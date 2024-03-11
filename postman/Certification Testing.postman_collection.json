@@ -1,0 +1,228 @@
+{
+	"info": {
+		"_postman_id": "033396e6-905a-4900-860d-7fc2ae0aa19f",
+		"name": "Certification Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29458798"
+	},
+	"item": [
+		{
+			"name": "SIS",
+			"item": [
+				{
+					"name": "01-EducationOrganization",
+					"item": [
+						{
+							"name": "School",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/schools?localEducationAgencyId=255901",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"schools"
+									],
+									"query": [
+										{
+											"key": "schoolId",
+											"value": "255901001",
+											"disabled": true
+										},
+										{
+											"key": "localEducationAgencyId",
+											"value": "255901"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Course",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/courses?courseCode=ALG-1",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"courses"
+									],
+									"query": [
+										{
+											"key": "courseCode",
+											"value": "ALG-1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Program",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/programs?programTypeDescriptor=uri://ed-fi.org/ProgramTypeDescriptor%23Bilingual",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"programs"
+									],
+									"query": [
+										{
+											"key": "programTypeDescriptor",
+											"value": "uri://ed-fi.org/ProgramTypeDescriptor#Bilingual"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ClassPeriod",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/classPeriods?schoolId=255901001",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"classPeriods"
+									],
+									"query": [
+										{
+											"key": "classPeriodName",
+											"value": "01 - Traditional",
+											"disabled": true
+										},
+										{
+											"key": "schoolId",
+											"value": "255901001"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Location",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/locations?schoolId=255901001",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"locations"
+									],
+									"query": [
+										{
+											"key": "schoolId",
+											"value": "255901001"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Assessment",
+			"item": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "tokenName",
+				"value": "edFiToken",
+				"type": "string"
+			},
+			{
+				"key": "grant_type",
+				"value": "client_credentials",
+				"type": "string"
+			},
+			{
+				"key": "client_authentication",
+				"value": "body",
+				"type": "string"
+			},
+			{
+				"key": "clientSecret",
+				"value": "{{edFiClientSecret}}",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "{{edFiClientId}}",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "{{baseUrl}}/oauth/token",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
