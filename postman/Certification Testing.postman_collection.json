@@ -136,7 +136,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{resourcesBaseUrl}}/ed-fi/locations?schoolId=255901001",
+									"raw": "{{resourcesBaseUrl}}/ed-fi/locations?schoolId=255901001&classroomIdentificationCode=502",
 									"host": [
 										"{{resourcesBaseUrl}}"
 									],
@@ -148,6 +148,10 @@
 										{
 											"key": "schoolId",
 											"value": "255901001"
+										},
+										{
+											"key": "classroomIdentificationCode",
+											"value": "502"
 										}
 									]
 								}
