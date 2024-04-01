@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "b893c395-58ab-4f59-a35f-f69a828e858f",
+		"_postman_id": "73f7f114-5ca2-4bda-a95b-879f66ac50db",
 		"name": "Certification Testing",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "27778522"
+		"_exporter_id": "27778522",
+		"_collection_link": "https://gap-ed-fi-qa.postman.co/workspace/EdFi---Team-B~293ad61d-bbcc-4e76-ae72-b7f19e7986a0/collection/27778522-73f7f114-5ca2-4bda-a95b-879f66ac50db?action=share&source=collection_link&creator=27778522"
 	},
 	"item": [
 		{
@@ -159,6 +160,1512 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "02-EducationOrganizationCalendar",
+					"item": [
+						{
+							"name": "Calendar",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/calendars?schoolId=255901107",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"calendars"
+									],
+									"query": [
+										{
+											"key": "schoolId",
+											"value": "255901107"
+										},
+										{
+											"key": "schoolId",
+											"value": "255901001",
+											"disabled": true
+										},
+										{
+											"key": "calendarCode",
+											"value": "2010605675",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CalendarDate",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/calendarDates?schoolId=255901107",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"calendarDates"
+									],
+									"query": [
+										{
+											"key": "schoolId",
+											"value": "255901107"
+										},
+										{
+											"key": "schoolId",
+											"value": "255901001",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GradingPeriod",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/gradingPeriods?gradingPeriodDescriptor=uri://ed-fi.org/GradingPeriodDescriptor%23First Six Weeks&schoolId=255901107",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"gradingPeriods"
+									],
+									"query": [
+										{
+											"key": "gradingPeriodDescriptor",
+											"value": "uri://ed-fi.org/GradingPeriodDescriptor%23First Six Weeks"
+										},
+										{
+											"key": "gradingPeriodDescriptor",
+											"value": "uri://ed-fi.org/GradingPeriodDescriptor%23Second Six Weeks",
+											"disabled": true
+										},
+										{
+											"key": "schoolId",
+											"value": "255901001",
+											"disabled": true
+										},
+										{
+											"key": "schoolId",
+											"value": "255901107"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Session",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/sessions?termDescriptor=uri://ed-fi.org/TermDescriptor%23Spring Semester",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"sessions"
+									],
+									"query": [
+										{
+											"key": "SchoolId",
+											"value": "255901107",
+											"disabled": true
+										},
+										{
+											"key": "SchoolId",
+											"value": "255901001",
+											"disabled": true
+										},
+										{
+											"key": "termDescriptor",
+											"value": "uri://ed-fi.org/TermDescriptor%23Spring Semester"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "03-MasterSchedule",
+					"item": [
+						{
+							"name": "CourseOffering",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/courseOfferings?schoolId=255901107&termDescriptorId=uri://ed-fi.org/TermDescriptor%23Fall Semester",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"courseOfferings"
+									],
+									"query": [
+										{
+											"key": "schoolId",
+											"value": "255901107"
+										},
+										{
+											"key": "schoolId",
+											"value": "255901001",
+											"disabled": true
+										},
+										{
+											"key": "termDescriptorId",
+											"value": "uri://ed-fi.org/TermDescriptor#Fall Semester"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Section",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/sections?schoolId=255901107&sessionName=2021-2022 Fall Semester",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"sections"
+									],
+									"query": [
+										{
+											"key": "schoolId",
+											"value": "255901107"
+										},
+										{
+											"key": "schoolId",
+											"value": "255901001",
+											"disabled": true
+										},
+										{
+											"key": "sessionName",
+											"value": "2021-2022 Fall Semester"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Bell Schedule",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/bellSchedules?schoolId=255901107",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"bellSchedules"
+									],
+									"query": [
+										{
+											"key": "schoolId",
+											"value": "255901107"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "04-StaffAssociation",
+					"item": [
+						{
+							"name": "Staff",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set StaffUniqueId value as Collection Variable\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const staffUniqueIdValue = pm.response.json();\r",
+											"    console.log(staffUniqueIdValue[0].staffUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"staffUniqueIdValueCollection\", staffUniqueIdValue[0].staffUniqueId);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/staffs?staffUniqueId={{staffUniqueIdValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"staffs"
+									],
+									"query": [
+										{
+											"key": "staffUniqueId",
+											"value": "{{staffUniqueIdValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StaffEducationOrganizationAssignmentAssociation",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/staffEducationOrganizationAssignmentAssociations?educationOrganizationId=255901107&staffUniqueId={{staffUniqueIdValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"staffEducationOrganizationAssignmentAssociations"
+									],
+									"query": [
+										{
+											"key": "educationOrganizationId",
+											"value": "255901107"
+										},
+										{
+											"key": "educationOrganizationId",
+											"value": "255901001",
+											"disabled": true
+										},
+										{
+											"key": "staffUniqueId",
+											"value": "{{staffUniqueIdValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StaffSchoolAssociation",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/staffSchoolAssociations?educationOrganizationId=255901107&staffUniqueId=207269",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"staffSchoolAssociations"
+									],
+									"query": [
+										{
+											"key": "educationOrganizationId",
+											"value": "255901107"
+										},
+										{
+											"key": "educationOrganizationId",
+											"value": "255901001",
+											"disabled": true
+										},
+										{
+											"key": "staffUniqueId",
+											"value": "207269"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StaffSectionAssociation",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/staffSectionAssociations?staffUniqueId={{staffUniqueIdValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"staffSectionAssociations"
+									],
+									"query": [
+										{
+											"key": "staffUniqueId",
+											"value": "{{staffUniqueIdValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "05-Student",
+					"item": [
+						{
+							"name": "Student",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdValue = pm.response.json();\r",
+											"    console.log(studentUniqueIdValue[0].studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdValueCollection\", studentUniqueIdValue[0].studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/students?studentUniqueId={{studentUniqueIdValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"students"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "06-StudentEnrollment",
+					"item": [
+						{
+							"name": "GraduationPlan",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/graduationPlans?educationOrganizationId=255901001",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"graduationPlans"
+									],
+									"query": [
+										{
+											"key": "educationOrganizationId",
+											"value": "255901001"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentSchoolAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student-School Association\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdValueSSCA = pm.response.json();\r",
+											"    console.log(studentUniqueIdValueSSCA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdValueSSCACollection\", studentUniqueIdValueSSCA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentSchoolAssociations",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentSchoolAssociations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentEducationOrganizationAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student-Education Organization Association\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdValueSEOA = pm.response.json();\r",
+											"    console.log(studentUniqueIdValueSEOA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdValueSEOACollection\", studentUniqueIdValueSEOA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentEducationOrganizationAssociations?studentUniqueId={{studentUniqueIdValueSEOACollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentEducationOrganizationAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdValueSEOACollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentSectionAssociation - PENDING",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student-Section Association\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdValueSSEA = pm.response.json();\r",
+											"    console.log(studentUniqueIdValueSSEA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdValueSSEACollection\", studentUniqueIdValueSSEA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentSectionAssociations",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentSectionAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdValueSSEACollection}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "07-Parent",
+					"item": [
+						{
+							"name": "Parent",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set parentUniqueId value as Collection Variable\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const parentUniqueIdValue = pm.response.json();\r",
+											"    console.log(parentUniqueIdValue[0].parentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"parentUniqueIdValueCollection\", parentUniqueIdValue[0].parentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/parents?parentUniqueId={{parentUniqueIdValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"parents"
+									],
+									"query": [
+										{
+											"key": "parentUniqueId",
+											"value": "{{parentUniqueIdValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentParentAssociation",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentParentAssociations?parentUniqueId={{parentUniqueIdValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentParentAssociations"
+									],
+									"query": [
+										{
+											"key": "parentUniqueId",
+											"value": "{{parentUniqueIdValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "08-StudentCohort - Check",
+					"item": [
+						{
+							"name": "Cohort",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/cohorts",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"cohorts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StaffCohortAssociation",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/staffCohortAssociations",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"staffCohortAssociations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentCohortAssociation",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/staffCohortAssociations",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"staffCohortAssociations"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "09-StudentDiscipline",
+					"item": [
+						{
+							"name": "DisciplineIncident",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/disciplineIncidents?schoolId=255901107",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"disciplineIncidents"
+									],
+									"query": [
+										{
+											"key": "schoolId",
+											"value": "255901107"
+										},
+										{
+											"key": "schoolId",
+											"value": "255901001",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentDisciplineIncidentAssociation - StudentDisciplineIncidentBehaviorAssociations",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Endpoint for studentDisciplineIncidentAssociations that is actually deprecated\r",
+											"\r",
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Discipline Incident Associations\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdValueSDBA = pm.response.json();\r",
+											"    console.log(studentUniqueIdValueSDBA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSDBAValueCollection\", studentUniqueIdValueSDBA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentDisciplineIncidentBehaviorAssociations?studentUniqueId={{studentUniqueIdSDBAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentDisciplineIncidentBehaviorAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSDBAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentDisciplineIncidentAssociation - studentDisciplineIncidentNonOffenderAssociations",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Endpoint for studentDisciplineIncidentAssociations that is actually deprecated\r",
+											"\r",
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Discipline Non-Offender Associations\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdValueSDNOA = pm.response.json();\r",
+											"    console.log(studentUniqueIdValueSDNOA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSDNOAValueCollection\", studentUniqueIdValueSDNOA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentDisciplineIncidentNonOffenderAssociations?studentUniqueId={{studentUniqueIdSDNOAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentDisciplineIncidentNonOffenderAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSDNOAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DisciplineAction",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Discipline Actions\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdDA = pm.response.json();\r",
+											"    console.log(studentUniqueIdDA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdDAValueCollection\", studentUniqueIdDA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/disciplineActions?studentUniqueId={{studentUniqueIdDAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"disciplineActions"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdDAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "10-StudentProgram",
+					"item": [
+						{
+							"name": "StudentProgramAssociation - PENDING",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentProgramAssociations?programTypeDescriptor=uri://ed-fi.org/ProgramTypeDescriptor%23Gifted and Talented",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "programTypeDescriptor",
+											"value": "uri://ed-fi.org/ProgramTypeDescriptor%23Gifted and Talented"
+										},
+										{
+											"key": "programTypeDescriptor",
+											"value": "uri://ed-fi.org/ProgramTypeDescriptor%23Career and Technical Education",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentSpecialEducationProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Special Education Program Association\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSSEPA = pm.response.json();\r",
+											"    console.log(studentUniqueIdSSEPA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSSEPAValueCollection\", studentUniqueIdSSEPA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentSpecialEducationProgramAssociations?studentUniqueId={{studentUniqueIdSSEPAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentSpecialEducationProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSSEPAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentTitleIPartAProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Title I Part A Program Associations\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSTIPAPA = pm.response.json();\r",
+											"    console.log(studentUniqueIdSTIPAPA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSTIPAPAValueCollection\", studentUniqueIdSTIPAPA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations?studentUniqueId={{studentUniqueIdSTIPAPAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentTitleIPartAProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSTIPAPAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentCTEProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student CTE Program ssociations\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSCTEPA = pm.response.json();\r",
+											"    console.log(studentUniqueIdSCTEPA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSCTEPAValueCollection\", studentUniqueIdSCTEPA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentCTEProgramAssociations?studentUniqueId={{studentUniqueIdSCTEPAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentCTEProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSCTEPAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentHomelessProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Homeless Program Association\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSHPA = pm.response.json();\r",
+											"    console.log(studentUniqueIdSHPA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSHPAValueCollection\", studentUniqueIdSHPA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentHomelessProgramAssociations?studentUniqueId={{studentUniqueIdSHPAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentHomelessProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSHPAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentLanguageInstructionProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Language Instruction Program Association\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSLIPA = pm.response.json();\r",
+											"    console.log(studentUniqueIdSLIPA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSLIPAValueCollection\", studentUniqueIdSLIPA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentLanguageInstructionProgramAssociations?studentUniqueId={{studentUniqueIdSLIPAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentLanguageInstructionProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSLIPAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentMigrantProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Migrant Education Program Associations\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSMEPA = pm.response.json();\r",
+											"    console.log(studentUniqueIdSMEPA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSMEPAValueCollection\", studentUniqueIdSMEPA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentMigrantEducationProgramAssociations?studentUniqueId={{studentUniqueIdSMEPAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentMigrantEducationProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSMEPAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentNeglectedOrDelinquentProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Neglected Or Delinquent Program Association\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSNDPA = pm.response.json();\r",
+											"    console.log(studentUniqueIdSNDPA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSNDPAValueCollection\", studentUniqueIdSNDPA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentNeglectedOrDelinquentProgramAssociations?studentUniqueId={{studentUniqueIdSNDPAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentNeglectedOrDelinquentProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSNDPAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentSchoolFoodServicesProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student School Food Services Program Association\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSSFSPA = pm.response.json();\r",
+											"    console.log(studentUniqueIdSSFSPA[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSSFSPAValueCollection\", studentUniqueIdSSFSPA[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentSchoolFoodServiceProgramAssociations?studentUniqueId={{studentUniqueIdSSFSPAValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentSchoolFoodServiceProgramAssociations"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSSFSPAValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "11-StudentAttendance",
+					"item": [
+						{
+							"name": "StudentSchoolAttendanceEvent",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student School Attendance Event\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSCAE = pm.response.json();\r",
+											"    console.log(studentUniqueIdSCAE[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSCAEValueCollection\", studentUniqueIdSCAE[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentSchoolAttendanceEvents?studentUniqueId={{studentUniqueIdSCAEValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentSchoolAttendanceEvents"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSCAEValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentSectionAttendanceEvent",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Section Attendance Event\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSSAE = pm.response.json();\r",
+											"    console.log(studentUniqueIdSSAE[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSSAEValueCollection\", studentUniqueIdSSAE[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentSectionAttendanceEvents?studentUniqueId={{studentUniqueIdSSAEValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentSectionAttendanceEvents"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSSAEValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "12-StudentGrade",
+					"item": [
+						{
+							"name": "Grade",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Grades\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdGrades = pm.response.json();\r",
+											"    console.log(studentUniqueIdGrades[0].studentSectionAssociationReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdGradesValueCollection\", studentUniqueIdGrades[0].studentSectionAssociationReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/grades?studentUniqueId={{studentUniqueIdGradesValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"grades"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdGradesValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "13-StudentTranscript.sql",
+					"item": [
+						{
+							"name": "CourseTranscript",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Course Transcript\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdCT = pm.response.json();\r",
+											"    console.log(studentUniqueIdCT[0].studentAcademicRecordReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdCTValueCollection\", studentUniqueIdCT[0].studentAcademicRecordReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/courseTranscripts?studentUniqueId={{studentUniqueIdCTValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"courseTranscripts"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdCTValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StudentAcademicRecord",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Set studentUniqueId value as Collection Variable for Student Academic Record\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"\r",
+											"    const studentUniqueIdSAR = pm.response.json();\r",
+											"    console.log(studentUniqueIdSAR[0].studentReference.studentUniqueId);\r",
+											"\r",
+											"    pm.collectionVariables.set(\"studentUniqueIdSARValueCollection\", studentUniqueIdSAR[0].studentReference.studentUniqueId);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourcesBaseUrl}}/ed-fi/studentAcademicRecords?studentUniqueId={{studentUniqueIdSARValueCollection}}",
+									"host": [
+										"{{resourcesBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentAcademicRecords"
+									],
+									"query": [
+										{
+											"key": "studentUniqueId",
+											"value": "{{studentUniqueIdSARValueCollection}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
@@ -227,6 +1734,100 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "staffUniqueId",
+			"value": ""
+		},
+		{
+			"key": "staffUniqueIdValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdValueCollection",
+			"value": ""
+		},
+		{
+			"key": "parentUniqueIdValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdValueSEOACollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSDBAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSDNOAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdDAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSCAEValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSSAEValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdGradesValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdCTValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSARValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSSEPAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSTIPAPAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSHPAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdValueSSCACollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdValueSSEACollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSCTEPAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSLIPAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSMEPAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSNDPAValueCollection",
+			"value": ""
+		},
+		{
+			"key": "studentUniqueIdSSFSPAValueCollection",
+			"value": ""
 		}
 	]
 }
