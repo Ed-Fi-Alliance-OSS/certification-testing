@@ -15,6 +15,20 @@
 					"item": [
 						{
 							"name": "School",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that School request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -56,6 +70,20 @@
 						},
 						{
 							"name": "Course",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Course request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -80,6 +108,20 @@
 						},
 						{
 							"name": "Program",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Program request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -95,7 +137,7 @@
 									"query": [
 										{
 											"key": "programTypeDescriptor",
-											"value": "uri://ed-fi.org/ProgramTypeDescriptor#Bilingual"
+											"value": "uri://ed-fi.org/ProgramTypeDescriptor%23Bilingual"
 										}
 									]
 								}
@@ -104,6 +146,20 @@
 						},
 						{
 							"name": "ClassPeriod",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Class Period request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -133,6 +189,20 @@
 						},
 						{
 							"name": "Location",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Location request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -166,6 +236,20 @@
 					"item": [
 						{
 							"name": "Calendar",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Calendar request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -200,6 +284,20 @@
 						},
 						{
 							"name": "CalendarDate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Calendar Date request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -229,6 +327,20 @@
 						},
 						{
 							"name": "GradingPeriod",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Grading Period request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -267,6 +379,20 @@
 						},
 						{
 							"name": "Session",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Session request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -306,6 +432,20 @@
 					"item": [
 						{
 							"name": "CourseOffering",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Course Offering request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -330,7 +470,7 @@
 										},
 										{
 											"key": "termDescriptorId",
-											"value": "uri://ed-fi.org/TermDescriptor#Fall Semester"
+											"value": "uri://ed-fi.org/TermDescriptor%23Fall Semester"
 										}
 									]
 								}
@@ -339,6 +479,20 @@
 						},
 						{
 							"name": "Section",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Section request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -372,6 +526,20 @@
 						},
 						{
 							"name": "Bell Schedule",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Bell Schedule request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -446,6 +614,20 @@
 						},
 						{
 							"name": "StaffEducationOrganizationAssignmentAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Staff Education Organization Assignment Association request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -479,6 +661,20 @@
 						},
 						{
 							"name": "StaffSchoolAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Staff School Association request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -512,6 +708,20 @@
 						},
 						{
 							"name": "StaffSectionAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Staff Section Association request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -589,6 +799,20 @@
 					"item": [
 						{
 							"name": "GraduationPlan",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Graduation Plan request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -797,6 +1021,20 @@
 						},
 						{
 							"name": "StudentParentAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Student Parent Association request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -826,6 +1064,20 @@
 					"item": [
 						{
 							"name": "Cohort",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Cohort request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -844,6 +1096,20 @@
 						},
 						{
 							"name": "StaffCohortAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Staff Cohort Association request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -862,6 +1128,20 @@
 						},
 						{
 							"name": "StudentCohortAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Student Cohort Association request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -890,7 +1170,9 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											""
+											"pm.test(\"Test that Discipline Incident request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -1063,7 +1345,21 @@
 					"name": "10-StudentProgram",
 					"item": [
 						{
-							"name": "StudentProgramAssociation - PENDING",
+							"name": "StudentProgramAssociation",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test that Student Program Association request has 200 code status\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
 							"request": {
 								"method": "GET",
 								"header": [],
