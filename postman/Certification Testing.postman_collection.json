@@ -1873,7 +1873,7 @@
 					]
 				},
 				{
-					"name": "13-StudentTranscript.sql",
+					"name": "13-StudentTranscript",
 					"item": [
 						{
 							"name": "CourseTranscript",
