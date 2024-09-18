@@ -1,12 +1,14 @@
 # Ed-Fi Certification Testing
 
-Test scripts for the Ed-Fi Certification process
+Test scripts for the Ed-Fi Certification process.
 
-In 2024-2025, the Alliance is moving from manual validation with SQL scripts to
-using the API itself for validation. This includes bringing in as much
-automation as possible, using [Postman](https://www.postman.com/) as the
-platform of choice. Not only will this streamline operations for the Ed-Fi
-Alliance, it will allow our partners to perform more of their own testing.
+In 2024-2025, the Alliance is testing an approach to move from manual validation
+with SQL scripts to using the API itself for validation. This approach seeks to
+bring in as much automation as possible, using
+[Postman](https://www.postman.com/) as the platform of choice. The goal of this
+is to streamline operations for the Ed-Fi Alliance, speed up development and
+certification times for our partners by allowing our partners to perform more of
+their own testing.
 
 ## Legal Information
 
