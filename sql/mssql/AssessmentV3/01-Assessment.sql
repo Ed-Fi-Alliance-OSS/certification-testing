@@ -55,7 +55,7 @@ LEFT JOIN edfi.AssessmentCategoryDescriptor acd
 	ON acd.AssessmentCategoryDescriptorId = a.AssessmentCategoryDescriptorId
 LEFT JOIN edfi.Descriptor dac
 	ON dac.DescriptorId = acd.AssessmentCategoryDescriptorId
----- academic subject --
+-- academic subject --
 LEFT JOIN edfi.AssessmentAcademicSubject aas
 	ON aas.AssessmentIdentifier = a.AssessmentIdentifier
 	AND aas.Namespace = a.Namespace
