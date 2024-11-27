@@ -6,7 +6,6 @@ select
 	ai.identificationcode
 	, daic.description as assessmentitemcategory
 	, ai.maxrawscore
-	, ai.correctresponse
 	, ls.description as learningstandard
 	, ai.assessmentidentifier
 	, ai.namespace
