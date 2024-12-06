@@ -9,7 +9,7 @@ select
 	, sasos.result
 	, drdt.description as resultdatatype
 	, darm.description as assessmentreportingmethod
-	, sasop.performancelevelmet
+	, sasop.performanceleveldescriptorid
 	, dpl.description as performancelevel
 	, darm2.description as assessmentreportingmethod
 	, saso.studentassessmentidentifier
