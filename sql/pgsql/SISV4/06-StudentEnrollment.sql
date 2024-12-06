@@ -78,9 +78,9 @@ join edfi.studenteducationorganizationassociationstudentcharacteristic seoasc on
 join edfi.descriptor dsc on dsc.descriptorid = seoasc.studentcharacteristicdescriptorid
 left join edfi.studenteducationorganizationassociationstudentindicator seoasi on seoasi.studentusi = seoa.studentusi
 and seoa.educationorganizationid = seoasi.educationorganizationid
-left join edfi.studenteducationorganizationassociationstudentidentificationcode seoasic on seoasic.studentusi = seoa.studentusi
+left join edfi.studenteducationorganizationassociationstudentidentifica_c15030 seoasic on seoasic.studentusi = seoa.studentusi
 	and seoasic.educationorganizationid = seoa.educationorganizationid
-left join edfi.studentidentificationsystemdescriptor sisd 
+left join edfi.studentidentificationsystemdescriptor sisd
 	on sisd.studentidentificationsystemdescriptorid = seoasic.studentidentificationsystemdescriptorid
 left join edfi.descriptor dsis on dsis.descriptorid = sisd.studentidentificationsystemdescriptorid
 join edfi.sexdescriptor sd on sd.sexdescriptorid = seoa.sexdescriptorid
