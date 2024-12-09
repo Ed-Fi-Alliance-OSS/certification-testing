@@ -16,8 +16,6 @@ select
 	, oa.nomenclature
 	, oa.description
 	, oaai.assessmentitemidentificationcode
-	, lo.objective
-	, lo.namespace as learningobjectivenamespace
 	, oa.parentidentificationcode
 	, oa.assessmentidentifier
 	, darm2.description as assessmentreportingmethodtype
@@ -42,14 +40,10 @@ left join edfi.objectiveassessmentassessmentitem oaai
 	on oaai.assessmentitemidentificationcode = oa.identificationcode
 	and oaai.assessmentidentifier = oa.assessmentidentifier
 	and oaai.namespace = oa.namespace
--- learning objective reference --
-left join edfi.objectiveassessmentlearningobjective oalo
-	on oalo.identificationcode = oa.identificationcode
-	and oalo.assessmentidentifier = oa.assessmentidentifier
-	and oalo.namespace = oa.namespace
-left join edfi.learningobjective lo
-	on lo.learningobjectiveid = oalo.learningobjectiveid
-	and lo.namespace = oalo.namespace
+left join edfi.gradebookentrylearningstandard gls
+	on gls.learningstandardid = oa.identificationcode
+	and gls.gradebookentryidentifier = oa.assessmentidentifier
+	and gls.namespace = oa.namespace
 -- learning standard reference --
 left join edfi.objectiveassessmentlearningstandard oals
 	on oals.identificationcode = oa.identificationcode
