@@ -16132,61 +16132,66 @@
 					"name": "12-StudentGrade",
 					"item": [
 						{
-							"name": "Scenario 5 DELETE - Get Student Grade",
-							"event": [
+							"name": "Scenario 5",
+							"item": [
 								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentGradeId\") + \" does not exist (404 Not Found)\", function () {\r",
-											"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
-											"});\r",
-											"\r",
-											"pm.test(\"Verify empty response for non-existent record\", function () {\r",
-											"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
+									"name": "Scenario 5 DELETE - Get Student Grade",
+									"event": [
 										{
-											"key": "token",
-											"value": "{{certToken}}",
-											"type": "string"
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentGradeId\") + \" does not exist (404 Not Found)\", function () {\r",
+													"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Verify empty response for non-existent record\", function () {\r",
+													"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
 										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{resourceBaseUrl}}/ed-fi/grades/{{s5DeletedStudentGradeId}}",
-									"host": [
-										"{{resourceBaseUrl}}"
 									],
-									"path": [
-										"ed-fi",
-										"grades",
-										"{{s5DeletedStudentGradeId}}"
-									]
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/grades/{{s5DeletedStudentGradeId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"grades",
+												"{{s5DeletedStudentGradeId}}"
+											]
+										}
+									},
+									"response": []
 								}
-							},
-							"response": []
+							]
 						}
 					]
 				}
