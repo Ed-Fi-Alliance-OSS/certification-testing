@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2427858d-733a-408c-9b5f-29218600a776",
+		"_postman_id": "22b8f751-d732-4a91-ac13-80ee1c8c5ed1",
 		"name": "Certification Testing",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "1204567"
@@ -641,88 +641,6 @@
 										}
 									},
 									"response": []
-								},
-								{
-									"name": "Scenario 1 DELETE - Get Program",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Record \" + pm.environment.get(\"s1DeletedProgramID\") + \" does not exist (404 Not Found)\", function () {\r",
-													"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
-													"});\r",
-													"\r",
-													"pm.test(\"Verify empty response for non-existent record\", function () {\r",
-													"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
-													"});"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// Making the GET request of Programs and getting the latest program ID\r",
-													"pm.sendRequest({\r",
-													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/programs`,\r",
-													"    method: 'GET',\r",
-													"    header: {\r",
-													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
-													"        'Accept': '*/*'\r",
-													"    }\r",
-													"}, function (err, res) {\r",
-													"    if (err) {\r",
-													"        console.log('Error in the Authentication Process:', err);\r",
-													"    }\r",
-													"});\r",
-													""
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"protocolProfileBehavior": {
-										"disableBodyPruning": true
-									},
-									"request": {
-										"auth": {
-											"type": "bearer",
-											"bearer": [
-												{
-													"key": "token",
-													"value": "{{certToken}}",
-													"type": "string"
-												}
-											]
-										},
-										"method": "GET",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\r\n    \"programName\": \"Grand Bend Bilingual 101\",\r\n    \"programTypeDescriptor\": \"uri://ed-fi.org/ProgramTypeDescriptor#Bilingual\",\r\n    \"educationOrganizationReference\": {\r\n        \"educationOrganizationId\": 255901\r\n    },\r\n    \"programId\": \"101\"\r\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{resourceBaseUrl}}/ed-fi/programs/{{s1DeletedProgramID}}",
-											"host": [
-												"{{resourceBaseUrl}}"
-											],
-											"path": [
-												"ed-fi",
-												"programs",
-												"{{s1DeletedProgramID}}"
-											]
-										}
-									},
-									"response": []
 								}
 							]
 						},
@@ -1237,6 +1155,75 @@
 												"ed-fi",
 												"locations",
 												"{{s2Location}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 DELETE - Get Program",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Record \" + pm.environment.get(\"s2DeletedProgramID\") + \" does not exist (404 Not Found)\", function () {\r",
+													"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Verify empty response for non-existent record\", function () {\r",
+													"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"programName\": \"Grand Bend Bilingual 101\",\r\n    \"programTypeDescriptor\": \"uri://ed-fi.org/ProgramTypeDescriptor#Bilingual\",\r\n    \"educationOrganizationReference\": {\r\n        \"educationOrganizationId\": 255901\r\n    },\r\n    \"programId\": \"101\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/programs/{{s2DeletedProgramID}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"programs",
+												"{{s2DeletedProgramID}}"
 											]
 										}
 									},
@@ -11807,19 +11794,7 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"// Making the GET request to Student Section Association and getting the ID of the student section association\r",
-													"pm.sendRequest({\r",
-													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSectionAssociations`,\r",
-													"    method: 'GET',\r",
-													"    header: {\r",
-													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
-													"        'Accept': '*/*'\r",
-													"    }\r",
-													"}, function (err, res) {\r",
-													"    if (err) {\r",
-													"        console.log('Error in the Authentication Process:', err);\r",
-													"    }\r",
-													"});"
+													""
 												],
 												"type": "text/javascript",
 												"packages": {}
@@ -12014,19 +11989,7 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"// Making the GET request to Student School Association and getting the ID of the student school association\r",
-													"pm.sendRequest({\r",
-													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSchoolAssociations`,\r",
-													"    method: 'GET',\r",
-													"    header: {\r",
-													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
-													"        'Accept': '*/*'\r",
-													"    }\r",
-													"}, function (err, res) {\r",
-													"    if (err) {\r",
-													"        console.log('Error in the Authentication Process:', err);\r",
-													"    }\r",
-													"});"
+													""
 												],
 												"type": "text/javascript",
 												"packages": {}
@@ -14875,7 +14838,65 @@
 						},
 						{
 							"name": "Scenario 5",
-							"item": []
+							"item": [
+								{
+									"name": "Scenario 5 DELETE - Get Cohort",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Record \" + pm.environment.get(\"s4DeletedCohortId\") + \" does not exist (404 Not Found)\", function () {\r",
+													"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Verify empty response for non-existent record\", function () {\r",
+													"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/cohorts/{{s4DeletedCohortId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"cohorts",
+												"{{s4DeletedCohortId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				},
@@ -15965,6 +15986,207 @@
 						{
 							"name": "Scenario 5",
 							"item": []
+						}
+					]
+				},
+				{
+					"name": "11-StudentAttendance",
+					"item": [
+						{
+							"name": "StudentSchoolAttendanceEvent",
+							"item": [
+								{
+									"name": "Scenario 5",
+									"item": [
+										{
+											"name": "Scenario 5 DELETE - Get Student School Attendance Events",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentSchoolAttendanceEventId\") + \" does not exist (404 Not Found)\", function () {\r",
+															"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
+															"});\r",
+															"\r",
+															"pm.test(\"Verify empty response for non-existent record\", function () {\r",
+															"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{certToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s5DeletedStudentSchoolAttendanceEventId}}",
+													"host": [
+														"{{resourceBaseUrl}}"
+													],
+													"path": [
+														"ed-fi",
+														"studentSchoolAttendanceEvents",
+														"{{s5DeletedStudentSchoolAttendanceEventId}}"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "StudentSectionAttendanceEvent",
+							"item": [
+								{
+									"name": "Scenario 5",
+									"item": [
+										{
+											"name": "Scenario 5 DELETE - Get Student Section Attendance Events",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentSectionAttendanceEventId\") + \" does not exist (404 Not Found)\", function () {\r",
+															"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
+															"});\r",
+															"\r",
+															"pm.test(\"Verify empty response for non-existent record\", function () {\r",
+															"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{certToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{s5DeletedStudentSectionAttendanceEventId}}",
+													"host": [
+														"{{resourceBaseUrl}}"
+													],
+													"path": [
+														"ed-fi",
+														"studentSectionAttendanceEvents",
+														"{{s5DeletedStudentSectionAttendanceEventId}}"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "12-StudentGrade",
+					"item": [
+						{
+							"name": "Scenario 5 DELETE - Get Student Grade",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentGradeId\") + \" does not exist (404 Not Found)\", function () {\r",
+											"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Verify empty response for non-existent record\", function () {\r",
+											"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{certToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourceBaseUrl}}/ed-fi/grades/{{s5DeletedStudentGradeId}}",
+									"host": [
+										"{{resourceBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"grades",
+										"{{s5DeletedStudentGradeId}}"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				}
