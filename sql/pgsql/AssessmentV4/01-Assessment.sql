@@ -4,12 +4,12 @@
 
 select
 	a.assessmenttitle
-	, darm.description as assessmentreportingmethod
+	, darm.description as assessmentscorereportingmethod
 	, ascore.minimumscore
 	, ascore.maximumscore
 	, drdt.description as resultdatatypetype
 	, dpl.description as performancelevel
-	, darm2.description as assessmentreportingmethod
+	, darm2.description as assessmentperformancelevelreportingmethod
 	, apl.minimumscore
 	, apl.maximumscore
 	, drdt2.description as resultdatatypetype
