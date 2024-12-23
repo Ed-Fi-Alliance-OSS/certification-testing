@@ -18378,136 +18378,1197 @@
 					"name": "11-StudentAttendance",
 					"item": [
 						{
-							"name": "StudentSchoolAttendanceEvent",
+							"name": "Scenario 1",
 							"item": [
 								{
-									"name": "Scenario 5",
-									"item": [
+									"name": "Scenario 1 POST - Get Student School Attendance Event",
+									"event": [
 										{
-											"name": "Scenario 5 DELETE - Get Student School Attendance Events",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentSchoolAttendanceEventId\") + \" does not exist (404 Not Found)\", function () {\r",
-															"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
-															"});\r",
-															"\r",
-															"pm.test(\"Verify empty response for non-existent record\", function () {\r",
-															"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
-															"});"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												},
-												{
-													"listen": "prerequest",
-													"script": {
-														"exec": [
-															""
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{certToken}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s5DeletedStudentSchoolAttendanceEventId}}",
-													"host": [
-														"{{resourceBaseUrl}}"
-													],
-													"path": [
-														"ed-fi",
-														"studentSchoolAttendanceEvents",
-														"{{s5DeletedStudentSchoolAttendanceEventId}}"
-													]
-												}
-											},
-											"response": []
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student School Attendance Event request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedSchoolId = 255901107;\r",
+													"let expectedSchoolIdSR = 255901107;\r",
+													"let expectedSchoolYear = `${currentYear}`;\r",
+													"let expectedSessionName = \"2016-2017 Fall Semester\";\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedAttendanceEventCategoryDescriptor = \"Tardy\";\r",
+													"let expectedEventDate = `${currentYear}-09-16`;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: schoolId value from schoolReference for Student School Attendance Event is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.schoolReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from schoolReference for Student School Attendance Event. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: schoolId value from sessionReference for Student School Attendance Event is \" + expectedSchoolIdSR, () => {\r",
+													"    pm.expect(response.sessionReference.schoolId, `'${expectedSchoolIdSR}' was not found in the schoolId property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolId}'`).to.eql(expectedSchoolIdSR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: schoolYear value from sessionReference for Student School Attendance Event is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.sessionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: sessionName value from sessionReference for Student School Attendance Event is \" + expectedSessionName, () => {\r",
+													"    pm.expect(response.sessionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.sessionName}'`).to.eql(expectedSessionName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: studentUniqueId value from studentReference for Student School Attendance Event is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student School Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: attendanceEventCategoryDescriptor value for Student School Attendance Event is \" + expectedAttendanceEventCategoryDescriptor, () => {\r",
+													"    pm.expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor property for Student School Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: eventDate value for Student School Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate property for Student School Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student School Attendance Events and getting the ID of the student school attendance event\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSchoolAttendanceEvents`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSchoolAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSchoolAttendanceEventDate = latestStudentSchoolAttendanceEvent ? latestStudentSchoolAttendanceEvent._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSchoolAttendanceEventDate', latestStudentSchoolAttendanceEventDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentSchoolAttendanceEventId\", latestStudentSchoolAttendanceEvent.id);\r",
+													"        console.log('s1StudentSchoolAttendanceEventId', pm.environment.get(\"s1StudentSchoolAttendanceEventId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
 										}
-									]
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s1StudentSchoolAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSchoolAttendanceEvents",
+												"{{s1StudentSchoolAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student Section Attendance Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Section Attendance Event request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedLocalCourseCode;\r",
+													"let expectedSchoolId = 255901107;\r",
+													"let expectedSchoolYear = 2017;\r",
+													"let expectedSectionIdentifier;\r",
+													"let expectedSessionName = \"2016-2017 Fall Semester\";\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedAttendanceEventCategoryDescriptor = \"Tardy\";\r",
+													"let expectedEventDate = `${currentYear}-09-16`;\r",
+													"\r",
+													"let localCourseCodeSystemValue = pm.environment.get(\"localCourseCodeSystemValue\");\r",
+													"\r",
+													"if (localCourseCodeSystemValue === \"\" || localCourseCodeSystemValue === null) {\r",
+													"    expectedLocalCourseCode = \"ELA-01\";\r",
+													"} else {\r",
+													"    expectedLocalCourseCode = localCourseCodeSystemValue;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: expectedLocalCourseCode value from sectionReference for Student Section Attendance Event is \" + expectedLocalCourseCode, () => {\r",
+													"    pm.expect(response.sectionReference.localCourseCode, `'${expectedLocalCourseCode}' was not found in the localCourseCode from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.localCourseCode}'`).to.eql(expectedLocalCourseCode);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: schoolId value from sectionReference for Student Section Attendance Event is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.sectionReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: schoolYear value from sectionReference for Student Section Attendance Event is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.sectionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"let sectionIdentifierSystemValue = pm.environment.get(\"sectionIdentifierSystemValue\");\r",
+													"\r",
+													"if (sectionIdentifierSystemValue === \"\" || sectionIdentifierSystemValue === null) {\r",
+													"    expectedSectionIdentifier = \"ELA012017RM555\";\r",
+													"} else {\r",
+													"    expectedSectionIdentifier = sectionIdentifierSystemValue;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: sectionIdentifier value from sectionReference for Student Section Attendance Event is \" + expectedSectionIdentifier, () => {\r",
+													"    pm.expect(response.sectionReference.sectionIdentifier, `'${expectedSectionIdentifier}' was not found in the sectionIdentifier from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sectionIdentifier}'`).to.eql(expectedSectionIdentifier);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: sessionName value from sectionReference for Student Section Attendance Event is \" + expectedSessionName, () => {\r",
+													"    pm.expect(response.sectionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sessionName}'`).to.eql(expectedSessionName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Section Attendance Event is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId from studentReference for Student Section Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: attendanceEventCategoryDescriptor value for Student Section Attendance Event is \" + expectedAttendanceEventCategoryDescriptor, () => {\r",
+													"    pm.expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor for Student Section Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 1 POST: eventDate value for Student Section Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate for Student Section Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Section Attendance Events and getting the ID of the student section attendance event\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSectionAttendanceEvents`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSectionAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSectionAttendanceEventDate = latestStudentSectionAttendanceEvent ? latestStudentSectionAttendanceEvent._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSectionAttendanceEventDate', latestStudentSectionAttendanceEventDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentSectionAttendanceEventId\", latestStudentSectionAttendanceEvent.id);\r",
+													"        console.log('s1StudentSectionAttendanceEventId', pm.environment.get(\"s1StudentSectionAttendanceEventId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{s1StudentSectionAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSectionAttendanceEvents",
+												"{{s1StudentSectionAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
 						{
-							"name": "StudentSectionAttendanceEvent",
+							"name": "Scenario 2",
 							"item": [
 								{
-									"name": "Scenario 5",
-									"item": [
+									"name": "Scenario 1 POST - Get Student School Attendance Event",
+									"event": [
 										{
-											"name": "Scenario 5 DELETE - Get Student Section Attendance Events",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentSectionAttendanceEventId\") + \" does not exist (404 Not Found)\", function () {\r",
-															"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
-															"});\r",
-															"\r",
-															"pm.test(\"Verify empty response for non-existent record\", function () {\r",
-															"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
-															"});"
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												},
-												{
-													"listen": "prerequest",
-													"script": {
-														"exec": [
-															""
-														],
-														"type": "text/javascript",
-														"packages": {}
-													}
-												}
-											],
-											"request": {
-												"auth": {
-													"type": "bearer",
-													"bearer": [
-														{
-															"key": "token",
-															"value": "{{certToken}}",
-															"type": "string"
-														}
-													]
-												},
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{s5DeletedStudentSectionAttendanceEventId}}",
-													"host": [
-														"{{resourceBaseUrl}}"
-													],
-													"path": [
-														"ed-fi",
-														"studentSectionAttendanceEvents",
-														"{{s5DeletedStudentSectionAttendanceEventId}}"
-													]
-												}
-											},
-											"response": []
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 POST: Test that Student School Attendance Event request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedSchoolId = 255901001;\r",
+													"let expectedSchoolIdSR = 255901001;\r",
+													"let expectedSchoolYear = `${currentYear}`;\r",
+													"let expectedSessionName = \"2016-2017 Fall Semester\";\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedAttendanceEventCategoryDescriptor = \"Unexcused Absence\";\r",
+													"let expectedEventDate = `${currentYear}-10-05`;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 POST: schoolId value from schoolReference for Student School Attendance Event is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.schoolReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from schoolReference for Student School Attendance Event. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 POST: schoolId value from sessionReference for Student School Attendance Event is \" + expectedSchoolIdSR, () => {\r",
+													"    pm.expect(response.sessionReference.schoolId, `'${expectedSchoolIdSR}' was not found in the schoolId property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolId}'`).to.eql(expectedSchoolIdSR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 POST: schoolYear value from sessionReference for Student School Attendance Event is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.sessionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 POST: sessionName value from sessionReference for Student School Attendance Event is \" + expectedSessionName, () => {\r",
+													"    pm.expect(response.sessionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.sessionName}'`).to.eql(expectedSessionName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 POST: studentUniqueId value from studentReference for Student School Attendance Event is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student School Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 POST: attendanceEventCategoryDescriptor value for Student School Attendance Event is \" + expectedAttendanceEventCategoryDescriptor, () => {\r",
+													"    pm.expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor property for Student School Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 POST: eventDate value for Student School Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate property for Student School Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student School Attendance Events and getting the ID of the student school attendance event\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSchoolAttendanceEvents`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSchoolAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSchoolAttendanceEventDate = latestStudentSchoolAttendanceEvent ? latestStudentSchoolAttendanceEvent._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSchoolAttendanceEventDate', latestStudentSchoolAttendanceEventDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentSchoolAttendanceEventId\", latestStudentSchoolAttendanceEvent.id);\r",
+													"        console.log('s2StudentSchoolAttendanceEventId', pm.environment.get(\"s2StudentSchoolAttendanceEventId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
 										}
-									]
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s2StudentSchoolAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSchoolAttendanceEvents",
+												"{{s2StudentSchoolAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 POST - Get Student Section Attendance Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 POST: Test that Student Section Attendance Event request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedLocalCourseCode;\r",
+													"let expectedSchoolId = 255901001\t;\r",
+													"let expectedSchoolYear = 2017;\r",
+													"let expectedSectionIdentifier;\r",
+													"let expectedSessionName = \"2016-2017 Fall Semester\";\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedAttendanceEventCategoryDescriptor = \"Unexcused Absence\";\r",
+													"let expectedEventDate = `${currentYear}-10-05`;\r",
+													"\r",
+													"let localCourseCodeSystemValueS2 = pm.environment.get(\"localCourseCodeSystemValueS2\");\r",
+													"\r",
+													"if (localCourseCodeSystemValueS2 === \"\" || localCourseCodeSystemValueS2 === null) {\r",
+													"    expectedLocalCourseCode = \"ALG-2\";\r",
+													"} else {\r",
+													"    expectedLocalCourseCode = localCourseCodeSystemValueS2;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 POST: expectedLocalCourseCode value from sectionReference for Student Section Attendance Event is \" + expectedLocalCourseCode, () => {\r",
+													"    pm.expect(response.sectionReference.localCourseCode, `'${expectedLocalCourseCode}' was not found in the localCourseCode from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.localCourseCode}'`).to.eql(expectedLocalCourseCode);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 POST: schoolId value from sectionReference for Student Section Attendance Event is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.sectionReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 POST: schoolYear value from sectionReference for Student Section Attendance Event is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.sectionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"let sectionIdentifierSystemValueS2 = pm.environment.get(\"sectionIdentifierSystemValueS2\");\r",
+													"\r",
+													"if (sectionIdentifierSystemValueS2 === \"\" || sectionIdentifierSystemValueS2 === null) {\r",
+													"    expectedSectionIdentifier = \"ALG12017RM901\";\r",
+													"} else {\r",
+													"    expectedSectionIdentifier = sectionIdentifierSystemValueS2;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 POST: sectionIdentifier value from sectionReference for Student Section Attendance Event is \" + expectedSectionIdentifier, () => {\r",
+													"    pm.expect(response.sectionReference.sectionIdentifier, `'${expectedSectionIdentifier}' was not found in the sectionIdentifier from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sectionIdentifier}'`).to.eql(expectedSectionIdentifier);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 POST: sessionName value from sectionReference for Student Section Attendance Event is \" + expectedSessionName, () => {\r",
+													"    pm.expect(response.sectionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sessionName}'`).to.eql(expectedSessionName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 POST: studentUniqueId value from studentReference for Student Section Attendance Event is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId from studentReference for Student Section Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 POST: attendanceEventCategoryDescriptor value for Student Section Attendance Event is \" + expectedAttendanceEventCategoryDescriptor, () => {\r",
+													"    pm.expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor for Student Section Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 2 POST: eventDate value for Student Section Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate for Student Section Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Section Attendance Events and getting the ID of the student section attendance event\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSectionAttendanceEvents`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSectionAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSectionAttendanceEventDate = latestStudentSectionAttendanceEvent ? latestStudentSectionAttendanceEvent._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSectionAttendanceEventDate', latestStudentSectionAttendanceEventDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentSectionAttendanceEventId\", latestStudentSectionAttendanceEvent.id);\r",
+													"        console.log('s2StudentSectionAttendanceEventId', pm.environment.get(\"s2StudentSectionAttendanceEventId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{s2StudentSectionAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSectionAttendanceEvents",
+												"{{s2StudentSectionAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Scenario 3",
+							"item": [
+								{
+									"name": "Scenario 3 PUT - Get Student School Attendance Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 3 PUT: Test that Student School Attendance Event request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedSchoolId = 255901107;\r",
+													"let expectedSchoolIdSR = 255901107;\r",
+													"let expectedSchoolYear = `${currentYear}`;\r",
+													"let expectedSessionName = \"2016-2017 Fall Semester\";\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedAttendanceEventCategoryDescriptor = \"Tardy\";\r",
+													"let expectedEventDate = `${currentYear}-09-16`;\r",
+													"let expectedAttendanceEventReason = \"Late\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 3 PUT: schoolId value from schoolReference for Student School Attendance Event is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.schoolReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from schoolReference for Student School Attendance Event. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 3 PUT: schoolId value from sessionReference for Student School Attendance Event is \" + expectedSchoolIdSR, () => {\r",
+													"    pm.expect(response.sessionReference.schoolId, `'${expectedSchoolIdSR}' was not found in the schoolId property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolId}'`).to.eql(expectedSchoolIdSR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 3 PUT: schoolYear value from sessionReference for Student School Attendance Event is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.sessionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 3 PUT: sessionName value from sessionReference for Student School Attendance Event is \" + expectedSessionName, () => {\r",
+													"    pm.expect(response.sessionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.sessionName}'`).to.eql(expectedSessionName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 3 PUT: studentUniqueId value from studentReference for Student School Attendance Event is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student School Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 3 PUT: attendanceEventCategoryDescriptor value for Student School Attendance Event is \" + expectedAttendanceEventCategoryDescriptor, () => {\r",
+													"    pm.expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor property for Student School Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 3 PUT: eventDate value for Student School Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate property for Student School Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 3 PUT: eventDate value for Student School Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate property for Student School Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 3 PUT: attendanceEventReason value for Student School Attendance Event is \" + expectedAttendanceEventReason, () => {\r",
+													"    pm.expect(response.attendanceEventReason, `'${expectedAttendanceEventReason}' was not found in the attendanceEventReason property for Student School Attendance Event. Retrieved value is '${response.attendanceEventReason}'`).to.eql(expectedAttendanceEventReason);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student School Attendance Events and getting the ID of the student school attendance event\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSchoolAttendanceEvents`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSchoolAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSchoolAttendanceEventDate = latestStudentSchoolAttendanceEvent ? latestStudentSchoolAttendanceEvent._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSchoolAttendanceEventDate', latestStudentSchoolAttendanceEventDate);\r",
+													"\r",
+													"        pm.environment.set(\"s3StudentSchoolAttendanceEventId\", latestStudentSchoolAttendanceEvent.id);\r",
+													"        console.log('s3StudentSchoolAttendanceEventId', pm.environment.get(\"s3StudentSchoolAttendanceEventId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s3StudentSchoolAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSchoolAttendanceEvents",
+												"{{s3StudentSchoolAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 3 PUT - Get Student Section Attendance Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 3 PUT: Test that Student Section Attendance Event request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedLocalCourseCode;\r",
+													"let expectedSchoolId = 255901107;\r",
+													"let expectedSchoolYear = 2017;\r",
+													"let expectedSectionIdentifier;\r",
+													"let expectedSessionName = \"2016-2017 Fall Semester\";\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedAttendanceEventCategoryDescriptor = \"Tardy\";\r",
+													"let expectedEventDate = `${currentYear}-09-16`;\r",
+													"let expectedAttendanceEventReason = \"Late\";\r",
+													"\r",
+													"let localCourseCodeSystemValueS3 = pm.environment.get(\"localCourseCodeSystemValueS3\");\r",
+													"\r",
+													"if (localCourseCodeSystemValueS3 === \"\" || localCourseCodeSystemValueS3 === null) {\r",
+													"    expectedLocalCourseCode = \"ELA-01\";\r",
+													"} else {\r",
+													"    expectedLocalCourseCode = localCourseCodeSystemValueS3;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"02 - Scenario 3 PUT: expectedLocalCourseCode value from sectionReference for Student Section Attendance Event is \" + expectedLocalCourseCode, () => {\r",
+													"    pm.expect(response.sectionReference.localCourseCode, `'${expectedLocalCourseCode}' was not found in the localCourseCode from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.localCourseCode}'`).to.eql(expectedLocalCourseCode);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 3 PUT: schoolId value from sectionReference for Student Section Attendance Event is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.sectionReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 3 PUT: schoolYear value from sectionReference for Student Section Attendance Event is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.sectionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"let sectionIdentifierSystemValueS3 = pm.environment.get(\"sectionIdentifierSystemValueS3\");\r",
+													"\r",
+													"if (sectionIdentifierSystemValueS3 === \"\" || sectionIdentifierSystemValueS3 === null) {\r",
+													"    expectedSectionIdentifier = \"ELA012017RM555\";\r",
+													"} else {\r",
+													"    expectedSectionIdentifier = sectionIdentifierSystemValueS3;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"05 - Scenario 3 PUT: sectionIdentifier value from sectionReference for Student Section Attendance Event is \" + expectedSectionIdentifier, () => {\r",
+													"    pm.expect(response.sectionReference.sectionIdentifier, `'${expectedSectionIdentifier}' was not found in the sectionIdentifier from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sectionIdentifier}'`).to.eql(expectedSectionIdentifier);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 3 PUT: sessionName value from sectionReference for Student Section Attendance Event is \" + expectedSessionName, () => {\r",
+													"    pm.expect(response.sectionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sessionName}'`).to.eql(expectedSessionName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 3 PUT: studentUniqueId value from studentReference for Student Section Attendance Event is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId from studentReference for Student Section Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 3 PUT: attendanceEventCategoryDescriptor value for Student Section Attendance Event is \" + expectedAttendanceEventCategoryDescriptor, () => {\r",
+													"    pm.expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor for Student Section Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 3 PUT: eventDate value for Student Section Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate for Student Section Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 3 PUT: attendanceEventReason value for Student Section Attendance Event is \" + expectedAttendanceEventReason, () => {\r",
+													"    pm.expect(response.attendanceEventReason, `'${expectedAttendanceEventReason}' was not found in the eventDate for Student Section Attendance Event. Retrieved value is '${response.attendanceEventReason}'`).to.eql(expectedAttendanceEventReason);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Section Attendance Events and getting the ID of the student section attendance event\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSectionAttendanceEvents`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSectionAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSectionAttendanceEventDate = latestStudentSectionAttendanceEvent ? latestStudentSectionAttendanceEvent._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSectionAttendanceEventDate', latestStudentSectionAttendanceEventDate);\r",
+													"\r",
+													"        pm.environment.set(\"s3StudentSectionAttendanceEventId\", latestStudentSectionAttendanceEvent.id);\r",
+													"        console.log('s3StudentSectionAttendanceEventId', pm.environment.get(\"s3StudentSectionAttendanceEventId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{s3StudentSectionAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSectionAttendanceEvents",
+												"{{s3StudentSectionAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Scenario 4",
+							"item": [
+								{
+									"name": "Scenario 4 PUT - Get Student School Attendance Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 4 PUT: Test that Student School Attendance Event request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedSchoolId = 255901001;\r",
+													"let expectedSchoolIdSR = 255901001;\r",
+													"let expectedSchoolYear = `${currentYear}`;\r",
+													"let expectedSessionName = \"\t2016-2017 Fall Semester\";\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedAttendanceEventCategoryDescriptor = \"Unexcused Absence\";\r",
+													"let expectedEventDate = `${currentYear}-10-05`;\r",
+													"let expectedAttendanceEventReason = \"No Note\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 4 PUT: schoolId value from schoolReference for Student School Attendance Event is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.schoolReference.schoolId, `${expectedSchoolId}' was not found in the schoolId property from schoolReference for Student School Attendance Event. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 4 PUT: schoolId value from sessionReference for Student School Attendance Event is \" + expectedSchoolIdSR, () => {\r",
+													"    pm.expect(response.sessionReference.schoolId, `'${expectedSchoolIdSR}' was not found in the schoolId property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolId}'`).to.eql(expectedSchoolIdSR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 4 PUT: schoolYear value from sessionReference for Student School Attendance Event is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.sessionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 4 PUT: sessionName value from sessionReference for Student School Attendance Event is \" + expectedSessionName, () => {\r",
+													"    pm.expect(response.sessionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.sessionName}'`).to.eql(expectedSessionName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 4 PUT: studentUniqueId value from studentReference for Student School Attendance Event is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student School Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 4 PUT: attendanceEventCategoryDescriptor value for Student School Attendance Event is \" + expectedAttendanceEventCategoryDescriptor, () => {\r",
+													"    pm.expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor property for Student School Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 4 PUT: eventDate value for Student School Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate property for Student School Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 4 PUT: eventDate value for Student School Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate property for Student School Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 4 PUT: attendanceEventReason value for Student School Attendance Event is \" + expectedAttendanceEventReason, () => {\r",
+													"    pm.expect(response.attendanceEventReason, `'${expectedAttendanceEventReason}' was not found in the attendanceEventReason property for Student School Attendance Event. Retrieved value is '${response.attendanceEventReason}'`).to.eql(expectedAttendanceEventReason);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student School Attendance Events and getting the ID of the student school attendance event\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSchoolAttendanceEvents`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSchoolAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSchoolAttendanceEventDate = latestStudentSchoolAttendanceEvent ? latestStudentSchoolAttendanceEvent._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSchoolAttendanceEventDate', latestStudentSchoolAttendanceEventDate);\r",
+													"\r",
+													"        pm.environment.set(\"s4StudentSchoolAttendanceEventId\", latestStudentSchoolAttendanceEvent.id);\r",
+													"        console.log('s4StudentSchoolAttendanceEventId', pm.environment.get(\"s4StudentSchoolAttendanceEventId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s4StudentSchoolAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSchoolAttendanceEvents",
+												"{{s4StudentSchoolAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 4 PUT - Get Student Section Attendance Event",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 4 PUT: Test that Student Section Attendance Event request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedLocalCourseCode;\r",
+													"let expectedSchoolId = 255901001;\r",
+													"let expectedSchoolYear = 2017;\r",
+													"let expectedSectionIdentifier;\r",
+													"let expectedSessionName = \"2016-2017 Fall Semester\";\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedAttendanceEventCategoryDescriptor = \"Unexcused Absence\";\r",
+													"let expectedEventDate = `${currentYear}-10-05`;\r",
+													"let expectedAttendanceEventReason = \"No Note\";\r",
+													"\r",
+													"let localCourseCodeSystemValueS4 = pm.environment.get(\"localCourseCodeSystemValueS4\");\r",
+													"\r",
+													"if (localCourseCodeSystemValueS4 === \"\" || localCourseCodeSystemValueS4 === null) {\r",
+													"    expectedLocalCourseCode = \"ALG-2\";\r",
+													"} else {\r",
+													"    expectedLocalCourseCode = localCourseCodeSystemValueS4;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"02 - Scenario 4 PUT: expectedLocalCourseCode value from sectionReference for Student Section Attendance Event is \" + expectedLocalCourseCode, () => {\r",
+													"    pm.expect(response.sectionReference.localCourseCode, `'${expectedLocalCourseCode}' was not found in the localCourseCode from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.localCourseCode}'`).to.eql(expectedLocalCourseCode);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 4 PUT: schoolId value from sectionReference for Student Section Attendance Event is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.sectionReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 4 PUT: schoolYear value from sectionReference for Student Section Attendance Event is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.sectionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"let sectionIdentifierSystemValueS4 = pm.environment.get(\"sectionIdentifierSystemValueS4\");\r",
+													"\r",
+													"if (sectionIdentifierSystemValueS4 === \"\" || sectionIdentifierSystemValueS4 === null) {\r",
+													"    expectedSectionIdentifier = \"ALG12017RM901\";\r",
+													"} else {\r",
+													"    expectedSectionIdentifier = sectionIdentifierSystemValueS4;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"05 - Scenario 4 PUT: sectionIdentifier value from sectionReference for Student Section Attendance Event is \" + expectedSectionIdentifier, () => {\r",
+													"    pm.expect(response.sectionReference.sectionIdentifier, `'${expectedSectionIdentifier}' was not found in the sectionIdentifier from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sectionIdentifier}'`).to.eql(expectedSectionIdentifier);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 4 PUT: sessionName value from sectionReference for Student Section Attendance Event is \" + expectedSessionName, () => {\r",
+													"    pm.expect(response.sectionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sessionName}'`).to.eql(expectedSessionName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 4 PUT: studentUniqueId value from studentReference for Student Section Attendance Event is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId from studentReference for Student Section Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 4 PUT: attendanceEventCategoryDescriptor value for Student Section Attendance Event is \" + expectedAttendanceEventCategoryDescriptor, () => {\r",
+													"    pm.expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor for Student Section Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 4 PUT: eventDate value for Student Section Attendance Event is \" + expectedEventDate, () => {\r",
+													"    pm.expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate for Student Section Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 4 PUT: attendanceEventReason value for Student Section Attendance Event is \" + expectedAttendanceEventReason, () => {\r",
+													"    pm.expect(response.attendanceEventReason, `'${expectedAttendanceEventReason}' was not found in the eventDate for Student Section Attendance Event. Retrieved value is '${response.attendanceEventReason}'`).to.eql(expectedAttendanceEventReason);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Section Attendance Events and getting the ID of the student section attendance event\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSectionAttendanceEvents`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSectionAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSectionAttendanceEventDate = latestStudentSectionAttendanceEvent ? latestStudentSectionAttendanceEvent._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSectionAttendanceEventDate', latestStudentSectionAttendanceEventDate);\r",
+													"\r",
+													"        pm.environment.set(\"s4StudentSectionAttendanceEventId\", latestStudentSectionAttendanceEvent.id);\r",
+													"        console.log('s4StudentSectionAttendanceEventId', pm.environment.get(\"s4StudentSectionAttendanceEventId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{s4StudentSectionAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSectionAttendanceEvents",
+												"{{s4StudentSectionAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Scenario 5",
+							"item": [
+								{
+									"name": "Scenario 5 DELETE - Get Student School Attendance Events",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentSchoolAttendanceEventId\") + \" does not exist (404 Not Found)\", function () {\r",
+													"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Verify empty response for non-existent record\", function () {\r",
+													"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s5DeletedStudentSchoolAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSchoolAttendanceEvents",
+												"{{s5DeletedStudentSchoolAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 5 DELETE - Get Student Section Attendance Events",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Record \" + pm.environment.get(\"s5DeletedStudentSectionAttendanceEventId\") + \" does not exist (404 Not Found)\", function () {\r",
+													"     pm.expect(pm.response.code, \"Expected a 404 status code for non-existent record\").to.eql(404);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Verify empty response for non-existent record\", function () {\r",
+													"    pm.expect(pm.response.text(), \"Expected the response body to be empty for a non-existent record\").to.be.empty; // Verify the response body is empty    \r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{s5DeletedStudentSectionAttendanceEventId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSectionAttendanceEvents",
+												"{{s5DeletedStudentSectionAttendanceEventId}}"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						}
