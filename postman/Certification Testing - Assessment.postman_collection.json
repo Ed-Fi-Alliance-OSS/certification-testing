@@ -1,0 +1,553 @@
+{
+	"info": {
+		"_postman_id": "e0728da6-25b0-4248-91a4-ab3065467265",
+		"name": "Certification Testing - Assessment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1204567"
+	},
+	"item": [
+		{
+			"name": "Assessment",
+			"item": [
+				{
+					"name": "Assesment",
+					"item": [
+						{
+							"name": "Scenario 01 - Get Assessments",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{certToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourceBaseUrl}}/ed-fi/assessments",
+									"host": [
+										"{{resourceBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"assessments"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "totalCount",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "assessmentIdentifier",
+											"value": "SAT Critical Reading",
+											"disabled": true
+										},
+										{
+											"key": "namespace",
+											"value": "uri://ed-fi.org/Assessment/Assessment.xml",
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": "8259b9a9aa724817acbf668a6b442cef",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "AssesmentItem",
+					"item": [
+						{
+							"name": "Scenario 02 - Get AssessmentItems",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{certToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourceBaseUrl}}/ed-fi/assessmentitems",
+									"host": [
+										"{{resourceBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"assessmentitems"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "totalCount",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "assessmentIdentifier",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "namespace",
+											"value": "uri://ed-fi.org/Assessment/Assessment.xml",
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ObjectiveAssesment",
+					"item": [
+						{
+							"name": "Scenario 03 - Get Objective Assessments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{certToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourceBaseUrl}}/ed-fi/objectiveAssessments?limit=25&totalCount=true",
+									"host": [
+										"{{resourceBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"objectiveAssessments"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "25"
+										},
+										{
+											"key": "totalCount",
+											"value": "true"
+										},
+										{
+											"key": "assessmentIdentifier",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "namespace",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "StudentAssesment",
+					"item": [
+						{
+							"name": "Scenario 04 - Get Student Assessments",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{certToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourceBaseUrl}}/ed-fi/studentAssessments",
+									"host": [
+										"{{resourceBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentAssessments"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "25",
+											"disabled": true
+										},
+										{
+											"key": "totalCount",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "assessmentIdentifier",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "namespace",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "StudentAssesmentItem",
+					"item": [
+						{
+							"name": "Scenario 05 - StudentAssessmentItem",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the JSON response",
+											"let response = pm.response.json();",
+											"",
+											"// Initialize an array to store all items",
+											"let allItems = [];",
+											"",
+											"// Loop through each object in the array",
+											"response.forEach(obj => {",
+											"    if (obj.items && Array.isArray(obj.items)) {",
+											"        // Add the items array to allItems",
+											"        allItems = allItems.concat(obj.items);",
+											"    }",
+											"});",
+											"",
+											"// Log the extracted items to the Postman console",
+											"console.log(\"Extracted items:\", allItems);",
+											"",
+											"// Save the items in an environment variable for further use (optional)",
+											"pm.environment.set(\"studentAssessmentItems\", JSON.stringify(allItems));",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{certToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourceBaseUrl}}/ed-fi/studentAssessments?limit=1",
+									"host": [
+										"{{resourceBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentAssessments"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "1"
+										},
+										{
+											"key": "totalCount",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "assessmentIdentifier",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "namespace",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "StudentObjectiveAssesment",
+					"item": [
+						{
+							"name": "Scenario 06 - Get StudentObjectiveAssessment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Access studentObjectiveAssessments",
+											"let studentObjectiveAssessments = jsonResponse[0]?.studentObjectiveAssessments;",
+											"",
+											"// Log the studentObjectiveAssessments",
+											"console.log(studentObjectiveAssessments);",
+											"pm.test(\"Student Objective Assessments is retrieved\", () => {",
+											"    pm.expect(studentObjectiveAssessments).to.be.an(\"array\");    ",
+											"    pm.environment.set(\"studentObjectiveAssessmentsArray\", JSON.stringify(studentObjectiveAssessments));",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"packages": {},
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{certToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{resourceBaseUrl}}/ed-fi/studentAssessments?limit=1",
+									"host": [
+										"{{resourceBaseUrl}}"
+									],
+									"path": [
+										"ed-fi",
+										"studentAssessments"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "1"
+										},
+										{
+											"key": "totalCount",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "assessmentIdentifier",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "namespace",
+											"value": "",
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"pm.sendRequest('https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js', function (err, res) {\r",
+					"    if (!err && res) {\r",
+					"        eval(res.text());\r",
+					"    }\r",
+					"});\r",
+					"\r",
+					"pm.sendRequest({\r",
+					"    url: `${pm.environment.get('baseUrl')}/oauth/token`,\r",
+					"    method: 'POST',\r",
+					"    header: {\r",
+					"        'Content-Type': 'application/x-www-form-urlencoded' \r",
+					"    },\r",
+					"    body: {\r",
+					"        mode: 'urlencoded',\r",
+					"        urlencoded: [\r",
+					"            { key: 'grant_type', value: 'client_credentials' },\r",
+					"            { key: 'client_id', value: pm.environment.get('edFiClientId') },\r",
+					"            { key: 'client_secret', value: pm.environment.get('edFiClientSecret')}\r",
+					"        ]\r",
+					"    }\r",
+					"}, function (err, res) {\r",
+					"    if (err) {\r",
+					"        console.log('Error when generating the token:', err); \r",
+					"    } else {\r",
+					"        accessToken = res.json().access_token;\r",
+					"        pm.environment.set('certToken',accessToken);\r",
+					"        console.log(\"Access token is: \", accessToken);\r",
+					"    }\r",
+					"});\r",
+					"\r",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "studentUniqueIdValueSSEACollection",
+			"value": ""
+		}
+	]
+}
