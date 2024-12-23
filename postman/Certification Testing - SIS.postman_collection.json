@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "f2f2010e-5d51-4d5a-bf1e-4ff30168a533",
+		"_postman_id": "29906b6d-e93e-4d1e-8f44-74f890769bf2",
 		"name": "Certification Testing - SIS",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "1204567"
+		"_exporter_id": "27778522",
+		"_collection_link": "https://gap-ed-fi-qa.postman.co/workspace/EdFi---Team-B~293ad61d-bbcc-4e76-ae72-b7f19e7986a0/collection/27778522-29906b6d-e93e-4d1e-8f44-74f890769bf2?action=share&source=collection_link&creator=27778522"
 	},
 	"item": [
 		{
@@ -15986,6 +15987,2390 @@
 						{
 							"name": "Scenario 5",
 							"item": []
+						}
+					]
+				},
+				{
+					"name": "10-StudentProgram",
+					"item": [
+						{
+							"name": "Scenario 1",
+							"item": [
+								{
+									"name": "Scenario 1 POST - GET Student CTE Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student CTE Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"Career and Technical Education\";\r",
+													"let expectedProgramTypeDescriptor = \"Career and Technical Education\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedNonTraditionalGenderStatus = true;\r",
+													"let expectedPrivateCTEProgram = false;\r",
+													"let expectedTechnicalSkillsAssessmentDescriptor = \"Passed\";\r",
+													"let expectedCteProgramServiceDescriptor = \"Information Technology\";\r",
+													"let expectedCipCode = \"11.0103\";\r",
+													"let expectedServiceBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedPrimaryIndicator = true;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: beginDate value for Student CTE Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' value was not found in the beginDate property for Student CTE Program Association. Retrieved value is '${response.beginDate}'.`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student CTE Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' value was not found in the educationOrganizationId property from educationOrganizationReference for Student CTE Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'.`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: programName value from programReference for Student CTE Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' value was not found in the programName property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.programName}'.`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student CTE Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' value was not found in the programTypeDescriptor property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'.`).to.contain(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: educationOrganizationId value from programReference for Student CTE Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' value was not found in the educationOrganizationId property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'.`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: studentUniqueId value from studentReference for Student CTE Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' value was not found in the studentUniqueId property from studentReference for Student CTE Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'.`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: nonTraditionalGenderStatus value for Student CTE Program Association is \" + expectedNonTraditionalGenderStatus, () => {\r",
+													"    pm.expect(response.nonTraditionalGenderStatus, `'${expectedNonTraditionalGenderStatus}' value was not found in the nonTraditionalGenderStatus property for Student CTE Program Association. Retrieved value is '${response.nonTraditionalGenderStatus}'.`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 1 POST: privateCTEProgram value for Student CTE Program Association is \" + expectedPrivateCTEProgram, () => {\r",
+													"    pm.expect(response.nonTraditionalGenderStatus, `'${expectedPrivateCTEProgram}' value was not found in the privateCTEProgram property for Student CTE Program Association. Retrieved value is '${response.privateCTEProgram}'.`).to.be.false;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 1 POST: technicalSkillsAssessmentDescriptor value for Student CTE Program Association is \" + expectedTechnicalSkillsAssessmentDescriptor, () => {\r",
+													"    pm.expect(response.technicalSkillsAssessmentDescriptor, `'${expectedTechnicalSkillsAssessmentDescriptor}' value was not found in the technicalSkillsAssessmentDescriptor property  for Student CTE Program Association. Retrieved value is '${response.technicalSkillsAssessmentDescriptor}'.`).to.contain(expectedTechnicalSkillsAssessmentDescriptor);\r",
+													"});\r",
+													"\r",
+													"let cteProgramServicesArray = response.cteProgramServices;\r",
+													"pm.expect(cteProgramServicesArray).to.be.an(\"array\");\r",
+													"\r",
+													"pm.test(\"11 - Scenario 1 POST: cteProgramServiceDescriptor value from cteProgramServices for Student CTE Program Association is \" + expectedCteProgramServiceDescriptor, () => {\r",
+													"    let foundCteProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let cteProgramServiceDescriptorItem = cteProgramServicesArray[i];\r",
+													"        let cteProgramServiceDescriptor = cteProgramServiceDescriptorItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor)) { \r",
+													"            foundCteProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundCteProgramServiceDescriptor, `'${expectedCteProgramServiceDescriptor}' was not found in the cteProgramServiceDescriptor property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"12 - Scenario 1 POST: cipCode value from cteProgramServices for Student CTE Program Association is \" + expectedCipCode, () => {\r",
+													"    let foundCipCode = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let cipCodeItem = cteProgramServicesArray[i];\r",
+													"        let cipCode = cipCodeItem.cipCode;\r",
+													"        let cteProgramServiceDescriptor = cipCodeItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && cipCode === expectedCipCode) { \r",
+													"            foundCipCode = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundCipCode, `'${expectedCteProgramServiceDescriptor}' with '${expectedCipCode}' was not found in the cipCode property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.cipCode))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"13 - Scenario 1 POST: serviceBeginDate value from cteProgramServices for Student CTE Program Association is \" + expectedServiceBeginDate, () => {\r",
+													"    let foundServiceBeginDate = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let serviceBeginDateItem = cteProgramServicesArray[i];\r",
+													"        let serviceBeginDate = serviceBeginDateItem.serviceBeginDate;\r",
+													"        let cteProgramServiceDescriptor = serviceBeginDateItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && serviceBeginDate === expectedServiceBeginDate) { \r",
+													"            foundServiceBeginDate = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundServiceBeginDate, `'${expectedCteProgramServiceDescriptor}' with '${expectedServiceBeginDate}' was not found in the serviceBeginDate property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.serviceBeginDate))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"14 - Scenario 1 POST: primaryIndicator value from cteProgramServices for Student CTE Program Association is \" + expectedPrimaryIndicator, () => {\r",
+													"    let foundPrimaryIndicator = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let primaryIndicatorItem = cteProgramServicesArray[i];\r",
+													"        let primaryIndicator = primaryIndicatorItem.primaryIndicator;\r",
+													"        let cteProgramServiceDescriptor = primaryIndicatorItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && primaryIndicator === expectedPrimaryIndicator) { \r",
+													"            foundPrimaryIndicator = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundPrimaryIndicator, `'${expectedCteProgramServiceDescriptor}' with '${expectedPrimaryIndicator}' was not found in the primaryIndicator property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.primaryIndicator))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student CTE Program Association and getting the ID of the student CTE program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentCTEProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentCTEProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentCTEProgramAssociationDate = latestStudentCTEProgramAssociation ? latestStudentCTEProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentCTEProgramAssociationDate', latestStudentCTEProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentCTEProgramAssociationId\", latestStudentCTEProgramAssociation.id);\r",
+													"        console.log('s1StudentCTEProgramAssociationId', pm.environment.get(\"s1StudentCTEProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentCTEProgramAssociations/{{s1StudentCTEProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentCTEProgramAssociations",
+												"{{s1StudentCTEProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student Homeless Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Homeless Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"Homeless\";\r",
+													"let expectedProgramTypeDescriptor = \"Homeless\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedHomelessPrimaryNighttimeResidenceDescriptor = \"Shelters\";\r",
+													"let expectedHomelessUnaccompaniedYouth = true;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: beginDate value for Student Homeless Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Homeless Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Homeless Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Homeless Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: programName value from programReference for Student Homeless Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student Homeless Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.contain(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: educationOrganizationId value from programReference for Student Homeless Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the programName property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Homeless Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Homeless Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: homelessPrimaryNighttimeResidenceDescriptor value for Student Homeless Program Association is \" + expectedHomelessPrimaryNighttimeResidenceDescriptor, () => {\r",
+													"    pm.expect(response.homelessPrimaryNighttimeResidenceDescriptor, `'${expectedHomelessPrimaryNighttimeResidenceDescriptor}' was not found in the homelessPrimaryNighttimeResidenceDescriptor property for Student Homeless Program Association. Retrieved value is '${response.homelessPrimaryNighttimeResidenceDescriptor}'`).to.contain(expectedHomelessPrimaryNighttimeResidenceDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 1 POST: homelessUnaccompaniedYouth value for Student Homeless Program Association is \" + expectedHomelessUnaccompaniedYouth, () => {\r",
+													"    pm.expect(response.homelessUnaccompaniedYouth, `'${expectedHomelessPrimaryNighttimeResidenceDescriptor}' was not found in the homelessUnaccompaniedYouth property for Student Homeless Program Association. Retrieved value is '${response.homelessUnaccompaniedYouth}'`).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Homeless Program Association and getting the ID of the student homeless program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentHomelessProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentHomelessProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentHomelessProgramAssociationDate = latestStudentHomelessProgramAssociation ? latestStudentHomelessProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentHomelessProgramAssociationDate', latestStudentHomelessProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentHomelessProgramAssociationId\", latestStudentHomelessProgramAssociation.id);\r",
+													"        console.log('s1StudentHomelessProgramAssociationId', pm.environment.get(\"s1StudentHomelessProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentHomelessProgramAssociations/{{s1StudentHomelessProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentHomelessProgramAssociations",
+												"{{s1StudentHomelessProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student Language Instruction Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Language Instruction Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"English as a Second Language (ESL)\";\r",
+													"let expectedProgramTypeDescriptor = \"English as a Second Language (ESL)\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedSchoolYear = currentYear;\r",
+													"let expectedParticipationDescriptor = \"Completed\";\r",
+													"let expectedProficiencyDescriptor = \"Not Proficient\";\r",
+													"let expectedMonitoredDescriptor = \"Year 1\";\r",
+													"let expectedLanguageInstructionProgramServiceDescriptor = \"Structured English Immersion\";\r",
+													"let expectedEnglishLearnerParticipation = true;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: beginDate value for Student Language Instruction Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Language Instruction Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Language Instruction Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Language Instruction Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: programName value from programReference for Student Language Instruction Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student Language Instruction Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.contain(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: educationOrganizationId value from programReference for Student Language Instruction Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Language Instruction Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Language Instruction Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"let englishLanguageProficiencyAssessmentsArray = response.englishLanguageProficiencyAssessments;\r",
+													"pm.expect(englishLanguageProficiencyAssessmentsArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: schoolYear value from schoolYearTypeReference from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is \" + expectedSchoolYear, () => {\r",
+													"    let foundSchoolYear = false;\r",
+													"    for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {\r",
+													"        let schoolYearItem = englishLanguageProficiencyAssessmentsArray[i];\r",
+													"        let schoolYear = schoolYearItem.schoolYearTypeReference.schoolYear;\r",
+													"        if (schoolYear === expectedSchoolYear) {\r",
+													"            foundSchoolYear = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundSchoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 1 POST: participationDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is \" + expectedParticipationDescriptor, () => {\r",
+													"    let foundParticipationDescriptor = false;\r",
+													"    for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {\r",
+													"        let participationDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];\r",
+													"        let participationDescriptor = participationDescriptorItem.participationDescriptor;\r",
+													"        let schoolYear = participationDescriptorItem.schoolYearTypeReference.schoolYear;\r",
+													"        if (schoolYear === expectedSchoolYear && participationDescriptor.includes(expectedParticipationDescriptor)) {\r",
+													"            foundParticipationDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundParticipationDescriptor, `schoolYear '${currentYear}' with '${expectedParticipationDescriptor}' was not found in the participationDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.participationDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 1 POST: proficiencyDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is \" + expectedProficiencyDescriptor, () => {\r",
+													"    let foundProficiencyDescriptor = false;\r",
+													"    for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {\r",
+													"        let proficiencyDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];\r",
+													"        let proficiencyDescriptor = proficiencyDescriptorItem.proficiencyDescriptor;\r",
+													"        let schoolYear = proficiencyDescriptorItem.schoolYearTypeReference.schoolYear;\r",
+													"        if (schoolYear === expectedSchoolYear && proficiencyDescriptor.includes(expectedProficiencyDescriptor)) {\r",
+													"            foundProficiencyDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundProficiencyDescriptor, `schoolYear '${currentYear}' with '${expectedProficiencyDescriptor}' was not found in the proficiencyDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.proficiencyDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"11 - Scenario 1 POST: monitoredDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is \" + expectedMonitoredDescriptor, () => {\r",
+													"    let foundMonitoredDescriptor = false;\r",
+													"    for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {\r",
+													"        let monitoredDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];\r",
+													"        let monitoredDescriptor = monitoredDescriptorItem.monitoredDescriptor;\r",
+													"        let schoolYear = monitoredDescriptorItem.schoolYearTypeReference.schoolYear;\r",
+													"        if (schoolYear === expectedSchoolYear && monitoredDescriptor.includes(expectedMonitoredDescriptor)) {\r",
+													"            foundMonitoredDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundMonitoredDescriptor, `schoolYear '${currentYear}' with '${expectedMonitoredDescriptor}' was not found in the monitoredDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.monitoredDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"let languageInstructionProgramServicesArray = response.languageInstructionProgramServices;\r",
+													"pm.expect(languageInstructionProgramServicesArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"12 - Scenario 1 POST: languageInstructionProgramServiceDescriptor value from languageInstructionProgramServices for Student Language Instruction Program Association is \" + expectedLanguageInstructionProgramServiceDescriptor, () => {\r",
+													"    let foundLanguageInstructionProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < languageInstructionProgramServicesArray.length; i++) {\r",
+													"        let languageInstructionProgramServiceDescriptorItem = languageInstructionProgramServicesArray[i];\r",
+													"        let languageInstructionProgramServiceDescriptor = languageInstructionProgramServiceDescriptorItem.languageInstructionProgramServiceDescriptor;\r",
+													"        if (languageInstructionProgramServiceDescriptor.includes(expectedLanguageInstructionProgramServiceDescriptor)) {\r",
+													"            foundLanguageInstructionProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundLanguageInstructionProgramServiceDescriptor, `'${expectedLanguageInstructionProgramServiceDescriptor}' was not found in the languageInstructionProgramServiceDescriptor property from languageInstructionProgramServices for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(languageInstructionProgramServicesArray.map(item => item.languageInstructionProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: englishLearnerParticipation value for Student Language Instruction Program Association is \" + expectedEnglishLearnerParticipation, () => {\r",
+													"    pm.expect(response.englishLearnerParticipation, `'${expectedEnglishLearnerParticipation}' was not found in the englishLearnerParticipation property for Student Language Instruction Program Association. Retrieved value is '${response.englishLearnerParticipation}'`).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Language Instruction Program Association and getting the ID of the student language instruction program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentLanguageInstructionProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentLanguageInstructionProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentLanguageInstructionProgramAssociationDate = latestStudentLanguageInstructionProgramAssociation ? latestStudentLanguageInstructionProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentLanguageInstructionProgramAssociationDate', latestStudentLanguageInstructionProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentLanguageInstructionProgramAssociationId\", latestStudentLanguageInstructionProgramAssociation.id);\r",
+													"        console.log('s1StudentLanguageInstructionProgramAssociationId', pm.environment.get(\"s1StudentLanguageInstructionProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentLanguageInstructionProgramAssociations/{{s1StudentLanguageInstructionProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentLanguageInstructionProgramAssociations",
+												"{{s1StudentLanguageInstructionProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student Migrant Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Migrant Education Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"Migrant Education\";\r",
+													"let expectedProgramTypeDescriptor = \"Migrant Education\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedPriorityForServices = true;\r",
+													"let expectedLastQualifyingMove = `${currentYear}-07-16`;\r",
+													"let expectedMigrantEducationProgramServiceDescriptor = \"Instructional Services\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: beginDate value for Student Migrant Education Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Migrant Education Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Migrant Education Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Migrant Education Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: programName value from programReference for Student Migrant Education Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student Migrant Education Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: educationOrganizationId value from programReference for Student Migrant Education Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Migrant Education Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Migrant Education Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: priorityForServices value for Student Migrant Education Program Association is \" + expectedPriorityForServices, () => {\r",
+													"    pm.expect(response.priorityForServices, `'${expectedPriorityForServices}' was not found in the priorityForServices property for Student Migrant Education Program Association. Retrieved value is '${response.priorityForServices}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 1 POST: lastQualifyingMove value for Student Migrant Education Program Association is \" + expectedLastQualifyingMove, () => {\r",
+													"    pm.expect(response.lastQualifyingMove, `'${expectedLastQualifyingMove}' was not found in the lastQualifyingMove property for Student Migrant Education Program Association. Retrieved value is '${response.lastQualifyingMove}'`).to.eql(expectedLastQualifyingMove);\r",
+													"});\r",
+													"\r",
+													"let migrantEducationProgramServicesArray = response.migrantEducationProgramServices;\r",
+													"pm.expect(migrantEducationProgramServicesArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"10 - Scenario 1 POST: migrantEducationProgramServiceDescriptor value from migrantEducationProgramServices for Student Migrant Education Program Association is \" + expectedMigrantEducationProgramServiceDescriptor, () => {\r",
+													"    let foundMigrantEducationProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < migrantEducationProgramServicesArray.length; i++) {\r",
+													"        let migrantEducationProgramServiceDescriptorItem = migrantEducationProgramServicesArray[i];\r",
+													"        let migrantEducationProgramServiceDescriptor = migrantEducationProgramServiceDescriptorItem.migrantEducationProgramServiceDescriptor;\r",
+													"        if (migrantEducationProgramServiceDescriptor.includes(expectedMigrantEducationProgramServiceDescriptor)) {\r",
+													"            foundMigrantEducationProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundMigrantEducationProgramServiceDescriptor, `'${expectedMigrantEducationProgramServiceDescriptor}' was not found in the migrantEducationProgramServiceDescriptor property from migrantEducationProgramServices for Student Migrant Education Program Association. Retrieved value is '${JSON.stringify(migrantEducationProgramServicesArray.map(item => item.migrantEducationProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Migrant Program Association and getting the ID of the student migrant program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentMigrantEducationProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentMigrantEducationProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentMigrantEducationProgramAssociationDate = latestStudentMigrantEducationProgramAssociation ? latestStudentMigrantEducationProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentMigrantEducationProgramAssociationDate', latestStudentMigrantEducationProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentMigrantEducationProgramAssociationId\", latestStudentMigrantEducationProgramAssociation.id);\r",
+													"        console.log('s1StudentMigrantEducationProgramAssociationId', pm.environment.get(\"s1StudentMigrantEducationProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentMigrantEducationProgramAssociations/{{s1StudentMigrantEducationProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentMigrantEducationProgramAssociations",
+												"{{s1StudentMigrantEducationProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student Neglected Or Delinquent Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Neglected Or Delinquent Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"Neglected and Delinquent Program\";\r",
+													"let expectedProgramTypeDescriptor = \"Neglected and Delinquent Program\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedNeglectedOrDelinquentProgramDescriptor = \"Neglected Programs\";\r",
+													"let expectedNeglectedOrDelinquentProgramServiceDescriptor = \"Mentoring Programs\";\r",
+													"let expectedServiceBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedPrimaryIndicator = true;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: beginDate value for Student Neglected Or Delinquent Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Neglected Or Delinquent Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: programName value from programReference for Student Neglected Or Delinquent Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student Neglected Or Delinquent Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: educationOrganizationId value from programReference for Student Neglected Or Delinquent Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Neglected Or Delinquent Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: neglectedOrDelinquentProgramDescriptor value for Student Neglected Or Delinquent Program Association is \" + expectedNeglectedOrDelinquentProgramDescriptor, () => {\r",
+													"    pm.expect(response.neglectedOrDelinquentProgramDescriptor, `'${expectedNeglectedOrDelinquentProgramDescriptor}' was not found in the neglectedOrDelinquentProgramDescriptor property for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.neglectedOrDelinquentProgramDescriptor}'`).to.include(expectedNeglectedOrDelinquentProgramDescriptor);\r",
+													"});\r",
+													"\r",
+													"let neglectedOrDelinquentProgramServicesArray = response.neglectedOrDelinquentProgramServices;\r",
+													"pm.expect(neglectedOrDelinquentProgramServicesArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"09 - Scenario 1 POST: neglectedOrDelinquentProgramServiceDescriptor value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is \" + expectedNeglectedOrDelinquentProgramServiceDescriptor, () => {\r",
+													"    let foundNeglectedOrDelinquentProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {\r",
+													"        let neglectedOrDelinquentProgramServiceDescriptorItem = neglectedOrDelinquentProgramServicesArray[i];\r",
+													"        let neglectedOrDelinquentProgramServiceDescriptor = neglectedOrDelinquentProgramServiceDescriptorItem.neglectedOrDelinquentProgramServiceDescriptor;\r",
+													"        if (neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { \r",
+													"            foundNeglectedOrDelinquentProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundNeglectedOrDelinquentProgramServiceDescriptor, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' was not found in the neglectedOrDelinquentProgramServiceDescriptor property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 1 POST: serviceBeginDate value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is \" + expectedServiceBeginDate, () => {\r",
+													"    let foundServiceBeginDate = false;\r",
+													"    for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {\r",
+													"        let serviceBeginDateItem = neglectedOrDelinquentProgramServicesArray[i];\r",
+													"        let serviceBeginDate = serviceBeginDateItem.serviceBeginDate;\r",
+													"        let neglectedOrDelinquentProgramServiceDescriptor = serviceBeginDateItem.neglectedOrDelinquentProgramServiceDescriptor;\r",
+													"        if (serviceBeginDate === expectedServiceBeginDate && neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { \r",
+													"            foundServiceBeginDate = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundServiceBeginDate, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' neglectedOrDelinquentProgramServiceDescriptor with '${expectedServiceBeginDate}' was not found in the serviceBeginDate property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.serviceBeginDate))}' with '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"11 - Scenario 1 POST: primaryIndicator value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is \" + expectedPrimaryIndicator, () => {\r",
+													"    let foundPrimaryIndicator = false;\r",
+													"    for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {\r",
+													"        let foundPrimaryIndicatorItem = neglectedOrDelinquentProgramServicesArray[i];\r",
+													"        let primaryIndicator = foundPrimaryIndicatorItem.primaryIndicator;\r",
+													"        let neglectedOrDelinquentProgramServiceDescriptor = foundPrimaryIndicatorItem.neglectedOrDelinquentProgramServiceDescriptor;\r",
+													"        if (primaryIndicator === expectedPrimaryIndicator && neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { \r",
+													"            foundPrimaryIndicator = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundPrimaryIndicator, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' neglectedOrDelinquentProgramServiceDescriptor with '${expectedPrimaryIndicator}' was not found in the primaryIndicator property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.primaryIndicator))}' with '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Neglected or Delinquent Program Association and getting the ID of the student neglected or delinquent program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentNeglectedOrDelinquentProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentNeglectedOrDelinquentProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentNeglectedOrDelinquentProgramAssociationDate = latestStudentNeglectedOrDelinquentProgramAssociation ? latestStudentNeglectedOrDelinquentProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentNeglectedOrDelinquentProgramAssociationDate', latestStudentNeglectedOrDelinquentProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentNeglectedOrDelinquentProgramAssociationId\", latestStudentNeglectedOrDelinquentProgramAssociation.id);\r",
+													"        console.log('s1StudentNeglectedOrDelinquentProgramAssociationId', pm.environment.get(\"s1StudentNeglectedOrDelinquentProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentNeglectedOrDelinquentProgramAssociations/{{s1StudentNeglectedOrDelinquentProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentNeglectedOrDelinquentProgramAssociations",
+												"{{s1StudentNeglectedOrDelinquentProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student School Food Services Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student School Food Services Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"let currentMonth = dateObject.getMonth() + 1;\r",
+													"let currentDate = dateObject.getDate();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-${currentMonth}-${currentDate}`;\r",
+													"let expectedEducationOrganizationId = 255901107;\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedProgramName = \"School Food Service\";\r",
+													"let expectedProgramTypeDescriptor = \"Other\";\r",
+													"let expectedSchoolFoodServiceProgramServiceDescriptor = \"Reduced Price Lunch\";\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: beginDate value for Student School Food Services Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student School Food Services Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student School Food Services Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student School Food Services Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: educationOrganizationId value from programReference for Student School Food Services Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: programName value from programReference for Student School Food Services Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: programTypeDescriptor value from programReference for Student School Food Services Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"let schoolFoodServiceProgramServicesArray = response.schoolFoodServiceProgramServices;\r",
+													"pm.expect(schoolFoodServiceProgramServicesArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: schoolFoodServiceProgramServiceDescriptor value from schoolFoodServiceProgramServices for Student School Food Services Program Association is \" + expectedSchoolFoodServiceProgramServiceDescriptor, () => {\r",
+													"    let foundSchoolFoodServiceProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < schoolFoodServiceProgramServicesArray.length; i++) {\r",
+													"        let schoolFoodServiceProgramServiceDescriptorItem = schoolFoodServiceProgramServicesArray[i];\r",
+													"        let schoolFoodServiceProgramServiceDescriptor = schoolFoodServiceProgramServiceDescriptorItem.schoolFoodServiceProgramServiceDescriptor;\r",
+													"        if (schoolFoodServiceProgramServiceDescriptor.includes(expectedSchoolFoodServiceProgramServiceDescriptor)) {\r",
+													"            foundSchoolFoodServiceProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundSchoolFoodServiceProgramServiceDescriptor, `'${expectedSchoolFoodServiceProgramServiceDescriptor}' was not found in the schoolFoodServiceProgramServiceDescriptor property from schoolFoodServiceProgramServices for Student School Food Services Program Association. Retrieved value is '${JSON.stringify(schoolFoodServiceProgramServicesArray.map(item => item.schoolFoodServiceProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: studentUniqueId value from studentReference for Student School Food Services Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student School Food Services Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student School Food Services Program Association and getting the ID of the student school food services program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSchoolFoodServiceProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSchoolFoodServiceProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSchoolFoodServiceProgramAssociationDate = latestStudentSchoolFoodServiceProgramAssociation ? latestStudentSchoolFoodServiceProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSchoolFoodServiceProgramAssociationDate', latestStudentSchoolFoodServiceProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentSchoolFoodServiceProgramAssociationId\", latestStudentSchoolFoodServiceProgramAssociation.id);\r",
+													"        console.log('s1StudentSchoolFoodServiceProgramAssociationId', pm.environment.get(\"s1StudentSchoolFoodServiceProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolFoodServiceProgramAssociations/{{s1StudentSchoolFoodServiceProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSchoolFoodServiceProgramAssociations",
+												"{{s1StudentSchoolFoodServiceProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student Title I Part A Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Title I Part A Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName\t= \"Title I Part A\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedProgramTypeDescriptor = \"Title I Part A\";\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedTitleIPartAParticipantDescriptor = \"Public Targeted Assistance Program\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: beginDate value for Student Title I Part A Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Title I Part A Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Title I Part A Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: programName value from programReference for Student Title I Part A Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: educationOrganizationId value from programReference for Student Title I Part A Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: programTypeDescriptor value from programReference for Student Title I Part A Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include\t(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Title I Part A Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Title I Part A Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: titleIPartAParticipantDescriptor value for Student Title I Part A Program Association is \" + expectedTitleIPartAParticipantDescriptor, () => {\r",
+													"    pm.expect(response.titleIPartAParticipantDescriptor, `'${expectedTitleIPartAParticipantDescriptor}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.titleIPartAParticipantDescriptor}'`).to.include(expectedTitleIPartAParticipantDescriptor);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Title I Part A Program Association and getting the ID of the student title I part A program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentTitleIPartAProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentTitleIPartAProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentTitleIPartAProgramAssociationDate = latestStudentTitleIPartAProgramAssociation ? latestStudentTitleIPartAProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentTitleIPartAProgramAssociationDate', latestStudentTitleIPartAProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentTitleIPartAProgramAssociationId\", latestStudentTitleIPartAProgramAssociation.id);\r",
+													"        console.log('s1StudentTitleIPartAProgramAssociationId', pm.environment.get(\"s1StudentTitleIPartAProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations/{{s1StudentTitleIPartAProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentTitleIPartAProgramAssociations",
+												"{{s1StudentTitleIPartAProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Scenario 2",
+							"item": [
+								{
+									"name": "Scenario 2 PUT - Get Student CTE Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 PUT: Test that Student CTE Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"Career and Technical Education\";\r",
+													"let expectedProgramTypeDescriptor = \"Career and Technical Education\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedEndDate = `${currentYear}-10-02`;\r",
+													"let expectedNonTraditionalGenderStatus = true;\r",
+													"let expectedPrivateCTEProgram = false;\r",
+													"let expectedTechnicalSkillsAssessmentDescriptor = \"Passed\";\r",
+													"let expectedCteProgramServiceDescriptor = \"Information Technology\";\r",
+													"let expectedCipCode = \"11.0103\";\r",
+													"let expectedServiceBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedServiceEndDate = `${currentYear}-10-02`;\r",
+													"let expectedPrimaryIndicator = true;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 PUT: beginDate value for Student CTE Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' value was not found in the beginDate property for Student CTE Program Association. Retrieved value is '${response.beginDate}'.`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 PUT: educationOrganizationId value from educationOrganizationReference for Student CTE Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' value was not found in the educationOrganizationId property from educationOrganizationReference for Student CTE Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'.`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 PUT: programName value from programReference for Student CTE Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' value was not found in the programName property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.programName}'.`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 PUT: programTypeDescriptor value from programReference for Student CTE Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' value was not found in the programTypeDescriptor property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'.`).to.contain(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 PUT: educationOrganizationId value from programReference for Student CTE Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' value was not found in the educationOrganizationId property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'.`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 PUT: studentUniqueId value from studentReference for Student CTE Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' value was not found in the studentUniqueId property from studentReference for Student CTE Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'.`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 PUT: endDate value for Student CTE Program Association is \" + expectedEndDate, () => {\r",
+													"    pm.expect(response.endDate, `'${expectedEndDate}' value was not found in the endDate property for Student CTE Program Association. Retrieved value is '${response.endDate}'.`).to.eql(expectedEndDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 2 PUT: nonTraditionalGenderStatus value for Student CTE Program Association is \" + expectedNonTraditionalGenderStatus, () => {\r",
+													"    pm.expect(response.nonTraditionalGenderStatus, `'${expectedNonTraditionalGenderStatus}' value was not found in the nonTraditionalGenderStatus property for Student CTE Program Association. Retrieved value is '${response.nonTraditionalGenderStatus}'.`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 2 PUT: privateCTEProgram value for Student CTE Program Association is \" + expectedPrivateCTEProgram, () => {\r",
+													"    pm.expect(response.nonTraditionalGenderStatus, `'${expectedPrivateCTEProgram}' value was not found in the privateCTEProgram property for Student CTE Program Association. Retrieved value is '${response.privateCTEProgram}'.`).to.be.false;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"11 - Scenario 2 PUT: technicalSkillsAssessmentDescriptor value for Student CTE Program Association is \" + expectedTechnicalSkillsAssessmentDescriptor, () => {\r",
+													"    pm.expect(response.technicalSkillsAssessmentDescriptor, `'${expectedTechnicalSkillsAssessmentDescriptor}' value was not found in the technicalSkillsAssessmentDescriptor property  for Student CTE Program Association. Retrieved value is '${response.technicalSkillsAssessmentDescriptor}'.`).to.contain(expectedTechnicalSkillsAssessmentDescriptor);\r",
+													"});\r",
+													"\r",
+													"let cteProgramServicesArray = response.cteProgramServices;\r",
+													"pm.expect(cteProgramServicesArray).to.be.an(\"array\");\r",
+													"\r",
+													"pm.test(\"12 - Scenario 2 PUT: cteProgramServiceDescriptor value from cteProgramServices for Student CTE Program Association is \" + expectedCteProgramServiceDescriptor, () => {\r",
+													"    let foundCteProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let cteProgramServiceDescriptorItem = cteProgramServicesArray[i];\r",
+													"        let cteProgramServiceDescriptor = cteProgramServiceDescriptorItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor)) { \r",
+													"            foundCteProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundCteProgramServiceDescriptor, `'${expectedCteProgramServiceDescriptor}' was not found in the cteProgramServiceDescriptor property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"13 - Scenario 2 PUT: cipCode value from cteProgramServices for Student CTE Program Association is \" + expectedCipCode, () => {\r",
+													"    let foundCipCode = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let cipCodeItem = cteProgramServicesArray[i];\r",
+													"        let cipCode = cipCodeItem.cipCode;\r",
+													"        let cteProgramServiceDescriptor = cipCodeItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && cipCode === expectedCipCode) { \r",
+													"            foundCipCode = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundCipCode, `'${expectedCteProgramServiceDescriptor}' with '${expectedCipCode}' was not found in the cipCode property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.cipCode))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"14 - Scenario 2 PUT: serviceBeginDate value from cteProgramServices for Student CTE Program Association is \" + expectedServiceBeginDate, () => {\r",
+													"    let foundServiceBeginDate = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let serviceBeginDateItem = cteProgramServicesArray[i];\r",
+													"        let serviceBeginDate = serviceBeginDateItem.serviceBeginDate;\r",
+													"        let cteProgramServiceDescriptor = serviceBeginDateItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && serviceBeginDate === expectedServiceBeginDate) { \r",
+													"            foundServiceBeginDate = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundServiceBeginDate, `'${expectedCteProgramServiceDescriptor}' with '${expectedServiceBeginDate}' was not found in the serviceBeginDate property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.serviceBeginDate))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"15 - Scenario 2 PUT: serviceEndDate value from cteProgramServices for Student CTE Program Association is \" + expectedServiceEndDate, () => {\r",
+													"    let foundServiceEndDate = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let serviceEndDateItem = cteProgramServicesArray[i];\r",
+													"        let serviceEndDate = serviceEndDateItem.serviceEndDate;\r",
+													"        let cteProgramServiceDescriptor = serviceEndDateItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && serviceEndDate === expectedServiceEndDate) { \r",
+													"            foundServiceEndDate = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundServiceEndDate, `'${expectedCteProgramServiceDescriptor}' with '${expectedServiceEndDate}' was not found in the serviceEndDate property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.serviceEndDate))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"16 - Scenario 2 PUT: primaryIndicator value from cteProgramServices for Student CTE Program Association is \" + expectedPrimaryIndicator, () => {\r",
+													"    let foundPrimaryIndicator = false;\r",
+													"    for (let i = 0; i < cteProgramServicesArray.length; i++) {\r",
+													"        let primaryIndicatorItem = cteProgramServicesArray[i];\r",
+													"        let primaryIndicator = primaryIndicatorItem.primaryIndicator;\r",
+													"        let cteProgramServiceDescriptor = primaryIndicatorItem.cteProgramServiceDescriptor;\r",
+													"        if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && primaryIndicator === expectedPrimaryIndicator) { \r",
+													"            foundPrimaryIndicator = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundPrimaryIndicator, `'${expectedCteProgramServiceDescriptor}' with '${expectedPrimaryIndicator}' was not found in the primaryIndicator property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.primaryIndicator))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student CTE Program Association and getting the ID of the student CTE program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentCTEProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentCTEProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentCTEProgramAssociationDate = latestStudentCTEProgramAssociation ? latestStudentCTEProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentCTEProgramAssociationDate', latestStudentCTEProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentCTEProgramAssociationId\", latestStudentCTEProgramAssociation.id);\r",
+													"        console.log('s2StudentCTEProgramAssociationId', pm.environment.get(\"s2StudentCTEProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentCTEProgramAssociations/{{s2StudentCTEProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentCTEProgramAssociations",
+												"{{s2StudentCTEProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 PUT - Get Student Homeless Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 PUT: Test that Student Homeless Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"Homeless\";\r",
+													"let expectedProgramTypeDescriptor = \"Homeless\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedHomelessPrimaryNighttimeResidenceDescriptor = \"Doubled-up\";\r",
+													"let expectedHomelessUnaccompaniedYouth = true;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 PUT: beginDate value for Student Homeless Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Homeless Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 PUT: educationOrganizationId value from educationOrganizationReference for Student Homeless Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Homeless Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 PUT: programName value from programReference for Student Homeless Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 PUT: programTypeDescriptor value from programReference for Student Homeless Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.contain(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 PUT: educationOrganizationId value from programReference for Student Homeless Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the programName property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 PUT: studentUniqueId value from studentReference for Student Homeless Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Homeless Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 PUT: homelessPrimaryNighttimeResidenceDescriptor value for Student Homeless Program Association is \" + expectedHomelessPrimaryNighttimeResidenceDescriptor, () => {\r",
+													"    pm.expect(response.homelessPrimaryNighttimeResidenceDescriptor, `'${expectedHomelessPrimaryNighttimeResidenceDescriptor}' was not found in the homelessPrimaryNighttimeResidenceDescriptor property for Student Homeless Program Association. Retrieved value is '${response.homelessPrimaryNighttimeResidenceDescriptor}'`).to.contain(expectedHomelessPrimaryNighttimeResidenceDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 2 PUT: homelessUnaccompaniedYouth value for Student Homeless Program Association is \" + expectedHomelessUnaccompaniedYouth, () => {\r",
+													"    pm.expect(response.homelessUnaccompaniedYouth, `'${expectedHomelessPrimaryNighttimeResidenceDescriptor}' was not found in the homelessUnaccompaniedYouth property for Student Homeless Program Association. Retrieved value is '${response.homelessUnaccompaniedYouth}'`).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Homeless Program Association and getting the ID of the student homeless program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentHomelessProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentHomelessProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentHomelessProgramAssociationDate = latestStudentHomelessProgramAssociation ? latestStudentHomelessProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentHomelessProgramAssociationDate', latestStudentHomelessProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentHomelessProgramAssociationId\", latestStudentHomelessProgramAssociation.id);\r",
+													"        console.log('s2StudentHomelessProgramAssociationId', pm.environment.get(\"s2StudentHomelessProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentHomelessProgramAssociations/{{s2StudentHomelessProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentHomelessProgramAssociations",
+												"{{s2StudentHomelessProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 PUT - Get Student Language Instruction Program Association Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 PUT: Test that Student Language Instruction Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"English as a Second Language (ESL)\";\r",
+													"let expectedProgramTypeDescriptor = \"English as a Second Language (ESL)\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedSchoolYear = currentYear;\r",
+													"let expectedParticipationDescriptor = \"Completed\";\r",
+													"let expectedProficiencyDescriptor = \"Proficient\";\r",
+													"let expectedMonitoredDescriptor = \"Year 1\";\r",
+													"let expectedLanguageInstructionProgramServiceDescriptor = \"Structured English Immersion\";\r",
+													"let expectedEnglishLearnerParticipation = true;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 PUT: beginDate value for Student Language Instruction Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Language Instruction Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 PUT: educationOrganizationId value from educationOrganizationReference for Student Language Instruction Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Language Instruction Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 PUT: programName value from programReference for Student Language Instruction Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 PUT: programTypeDescriptor value from programReference for Student Language Instruction Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.contain(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 PUT: educationOrganizationId value from programReference for Student Language Instruction Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 PUT: studentUniqueId value from studentReference for Student Language Instruction Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Language Instruction Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"let englishLanguageProficiencyAssessmentsArray = response.englishLanguageProficiencyAssessments;\r",
+													"pm.expect(englishLanguageProficiencyAssessmentsArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 PUT: schoolYear value from schoolYearTypeReference from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is \" + expectedSchoolYear, () => {\r",
+													"    let foundSchoolYear = false;\r",
+													"    for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {\r",
+													"        let schoolYearItem = englishLanguageProficiencyAssessmentsArray[i];\r",
+													"        let schoolYear = schoolYearItem.schoolYearTypeReference.schoolYear;\r",
+													"        if (schoolYear === expectedSchoolYear) {\r",
+													"            foundSchoolYear = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundSchoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 2 PUT: participationDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is \" + expectedParticipationDescriptor, () => {\r",
+													"    let foundParticipationDescriptor = false;\r",
+													"    for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {\r",
+													"        let participationDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];\r",
+													"        let participationDescriptor = participationDescriptorItem.participationDescriptor;\r",
+													"        let schoolYear = participationDescriptorItem.schoolYearTypeReference.schoolYear;\r",
+													"        if (schoolYear === expectedSchoolYear && participationDescriptor.includes(expectedParticipationDescriptor)) {\r",
+													"            foundParticipationDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundParticipationDescriptor, `schoolYear '${currentYear}' with '${expectedParticipationDescriptor}' was not found in the participationDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.participationDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 2 PUT: proficiencyDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is \" + expectedProficiencyDescriptor, () => {\r",
+													"    let foundProficiencyDescriptor = false;\r",
+													"    for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {\r",
+													"        let proficiencyDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];\r",
+													"        let proficiencyDescriptor = proficiencyDescriptorItem.proficiencyDescriptor;\r",
+													"        let schoolYear = proficiencyDescriptorItem.schoolYearTypeReference.schoolYear;\r",
+													"        if (schoolYear === expectedSchoolYear && proficiencyDescriptor.includes(expectedProficiencyDescriptor)) {\r",
+													"            foundProficiencyDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundProficiencyDescriptor, `schoolYear '${currentYear}' with '${expectedProficiencyDescriptor}' was not found in the proficiencyDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.proficiencyDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"11 - Scenario 2 PUT: monitoredDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is \" + expectedMonitoredDescriptor, () => {\r",
+													"    let foundMonitoredDescriptor = false;\r",
+													"    for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {\r",
+													"        let monitoredDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];\r",
+													"        let monitoredDescriptor = monitoredDescriptorItem.monitoredDescriptor;\r",
+													"        let schoolYear = monitoredDescriptorItem.schoolYearTypeReference.schoolYear;\r",
+													"        if (schoolYear === expectedSchoolYear && monitoredDescriptor.includes(expectedMonitoredDescriptor)) {\r",
+													"            foundMonitoredDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundMonitoredDescriptor, `schoolYear '${currentYear}' with '${expectedMonitoredDescriptor}' was not found in the monitoredDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.monitoredDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"let languageInstructionProgramServicesArray = response.languageInstructionProgramServices;\r",
+													"pm.expect(languageInstructionProgramServicesArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"12 - Scenario 2 PUT: languageInstructionProgramServiceDescriptor value from languageInstructionProgramServices for Student Language Instruction Program Association is \" + expectedLanguageInstructionProgramServiceDescriptor, () => {\r",
+													"    let foundLanguageInstructionProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < languageInstructionProgramServicesArray.length; i++) {\r",
+													"        let languageInstructionProgramServiceDescriptorItem = languageInstructionProgramServicesArray[i];\r",
+													"        let languageInstructionProgramServiceDescriptor = languageInstructionProgramServiceDescriptorItem.languageInstructionProgramServiceDescriptor;\r",
+													"        if (languageInstructionProgramServiceDescriptor.includes(expectedLanguageInstructionProgramServiceDescriptor)) {\r",
+													"            foundLanguageInstructionProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundLanguageInstructionProgramServiceDescriptor, `'${expectedLanguageInstructionProgramServiceDescriptor}' was not found in the languageInstructionProgramServiceDescriptor property from languageInstructionProgramServices for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(languageInstructionProgramServicesArray.map(item => item.languageInstructionProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 PUT: englishLearnerParticipation value for Student Language Instruction Program Association is \" + expectedEnglishLearnerParticipation, () => {\r",
+													"    pm.expect(response.englishLearnerParticipation, `'${expectedEnglishLearnerParticipation}' was not found in the englishLearnerParticipation property for Student Language Instruction Program Association. Retrieved value is '${response.englishLearnerParticipation}'`).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Language Instruction Program Association and getting the ID of the student language instruction program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentLanguageInstructionProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentLanguageInstructionProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentLanguageInstructionProgramAssociationDate = latestStudentLanguageInstructionProgramAssociation ? latestStudentLanguageInstructionProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentLanguageInstructionProgramAssociationDate', latestStudentLanguageInstructionProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentLanguageInstructionProgramAssociationId\", latestStudentLanguageInstructionProgramAssociation.id);\r",
+													"        console.log('s2StudentLanguageInstructionProgramAssociationId', pm.environment.get(\"s2StudentLanguageInstructionProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentLanguageInstructionProgramAssociations/{{s2StudentLanguageInstructionProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentLanguageInstructionProgramAssociations",
+												"{{s2StudentLanguageInstructionProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 PUT- Get Student Migrant Program Association Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 PUT: Test that Student Migrant Education Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"Migrant Education\";\r",
+													"let expectedProgramTypeDescriptor = \"Migrant Education\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedPriorityForServices = false;\r",
+													"let expectedLastQualifyingMove = `${currentYear}-07-16`;\r",
+													"let expectedMigrantEducationProgramServiceDescriptor = \"Instructional Services\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 PUT: beginDate value for Student Migrant Education Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Migrant Education Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 PUT: educationOrganizationId value from educationOrganizationReference for Student Migrant Education Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Migrant Education Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 PUT: programName value from programReference for Student Migrant Education Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 PUT: programTypeDescriptor value from programReference for Student Migrant Education Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 PUT: educationOrganizationId value from programReference for Student Migrant Education Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 PUT: studentUniqueId value from studentReference for Student Migrant Education Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Migrant Education Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 PUT: priorityForServices value for Student Migrant Education Program Association is \" + expectedPriorityForServices, () => {\r",
+													"    pm.expect(response.priorityForServices, `'${expectedPriorityForServices}' was not found in the priorityForServices property for Student Migrant Education Program Association. Retrieved value is '${response.priorityForServices}'`).to.be.false;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 2 PUT: lastQualifyingMove value for Student Migrant Education Program Association is \" + expectedLastQualifyingMove, () => {\r",
+													"    pm.expect(response.lastQualifyingMove, `'${expectedLastQualifyingMove}' was not found in the lastQualifyingMove property for Student Migrant Education Program Association. Retrieved value is '${response.lastQualifyingMove}'`).to.eql(expectedLastQualifyingMove);\r",
+													"});\r",
+													"\r",
+													"let migrantEducationProgramServicesArray = response.migrantEducationProgramServices;\r",
+													"pm.expect(migrantEducationProgramServicesArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"10 - Scenario 2 PUT: migrantEducationProgramServiceDescriptor value from migrantEducationProgramServices for Student Migrant Education Program Association is \" + expectedMigrantEducationProgramServiceDescriptor, () => {\r",
+													"    let foundMigrantEducationProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < migrantEducationProgramServicesArray.length; i++) {\r",
+													"        let migrantEducationProgramServiceDescriptorItem = migrantEducationProgramServicesArray[i];\r",
+													"        let migrantEducationProgramServiceDescriptor = migrantEducationProgramServiceDescriptorItem.migrantEducationProgramServiceDescriptor;\r",
+													"        if (migrantEducationProgramServiceDescriptor.includes(expectedMigrantEducationProgramServiceDescriptor)) {\r",
+													"            foundMigrantEducationProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundMigrantEducationProgramServiceDescriptor, `'${expectedMigrantEducationProgramServiceDescriptor}' was not found in the migrantEducationProgramServiceDescriptor property from migrantEducationProgramServices for Student Migrant Education Program Association. Retrieved value is '${JSON.stringify(migrantEducationProgramServicesArray.map(item => item.migrantEducationProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Migrant Education Program Association and getting the ID of the student migrant education program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentMigrantEducationProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentMigrantEducationProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentMigrantEducationProgramAssociationDate = latestStudentMigrantEducationProgramAssociation ? latestStudentMigrantEducationProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentMigrantEducationProgramAssociationDate', latestStudentMigrantEducationProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentMigrantEducationProgramAssociationId\", latestStudentMigrantEducationProgramAssociation.id);\r",
+													"        console.log('s2StudentMigrantEducationProgramAssociationId', pm.environment.get(\"s2StudentMigrantEducationProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentMigrantEducationProgramAssociations/{{s2StudentMigrantEducationProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentMigrantEducationProgramAssociations",
+												"{{s2StudentMigrantEducationProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 PUT - Get Student Neglected Or Delinquent Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 PUT: Test that Student Neglected Or Delinquent Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName = \"Neglected and Delinquent Program\";\r",
+													"let expectedProgramTypeDescriptor = \"Neglected and Delinquent Program\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedNeglectedOrDelinquentProgramDescriptor = \"Neglected Programs\";\r",
+													"let expectedNeglectedOrDelinquentProgramServiceDescriptor = \"Dropout Prevention Programs\";\r",
+													"let expectedServiceBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedPrimaryIndicator = true;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 PUT: beginDate value for Student Neglected Or Delinquent Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 PUT: educationOrganizationId value from educationOrganizationReference for Student Neglected Or Delinquent Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 PUT: programName value from programReference for Student Neglected Or Delinquent Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 PUT: programTypeDescriptor value from programReference for Student Neglected Or Delinquent Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 PUT: educationOrganizationId value from programReference for Student Neglected Or Delinquent Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 PUT: studentUniqueId value from studentReference for Student Neglected Or Delinquent Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 PUT: neglectedOrDelinquentProgramDescriptor value for Student Neglected Or Delinquent Program Association is \" + expectedNeglectedOrDelinquentProgramDescriptor, () => {\r",
+													"    pm.expect(response.neglectedOrDelinquentProgramDescriptor, `'${expectedNeglectedOrDelinquentProgramDescriptor}' was not found in the neglectedOrDelinquentProgramDescriptor property for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.neglectedOrDelinquentProgramDescriptor}'`).to.include(expectedNeglectedOrDelinquentProgramDescriptor);\r",
+													"});\r",
+													"\r",
+													"let neglectedOrDelinquentProgramServicesArray = response.neglectedOrDelinquentProgramServices;\r",
+													"pm.expect(neglectedOrDelinquentProgramServicesArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"09 - Scenario 2 PUT: neglectedOrDelinquentProgramServiceDescriptor value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is \" + expectedNeglectedOrDelinquentProgramServiceDescriptor, () => {\r",
+													"    let foundNeglectedOrDelinquentProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {\r",
+													"        let neglectedOrDelinquentProgramServiceDescriptorItem = neglectedOrDelinquentProgramServicesArray[i];\r",
+													"        let neglectedOrDelinquentProgramServiceDescriptor = neglectedOrDelinquentProgramServiceDescriptorItem.neglectedOrDelinquentProgramServiceDescriptor;\r",
+													"        if (neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { \r",
+													"            foundNeglectedOrDelinquentProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundNeglectedOrDelinquentProgramServiceDescriptor, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' was not found in the neglectedOrDelinquentProgramServiceDescriptor property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 2 PUT: serviceBeginDate value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is \" + expectedServiceBeginDate, () => {\r",
+													"    let foundServiceBeginDate = false;\r",
+													"    for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {\r",
+													"        let serviceBeginDateItem = neglectedOrDelinquentProgramServicesArray[i];\r",
+													"        let serviceBeginDate = serviceBeginDateItem.serviceBeginDate;\r",
+													"        let neglectedOrDelinquentProgramServiceDescriptor = serviceBeginDateItem.neglectedOrDelinquentProgramServiceDescriptor;\r",
+													"        if (serviceBeginDate === expectedServiceBeginDate && neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { \r",
+													"            foundServiceBeginDate = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundServiceBeginDate, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' neglectedOrDelinquentProgramServiceDescriptor with '${expectedServiceBeginDate}' was not found in the serviceBeginDate property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.serviceBeginDate))}' with '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"11 - Scenario 2 PUT: primaryIndicator value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is \" + expectedPrimaryIndicator, () => {\r",
+													"    let foundPrimaryIndicator = false;\r",
+													"    for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {\r",
+													"        let foundPrimaryIndicatorItem = neglectedOrDelinquentProgramServicesArray[i];\r",
+													"        let primaryIndicator = foundPrimaryIndicatorItem.primaryIndicator;\r",
+													"        let neglectedOrDelinquentProgramServiceDescriptor = foundPrimaryIndicatorItem.neglectedOrDelinquentProgramServiceDescriptor;\r",
+													"        if (primaryIndicator === expectedPrimaryIndicator && neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { \r",
+													"            foundPrimaryIndicator = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundPrimaryIndicator, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' neglectedOrDelinquentProgramServiceDescriptor with '${expectedPrimaryIndicator}' was not found in the primaryIndicator property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.primaryIndicator))}' with '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Neglected or Delinquent Program Association and getting the ID of the student neglected or delinquent program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentNeglectedOrDelinquentProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentNeglectedOrDelinquentProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentNeglectedOrDelinquentProgramAssociationDate = latestStudentNeglectedOrDelinquentProgramAssociation ? latestStudentNeglectedOrDelinquentProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentNeglectedOrDelinquentProgramAssociationDate', latestStudentNeglectedOrDelinquentProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentNeglectedOrDelinquentProgramAssociationId\", latestStudentNeglectedOrDelinquentProgramAssociation.id);\r",
+													"        console.log('s2StudentNeglectedOrDelinquentProgramAssociationId', pm.environment.get(\"s2StudentNeglectedOrDelinquentProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentNeglectedOrDelinquentProgramAssociations/{{s2StudentNeglectedOrDelinquentProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentNeglectedOrDelinquentProgramAssociations",
+												"{{s2StudentNeglectedOrDelinquentProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 PUT - Get Student School Food Services Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 PUT: Test that Student School Food Services Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"let currentMonth = dateObject.getMonth() + 1;\r",
+													"let currentDate = dateObject.getDate();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-${currentMonth}-${currentDate}`;\r",
+													"let expectedEducationOrganizationId = 255901107;\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedProgramName = \"School Food Service\";\r",
+													"let expectedProgramTypeDescriptor = \"Other\";\r",
+													"let expectedSchoolFoodServiceProgramServiceDescriptor = \"Free Lunch\";\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 PUT: beginDate value for Student School Food Services Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student School Food Services Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 PUT: educationOrganizationId value from educationOrganizationReference for Student School Food Services Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student School Food Services Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 PUT: educationOrganizationId value from programReference for Student School Food Services Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 PUT: programName value from programReference for Student School Food Services Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 PUT: programTypeDescriptor value from programReference for Student School Food Services Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"let schoolFoodServiceProgramServicesArray = response.schoolFoodServiceProgramServices;\r",
+													"pm.expect(schoolFoodServiceProgramServicesArray).to.be.an(\"Array\");\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 PUT: schoolFoodServiceProgramServiceDescriptor value from schoolFoodServiceProgramServices for Student School Food Services Program Association is \" + expectedSchoolFoodServiceProgramServiceDescriptor, () => {\r",
+													"    let foundSchoolFoodServiceProgramServiceDescriptor = false;\r",
+													"    for (let i = 0; i < schoolFoodServiceProgramServicesArray.length; i++) {\r",
+													"        let schoolFoodServiceProgramServiceDescriptorItem = schoolFoodServiceProgramServicesArray[i];\r",
+													"        let schoolFoodServiceProgramServiceDescriptor = schoolFoodServiceProgramServiceDescriptorItem.schoolFoodServiceProgramServiceDescriptor;\r",
+													"        if (schoolFoodServiceProgramServiceDescriptor.includes(expectedSchoolFoodServiceProgramServiceDescriptor)) {\r",
+													"            foundSchoolFoodServiceProgramServiceDescriptor = true;\r",
+													"        }\r",
+													"    }\r",
+													"    pm.expect(foundSchoolFoodServiceProgramServiceDescriptor, `'${expectedSchoolFoodServiceProgramServiceDescriptor}' was not found in the schoolFoodServiceProgramServiceDescriptor property from schoolFoodServiceProgramServices for Student School Food Services Program Association. Retrieved value is '${JSON.stringify(schoolFoodServiceProgramServicesArray.map(item => item.schoolFoodServiceProgramServiceDescriptor))}'`).to.be.true;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 PUT: studentUniqueId value from studentReference for Student School Food Services Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student School Food Services Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student School Food Services Program Association and getting the ID of the student school food services program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentSchoolFoodServiceProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentSchoolFoodServiceProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentSchoolFoodServiceProgramAssociationDate = latestStudentSchoolFoodServiceProgramAssociation ? latestStudentSchoolFoodServiceProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentSchoolFoodServiceProgramAssociationDate', latestStudentSchoolFoodServiceProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentSchoolFoodServiceProgramAssociationId\", latestStudentSchoolFoodServiceProgramAssociation.id);\r",
+													"        console.log('s2StudentSchoolFoodServiceProgramAssociationId', pm.environment.get(\"s2StudentSchoolFoodServiceProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentSchoolFoodServiceProgramAssociations/{{s2StudentSchoolFoodServiceProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentSchoolFoodServiceProgramAssociations",
+												"{{s2StudentSchoolFoodServiceProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 POST - Get Student Title I Part A Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 POST: Test that Student Title I Part A Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName\t= \"Title I Part A\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedProgramTypeDescriptor = \"Title I Part A\";\r",
+													"let expectedStudentUniqueId = \"\t222222\";\r",
+													"let expectedTitleIPartAParticipantDescriptor = \"Public Targeted Assistance Program\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 POST: beginDate value for Student Title I Part A Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 POST: educationOrganizationId value from educationOrganizationReference for Student Title I Part A Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Title I Part A Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 POST: programName value from programReference for Student Title I Part A Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 POST: educationOrganizationId value from programReference for Student Title I Part A Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 POST: programTypeDescriptor value from programReference for Student Title I Part A Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include\t(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 POST: studentUniqueId value from studentReference for Student Title I Part A Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Title I Part A Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 POST: titleIPartAParticipantDescriptor value for Student Title I Part A Program Association is \" + expectedTitleIPartAParticipantDescriptor, () => {\r",
+													"    pm.expect(response.titleIPartAParticipantDescriptor, `'${expectedTitleIPartAParticipantDescriptor}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.titleIPartAParticipantDescriptor}'`).to.include(expectedTitleIPartAParticipantDescriptor);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Title I Part A Program Association and getting the ID of the student title I part A program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentTitleIPartAProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentTitleIPartAProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentTitleIPartAProgramAssociationDate = latestStudentTitleIPartAProgramAssociation ? latestStudentTitleIPartAProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentTitleIPartAProgramAssociationDate', latestStudentTitleIPartAProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentTitleIPartAProgramAssociationId\", latestStudentTitleIPartAProgramAssociation.id);\r",
+													"        console.log('s2StudentTitleIPartAProgramAssociationId', pm.environment.get(\"s2StudentTitleIPartAProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations/{{s2StudentTitleIPartAProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentTitleIPartAProgramAssociations",
+												"{{s2StudentTitleIPartAProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Scenario 3",
+							"item": [
+								{
+									"name": "Scenario 3 PUT - Get Student Title I Part A Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 3 PUT: Test that Student Title I Part A Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName\t= \"Title I Part A\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedProgramTypeDescriptor = \"Title I Part A\";\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedTitleIPartAParticipantDescriptor = \"Public Schoolwide Program\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 3 PUT: beginDate value for Student Title I Part A Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 3 PUT: educationOrganizationId value from educationOrganizationReference for Student Title I Part A Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Title I Part A Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 3 PUT: programName value from programReference for Student Title I Part A Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 3 PUT: educationOrganizationId value from programReference for Student Title I Part A Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 3 PUT: programTypeDescriptor value from programReference for Student Title I Part A Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include\t(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 3 PUT: studentUniqueId value from studentReference for Student Title I Part A Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Title I Part A Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 3 PUT: titleIPartAParticipantDescriptor value for Student Title I Part A Program Association is \" + expectedTitleIPartAParticipantDescriptor, () => {\r",
+													"    pm.expect(response.titleIPartAParticipantDescriptor, `'${expectedTitleIPartAParticipantDescriptor}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.titleIPartAParticipantDescriptor}'`).to.include(expectedTitleIPartAParticipantDescriptor);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Title I Part A Program Association and getting the ID of the student title I part A program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentTitleIPartAProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentTitleIPartAProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentTitleIPartAProgramAssociationDate = latestStudentTitleIPartAProgramAssociation ? latestStudentTitleIPartAProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentTitleIPartAProgramAssociationDate', latestStudentTitleIPartAProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s3StudentTitleIPartAProgramAssociationId\", latestStudentTitleIPartAProgramAssociation.id);\r",
+													"        console.log('s3StudentTitleIPartAProgramAssociationId', pm.environment.get(\"s3StudentTitleIPartAProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations/{{s3StudentTitleIPartAProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentTitleIPartAProgramAssociations",
+												"{{s3StudentTitleIPartAProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Scenario 4",
+							"item": [
+								{
+									"name": "Scenario 4 PUT - Get Student Title I Part A Program Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 4 PUT: Test that Student Title I Part A Program Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedBeginDate = `${currentYear}-08-23`;\r",
+													"let expectedEducationOrganizationId = 255901;\r",
+													"let expectedProgramName\t= \"Title I Part A\";\r",
+													"let expectedEducationOrganizationIdPR = 255901;\r",
+													"let expectedProgramTypeDescriptor = \"Title I Part A\";\r",
+													"let expectedStudentUniqueId = \"\t222222\";\r",
+													"let expectedTitleIPartAParticipantDescriptor = \"Was not served\";\r",
+													"\r",
+													"pm.test(\"02 - Scenario 4 PUT: beginDate value for Student Title I Part A Program Association is \" + expectedBeginDate, () => {\r",
+													"    pm.expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 4 PUT: educationOrganizationId value from educationOrganizationReference for Student Title I Part A Program Association is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Title I Part A Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 4 PUT: programName value from programReference for Student Title I Part A Program Association is \" + expectedProgramName, () => {\r",
+													"    pm.expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 4 PUT: educationOrganizationId value from programReference for Student Title I Part A Program Association is \" + expectedEducationOrganizationIdPR, () => {\r",
+													"    pm.expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedEducationOrganizationIdPR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 4 PUT: programTypeDescriptor value from programReference for Student Title I Part A Program Association is \" + expectedProgramTypeDescriptor, () => {\r",
+													"    pm.expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include\t(expectedProgramTypeDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 4 PUT: studentUniqueId value from studentReference for Student Title I Part A Program Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Title I Part A Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 4 PUT: titleIPartAParticipantDescriptor value for Student Title I Part A Program Association is \" + expectedTitleIPartAParticipantDescriptor, () => {\r",
+													"    pm.expect(response.titleIPartAParticipantDescriptor, `'${expectedTitleIPartAParticipantDescriptor}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.titleIPartAParticipantDescriptor}'`).to.include(expectedTitleIPartAParticipantDescriptor);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Title I Part A Program Association and getting the ID of the student title I part A program association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentTitleIPartAProgramAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentTitleIPartAProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentTitleIPartAProgramAssociationDate = latestStudentTitleIPartAProgramAssociation ? latestStudentTitleIPartAProgramAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentTitleIPartAProgramAssociationDate', latestStudentTitleIPartAProgramAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s4StudentTitleIPartAProgramAssociationId\", latestStudentTitleIPartAProgramAssociation.id);\r",
+													"        console.log('s4StudentTitleIPartAProgramAssociationId', pm.environment.get(\"s4StudentTitleIPartAProgramAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations/{{s4StudentTitleIPartAProgramAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentTitleIPartAProgramAssociations",
+												"{{s4StudentTitleIPartAProgramAssociationId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				},
