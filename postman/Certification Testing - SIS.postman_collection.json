@@ -15174,6 +15174,115 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student Discipline Incident Behavior Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Discipline Incident Behavior Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let expectedIncidentIdentifier;\r",
+													"let expectedSchoolId = 255901107;\r",
+													"let expectedBehaviorDescriptor = \"School Code of Conduct\";\r",
+													"let expectedStudentParticipationCodeDescriptor = \"Perpetrator\"; // studentParticipationCodeDescriptor attibute is not present in the endpoint\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"\r",
+													"let incidentIdentifierSystemValue = pm.environment.get(\"incidentIdentifierSystemValue\");\r",
+													"\r",
+													"if (incidentIdentifierSystemValue === \"\" || incidentIdentifierSystemValue === null) {\r",
+													"    expectedIncidentIdentifier = \"1\";\r",
+													"} else {\r",
+													"    expectedIncidentIdentifier = incidentIdentifierSystemValue;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: incidentIdentifier value from disciplineIncidentReference for Student Discipline Incident Behavior Association is \" + expectedIncidentIdentifier, () => {\r",
+													"    pm.expect(response.disciplineIncidentReference.incidentIdentifier, `'${expectedIncidentIdentifier}' was not found in the incidentIdentifier property from disciplineIncidentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.disciplineIncidentReference.incidentIdentifier}'`).to.eql(expectedIncidentIdentifier);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: schoolId value from disciplineIncidentReference for Student Discipline Incident Behavior Association is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.disciplineIncidentReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from disciplineIncidentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.disciplineIncidentReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: behaviorDescriptor value for Student Discipline Incident Behavior Association is \" + expectedBehaviorDescriptor, () => {\r",
+													"    pm.expect(response.behaviorDescriptor, `'${expectedBehaviorDescriptor}' was not found in the behaviorDescriptor property for Student Discipline Incident Behavior Association. Retrieved value is '${response.behaviorDescriptor}'`).to.include(expectedBehaviorDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: studentUniqueId value from studentReference for Student Discipline Incident Behavior Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Discipline Incident Behavior Association and getting the ID of student discipline incident behavior association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentDisciplineIncidentBehaviorAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentDisciplineIncidentBehaviorAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentDisciplineIncidentBehaviorAssociationDate = latestStudentDisciplineIncidentBehaviorAssociation ? latestStudentDisciplineIncidentBehaviorAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentDisciplineIncidentBehaviorAssociationDate', latestStudentDisciplineIncidentBehaviorAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentDisciplineIncidentBehaviorAssociationId\", latestStudentDisciplineIncidentBehaviorAssociation.id);\r",
+													"        console.log('s1StudentDisciplineIncidentBehaviorAssociationId', pm.environment.get(\"s1StudentDisciplineIncidentBehaviorAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentDisciplineIncidentBehaviorAssociations/{{s1StudentDisciplineIncidentBehaviorAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentDisciplineIncidentBehaviorAssociations",
+												"{{s1StudentDisciplineIncidentBehaviorAssociationId}}"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
@@ -15437,6 +15546,115 @@
 												"ed-fi",
 												"disciplineIncidents",
 												"{{s2DisciplineIncidentId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 POST - Get Student Discipline Incident Behavior Association",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Discipline Incident Behavior Association request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let expectedIncidentIdentifier;\r",
+													"let expectedSchoolId = 255901001;\r",
+													"let expectedBehaviorDescriptor = \"State Offense\";\r",
+													"let expectedStudentParticipationCodeDescriptor = \"Perpetrator\"; // studentParticipationCodeDescriptor attibute is not present in the endpoint\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"\r",
+													"let incidentIdentifierSystemValueS2 = pm.environment.get(\"incidentIdentifierSystemValueS2\");\r",
+													"\r",
+													"if (incidentIdentifierSystemValueS2 === \"\" || incidentIdentifierSystemValueS2 === null) {\r",
+													"    expectedIncidentIdentifier = \"2\";\r",
+													"} else {\r",
+													"    expectedIncidentIdentifier = incidentIdentifierSystemValueS2;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: incidentIdentifier value from disciplineIncidentReference for Student Discipline Incident Behavior Association is \" + expectedIncidentIdentifier, () => {\r",
+													"    pm.expect(response.disciplineIncidentReference.incidentIdentifier, `'${expectedIncidentIdentifier}' was not found in the incidentIdentifier property from disciplineIncidentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.disciplineIncidentReference.incidentIdentifier}'`).to.eql(expectedIncidentIdentifier);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: schoolId value from disciplineIncidentReference for Student Discipline Incident Behavior Association is \" + expectedSchoolId, () => {\r",
+													"    pm.expect(response.disciplineIncidentReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from disciplineIncidentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.disciplineIncidentReference.schoolId}'`).to.eql(expectedSchoolId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: behaviorDescriptor value for Student Discipline Incident Behavior Association is \" + expectedBehaviorDescriptor, () => {\r",
+													"    pm.expect(response.behaviorDescriptor, `'${expectedBehaviorDescriptor}' was not found in the behaviorDescriptor property for Student Discipline Incident Behavior Association. Retrieved value is '${response.behaviorDescriptor}'`).to.include(expectedBehaviorDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: studentUniqueId value from studentReference for Student Discipline Incident Behavior Association is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Discipline Incident Behavior Association and getting the ID of student discipline incident behavior association\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentDisciplineIncidentBehaviorAssociations`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentDisciplineIncidentBehaviorAssociation = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentDisciplineIncidentBehaviorAssociationDate = latestStudentDisciplineIncidentBehaviorAssociation ? latestStudentDisciplineIncidentBehaviorAssociation._lastModifiedDate : null;\r",
+													"        console.log('latestStudentDisciplineIncidentBehaviorAssociationDate', latestStudentDisciplineIncidentBehaviorAssociationDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentDisciplineIncidentBehaviorAssociationId\", latestStudentDisciplineIncidentBehaviorAssociation.id);\r",
+													"        console.log('s2StudentDisciplineIncidentBehaviorAssociationId', pm.environment.get(\"s2StudentDisciplineIncidentBehaviorAssociationId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentDisciplineIncidentBehaviorAssociations/{{s2StudentDisciplineIncidentBehaviorAssociationId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentDisciplineIncidentBehaviorAssociations",
+												"{{s2StudentDisciplineIncidentBehaviorAssociationId}}"
 											]
 										}
 									},
@@ -19845,12 +20063,12 @@
 													"    pm.expect(response.studentSectionAssociationReference.beginDate, `'${expectedBeginDate}' was not found in the beginDate property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.beginDate}'`).to.eql(expectedBeginDate);\r",
 													"});\r",
 													"\r",
-													"let localCourseCodeSystemValue = pm.environment.get(\"localCourseCodeSystemValue\");\r",
+													"let localCourseCodeSystemValueS2 = pm.environment.get(\"localCourseCodeSystemValueS2\");\r",
 													"\r",
-													"if (localCourseCodeSystemValue === \"\" || localCourseCodeSystemValue === null) {\r",
+													"if (localCourseCodeSystemValueS2 === \"\" || localCourseCodeSystemValueS2 === null) {\r",
 													"    expectedLocalCourseCode = \"ALG-2\";\r",
 													"} else {\r",
-													"    expectedLocalCourseCode = localCourseCodeSystemValue;\r",
+													"    expectedLocalCourseCode = localCourseCodeSystemValueS2;\r",
 													"}\r",
 													"\r",
 													"pm.test(\"13 - Scenario 2 POST: localCourseCode value from studentSectionAssociationReference for Grade is \" + expectedLocalCourseCode, () => {\r",
@@ -20025,12 +20243,12 @@
 													"    pm.expect(response.studentSectionAssociationReference.beginDate, `'${expectedBeginDate}' was not found in the beginDate property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.beginDate}'`).to.eql(expectedBeginDate);\r",
 													"});\r",
 													"\r",
-													"let localCourseCodeSystemValue = pm.environment.get(\"localCourseCodeSystemValue\");\r",
+													"let localCourseCodeSystemValueS3 = pm.environment.get(\"localCourseCodeSystemValueS3\");\r",
 													"\r",
-													"if (localCourseCodeSystemValue === \"\" || localCourseCodeSystemValue === null) {\r",
+													"if (localCourseCodeSystemValueS3 === \"\" || localCourseCodeSystemValueS3 === null) {\r",
 													"    expectedLocalCourseCode = \"ELA-01\";\r",
 													"} else {\r",
-													"    expectedLocalCourseCode = localCourseCodeSystemValue;\r",
+													"    expectedLocalCourseCode = localCourseCodeSystemValueS3;\r",
 													"}\r",
 													"\r",
 													"pm.test(\"13 - Scenario 3 PUT: localCourseCode value from studentSectionAssociationReference for Grade is \" + expectedLocalCourseCode, () => {\r",
@@ -20053,12 +20271,12 @@
 													"    pm.expect(response.studentSectionAssociationReference.sessionName, `'${expectedSessionName}' was not found in the sessionName property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.sessionName}'`).to.eql(expectedSessionName);\r",
 													"});\r",
 													"\r",
-													"let sectionIdentifierSystemValue = pm.environment.get(\"sectionIdentifierSystemValue\");\r",
+													"let sectionIdentifierSystemValueS3 = pm.environment.get(\"sectionIdentifierSystemValueS3\");\r",
 													"\r",
-													"if (sectionIdentifierSystemValue === \"\" || sectionIdentifierSystemValue === null) {\r",
+													"if (sectionIdentifierSystemValueS3 === \"\" || sectionIdentifierSystemValueS3 === null) {\r",
 													"    expectedSectionIdentifier = \"ELA012017RM555\";\r",
 													"} else {\r",
-													"    expectedSectionIdentifier = sectionIdentifierSystemValue;\r",
+													"    expectedSectionIdentifier = sectionIdentifierSystemValueS3;\r",
 													"}\r",
 													"\r",
 													"pm.test(\"18 - Scenario 3 PUT: sectionIdentifier value from studentSectionAssociationReference for Grade is \" + expectedSectionIdentifier, () => {\r",
@@ -20213,12 +20431,12 @@
 													"    pm.expect(response.studentSectionAssociationReference.beginDate, `'${expectedBeginDate}' was not found in the beginDate property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.beginDate}'`).to.eql(expectedBeginDate);\r",
 													"});\r",
 													"\r",
-													"let localCourseCodeSystemValue = pm.environment.get(\"localCourseCodeSystemValue\");\r",
+													"let localCourseCodeSystemValueS4 = pm.environment.get(\"localCourseCodeSystemValueS4\");\r",
 													"\r",
-													"if (localCourseCodeSystemValue === \"\" || localCourseCodeSystemValue === null) {\r",
+													"if (localCourseCodeSystemValueS4 === \"\" || localCourseCodeSystemValueS4 === null) {\r",
 													"    expectedLocalCourseCode = \"ALG-2\";\r",
 													"} else {\r",
-													"    expectedLocalCourseCode = localCourseCodeSystemValue;\r",
+													"    expectedLocalCourseCode = localCourseCodeSystemValueS4;\r",
 													"}\r",
 													"\r",
 													"pm.test(\"13 - Scenario 4 PUT: localCourseCode value from studentSectionAssociationReference for Grade is \" + expectedLocalCourseCode, () => {\r",
@@ -20368,6 +20586,916 @@
 												"ed-fi",
 												"grades",
 												"{{s5DeletedStudentGradeId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "13-StudentTranscript.sql Copy",
+					"item": [
+						{
+							"name": "Scenario 1",
+							"item": [
+								{
+									"name": "Scenario 1 POST - Get Course Transcript",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Course Transcript request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedEducationOrganizationId = 255901001;\r",
+													"let expectedCourseCode = \"ALG-01\";\r",
+													"let expectedEducationOrganizationIdSARR = 255901001;\r",
+													"let expectedSchoolYear = currentYear;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedTermDescriptor = \"Fall Semester\";\r",
+													"let expectedCourseAttemptResultDescriptor = \"Pass\";\r",
+													"let expectedAttemptedCredits = 3;\r",
+													"let expectedEarnedCredits = 3;\r",
+													"let expectedFinalLetterGradeEarned = \"A\";\r",
+													"let expectedFinalNumericGradeEarned = 98;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: educationOrganizationId value from educationOrganizationId for Student Transcript is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.courseReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from courseReference for Course Transcript. Retrieved value is '${response.courseReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: courseCode value from educationOrganizationId for Student Transcript is \" + expectedEducationOrganizationIdSARR, () => {\r",
+													"    pm.expect(response.courseReference.courseCode, `'${expectedEducationOrganizationIdSARR}' was not found in the courseCode property from courseReference for Course Transcript. Retrieved value is '${response.courseReference.courseCode}'`).to.eql(expectedEducationOrganizationIdSARR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: educationOrganizationId value from studentAcademicRecordReference for Student Transcript is \" + expectedEducationOrganizationIdSARR, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.educationOrganizationId, `'${expectedEducationOrganizationIdSARR}' was not found in the educationOrganizationId property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdSARR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: schoolYear value from studentAcademicRecordReference for Student Transcript is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: studentUniqueId value from studentAcademicRecordReference for Student Transcript is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: termDescriptor value from studentAcademicRecordReference for Student Transcript is \" + expectedTermDescriptor, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.termDescriptor}'`).to.include(expectedTermDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 1 POST: courseAttemptResultDescriptor value for Student Transcript is \" + expectedCourseAttemptResultDescriptor, () => {\r",
+													"    pm.expect(response.courseAttemptResultDescriptor, `'${expectedCourseAttemptResultDescriptor}' was not found in the courseAttemptResultDescriptor property for Course Transcript. Retrieved value is '${response.courseAttemptResultDescriptor}'`).to.include(expectedCourseAttemptResultDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 1 POST: attemptedCredits value for Student Transcript is \" + expectedAttemptedCredits, () => {\r",
+													"    pm.expect(response.attemptedCredits, `'${expectedAttemptedCredits}' was not found in the attemptedCredits property for Course Transcript. Retrieved value is '${response.attemptedCredits}'`).to.eql(expectedAttemptedCredits);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 1 POST: earnedCredits value for Student Transcript is \" + expectedEarnedCredits, () => {\r",
+													"    pm.expect(response.earnedCredits, `'${expectedEarnedCredits}' was not found in the earnedCredits property for Course Transcript. Retrieved value is '${response.earnedCredits}'`).to.eql(expectedEarnedCredits);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"11 - Scenario 1 POST: finalLetterGradeEarned value for Student Transcript is \" + expectedFinalLetterGradeEarned, () => {\r",
+													"    pm.expect(response.finalLetterGradeEarned, `'${expectedFinalLetterGradeEarned}' was not found in the finalLetterGradeEarned property for Course Transcript. Retrieved value is '${response.finalLetterGradeEarned}'`).to.eql(expectedFinalLetterGradeEarned);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"12 - Scenario 1 POST: finalNumericGradeEarned value for Student Transcript is \" + expectedFinalNumericGradeEarned, () => {\r",
+													"    pm.expect(response.finalNumericGradeEarned, `'${expectedFinalNumericGradeEarned}' was not found in the finalNumericGradeEarned property for Course Transcript. Retrieved value is '${response.finalNumericGradeEarned}'`).to.eql(expectedFinalNumericGradeEarned);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Course Transcript and getting the ID of course transcript\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/courseTranscripts`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestCourseTranscript = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestCourseTranscriptDate = latestCourseTranscript ? latestCourseTranscript._lastModifiedDate : null;\r",
+													"        console.log('latestCourseTranscriptDate', latestCourseTranscriptDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1CourseTranscriptId\", latestCourseTranscript.id);\r",
+													"        console.log('s1CourseTranscriptId', pm.environment.get(\"s1CourseTranscriptId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/courseTranscripts/{{s1CourseTranscriptId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"courseTranscripts",
+												"{{s1CourseTranscriptId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 1 POST - Get Student Academic Record",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 1 POST: Test that Student Academic Record request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedEducationOrganizationId = 255901107;\r",
+													"let expectedSchoolYear = currentYear - 5;\r",
+													"let expectedStudentUniqueId = \"111111\";\r",
+													"let expectedTermDescriptor = \"Fall Semester\";\r",
+													"let expectedCumulativeAttemptedCredits;\r",
+													"let expectedCumulativeEarnedCredits;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Academic Record is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Academic Record. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 1 POST: schoolYear value from schoolYearTypeReference for Student Academic Record is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.schoolYearTypeReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 1 POST: studentUniqueId value from studentReference for Student Academic Record is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 1 POST: termDescriptor value for Student Academic Record is \" + expectedTermDescriptor, () => {\r",
+													"    pm.expect(response.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property for Student Academic Record. Retrieved value is '${response.termDescriptor}'`).to.include(expectedTermDescriptor);\r",
+													"});\r",
+													"\r",
+													"let cumulativeAttemptedCreditsSystemValue = pm.environment.get(\"cumulativeAttemptedCreditsSystemValue\");\r",
+													"\r",
+													"if (cumulativeAttemptedCreditsSystemValue === null || cumulativeAttemptedCreditsSystemValue === \"\") {\r",
+													"    expectedCumulativeAttemptedCredits = 0;\r",
+													"} else { \r",
+													"    expectedCumulativeAttemptedCredits = cumulativeAttemptedCreditsSystemValue;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"06 - Scenario 1 POST: cumulativeAttemptedCredits value for Student Academic Record is \" + expectedCumulativeAttemptedCredits, () => {\r",
+													"    pm.expect(response.cumulativeAttemptedCredits, `'${expectedCumulativeAttemptedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeAttemptedCredits}'`).to.eql(expectedCumulativeAttemptedCredits);\r",
+													"});\r",
+													"\r",
+													"let cumulativeEarnedCreditsSystemValue = pm.environment.get(\"cumulativeEarnedCreditsSystemValue\");\r",
+													"\r",
+													"if (cumulativeEarnedCreditsSystemValue === null || cumulativeEarnedCreditsSystemValue === \"\") {\r",
+													"    expectedCumulativeEarnedCredits = 0;\r",
+													"} else { \r",
+													"    expectedCumulativeEarnedCredits = cumulativeEarnedCreditsSystemValue;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"07 - Scenario 1 POST: cumulativeEarnedCredits value for Student Academic Record is \" + expectedCumulativeEarnedCredits, () => {\r",
+													"    pm.expect(response.cumulativeEarnedCredits, `'${expectedCumulativeEarnedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeEarnedCredits}'`).to.eql(expectedCumulativeEarnedCredits);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Academic Record and getting the ID of student academic record\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentAcademicRecords`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentAcademicRecord = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentAcademicRecordDate = latestStudentAcademicRecord ? latestStudentAcademicRecord._lastModifiedDate : null;\r",
+													"        console.log('latestStudentAcademicRecordDate', latestStudentAcademicRecordDate);\r",
+													"\r",
+													"        pm.environment.set(\"s1StudentAcademicRecordId\", latestStudentAcademicRecord.id);\r",
+													"        console.log('s1StudentAcademicRecordId', pm.environment.get(\"s1StudentAcademicRecordId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{s1StudentAcademicRecordId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentAcademicRecords",
+												"{{s1StudentAcademicRecordId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Scenario 2",
+							"item": [
+								{
+									"name": "Scenario 1 POST - Get Course Transcript",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 PUT: Test that Course Transcript request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedEducationOrganizationId = 255901001;\r",
+													"let expectedCourseCode = \"ALG-01\";\r",
+													"let expectedEducationOrganizationIdSARR = 255901001;\r",
+													"let expectedSchoolYear = currentYear;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedTermDescriptor = \"Fall Semester\";\r",
+													"let expectedCourseAttemptResultDescriptor = \"Pass\";\r",
+													"let expectedAttemptedCredits = 3;\r",
+													"let expectedEarnedCredits = 3;\r",
+													"let expectedFinalLetterGradeEarned = \"A\";\r",
+													"let expectedFinalNumericGradeEarned = 100;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 PUT: educationOrganizationId value from educationOrganizationId for Student Transcript is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.courseReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from courseReference for Course Transcript. Retrieved value is '${response.courseReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 PUT: courseCode value from educationOrganizationId for Student Transcript is \" + expectedEducationOrganizationIdSARR, () => {\r",
+													"    pm.expect(response.courseReference.courseCode, `'${expectedEducationOrganizationIdSARR}' was not found in the courseCode property from courseReference for Course Transcript. Retrieved value is '${response.courseReference.courseCode}'`).to.eql(expectedEducationOrganizationIdSARR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 PUT: educationOrganizationId value from studentAcademicRecordReference for Student Transcript is \" + expectedEducationOrganizationIdSARR, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.educationOrganizationId, `'${expectedEducationOrganizationIdSARR}' was not found in the educationOrganizationId property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdSARR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 PUT: schoolYear value from studentAcademicRecordReference for Student Transcript is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 PUT: studentUniqueId value from studentAcademicRecordReference for Student Transcript is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 PUT: termDescriptor value from studentAcademicRecordReference for Student Transcript is \" + expectedTermDescriptor, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.termDescriptor}'`).to.include(expectedTermDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 PUT: courseAttemptResultDescriptor value for Student Transcript is \" + expectedCourseAttemptResultDescriptor, () => {\r",
+													"    pm.expect(response.courseAttemptResultDescriptor, `'${expectedCourseAttemptResultDescriptor}' was not found in the courseAttemptResultDescriptor property for Course Transcript. Retrieved value is '${response.courseAttemptResultDescriptor}'`).to.include(expectedCourseAttemptResultDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 2 PUT: attemptedCredits value for Student Transcript is \" + expectedAttemptedCredits, () => {\r",
+													"    pm.expect(response.attemptedCredits, `'${expectedAttemptedCredits}' was not found in the attemptedCredits property for Course Transcript. Retrieved value is '${response.attemptedCredits}'`).to.eql(expectedAttemptedCredits);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 2 PUT: earnedCredits value for Student Transcript is \" + expectedEarnedCredits, () => {\r",
+													"    pm.expect(response.earnedCredits, `'${expectedEarnedCredits}' was not found in the earnedCredits property for Course Transcript. Retrieved value is '${response.earnedCredits}'`).to.eql(expectedEarnedCredits);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"11 - Scenario 2 PUT: finalLetterGradeEarned value for Student Transcript is \" + expectedFinalLetterGradeEarned, () => {\r",
+													"    pm.expect(response.finalLetterGradeEarned, `'${expectedFinalLetterGradeEarned}' was not found in the finalLetterGradeEarned property for Course Transcript. Retrieved value is '${response.finalLetterGradeEarned}'`).to.eql(expectedFinalLetterGradeEarned);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"12 - Scenario 2 PUT: finalNumericGradeEarned value for Student Transcript is \" + expectedFinalNumericGradeEarned, () => {\r",
+													"    pm.expect(response.finalNumericGradeEarned, `'${expectedFinalNumericGradeEarned}' was not found in the finalNumericGradeEarned property for Course Transcript. Retrieved value is '${response.finalNumericGradeEarned}'`).to.eql(expectedFinalNumericGradeEarned);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Course Transcript and getting the ID of course transcript\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/courseTranscripts`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestCourseTranscript = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestCourseTranscriptDate = latestCourseTranscript ? latestCourseTranscript._lastModifiedDate : null;\r",
+													"        console.log('latestCourseTranscriptDate', latestCourseTranscriptDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2CourseTranscriptId\", latestCourseTranscript.id);\r",
+													"        console.log('s2CourseTranscriptId', pm.environment.get(\"s2CourseTranscriptId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/courseTranscripts/{{s2CourseTranscriptId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"courseTranscripts",
+												"{{s2CourseTranscriptId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 2 POST - Get Student Academic Record",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 2 POST: Test that Student Academic Record request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedEducationOrganizationId = 255901001;\r",
+													"let expectedSchoolYear = currentYear - 5;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedTermDescriptor = \"Fall Semester\";\r",
+													"let expectedCumulativeAttemptedCredits;\r",
+													"let expectedCumulativeEarnedCredits;\r",
+													"let expectedCumulativeGradePointAverage;\r",
+													"let expectedSessionAttemptedCredits;\r",
+													"let expectedSessionEarnedCredits;\r",
+													"let expectedEducationOrganizationIdGPR = 255901001; //There is no graduation plan reference for the Student Academic Records endpoint\r",
+													"let expectedGraduationSchoolYear = currentYear; //There is no graduation plan reference for the Student Academic Records endpoint\r",
+													"let expectedGraduationPlanTypeDescriptor = \"Recommended\"; //There is no graduation plan reference for the Student Academic Records endpoint\r",
+													"\r",
+													"pm.test(\"02 - Scenario 2 POST: educationOrganizationId value from educationOrganizationReference for Student Academic Record is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Academic Record. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 2 POST: schoolYear value from schoolYearTypeReference for Student Academic Record is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.schoolYearTypeReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 2 POST: studentUniqueId value from studentReference for Student Academic Record is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 2 POST: termDescriptor value for Student Academic Record is \" + expectedTermDescriptor, () => {\r",
+													"    pm.expect(response.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property for Student Academic Record. Retrieved value is '${response.termDescriptor}'`).to.include(expectedTermDescriptor);\r",
+													"});\r",
+													"\r",
+													"let cumulativeAttemptedCreditsSystemValueS2 = pm.environment.get(\"cumulativeAttemptedCreditsSystemValueS2\");\r",
+													"\r",
+													"if (cumulativeAttemptedCreditsSystemValueS2 === null || cumulativeAttemptedCreditsSystemValueS2 === \"\") {\r",
+													"    expectedCumulativeAttemptedCredits = 40;\r",
+													"} else { \r",
+													"    expectedCumulativeAttemptedCredits = cumulativeAttemptedCreditsSystemValueS2;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"06 - Scenario 2 POST: cumulativeAttemptedCredits value for Student Academic Record is \" + expectedCumulativeAttemptedCredits, () => {\r",
+													"    pm.expect(response.cumulativeAttemptedCredits, `'${expectedCumulativeAttemptedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeAttemptedCredits}'`).to.eql(expectedCumulativeAttemptedCredits);\r",
+													"});\r",
+													"\r",
+													"let cumulativeEarnedCreditsSystemValueS2 = pm.environment.get(\"cumulativeEarnedCreditsSystemValueS2\");\r",
+													"\r",
+													"if (cumulativeEarnedCreditsSystemValueS2 === null || cumulativeEarnedCreditsSystemValueS2 === \"\") {\r",
+													"    expectedCumulativeEarnedCredits = 38;\r",
+													"} else { \r",
+													"    expectedCumulativeEarnedCredits = cumulativeEarnedCreditsSystemValueS2;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"07 - Scenario 2 POST: cumulativeEarnedCredits value for Student Academic Record is \" + expectedCumulativeEarnedCredits, () => {\r",
+													"    pm.expect(response.cumulativeEarnedCredits, `'${expectedCumulativeEarnedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeEarnedCredits}'`).to.eql(expectedCumulativeEarnedCredits);\r",
+													"});\r",
+													"\r",
+													"let cumulativeGradePointAverageSystemValueS2 = pm.environment.get(\"cumulativeGradePointAverageSystemValueS2\");\r",
+													"\r",
+													"if (cumulativeGradePointAverageSystemValueS2 === null || cumulativeGradePointAverageSystemValueS2 === \"\"){\r",
+													"    expectedCumulativeGradePointAverage = 3.0;\r",
+													"} else {\r",
+													"    expectedCumulativeGradePointAverage = cumulativeGradePointAverageSystemValueS2;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"08 - Scenario 2 POST: cumulativeGradePointAverage value for Student Academic Record is \" + expectedCumulativeGradePointAverage, () => {\r",
+													"    pm.expect(response.cumulativeGradePointAverage, `'${expectedCumulativeGradePointAverage}' was not found in the cumulativeGradePointAverage property for Student Academic Record. Retrieved value is '${response.cumulativeGradePointAverage}'`).to.eql(expectedCumulativeGradePointAverage);\r",
+													"});\r",
+													"\r",
+													"let sessionAttemptedCreditsSystemValueS2 = pm.environment.get(\"sessionAttemptedCreditsSystemValueS2\");\r",
+													"\r",
+													"if (sessionAttemptedCreditsSystemValueS2 === null || sessionAttemptedCreditsSystemValueS2 === \"\"){\r",
+													"    expectedSessionAttemptedCredits = 3.0;\r",
+													"} else {\r",
+													"    expectedSessionAttemptedCredits = sessionAttemptedCreditsSystemValueS2;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"09 - Scenario 2 POST: sessionAttemptedCredits value for Student Academic Record is \" + expectedSessionAttemptedCredits, () => {\r",
+													"    pm.expect(response.sessionAttemptedCredits, `'${expectedSessionAttemptedCredits}' was not found in the sessionAttemptedCredits property for Student Academic Record. Retrieved value is '${response.sessionAttemptedCredits}'`).to.eql(expectedSessionAttemptedCredits);\r",
+													"});\r",
+													"\r",
+													"let sessionEarnedCreditsSystemValueS2 = pm.environment.get(\"sessionEarnedCreditsSystemValueS2\");\r",
+													"\r",
+													"if (sessionEarnedCreditsSystemValueS2 === null || sessionEarnedCreditsSystemValueS2 === \"\"){\r",
+													"    expectedSessionEarnedCredits = 3;\r",
+													"} else {\r",
+													"    expectedSessionEarnedCredits = sessionEarnedCreditsSystemValueS2;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"10 - Scenario 2 POST: sessionEarnedCredits value for Student Academic Record is \" + expectedSessionEarnedCredits, () => {\r",
+													"    pm.expect(response.sessionEarnedCredits, `'${expectedSessionEarnedCredits}' was not found in the sessionEarnedCredits property for Student Academic Record. Retrieved value is '${response.sessionEarnedCredits}'`).to.eql(expectedSessionEarnedCredits);\r",
+													"});\r",
+													"\r",
+													"//There is no graduation plan reference for the Student Academic Records endpoint"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Academic Record and getting the ID of student academic record\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentAcademicRecords`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentAcademicRecord = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentAcademicRecordDate = latestStudentAcademicRecord ? latestStudentAcademicRecord._lastModifiedDate : null;\r",
+													"        console.log('latestStudentAcademicRecordDate', latestStudentAcademicRecordDate);\r",
+													"\r",
+													"        pm.environment.set(\"s2StudentAcademicRecordId\", latestStudentAcademicRecord.id);\r",
+													"        console.log('s2StudentAcademicRecordId', pm.environment.get(\"s2StudentAcademicRecordId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{s2StudentAcademicRecordId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentAcademicRecords",
+												"{{s2StudentAcademicRecordId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Scenario 3",
+							"item": [
+								{
+									"name": "Scenario 3 POST - Get Course Transcript Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 3 POST: Test that Course Transcript request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedEducationOrganizationId = 255901001;\r",
+													"let expectedCourseCode = pm.environment.get(\"courseCodeSystemValue\");\r",
+													"let expectedEducationOrganizationIdSARR = 255901001;\r",
+													"let expectedSchoolYear = currentYear - 5;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedTermDescriptor = \"Spring Semester\";\r",
+													"let expectedCourseAttemptResultDescriptor = \"Pass\";\r",
+													"let expectedAttemptedCredits = 3;\r",
+													"let expectedEarnedCredits = 3;\r",
+													"let expectedFinalLetterGradeEarned = \"A\";\r",
+													"let expectedFinalNumericGradeEarned = 92;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 3 POST: educationOrganizationId value from educationOrganizationId for Student Transcript is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.courseReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from courseReference for Course Transcript. Retrieved value is '${response.courseReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"if (!expectedCourseCode) {\r",
+													"    pm.test(\"03 - Scenario 3 POST: courseCode value from educationOrganizationId for Student Transcript is empty. Please enter a value to this variable 'courseCodeSystemValue'\", () => {\r",
+													"        pm.expect(expectedCourseCode, \"Please enter a value to this variable 'courseCodeSystemValue'\").to.not.be.empty;\r",
+													"    });\r",
+													"} else {\r",
+													"    pm.test(\"03 - Scenario 3 POST: courseCode value from educationOrganizationId for Student Transcript is \" + expectedCourseCode, () => {\r",
+													"        pm.expect(response.courseReference.courseCode, `'${expectedCourseCode}' was not found in the courseCode property from courseReference for Course Transcript. Retrieved value is '${response.courseReference.courseCode}'`).to.eql(expectedCourseCode);\r",
+													"    });\r",
+													"}\r",
+													"\r",
+													"pm.test(\"04 - Scenario 3 POST: educationOrganizationId value from studentAcademicRecordReference for Student Transcript is \" + expectedEducationOrganizationIdSARR, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.educationOrganizationId, `'${expectedEducationOrganizationIdSARR}' was not found in the educationOrganizationId property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdSARR);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 3 POST: schoolYear value from studentAcademicRecordReference for Student Transcript is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"06 - Scenario 3 POST: studentUniqueId value from studentAcademicRecordReference for Student Transcript is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"07 - Scenario 3 POST: termDescriptor value from studentAcademicRecordReference for Student Transcript is \" + expectedTermDescriptor, () => {\r",
+													"    pm.expect(response.studentAcademicRecordReference.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.termDescriptor}'`).to.include(expectedTermDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"08 - Scenario 3 POST: courseAttemptResultDescriptor value for Student Transcript is \" + expectedCourseAttemptResultDescriptor, () => {\r",
+													"    pm.expect(response.courseAttemptResultDescriptor, `'${expectedCourseAttemptResultDescriptor}' was not found in the courseAttemptResultDescriptor property for Course Transcript. Retrieved value is '${response.courseAttemptResultDescriptor}'`).to.include(expectedCourseAttemptResultDescriptor);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"09 - Scenario 3 POST: attemptedCredits value for Student Transcript is \" + expectedAttemptedCredits, () => {\r",
+													"    pm.expect(response.attemptedCredits, `'${expectedAttemptedCredits}' was not found in the attemptedCredits property for Course Transcript. Retrieved value is '${response.attemptedCredits}'`).to.eql(expectedAttemptedCredits);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"10 - Scenario 3 POST: earnedCredits value for Student Transcript is \" + expectedEarnedCredits, () => {\r",
+													"    pm.expect(response.earnedCredits, `'${expectedEarnedCredits}' was not found in the earnedCredits property for Course Transcript. Retrieved value is '${response.earnedCredits}'`).to.eql(expectedEarnedCredits);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"11 - Scenario 3 POST: finalLetterGradeEarned value for Student Transcript is \" + expectedFinalLetterGradeEarned, () => {\r",
+													"    pm.expect(response.finalLetterGradeEarned, `'${expectedFinalLetterGradeEarned}' was not found in the finalLetterGradeEarned property for Course Transcript. Retrieved value is '${response.finalLetterGradeEarned}'`).to.eql(expectedFinalLetterGradeEarned);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"12 - Scenario 3 POST: finalNumericGradeEarned value for Student Transcript is \" + expectedFinalNumericGradeEarned, () => {\r",
+													"    pm.expect(response.finalNumericGradeEarned, `'${expectedFinalNumericGradeEarned}' was not found in the finalNumericGradeEarned property for Course Transcript. Retrieved value is '${response.finalNumericGradeEarned}'`).to.eql(expectedFinalNumericGradeEarned);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Course Transcript and getting the ID of course transcript\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/courseTranscripts`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestCourseTranscript = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestCourseTranscriptDate = latestCourseTranscript ? latestCourseTranscript._lastModifiedDate : null;\r",
+													"        console.log('latestCourseTranscriptDate', latestCourseTranscriptDate);\r",
+													"\r",
+													"        pm.environment.set(\"s3CourseTranscriptId\", latestCourseTranscript.id);\r",
+													"        console.log('s3CourseTranscriptId', pm.environment.get(\"s3CourseTranscriptId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/courseTranscripts/{{s3CourseTranscriptId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"courseTranscripts",
+												"{{s3CourseTranscriptId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Scenario 3 PUT - Get Student Academic Record",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"01 - Scenario 3 PUT: Test that Student Academic Record request has 200 code status\", () => {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"let response = pm.response.json();\r",
+													"\r",
+													"let dateObject = new Date();\r",
+													"let currentYear = dateObject.getFullYear();\r",
+													"\r",
+													"let expectedEducationOrganizationId = 255901001;\r",
+													"let expectedSchoolYear = currentYear;\r",
+													"let expectedStudentUniqueId = \"222222\";\r",
+													"let expectedTermDescriptor = \"Fall Semester\";\r",
+													"let expectedCumulativeAttemptedCredits;\r",
+													"let expectedCumulativeEarnedCredits;\r",
+													"let expectedCumulativeGradePointAverage;\r",
+													"let expectedSessionAttemptedCredits;\r",
+													"let expectedSessionEarnedCredits;\r",
+													"\r",
+													"pm.test(\"02 - Scenario 3 PUT: educationOrganizationId value from educationOrganizationReference for Student Academic Record is \" + expectedEducationOrganizationId, () => {\r",
+													"    pm.expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Academic Record. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"03 - Scenario 3 PUT: schoolYear value from schoolYearTypeReference for Student Academic Record is \" + expectedSchoolYear, () => {\r",
+													"    pm.expect(response.schoolYearTypeReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eql(expectedSchoolYear);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"04 - Scenario 3 PUT: studentUniqueId value from studentReference for Student Academic Record is \" + expectedStudentUniqueId, () => {\r",
+													"    pm.expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"05 - Scenario 3 PUT: termDescriptor value for Student Academic Record is \" + expectedTermDescriptor, () => {\r",
+													"    pm.expect(response.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property for Student Academic Record. Retrieved value is '${response.termDescriptor}'`).to.include(expectedTermDescriptor);\r",
+													"});\r",
+													"\r",
+													"let cumulativeAttemptedCreditsSystemValueS3 = pm.environment.get(\"cumulativeAttemptedCreditsSystemValueS3\");\r",
+													"\r",
+													"if (cumulativeAttemptedCreditsSystemValueS3 === null || cumulativeAttemptedCreditsSystemValueS3 === \"\") {\r",
+													"    expectedCumulativeAttemptedCredits = 43;\r",
+													"} else { \r",
+													"    expectedCumulativeAttemptedCredits = cumulativeAttemptedCreditsSystemValueS3 + 3;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"06 - Scenario 3 PUT: cumulativeAttemptedCredits value for Student Academic Record is \" + expectedCumulativeAttemptedCredits, () => {\r",
+													"    pm.expect(response.cumulativeAttemptedCredits, `'${expectedCumulativeAttemptedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeAttemptedCredits}'`).to.eql(expectedCumulativeAttemptedCredits);\r",
+													"});\r",
+													"\r",
+													"let cumulativeEarnedCreditsSystemValueS3 = pm.environment.get(\"cumulativeEarnedCreditsSystemValueS3\");\r",
+													"\r",
+													"if (cumulativeEarnedCreditsSystemValueS3 === null || cumulativeEarnedCreditsSystemValueS3 === \"\") {\r",
+													"    expectedCumulativeEarnedCredits = 41;\r",
+													"} else { \r",
+													"    expectedCumulativeEarnedCredits = cumulativeEarnedCreditsSystemValueS3 + 3;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"07 - Scenario 3 PUT: cumulativeEarnedCredits value for Student Academic Record is \" + expectedCumulativeEarnedCredits, () => {\r",
+													"    pm.expect(response.cumulativeEarnedCredits, `'${expectedCumulativeEarnedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeEarnedCredits}'`).to.eql(expectedCumulativeEarnedCredits);\r",
+													"});\r",
+													"\r",
+													"let cumulativeGradePointAverageSystemValueS3 = pm.environment.get(\"cumulativeGradePointAverageSystemValueS3\");\r",
+													"\r",
+													"if (cumulativeGradePointAverageSystemValueS3 === null || cumulativeGradePointAverageSystemValueS3 === \"\"){\r",
+													"    expectedCumulativeGradePointAverage = 3.0;\r",
+													"} else {\r",
+													"    expectedCumulativeGradePointAverage = cumulativeGradePointAverageSystemValueS3;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"08 - Scenario 3 PUT: cumulativeGradePointAverage value for Student Academic Record is \" + expectedCumulativeGradePointAverage, () => {\r",
+													"    pm.expect(response.cumulativeGradePointAverage, `'${expectedCumulativeGradePointAverage}' was not found in the cumulativeGradePointAverage property for Student Academic Record. Retrieved value is '${response.cumulativeGradePointAverage}'`).to.eql(expectedCumulativeGradePointAverage);\r",
+													"});\r",
+													"\r",
+													"let sessionAttemptedCreditsSystemValueS3 = pm.environment.get(\"sessionAttemptedCreditsSystemValueS3\");\r",
+													"\r",
+													"if (sessionAttemptedCreditsSystemValueS3 === null || sessionAttemptedCreditsSystemValueS3 === \"\"){\r",
+													"    expectedSessionAttemptedCredits = 6;\r",
+													"} else {\r",
+													"    expectedSessionAttemptedCredits = sessionAttemptedCreditsSystemValueS3 + 3;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"09 - Scenario 3 PUT: sessionAttemptedCredits value for Student Academic Record is \" + expectedSessionAttemptedCredits, () => {\r",
+													"    pm.expect(response.sessionAttemptedCredits, `'${expectedSessionAttemptedCredits}' was not found in the sessionAttemptedCredits property for Student Academic Record. Retrieved value is '${response.sessionAttemptedCredits}'`).to.eql(expectedSessionAttemptedCredits);\r",
+													"});\r",
+													"\r",
+													"let sessionEarnedCreditsSystemValueS3 = pm.environment.get(\"sessionEarnedCreditsSystemValueS3\");\r",
+													"\r",
+													"if (sessionEarnedCreditsSystemValueS3 === null || sessionEarnedCreditsSystemValueS3 === \"\"){\r",
+													"    expectedSessionEarnedCredits = 6;\r",
+													"} else {\r",
+													"    expectedSessionEarnedCredits = sessionEarnedCreditsSystemValueS3 + 3;\r",
+													"}\r",
+													"\r",
+													"pm.test(\"10 - Scenario 3 PUT: sessionEarnedCredits value for Student Academic Record is \" + expectedSessionEarnedCredits, () => {\r",
+													"    pm.expect(response.sessionEarnedCredits, `'${expectedSessionEarnedCredits}' was not found in the sessionEarnedCredits property for Student Academic Record. Retrieved value is '${response.sessionEarnedCredits}'`).to.eql(expectedSessionEarnedCredits);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Making the GET request to Student Academic Record and getting the ID of student academic record\r",
+													"pm.sendRequest({\r",
+													"    url: `${pm.environment.get('resourceBaseUrl')}/ed-fi/studentAcademicRecords`,\r",
+													"    method: 'GET',\r",
+													"    header: {\r",
+													"        'Authorization': 'Bearer ' + pm.environment.get('certToken'),\r",
+													"        'Accept': '*/*'\r",
+													"    }\r",
+													"}, function (err, res) {\r",
+													"    if (err) {\r",
+													"        console.log('Error in the Authentication Process:', err);\r",
+													"    } else {\r",
+													"        const _ = require('lodash');\r",
+													"\r",
+													"        var jsonData = res.json();\r",
+													"\r",
+													"        let latestStudentAcademicRecord = _.maxBy(jsonData, '_lastModifiedDate');\r",
+													"\r",
+													"        let latestStudentAcademicRecordDate = latestStudentAcademicRecord ? latestStudentAcademicRecord._lastModifiedDate : null;\r",
+													"        console.log('latestStudentAcademicRecordDate', latestStudentAcademicRecordDate);\r",
+													"\r",
+													"        pm.environment.set(\"s3StudentAcademicRecordId\", latestStudentAcademicRecord.id);\r",
+													"        console.log('s3StudentAcademicRecordId', pm.environment.get(\"s3StudentAcademicRecordId\"));\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{certToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{s3StudentAcademicRecordId}}",
+											"host": [
+												"{{resourceBaseUrl}}"
+											],
+											"path": [
+												"ed-fi",
+												"studentAcademicRecords",
+												"{{s3StudentAcademicRecordId}}"
 											]
 										}
 									},
