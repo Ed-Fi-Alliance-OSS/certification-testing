@@ -39,7 +39,7 @@
 											"var jsonData = pm.response.json();\r",
 											"\r",
 											"// With querystring ?schoolId=255901333 there can be only one result in the array, since schoolId is unique\r",
-											"pm.test(\"02 - Scenario 1 POST: find school255901333\", () => {\r",
+											"pm.test(\"02 - Scenario 1 POST: find school 255901333\", () => {\r",
 											"    pm.expect(jsonData).to.be.an('array');\r",
 											"    pm.expect(jsonData).to.have.lengthOf(1);\r",
 											"});\r",
