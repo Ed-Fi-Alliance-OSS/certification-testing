@@ -29,11 +29,12 @@ script:pre-request {
       if (err) {
           console.log('Error in the Authentication Process:', err);
       } else {
-          const _ = require('lodash');
-  
           var jsonData = res.data;
-  
-          let latestSchool = _.maxBy(jsonData, '_lastModifiedDate');
+
+          // Find the latest item by _lastModifiedDate using native JavaScript
+          let latestSchool = jsonData.reduce((latest, current) => {
+              return (!latest || current._lastModifiedDate > latest._lastModifiedDate) ? current : latest;
+          }, null);
   
           let latestSchoolDate = latestSchool ? latestSchool._lastModifiedDate : null;
           console.log('latestSchoolDate', latestSchoolDate);
