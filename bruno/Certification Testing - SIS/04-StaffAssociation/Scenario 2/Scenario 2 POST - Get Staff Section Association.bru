@@ -1,0 +1,119 @@
+meta {
+  name: Scenario 2 POST - Get Staff Section Association
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations/{{s2staffSectionAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Staff Section Association and getting the ID of the Staff Section Association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/staffSectionAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestBellSchedule = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestBellScheduleDate = latestBellSchedule ? latestBellSchedule._lastModifiedDate : null;
+          console.log('latestBellScheduleDate', latestBellScheduleDate);
+  
+          bru.setEnvVar("s2staffSectionAssociationId", latestBellSchedule.id);
+          console.log('s2staffSectionAssociationId', bru.getEnvVar("s2staffSectionAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Staff Section Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let localCourseCodeSystemValueS2 = bru.getEnvVar("localCourseCodeSystemValueS2");
+  let statementLocalCourseCode;
+  
+  if (localCourseCodeSystemValueS2 === "" || localCourseCodeSystemValueS2 === null) {
+      statementLocalCourseCode = "ALG-2";
+  } else {
+      statementLocalCourseCode = localCourseCodeSystemValueS2;
+  }
+  
+  test("02 - Scenario 2 POST: localCourseCode value for Staff Section Association is " + statementLocalCourseCode, () => {
+      expect(response.sectionReference.localCourseCode, `'${statementLocalCourseCode}' was not found in the localCourseCode property from the Section Reference. Retrieved value is '${response.sectionReference.localCourseCode}'`).to.eql(statementLocalCourseCode);
+  });
+  
+  test("03 - Scenario 2 POST: schoolId value for Staff Section Association is '255901001'", () => {
+      expect(response.sectionReference.schoolId, `'255901001' was not found in the localCourseCode property from the Section Reference. Retrieved value is '${response.sectionReference.schoolId}'`).to.eql(255901001);
+  });
+  
+  test("04 - Scenario 2 POST: schoolYear value for Staff Section Association is '2017'", () => {
+      expect(response.sectionReference.schoolYear, `'2017' was not found in the schoolYear property from the Section Reference. Retrieved value is '${response.sectionReference.schoolYear}'`).to.eql(2017);
+  });
+  
+  test("05 - Scenario 2 POST: sessionName value for Staff Section Association is '2016-2017 Fall Semester'", () => {
+      expect(response.sectionReference.sessionName, `'2016-2017 Fall Semester' was not found in the sessionName property from the Section Reference. Retrieved value is '${response.sectionReference.sessionName}'`).to.eql("2016-2017 Fall Semester");
+  });
+  
+  let sectionIdentifierSystemValueS2 = bru.getEnvVar("sectionIdentifierSystemValueS2");
+  let statementSectionIdentifier;
+  
+  if (sectionIdentifierSystemValueS2 === "" || sectionIdentifierSystemValueS2 === null) {
+      statementSectionIdentifier = "ALG12017RM901";
+  } else {
+      statementSectionIdentifier = sectionIdentifierSystemValueS2;
+  }
+  
+  test("06 - Scenario 2 POST: sectionIdentifier value for Staff Section Association is " + statementSectionIdentifier, () => {
+      expect(response.sectionReference.sectionIdentifier, `'${statementSectionIdentifier}' was not found in the sectionIdentifier property from the Section Reference. Retrieved value is '${response.sectionReference.sectionIdentifier}'`).to.eql(statementSectionIdentifier);
+  });
+  
+  let staffUniqueIdSystemValueS2 = bru.getEnvVar("staffUniqueIdSystemValueS2");
+  let statementStaffUniqueId;
+  
+  if (staffUniqueIdSystemValueS2 === "" || staffUniqueIdSystemValueS2 === null) {
+      statementStaffUniqueId = "207269";
+  } else {
+      statementStaffUniqueId = staffUniqueIdSystemValueS2;
+  }
+  
+  test("07 - Scenario 2 POST: staffUniqueId value for Staff Section Association is " + statementStaffUniqueId, () => {
+      expect(response.staffReference.staffUniqueId, `'${statementStaffUniqueId}' was not found in the staffUniqueId property from the Section Reference. Retrieved value is '${response.staffReference.staffUniqueId}'`).to.eql(statementStaffUniqueId);
+  });
+  
+  test("08 - Scenario 2 POST: classroomPositionDescriptor value for Staff Section Association is 'Teacher of Record'", () => {
+      expect(response.classroomPositionDescriptor, `'Teacher of Record' was not found in the classroomPositionDescriptor property. Retrieved value is '${response.classroomPositionDescriptor}'`).to.contain("Teacher of Record");
+  });
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedBeginDate = `${currentYear}-08-31`;
+  
+  test("09 - Scenario 2 POST: beginDate value for Staff Section Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

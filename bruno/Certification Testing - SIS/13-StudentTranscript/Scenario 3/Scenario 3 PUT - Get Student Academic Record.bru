@@ -1,0 +1,144 @@
+meta {
+  name: Scenario 3 PUT - Get Student Academic Record
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{s3StudentAcademicRecordId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Academic Record and getting the ID of student academic record
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentAcademicRecords`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentAcademicRecord = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentAcademicRecordDate = latestStudentAcademicRecord ? latestStudentAcademicRecord._lastModifiedDate : null;
+          console.log('latestStudentAcademicRecordDate', latestStudentAcademicRecordDate);
+  
+          bru.setEnvVar("s3StudentAcademicRecordId", latestStudentAcademicRecord.id);
+          console.log('s3StudentAcademicRecordId', bru.getEnvVar("s3StudentAcademicRecordId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 3 PUT: Test that Student Academic Record request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedEducationOrganizationId = 255901001;
+  let expectedSchoolYear = currentYear;
+  let expectedStudentUniqueId = "222222";
+  let expectedTermDescriptor = "Fall Semester";
+  let expectedCumulativeAttemptedCredits;
+  let expectedCumulativeEarnedCredits;
+  let expectedCumulativeGradePointAverage;
+  let expectedSessionAttemptedCredits;
+  let expectedSessionEarnedCredits;
+  
+  test("02 - Scenario 3 PUT: educationOrganizationId value from educationOrganizationReference for Student Academic Record is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Academic Record. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("03 - Scenario 3 PUT: schoolYear value from schoolYearTypeReference for Student Academic Record is " + expectedSchoolYear, () => {
+      expect(response.schoolYearTypeReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eql(expectedSchoolYear);
+  });
+  
+  test("04 - Scenario 3 PUT: studentUniqueId value from studentReference for Student Academic Record is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("05 - Scenario 3 PUT: termDescriptor value for Student Academic Record is " + expectedTermDescriptor, () => {
+      expect(response.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property for Student Academic Record. Retrieved value is '${response.termDescriptor}'`).to.include(expectedTermDescriptor);
+  });
+  
+  let cumulativeAttemptedCreditsSystemValueS3 = bru.getEnvVar("cumulativeAttemptedCreditsSystemValueS3");
+  
+  if (cumulativeAttemptedCreditsSystemValueS3 === null || cumulativeAttemptedCreditsSystemValueS3 === "") {
+      expectedCumulativeAttemptedCredits = 43;
+  } else { 
+      expectedCumulativeAttemptedCredits = cumulativeAttemptedCreditsSystemValueS3 + 3;
+  }
+  
+  test("06 - Scenario 3 PUT: cumulativeAttemptedCredits value for Student Academic Record is " + expectedCumulativeAttemptedCredits, () => {
+      expect(response.cumulativeAttemptedCredits, `'${expectedCumulativeAttemptedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeAttemptedCredits}'`).to.eql(expectedCumulativeAttemptedCredits);
+  });
+  
+  let cumulativeEarnedCreditsSystemValueS3 = bru.getEnvVar("cumulativeEarnedCreditsSystemValueS3");
+  
+  if (cumulativeEarnedCreditsSystemValueS3 === null || cumulativeEarnedCreditsSystemValueS3 === "") {
+      expectedCumulativeEarnedCredits = 41;
+  } else { 
+      expectedCumulativeEarnedCredits = cumulativeEarnedCreditsSystemValueS3 + 3;
+  }
+  
+  test("07 - Scenario 3 PUT: cumulativeEarnedCredits value for Student Academic Record is " + expectedCumulativeEarnedCredits, () => {
+      expect(response.cumulativeEarnedCredits, `'${expectedCumulativeEarnedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeEarnedCredits}'`).to.eql(expectedCumulativeEarnedCredits);
+  });
+  
+  let cumulativeGradePointAverageSystemValueS3 = bru.getEnvVar("cumulativeGradePointAverageSystemValueS3");
+  
+  if (cumulativeGradePointAverageSystemValueS3 === null || cumulativeGradePointAverageSystemValueS3 === ""){
+      expectedCumulativeGradePointAverage = 3.0;
+  } else {
+      expectedCumulativeGradePointAverage = cumulativeGradePointAverageSystemValueS3;
+  }
+  
+  test("08 - Scenario 3 PUT: cumulativeGradePointAverage value for Student Academic Record is " + expectedCumulativeGradePointAverage, () => {
+      expect(response.cumulativeGradePointAverage, `'${expectedCumulativeGradePointAverage}' was not found in the cumulativeGradePointAverage property for Student Academic Record. Retrieved value is '${response.cumulativeGradePointAverage}'`).to.eql(expectedCumulativeGradePointAverage);
+  });
+  
+  let sessionAttemptedCreditsSystemValueS3 = bru.getEnvVar("sessionAttemptedCreditsSystemValueS3");
+  
+  if (sessionAttemptedCreditsSystemValueS3 === null || sessionAttemptedCreditsSystemValueS3 === ""){
+      expectedSessionAttemptedCredits = 6;
+  } else {
+      expectedSessionAttemptedCredits = sessionAttemptedCreditsSystemValueS3 + 3;
+  }
+  
+  test("09 - Scenario 3 PUT: sessionAttemptedCredits value for Student Academic Record is " + expectedSessionAttemptedCredits, () => {
+      expect(response.sessionAttemptedCredits, `'${expectedSessionAttemptedCredits}' was not found in the sessionAttemptedCredits property for Student Academic Record. Retrieved value is '${response.sessionAttemptedCredits}'`).to.eql(expectedSessionAttemptedCredits);
+  });
+  
+  let sessionEarnedCreditsSystemValueS3 = bru.getEnvVar("sessionEarnedCreditsSystemValueS3");
+  
+  if (sessionEarnedCreditsSystemValueS3 === null || sessionEarnedCreditsSystemValueS3 === ""){
+      expectedSessionEarnedCredits = 6;
+  } else {
+      expectedSessionEarnedCredits = sessionEarnedCreditsSystemValueS3 + 3;
+  }
+  
+  test("10 - Scenario 3 PUT: sessionEarnedCredits value for Student Academic Record is " + expectedSessionEarnedCredits, () => {
+      expect(response.sessionEarnedCredits, `'${expectedSessionEarnedCredits}' was not found in the sessionEarnedCredits property for Student Academic Record. Retrieved value is '${response.sessionEarnedCredits}'`).to.eql(expectedSessionEarnedCredits);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

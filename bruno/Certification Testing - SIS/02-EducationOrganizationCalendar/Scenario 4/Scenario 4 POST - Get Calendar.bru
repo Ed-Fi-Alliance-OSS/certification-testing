@@ -1,0 +1,89 @@
+meta {
+  name: Scenario 4 POST - Get Calendar
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/calendars/{{s4CalendarId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Calendars and getting the ID of the calendar
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/calendars`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestCalendar = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestCalendarDate = latestCalendar ? latestCalendar._lastModifiedDate : null;
+          console.log('latestCalendarDate', latestCalendarDate);
+  
+          bru.setEnvVar("s4CalendarId", latestCalendar.id);
+          console.log('s4CalendarId', bru.getEnvVar("s4CalendarId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 4 PUT: Test that Calendar request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 4 PUT: calendarCode value for the calendar is 'IEP001'", () => {
+      expect(response.calendarCode, `'IEP001' was not found in the calendarCode property. Retrieved value is: ${response.calendarCode}`).to.eql("IEP001");
+  });
+  
+  test("03 - Scenario 4 PUT: schoolId value for the calendar is '255901001'", () =>{
+      expect(response.schoolReference.schoolId, `'255901001' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql('255901001');
+  });
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  console.log("currentYear", currentYear);
+  
+  test("04 - Scenario 4 PUT: schoolYear value for the calendar is " + currentYear, () => {
+      expect(response.schoolYearTypeReference.schoolYear, `${currentYear} was not found in the schoolYear property. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eq(currentYear);
+  });
+  
+  test("05 - Scenario 4 PUT: calendarTypeDescriptor value for the calendar is 'IEP'", () => {
+      expect(response.calendarTypeDescriptor, `'IEP' was not found in the schoolYear property. Retrieved value is '${response.calendarTypeDescriptor}'`).to.contain("IEP");
+  });
+  
+  let certGradeLevels = [
+      { "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Ninth grade" },
+      { "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Tenth grade" }
+  ];
+  let gradeLevelDescriptorArray = response.gradeLevels;
+  
+  test("06 - Scenario 4 puT: gradeLevelDescriptor value for the school contains 'Ninth grade'", () =>{
+      let gradeLevelDescriptors = gradeLevelDescriptorArray.map(item => item.gradeLevelDescriptor);
+      certGradeLevels.forEach(expected => {
+          let gradeLevelFound = gradeLevelDescriptors.includes(expected.gradeLevelDescriptor);
+          expect(gradeLevelFound, `'${expected.gradeLevelDescriptor}' were not completely found. These are the values found: ${JSON.stringify(gradeLevelDescriptors)}`).to.be.true;
+      });
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,76 @@
+meta {
+  name: Scenario 3 PUT - Get Graduation Plan
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlans/{{s3GraduationPlanId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Graduation Plans and getting the ID of the graduation plan
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/graduationPlans`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestGraduationPlan = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestGraduationPlanDate = latestGraduationPlan ? latestGraduationPlan._lastModifiedDate : null;
+          console.log('latestGraduationPlanDate', latestGraduationPlanDate);
+  
+          bru.setEnvVar("s3GraduationPlanId", latestGraduationPlan.id);
+          console.log('s3GraduationPlanId', bru.getEnvVar("s3GraduationPlanId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 3 PUT: Test that Graduation Plan request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let expectedEducationOrganizationId = 255901001;
+  let expectedSchoolYear = 2020;
+  let expectedTotalRequiredCredits = 30;
+  let expectedGraduationPlanTypeDescriptor = "Recommended";
+  
+  test("02 - Scenario 3 PUT: educationOrganizationId value for the Graduation Plan is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId from educationOrganizationReference for the Graduation Plan. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("03 - Scenario 3 PUT: schoolYear value for the Graduation Plan is " + expectedSchoolYear, () => {
+      expect(response.graduationSchoolYearTypeReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear from graduationSchoolYearTypeReference for the Graduation Plan. Retrieved value is '${response.graduationSchoolYearTypeReference.schoolYear}'`).to.eql(expectedSchoolYear);
+  });
+  
+  test("04 - Scenario 3 PUT: totalRequiredCredits value for the Graduation Plan is " + expectedTotalRequiredCredits, () => {
+      expect(response.totalRequiredCredits, `'${expectedTotalRequiredCredits}' was not found in the totalRequiredCredits property. Retrieved value is '${response.totalRequiredCredits}'`).to.eql(expectedTotalRequiredCredits);
+  });
+  
+  test("04 - Scenario 3 PUT: graduationPlanTypeDescriptor value for the Graduation Plan is " + expectedGraduationPlanTypeDescriptor, () => {
+      expect(response.graduationPlanTypeDescriptor, `'${expectedGraduationPlanTypeDescriptor}' was not found in the graduationPlanTypeDescriptor property. Retrieved value is '${response.graduationPlanTypeDescriptor}'`).to.contain(expectedGraduationPlanTypeDescriptor);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

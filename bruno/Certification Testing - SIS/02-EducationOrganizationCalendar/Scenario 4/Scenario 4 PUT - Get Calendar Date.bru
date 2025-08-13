@@ -1,0 +1,101 @@
+meta {
+  name: Scenario 4 PUT - Get Calendar Date
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/calendarDates/{{s4CalendarDateId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request of Calendar Dates and getting the ID of the latest calendar date
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/calendarDates`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestCalendarDate = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestCalendarDateDate = latestCalendarDate ? latestCalendarDate._lastModifiedDate : null;
+          console.log('latestCalendarDateDate', latestCalendarDateDate);
+  
+          bru.setEnvVar("s4CalendarDateId", latestCalendarDate.id);
+          console.log('s4CalendarDateId', bru.getEnvVar("s4CalendarDateId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 4 PUT: Test that Calendar datesrequest has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateString = response.date;
+  console.log("dateString", dateString);
+  
+  let date = new Date(dateString);
+  console.log("date", date);
+  
+  let yearFromDate = date.getFullYear();
+  let monthFromDate = date.getMonth() + 1;
+  let dayFromDate = date.getDate();
+  console.log("yearFromDate: ", yearFromDate, " || monthFromDate: ", monthFromDate, " || dayFromDate: ", dayFromDate);
+  
+  let currentYear = new Date().getFullYear();
+  console.log("currentYear", currentYear);
+  
+  let currentDateTest = `${currentYear}-09-16`;
+  
+  let formattedDate = date.toISOString().split('T')[0];
+  console.log("formattedDate", formattedDate);
+  
+  test("02 - Scenario 4 PUT: year of date value for the calendar dates is " + currentYear + "-09-16", () => {
+      expect(formattedDate, `'${currentYear}-09-16' was not found in the date property. Retrieved value is: ${formattedDate}`).to.eql(`${currentYear}-09-16`);
+  });
+  
+  test("03 - Scenario 4 PUT: calendarCode value for the calendar is 'IEP001'", () => {
+      expect(response.calendarCode, `'IEP001' was not found in the calendarCode property. Retrieved value is: ${response.calendarCode}`).to.eql("IEP001");
+  });
+  
+  test("04 - Scenario 4 PUT: schoolId value for the calendar is '255901001'", () =>{
+      expect(response.schoolReference.schoolId, `'255901001' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql('255901001');
+  });
+  
+  test("05 - Scenario 4 PUT: schoolYear value for the calendar date is " + currentYear, () => {
+      expect(response.calendarReference.schoolYear, `${currentYear} was not found in the schoolYear property. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eq(currentYear);
+  });
+  
+  let certCalendarEventDescriptor= [
+      { "calendarEventDescriptor": "uri://ed-fi.org/CalendarEventDescriptor#Holiday" }
+  ];
+  let calendarEventDescriptorArray = response.calendarEvents;
+  
+  test("06 - Scenario 4 PUT: calendarEventDescriptor value for the calendar date is 'Instructional Day'", () => {
+      let ced = calendarEventDescriptorArray.some(item => item.calendarEventDescriptor.includes("Holiday"));
+      expect(ced, `'Holiday' was not found in any of the calendarEventDescriptor values. The obtained values are: ${JSON.stringify(calendarEventDescriptorArray.map(item => item.calendarEventDescriptor))}`).to.be.true;
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,257 @@
+meta {
+  name: Scenario 2 POST - Get Student Education Organization Association
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationAssociations/{{s2StudentEducationOrganizationAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Education Organization Association and getting the ID of the student school association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentEducationOrganizationAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentEducationOrganizationAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentEducationOrganizationAssociationDate = latestStudentEducationOrganizationAssociation ? latestStudentEducationOrganizationAssociation._lastModifiedDate : null;
+          console.log('latestStudentEducationOrganizationAssociationDate', latestStudentEducationOrganizationAssociationDate);
+  
+          bru.setEnvVar("s2StudentEducationOrganizationAssociationId", latestStudentEducationOrganizationAssociation.id);
+          console.log('s2StudentEducationOrganizationAssociationId', bru.getEnvVar("s2StudentEducationOrganizationAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Student Education Organization Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let expectedEducationOrganizationId = 255901 ;
+  let expectedStudentUniqueId = "222222";
+  let expectedLimitedEnglishProficiencyDescriptor = "NotLimited";
+  let expectedStudentCharacteristicDescriptor = "Economic Disadvantaged";
+  let expectedAssigningOrganizationIdentificationCode1 = "State";
+  let expectedAssigningOrganizationIdentificationCode2 = "District";
+  let expectedAssigningOrganizationIdentificationCode3 = "Local";
+  let expectedIdentificationCode1 = bru.getEnvVar("s2IdentificationCode1");
+  let expectedIdentificationCode2 = bru.getEnvVar("s2IdentificationCode2");
+  let expectedIdentificationCode3 = bru.getEnvVar("s2IdentificationCode3");
+  let expectedStudentIdentificationSystemDescriptor1 = "State";
+  let expectedStudentIdentificationSystemDescriptor2 = "District";
+  let expectedStudentIdentificationSystemDescriptor3 = "Local";
+  let expectedSexDescriptor = "Female";
+  let expectedAddressTypeDescriptor = "Home";
+  let expectedCity = "Grand Bend";
+  let expectedPostalCode = 78834;
+  let expectedStateAbbreviationDescriptor = "TX";
+  let expectedStreetNumberName = "123 Cedar Street";
+  let expectedElectronicMailAddress = "madison@edficert.org";
+  let expectedElectronicMailTypeDescriptor = "Other";
+  let expectedHispanicLatinoEthnicity = false;
+  let expectedRaceDescriptor = "White";
+  
+  test("02 - Scenario 2 POST: educationOrganizationId value for the Student Education Organization Association is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from the educationOrganizationReference for the Student Education Organization Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("03 - Scenario 2 POST: studentUniqueId value for the Student Education Organization Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from the studentReference for the Student Education Organization Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("04 - Scenario 2 POST: limitedEnglishProficiencyDescriptor value for the Student Education Organization Association is " + expectedLimitedEnglishProficiencyDescriptor, () => {
+      expect(response.limitedEnglishProficiencyDescriptor, `'${expectedLimitedEnglishProficiencyDescriptor}' was not found in the limitedEnglishProficiencyDescriptor property for the Student Education Organization Association. Retrieved value is '${response.limitedEnglishProficiencyDescriptor}'`).to.include(expectedLimitedEnglishProficiencyDescriptor);
+  });
+  
+  let studentCharacteristicsArray = response.studentCharacteristics;
+  expect(studentCharacteristicsArray).to.be.an("array")
+  test("05 - Scenario 2 POST: studentCharacteristicDescriptor value for the Student Education Organization Association is " + expectedStudentCharacteristicDescriptor, () => {
+      let foundStudentCharacteristicDescriptor = false;
+      for (let i = 0; i < studentCharacteristicsArray.length; i++) {
+          let studentCharacteristicDescriptorItem = studentCharacteristicsArray[i];
+          let studentCharacteristicDescriptor = studentCharacteristicDescriptorItem.studentCharacteristicDescriptor;
+          if (studentCharacteristicDescriptor.includes(expectedStudentCharacteristicDescriptor)) {
+              foundStudentCharacteristicDescriptor = true;
+          }
+          expect(foundStudentCharacteristicDescriptor, `'${expectedStudentCharacteristicDescriptor}' was not found in the studentCharacteristicDescriptor property. Retrieved value is '${JSON.stringify(studentCharacteristicsArray)}'. Please take a look at the response for more information.`).to.be.true;
+      }  
+  });
+  
+  let studentIdentificationCodesArray = response.studentIdentificationCodes;
+  expect(studentIdentificationCodesArray).to.be.an("array");
+  
+  test("06 - Scenario 2 POST: assigningOrganizationIdentificationCode values for the Student Education Organization Association could be " + expectedAssigningOrganizationIdentificationCode1 + ", " + expectedAssigningOrganizationIdentificationCode2 + " , or " + expectedAssigningOrganizationIdentificationCode3, () => {
+      let doesValuesExists = false;
+      studentIdentificationCodesArray.forEach(function(item) {
+          if (item.assigningOrganizationIdentificationCode === expectedAssigningOrganizationIdentificationCode1 || item.assigningOrganizationIdentificationCode === expectedAssigningOrganizationIdentificationCode2 || item.assigningOrganizationIdentificationCode === expectedAssigningOrganizationIdentificationCode3) {
+              doesValuesExists = true;
+          }
+      });
+      expect(doesValuesExists, `'${expectedAssigningOrganizationIdentificationCode1}', '${expectedAssigningOrganizationIdentificationCode2}', or '${expectedAssigningOrganizationIdentificationCode3}' were not found in assigningOrganizationIdentificationCode from studentIdentificationCodes for Student Education Organization Association. Retrieved values are '${JSON.stringify(studentIdentificationCodesArray.map(item => item.assigningOrganizationIdentificationCode))}'. Please take a look at the response for more information.`).to.be.true;
+  });
+  
+  test("07 - Scenario 2 POST: identificationCode values for the Student Education Organization Association could be " + expectedIdentificationCode1 + ", " + expectedIdentificationCode2 + " , or " + expectedIdentificationCode3, () => {
+      let doesValuesExists = false;
+      studentIdentificationCodesArray.forEach(function(item) {
+          if (item.identificationCode === expectedIdentificationCode1 || item.identificationCode === expectedIdentificationCode2 || item.identificationCode === expectedIdentificationCode3) {
+              doesValuesExists = true;
+          }
+      });
+      expect(doesValuesExists, `'${expectedIdentificationCode1}', '${expectedIdentificationCode2}', or '${expectedIdentificationCode3}' were not found in identificationCode from studentIdentificationCodes for Student Education Organization Association. Retrieved values are '${JSON.stringify(studentIdentificationCodesArray.map(item => item.identificationCode))}'. Please take a look at the response for more information.`).to.be.true;
+  });
+  
+  test("08 - Scenario 2 POST: studentIdentificationSystemDescriptor values for the Student Education Organization Association could be " + expectedStudentIdentificationSystemDescriptor1 + ", " + expectedStudentIdentificationSystemDescriptor2 + " , or " + expectedStudentIdentificationSystemDescriptor3, () => {
+      let doesValuesExists = false;
+      studentIdentificationCodesArray.forEach(function(item) {
+          if (item.studentIdentificationSystemDescriptor.includes(expectedStudentIdentificationSystemDescriptor1) || item.studentIdentificationSystemDescriptor.includes(expectedStudentIdentificationSystemDescriptor2) || item.studentIdentificationSystemDescriptor.includes(expectedStudentIdentificationSystemDescriptor3)) {
+              doesValuesExists = true;
+          }
+      });
+      expect(doesValuesExists, `'${expectedStudentIdentificationSystemDescriptor1}', '${expectedStudentIdentificationSystemDescriptor2}', or '${expectedStudentIdentificationSystemDescriptor3}' were not found in studentIdentificationSystemDescriptor from studentIdentificationCodes for Student Education Organization Association. Retrieved values are '${JSON.stringify(studentIdentificationCodesArray.map(item => item.studentIdentificationSystemDescriptor))}'. Please take a look at the response for more information.`).to.be.true;
+  });
+  
+  test("09 - Scenario 2 POST: sexDescriptor value for the Student Education Organization Association is " + expectedSexDescriptor, () => {
+      expect(response.sexDescriptor, `'${expectedSexDescriptor}' was not found in the sexDescriptor property for the Student Education Organization Association. Retrieved value is '${response.sexDescriptor}'`).to.contain(expectedSexDescriptor);
+  });
+  
+  let addressesArray = response.addresses;
+  expect(addressesArray).to.be.an("array");
+  
+  test("10 - Scenario 2 POST: addressTypeDescriptor value for the Student Education Organization Association is " + expectedAddressTypeDescriptor, () => {
+      let foundAddressTypeDescriptor = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let addressTypeDescriptorItem = addressesArray[i];
+          let addressTypeDescriptor = addressTypeDescriptorItem.addressTypeDescriptor;
+          if (addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundAddressTypeDescriptor = true;
+          }
+      expect(foundAddressTypeDescriptor, `'${expectedAddressTypeDescriptor}' was not found in the addressTypeDescriptor property. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}' `).to.be.true ;   
+      }
+  });
+  
+  test("11 - Scenario 2 POST: city value for the Student Education Organization Association is " + expectedCity, () => {
+      let foundCity = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let cityItem = addressesArray[i];
+          let city = cityItem.city;
+          let addressTypeDescriptor = cityItem.addressTypeDescriptor;
+          if (city === expectedCity && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundCity = true;
+          }
+      expect(foundCity, `'${expectedCity}' with '${expectedAddressTypeDescriptor}' were not found in the city property. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.city))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  test("12 - Scenario 2 POST: postalCode value for the Student Education Organization Association is " + expectedPostalCode, () => {
+      let foundPostalCode = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let postalCodeItem = addressesArray[i];
+          let postalCode = postalCodeItem.postalCode;
+          let addressTypeDescriptor = postalCodeItem.addressTypeDescriptor;
+          if (postalCode === expectedPostalCode && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundPostalCode = true;
+          }
+      expect(foundPostalCode, `'${expectedPostalCode}' with '${expectedAddressTypeDescriptor}' were not found in the postalCode property. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.postalCode))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  test("13 - Scenario 2 POST: stateAbbreviationDescriptor value for the Student Education Organization Association is " + expectedStateAbbreviationDescriptor, () => {
+      let foundstateAbbreviationDescriptor = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let stateAbbreviationDescriptorItem = addressesArray[i];
+          let stateAbbreviationDescriptor = stateAbbreviationDescriptorItem.stateAbbreviationDescriptor;
+          let addressTypeDescriptor = stateAbbreviationDescriptorItem.addressTypeDescriptor;
+          if (stateAbbreviationDescriptor.includes(expectedStateAbbreviationDescriptor) && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundstateAbbreviationDescriptor = true;
+          }
+      expect(foundstateAbbreviationDescriptor, `'${expectedStateAbbreviationDescriptor}' with '${expectedAddressTypeDescriptor}' were not found in the stateAbbreviationDescriptor property. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.stateAbbreviationDescriptor))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  test("14 - Scenario 2 POST: streetNumberName value for the Student Education Organization Association is " + expectedStreetNumberName, () => {
+      let foundStreetNumberName = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let streetNumberNameItem = addressesArray[i];
+          let streetNumberName = streetNumberNameItem.streetNumberName;
+          let addressTypeDescriptor = streetNumberNameItem.addressTypeDescriptor;
+          if (streetNumberName === expectedStreetNumberName && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundStreetNumberName = true;
+          }
+      expect(foundStreetNumberName, `'${expectedStreetNumberName}' with '${expectedAddressTypeDescriptor}' were not found in the postalCode property. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.streetNumberName))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  let electronicMailsArray = response.electronicMails;
+  expect(electronicMailsArray).to.be.an("array");
+  
+  test("15 - Scenario 2 POST: electronicMailAddress value for the Student Education Organization Association is " + expectedElectronicMailAddress, () => {
+      let foundElectronicMailAddress = false;
+      for (let i = 0; i < telephonesArray.length; i++) {
+          let electronicMailAddressItem = electronicMailsArray[i];
+          let electronicMailAddress = electronicMailAddressItem.electronicMailAddress;
+          if (electronicMailAddress === expectedElectronicMailAddress) {
+              foundTelephoneNumber = true;
+          }
+      expect(foundElectronicMailAddress, `'${expectedElectronicMailAddress}' was not found in the electronicMailAddress property. Retrieved value is '${JSON.stringify(electronicMailsArray.map(item => item.electronicMailAddress))}'.`).to.be.true ;   
+      }
+  });
+  
+  test("16 - Scenario 2 POST: electronicMailTypeDescriptor value for the Student Education Organization Association is " + expectedElectronicMailTypeDescriptor, () => {
+      let foundElectronicMailTypeDescriptor = false;
+      for (let i = 0; i < telephonesArray.length; i++) {
+          let electronicMailTypeDescriptorItem = telephonesArray[i];
+          let electronicMailTypeDescriptor = electronicMailTypeDescriptorItem.electronicMailTypeDescriptorItem;
+          let electronicMailAddress = electronicMailTypeDescriptorItem.electronicMailAddress;
+          if (electronicMailAddress === expectedElectronicMailAddress && electronicMailTypeDescriptor.includes(expectedElectronicMailTypeDescriptor)) {
+              foundElectronicMailTypeDescriptor = true;
+          }
+      expect(foundElectronicMailTypeDescriptor, `'${expectedElectronicMailTypeDescriptor}' with '${expectedElectronicMailAddress}' was not found in the electronicMailTypeDescriptor property. Retrieved value is '${JSON.stringify(electronicMailsArray.map(item => item.electronicMailTypeDescriptor))}' with '${JSON.stringify(electronicMailsArray.map(item => item.electronicMailAddress))}'. Please take a look at the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  test("17 - Scenario 2 POST: hispanicLatinoEthnicity value for the Student Education Organization Association is " + expectedHispanicLatinoEthnicity, () => {
+      expect(response.hispanicLatinoEthnicity, `'${expectedHispanicLatinoEthnicity}' was not found in the hispanicLatinoEthnicity property for the Student Education Organization Association. Retrieved value is '${response.hispanicLatinoEthnicity}'`).to.be.false;
+  });
+  
+  let racesArray = response.races;
+  expect(racesArray).to.be.an("array");
+  
+  test("18 - Scenario 2 POST: raceDescriptor value for the Student Education Organization Association is " + expectedRaceDescriptor, () => {
+      let foundRaceDescriptor = false;
+      for (let i = 0; i < racesArray.length; i++) {
+          let raceDescriptorItem = racesArray[i];
+          let raceDescriptor = raceDescriptorItem.raceDescriptor;
+          if (raceDescriptor.includes(expectedRaceDescriptor)) {
+              foundRaceDescriptor = true;
+          }
+      expect(foundRaceDescriptor, `'${expectedRaceDescriptor}' was not found in the raceDescriptor property. Retrieved value is '${JSON.stringify(racesArray.map(item => item.raceDescriptor))}'.`).to.be.true ;   
+      }
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

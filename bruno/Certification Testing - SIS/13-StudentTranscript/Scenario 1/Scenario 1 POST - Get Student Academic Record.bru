@@ -1,0 +1,105 @@
+meta {
+  name: Scenario 1 POST - Get Student Academic Record
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{s1StudentAcademicRecordId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Academic Record and getting the ID of student academic record
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentAcademicRecords`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentAcademicRecord = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentAcademicRecordDate = latestStudentAcademicRecord ? latestStudentAcademicRecord._lastModifiedDate : null;
+          console.log('latestStudentAcademicRecordDate', latestStudentAcademicRecordDate);
+  
+          bru.setEnvVar("s1StudentAcademicRecordId", latestStudentAcademicRecord.id);
+          console.log('s1StudentAcademicRecordId', bru.getEnvVar("s1StudentAcademicRecordId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Student Academic Record request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedEducationOrganizationId = 255901107;
+  let expectedSchoolYear = currentYear - 5;
+  let expectedStudentUniqueId = "111111";
+  let expectedTermDescriptor = "Fall Semester";
+  let expectedCumulativeAttemptedCredits;
+  let expectedCumulativeEarnedCredits;
+  
+  test("02 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Academic Record is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Academic Record. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("03 - Scenario 1 POST: schoolYear value from schoolYearTypeReference for Student Academic Record is " + expectedSchoolYear, () => {
+      expect(response.schoolYearTypeReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eql(expectedSchoolYear);
+  });
+  
+  test("04 - Scenario 1 POST: studentUniqueId value from studentReference for Student Academic Record is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("05 - Scenario 1 POST: termDescriptor value for Student Academic Record is " + expectedTermDescriptor, () => {
+      expect(response.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property for Student Academic Record. Retrieved value is '${response.termDescriptor}'`).to.include(expectedTermDescriptor);
+  });
+  
+  let cumulativeAttemptedCreditsSystemValue = bru.getEnvVar("cumulativeAttemptedCreditsSystemValue");
+  
+  if (cumulativeAttemptedCreditsSystemValue === null || cumulativeAttemptedCreditsSystemValue === "") {
+      expectedCumulativeAttemptedCredits = 0;
+  } else { 
+      expectedCumulativeAttemptedCredits = cumulativeAttemptedCreditsSystemValue;
+  }
+  
+  test("06 - Scenario 1 POST: cumulativeAttemptedCredits value for Student Academic Record is " + expectedCumulativeAttemptedCredits, () => {
+      expect(response.cumulativeAttemptedCredits, `'${expectedCumulativeAttemptedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeAttemptedCredits}'`).to.eql(expectedCumulativeAttemptedCredits);
+  });
+  
+  let cumulativeEarnedCreditsSystemValue = bru.getEnvVar("cumulativeEarnedCreditsSystemValue");
+  
+  if (cumulativeEarnedCreditsSystemValue === null || cumulativeEarnedCreditsSystemValue === "") {
+      expectedCumulativeEarnedCredits = 0;
+  } else { 
+      expectedCumulativeEarnedCredits = cumulativeEarnedCreditsSystemValue;
+  }
+  
+  test("07 - Scenario 1 POST: cumulativeEarnedCredits value for Student Academic Record is " + expectedCumulativeEarnedCredits, () => {
+      expect(response.cumulativeEarnedCredits, `'${expectedCumulativeEarnedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeEarnedCredits}'`).to.eql(expectedCumulativeEarnedCredits);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

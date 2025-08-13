@@ -1,0 +1,27 @@
+meta {
+  name: Scenario 01 - Get Assessments
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/assessments
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: 2
+  ~totalCount: true
+  ~assessmentIdentifier: SAT Critical Reading
+  ~namespace: uri://ed-fi.org/Assessment/Assessment.xml
+  ~id: 8259b9a9aa724817acbf668a6b442cef
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+settings {
+  encodeUrl: true
+}

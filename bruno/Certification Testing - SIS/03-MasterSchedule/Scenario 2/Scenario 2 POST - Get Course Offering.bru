@@ -1,0 +1,90 @@
+meta {
+  name: Scenario 2 POST - Get Course Offering
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings/{{s2CourseOfferingId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Course Offerings and getting the ID of the course offering
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/courseOfferings`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestCourseOffering = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestCourseOfferingDate = latestCourseOffering ? latestCourseOffering._lastModifiedDate : null;
+          console.log('latestCourseOfferingDate', latestCourseOfferingDate);
+  
+          bru.setEnvVar("s2CourseOfferingId", latestCourseOffering.id);
+          console.log('s2CourseOfferingId', bru.getEnvVar("s2CourseOfferingId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Course Offering request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 2 POST: courseCode value for the course offering is 'ALG-01'", () => {
+      expect(response.courseReference.courseCode, `'ALG-01' was not found in the courseCode property. Retrieved value is '${response.courseReference.courseCode}'`).to.eql("ALG-01");
+  });
+  
+  test("03 - Scenario 2 POST: schoolId value from course reference for the course offering  is '255901001'", () =>{
+      expect(response.courseReference.educationOrganizationId, `'255901001' was not found in the schoolId property. Retrieved value is '${response.courseReference.educationOrganizationId}'`).to.eql(255901001);
+  });
+  
+  test("04 - Scenario 2 POST: schoolId value from school reference for the course offering is '255901001'", () =>{
+      expect(response.schoolReference.schoolId, `'255901001' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(255901001);
+  });
+  
+  test("05 - Scenario 2 POST: sessionName value of course reference for the course offering is '2016-2017 Fall Semester'", () =>{
+      expect(response.sessionReference.sessionName, `'2016-2017 Fall Semester' was not found in the sessionName property. Retrieved value is '${response.sessionReference.sessionName}'`).to.eql("2016-2017 Fall Semester");
+  });
+  
+  test("06 - Scenario 2 POST: schoolId value from session reference for the course offering is '255901001'", () =>{
+      expect(response.sessionReference.schoolId, `'255901001' was not found in the schoolId property. Retrieved value is '${response.sessionReference.schoolId}'`).to.eql(255901001);
+  });
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  test("07 - Scenario 2 POST: schoolYear value from session reference for the course offering is " + currentYear, () =>{
+      expect(response.sessionReference.schoolYear, `'${currentYear}' was not found in the schoolYear property. Retrieved value is '${response.sessionReference.schoolYear}'`).to.eql(currentYear);
+  });
+  
+  test("08 - Scenario 2 POST: localCourseTitle value from session reference for the course offering is 'Algebra 02 GBHS'", () =>{
+      expect(response.localCourseTitle, `'Algebra 02 GBHS' was not found in the localCourseTitle property. Retrieved value is '${response.localCourseTitle}'`).to.eql("Algebra 02 GBHS");
+  });
+  
+  test("09 - Scenario 2 POST: localCourseCode value from session reference for the course offering is 'ALG-2'", () =>{
+      expect(response.localCourseTitle, `'ALG-2' was not found in the localCourseCode property. Retrieved value is '${response.localCourseTitle}'`).to.eql("ALG-2");
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,168 @@
+meta {
+  name: Scenario 1 POST - Get Student Language Instruction Program Association
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentLanguageInstructionProgramAssociations/{{s1StudentLanguageInstructionProgramAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Language Instruction Program Association and getting the ID of the student language instruction program association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentLanguageInstructionProgramAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentLanguageInstructionProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentLanguageInstructionProgramAssociationDate = latestStudentLanguageInstructionProgramAssociation ? latestStudentLanguageInstructionProgramAssociation._lastModifiedDate : null;
+          console.log('latestStudentLanguageInstructionProgramAssociationDate', latestStudentLanguageInstructionProgramAssociationDate);
+  
+          bru.setEnvVar("s1StudentLanguageInstructionProgramAssociationId", latestStudentLanguageInstructionProgramAssociation.id);
+          console.log('s1StudentLanguageInstructionProgramAssociationId', bru.getEnvVar("s1StudentLanguageInstructionProgramAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Student Language Instruction Program Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedBeginDate = `${currentYear}-08-23`;
+  let expectedEducationOrganizationId = 255901;
+  let expectedProgramName = "English as a Second Language (ESL)";
+  let expectedProgramTypeDescriptor = "English as a Second Language (ESL)";
+  let expectedEducationOrganizationIdPR = 255901;
+  let expectedStudentUniqueId = "222222";
+  let expectedSchoolYear = currentYear;
+  let expectedParticipationDescriptor = "Completed";
+  let expectedProficiencyDescriptor = "Not Proficient";
+  let expectedMonitoredDescriptor = "Year 1";
+  let expectedLanguageInstructionProgramServiceDescriptor = "Structured English Immersion";
+  let expectedEnglishLearnerParticipation = true;
+  
+  test("02 - Scenario 1 POST: beginDate value for Student Language Instruction Program Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Language Instruction Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Language Instruction Program Association is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Language Instruction Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("04 - Scenario 1 POST: programName value from programReference for Student Language Instruction Program Association is " + expectedProgramName, () => {
+      expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);
+  });
+  
+  test("05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student Language Instruction Program Association is " + expectedProgramTypeDescriptor, () => {
+      expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.contain(expectedProgramTypeDescriptor);
+  });
+  
+  test("06 - Scenario 1 POST: educationOrganizationId value from programReference for Student Language Instruction Program Association is " + expectedEducationOrganizationIdPR, () => {
+      expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Language Instruction Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);
+  });
+  
+  test("07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Language Instruction Program Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Language Instruction Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  let englishLanguageProficiencyAssessmentsArray = response.englishLanguageProficiencyAssessments;
+  expect(englishLanguageProficiencyAssessmentsArray).to.be.an("Array");
+  
+  test("08 - Scenario 1 POST: schoolYear value from schoolYearTypeReference from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is " + expectedSchoolYear, () => {
+      let foundSchoolYear = false;
+      for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {
+          let schoolYearItem = englishLanguageProficiencyAssessmentsArray[i];
+          let schoolYear = schoolYearItem.schoolYearTypeReference.schoolYear;
+          if (schoolYear === expectedSchoolYear) {
+              foundSchoolYear = true;
+          }
+      }
+      expect(foundSchoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}'`).to.be.true;
+  });
+  
+  test("09 - Scenario 1 POST: participationDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is " + expectedParticipationDescriptor, () => {
+      let foundParticipationDescriptor = false;
+      for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {
+          let participationDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];
+          let participationDescriptor = participationDescriptorItem.participationDescriptor;
+          let schoolYear = participationDescriptorItem.schoolYearTypeReference.schoolYear;
+          if (schoolYear === expectedSchoolYear && participationDescriptor.includes(expectedParticipationDescriptor)) {
+              foundParticipationDescriptor = true;
+          }
+      }
+      expect(foundParticipationDescriptor, `schoolYear '${currentYear}' with '${expectedParticipationDescriptor}' was not found in the participationDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.participationDescriptor))}'`).to.be.true;
+  });
+  
+  test("10 - Scenario 1 POST: proficiencyDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is " + expectedProficiencyDescriptor, () => {
+      let foundProficiencyDescriptor = false;
+      for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {
+          let proficiencyDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];
+          let proficiencyDescriptor = proficiencyDescriptorItem.proficiencyDescriptor;
+          let schoolYear = proficiencyDescriptorItem.schoolYearTypeReference.schoolYear;
+          if (schoolYear === expectedSchoolYear && proficiencyDescriptor.includes(expectedProficiencyDescriptor)) {
+              foundProficiencyDescriptor = true;
+          }
+      }
+      expect(foundProficiencyDescriptor, `schoolYear '${currentYear}' with '${expectedProficiencyDescriptor}' was not found in the proficiencyDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.proficiencyDescriptor))}'`).to.be.true;
+  });
+  
+  test("11 - Scenario 1 POST: monitoredDescriptor value from englishLanguageProficiencyAssessments for Student Language Instruction Program Association is " + expectedMonitoredDescriptor, () => {
+      let foundMonitoredDescriptor = false;
+      for (let i = 0; i < englishLanguageProficiencyAssessmentsArray.length; i++) {
+          let monitoredDescriptorItem = englishLanguageProficiencyAssessmentsArray[i];
+          let monitoredDescriptor = monitoredDescriptorItem.monitoredDescriptor;
+          let schoolYear = monitoredDescriptorItem.schoolYearTypeReference.schoolYear;
+          if (schoolYear === expectedSchoolYear && monitoredDescriptor.includes(expectedMonitoredDescriptor)) {
+              foundMonitoredDescriptor = true;
+          }
+      }
+      expect(foundMonitoredDescriptor, `schoolYear '${currentYear}' with '${expectedMonitoredDescriptor}' was not found in the monitoredDescriptor property from englishLanguageProficiencyAssessments for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.schoolYearTypeReference.schoolYear))}' with '${JSON.stringify(englishLanguageProficiencyAssessmentsArray.map(item => item.monitoredDescriptor))}'`).to.be.true;
+  });
+  
+  let languageInstructionProgramServicesArray = response.languageInstructionProgramServices;
+  expect(languageInstructionProgramServicesArray).to.be.an("Array");
+  
+  test("12 - Scenario 1 POST: languageInstructionProgramServiceDescriptor value from languageInstructionProgramServices for Student Language Instruction Program Association is " + expectedLanguageInstructionProgramServiceDescriptor, () => {
+      let foundLanguageInstructionProgramServiceDescriptor = false;
+      for (let i = 0; i < languageInstructionProgramServicesArray.length; i++) {
+          let languageInstructionProgramServiceDescriptorItem = languageInstructionProgramServicesArray[i];
+          let languageInstructionProgramServiceDescriptor = languageInstructionProgramServiceDescriptorItem.languageInstructionProgramServiceDescriptor;
+          if (languageInstructionProgramServiceDescriptor.includes(expectedLanguageInstructionProgramServiceDescriptor)) {
+              foundLanguageInstructionProgramServiceDescriptor = true;
+          }
+      }
+      expect(foundLanguageInstructionProgramServiceDescriptor, `'${expectedLanguageInstructionProgramServiceDescriptor}' was not found in the languageInstructionProgramServiceDescriptor property from languageInstructionProgramServices for Student Language Instruction Program Association. Retrieved value is '${JSON.stringify(languageInstructionProgramServicesArray.map(item => item.languageInstructionProgramServiceDescriptor))}'`).to.be.true;
+  });
+  
+  test("02 - Scenario 1 POST: englishLearnerParticipation value for Student Language Instruction Program Association is " + expectedEnglishLearnerParticipation, () => {
+      expect(response.englishLearnerParticipation, `'${expectedEnglishLearnerParticipation}' was not found in the englishLearnerParticipation property for Student Language Instruction Program Association. Retrieved value is '${response.englishLearnerParticipation}'`).to.be.true;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,115 @@
+meta {
+  name: Scenario 1 POST - Get Student Migrant Program Association
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentMigrantEducationProgramAssociations/{{s1StudentMigrantEducationProgramAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Migrant Program Association and getting the ID of the student migrant program association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentMigrantEducationProgramAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentMigrantEducationProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentMigrantEducationProgramAssociationDate = latestStudentMigrantEducationProgramAssociation ? latestStudentMigrantEducationProgramAssociation._lastModifiedDate : null;
+          console.log('latestStudentMigrantEducationProgramAssociationDate', latestStudentMigrantEducationProgramAssociationDate);
+  
+          bru.setEnvVar("s1StudentMigrantEducationProgramAssociationId", latestStudentMigrantEducationProgramAssociation.id);
+          console.log('s1StudentMigrantEducationProgramAssociationId', bru.getEnvVar("s1StudentMigrantEducationProgramAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Student Migrant Education Program Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedBeginDate = `${currentYear}-08-23`;
+  let expectedEducationOrganizationId = 255901;
+  let expectedProgramName = "Migrant Education";
+  let expectedProgramTypeDescriptor = "Migrant Education";
+  let expectedEducationOrganizationIdPR = 255901;
+  let expectedStudentUniqueId = "111111";
+  let expectedPriorityForServices = true;
+  let expectedLastQualifyingMove = `${currentYear}-07-16`;
+  let expectedMigrantEducationProgramServiceDescriptor = "Instructional Services";
+  
+  test("02 - Scenario 1 POST: beginDate value for Student Migrant Education Program Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Migrant Education Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Migrant Education Program Association is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Migrant Education Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("04 - Scenario 1 POST: programName value from programReference for Student Migrant Education Program Association is " + expectedProgramName, () => {
+      expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);
+  });
+  
+  test("05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student Migrant Education Program Association is " + expectedProgramTypeDescriptor, () => {
+      expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);
+  });
+  
+  test("06 - Scenario 1 POST: educationOrganizationId value from programReference for Student Migrant Education Program Association is " + expectedEducationOrganizationIdPR, () => {
+      expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Migrant Education Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);
+  });
+  
+  test("07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Migrant Education Program Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Migrant Education Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("08 - Scenario 1 POST: priorityForServices value for Student Migrant Education Program Association is " + expectedPriorityForServices, () => {
+      expect(response.priorityForServices, `'${expectedPriorityForServices}' was not found in the priorityForServices property for Student Migrant Education Program Association. Retrieved value is '${response.priorityForServices}'`).to.be.true;
+  });
+  
+  test("09 - Scenario 1 POST: lastQualifyingMove value for Student Migrant Education Program Association is " + expectedLastQualifyingMove, () => {
+      expect(response.lastQualifyingMove, `'${expectedLastQualifyingMove}' was not found in the lastQualifyingMove property for Student Migrant Education Program Association. Retrieved value is '${response.lastQualifyingMove}'`).to.eql(expectedLastQualifyingMove);
+  });
+  
+  let migrantEducationProgramServicesArray = response.migrantEducationProgramServices;
+  expect(migrantEducationProgramServicesArray).to.be.an("Array");
+  
+  test("10 - Scenario 1 POST: migrantEducationProgramServiceDescriptor value from migrantEducationProgramServices for Student Migrant Education Program Association is " + expectedMigrantEducationProgramServiceDescriptor, () => {
+      let foundMigrantEducationProgramServiceDescriptor = false;
+      for (let i = 0; i < migrantEducationProgramServicesArray.length; i++) {
+          let migrantEducationProgramServiceDescriptorItem = migrantEducationProgramServicesArray[i];
+          let migrantEducationProgramServiceDescriptor = migrantEducationProgramServiceDescriptorItem.migrantEducationProgramServiceDescriptor;
+          if (migrantEducationProgramServiceDescriptor.includes(expectedMigrantEducationProgramServiceDescriptor)) {
+              foundMigrantEducationProgramServiceDescriptor = true;
+          }
+      }
+      expect(foundMigrantEducationProgramServiceDescriptor, `'${expectedMigrantEducationProgramServiceDescriptor}' was not found in the migrantEducationProgramServiceDescriptor property from migrantEducationProgramServices for Student Migrant Education Program Association. Retrieved value is '${JSON.stringify(migrantEducationProgramServicesArray.map(item => item.migrantEducationProgramServiceDescriptor))}'`).to.be.true;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

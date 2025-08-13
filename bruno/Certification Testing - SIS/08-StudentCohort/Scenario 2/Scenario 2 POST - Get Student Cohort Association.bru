@@ -1,0 +1,88 @@
+meta {
+  name: Scenario 2 POST - Get Student Cohort Association
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentCohortAssociations/{{s2StudentCohortAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Cohort Association and getting the ID of the staff cohort association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentCohortAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentCohortAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentCohortAssociationDate = latestStudentCohortAssociation ? latestStudentCohortAssociation._lastModifiedDate : null;
+          console.log('latestStudentCohortAssociationDate', latestStudentCohortAssociationDate);
+  
+          bru.setEnvVar("s2StudentCohortAssociationId", latestStudentCohortAssociation.id);
+          console.log('s2StudentCohortAssociationId', bru.getEnvVar("s2StudentCohortAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Student Cohort Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedEducationOrganizationId = 255901001;
+  let expectedCohortIdentifier;
+  let expectedStudentUniqueId = "222222";
+  let expectedBeginDate = `${currentYear}-09-14`;
+  
+  test("02 - Scenario 2 POST: educationOrganizationId value from cohortReference for Student Cohort Association is " + expectedEducationOrganizationId, () => {
+      expect(response.cohortReference.educationOrganizationId, `'${expectedEducationOrganizationId}' value was not found in the educationOrganizationId property from cohortReference for Student Cohort Association. Retrieved value is '${response.cohortReference.educationOrganizationId}'.`)
+  });
+  
+  let cohortIdentifierSystemValueS2 = bru.getEnvVar("cohortIdentifierSystemValueS2");
+  expectedCohortIdentifier = "";
+  if (cohortIdentifierSystemValueS2 === "" || cohortIdentifierSystemValueS2 === null) {
+      expectedCohortIdentifier = "2";
+  } else {
+      expectedCohortIdentifier = cohortIdentifierSystemValueS2;
+  }
+  
+  test("03 - Scenario 2 POST: cohortIdentifier value from cohortReference for Student Cohort Association is: " + expectedCohortIdentifier, () => {
+      expect(response.cohortReference.cohortIdentifier, `'${expectedCohortIdentifier}' value was not found in the educationOrganizationId property from cohortReference for Student Cohort Association. Retrieved value is '${response.cohortReference.cohortIdentifier}'.`).to.eql(expectedCohortIdentifier);
+  });
+  
+  test("04 - Scenario 2 POST: studentUniqueId value from studentReference for Student Cohort Association is: " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' value was not found in the studentUniqueId property from studentReference for Student Cohort Association. Retrieved value is '${response.studentReference.studentUniqueId}'.`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("05 - Scenario 2 POST: beginDate value for Student Cohort Association is: " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' value was not found in the beginDate property for Student Cohort Association. Retrieved value is '${response.beginDate}'.`).to.eql(expectedBeginDate);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

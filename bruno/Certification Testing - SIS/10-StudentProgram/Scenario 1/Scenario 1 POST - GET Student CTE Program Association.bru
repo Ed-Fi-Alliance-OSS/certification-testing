@@ -1,0 +1,162 @@
+meta {
+  name: Scenario 1 POST - GET Student CTE Program Association
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentCTEProgramAssociations/{{s1StudentCTEProgramAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student CTE Program Association and getting the ID of the student CTE program association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentCTEProgramAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentCTEProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentCTEProgramAssociationDate = latestStudentCTEProgramAssociation ? latestStudentCTEProgramAssociation._lastModifiedDate : null;
+          console.log('latestStudentCTEProgramAssociationDate', latestStudentCTEProgramAssociationDate);
+  
+          bru.setEnvVar("s1StudentCTEProgramAssociationId", latestStudentCTEProgramAssociation.id);
+          console.log('s1StudentCTEProgramAssociationId', bru.getEnvVar("s1StudentCTEProgramAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Student CTE Program Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedBeginDate = `${currentYear}-08-23`;
+  let expectedEducationOrganizationId = 255901;
+  let expectedProgramName = "Career and Technical Education";
+  let expectedProgramTypeDescriptor = "Career and Technical Education";
+  let expectedEducationOrganizationIdPR = 255901;
+  let expectedStudentUniqueId = "222222";
+  let expectedNonTraditionalGenderStatus = true;
+  let expectedPrivateCTEProgram = false;
+  let expectedTechnicalSkillsAssessmentDescriptor = "Passed";
+  let expectedCteProgramServiceDescriptor = "Information Technology";
+  let expectedCipCode = "11.0103";
+  let expectedServiceBeginDate = `${currentYear}-08-23`;
+  let expectedPrimaryIndicator = true;
+  
+  test("02 - Scenario 1 POST: beginDate value for Student CTE Program Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' value was not found in the beginDate property for Student CTE Program Association. Retrieved value is '${response.beginDate}'.`).to.eql(expectedBeginDate);
+  });
+  
+  test("03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student CTE Program Association is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' value was not found in the educationOrganizationId property from educationOrganizationReference for Student CTE Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'.`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("04 - Scenario 1 POST: programName value from programReference for Student CTE Program Association is " + expectedProgramName, () => {
+      expect(response.programReference.programName, `'${expectedProgramName}' value was not found in the programName property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.programName}'.`).to.eql(expectedProgramName);
+  });
+  
+  test("05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student CTE Program Association is " + expectedProgramTypeDescriptor, () => {
+      expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' value was not found in the programTypeDescriptor property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'.`).to.contain(expectedProgramTypeDescriptor);
+  });
+  
+  test("06 - Scenario 1 POST: educationOrganizationId value from programReference for Student CTE Program Association is " + expectedEducationOrganizationIdPR, () => {
+      expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' value was not found in the educationOrganizationId property from programReference for Student CTE Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'.`).to.eql(expectedEducationOrganizationIdPR);
+  });
+  
+  test("07 - Scenario 1 POST: studentUniqueId value from studentReference for Student CTE Program Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' value was not found in the studentUniqueId property from studentReference for Student CTE Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'.`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("08 - Scenario 1 POST: nonTraditionalGenderStatus value for Student CTE Program Association is " + expectedNonTraditionalGenderStatus, () => {
+      expect(response.nonTraditionalGenderStatus, `'${expectedNonTraditionalGenderStatus}' value was not found in the nonTraditionalGenderStatus property for Student CTE Program Association. Retrieved value is '${response.nonTraditionalGenderStatus}'.`).to.be.true;
+  });
+  
+  test("09 - Scenario 1 POST: privateCTEProgram value for Student CTE Program Association is " + expectedPrivateCTEProgram, () => {
+      expect(response.nonTraditionalGenderStatus, `'${expectedPrivateCTEProgram}' value was not found in the privateCTEProgram property for Student CTE Program Association. Retrieved value is '${response.privateCTEProgram}'.`).to.be.false;
+  });
+  
+  test("10 - Scenario 1 POST: technicalSkillsAssessmentDescriptor value for Student CTE Program Association is " + expectedTechnicalSkillsAssessmentDescriptor, () => {
+      expect(response.technicalSkillsAssessmentDescriptor, `'${expectedTechnicalSkillsAssessmentDescriptor}' value was not found in the technicalSkillsAssessmentDescriptor property  for Student CTE Program Association. Retrieved value is '${response.technicalSkillsAssessmentDescriptor}'.`).to.contain(expectedTechnicalSkillsAssessmentDescriptor);
+  });
+  
+  let cteProgramServicesArray = response.cteProgramServices;
+  expect(cteProgramServicesArray).to.be.an("array");
+  
+  test("11 - Scenario 1 POST: cteProgramServiceDescriptor value from cteProgramServices for Student CTE Program Association is " + expectedCteProgramServiceDescriptor, () => {
+      let foundCteProgramServiceDescriptor = false;
+      for (let i = 0; i < cteProgramServicesArray.length; i++) {
+          let cteProgramServiceDescriptorItem = cteProgramServicesArray[i];
+          let cteProgramServiceDescriptor = cteProgramServiceDescriptorItem.cteProgramServiceDescriptor;
+          if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor)) { 
+              foundCteProgramServiceDescriptor = true;
+          }
+      }
+      expect(foundCteProgramServiceDescriptor, `'${expectedCteProgramServiceDescriptor}' was not found in the cteProgramServiceDescriptor property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;
+  });
+  
+  test("12 - Scenario 1 POST: cipCode value from cteProgramServices for Student CTE Program Association is " + expectedCipCode, () => {
+      let foundCipCode = false;
+      for (let i = 0; i < cteProgramServicesArray.length; i++) {
+          let cipCodeItem = cteProgramServicesArray[i];
+          let cipCode = cipCodeItem.cipCode;
+          let cteProgramServiceDescriptor = cipCodeItem.cteProgramServiceDescriptor;
+          if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && cipCode === expectedCipCode) { 
+              foundCipCode = true;
+          }
+      }
+      expect(foundCipCode, `'${expectedCteProgramServiceDescriptor}' with '${expectedCipCode}' was not found in the cipCode property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.cipCode))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;
+  });
+  
+  test("13 - Scenario 1 POST: serviceBeginDate value from cteProgramServices for Student CTE Program Association is " + expectedServiceBeginDate, () => {
+      let foundServiceBeginDate = false;
+      for (let i = 0; i < cteProgramServicesArray.length; i++) {
+          let serviceBeginDateItem = cteProgramServicesArray[i];
+          let serviceBeginDate = serviceBeginDateItem.serviceBeginDate;
+          let cteProgramServiceDescriptor = serviceBeginDateItem.cteProgramServiceDescriptor;
+          if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && serviceBeginDate === expectedServiceBeginDate) { 
+              foundServiceBeginDate = true;
+          }
+      }
+      expect(foundServiceBeginDate, `'${expectedCteProgramServiceDescriptor}' with '${expectedServiceBeginDate}' was not found in the serviceBeginDate property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.serviceBeginDate))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;
+  });
+  
+  test("14 - Scenario 1 POST: primaryIndicator value from cteProgramServices for Student CTE Program Association is " + expectedPrimaryIndicator, () => {
+      let foundPrimaryIndicator = false;
+      for (let i = 0; i < cteProgramServicesArray.length; i++) {
+          let primaryIndicatorItem = cteProgramServicesArray[i];
+          let primaryIndicator = primaryIndicatorItem.primaryIndicator;
+          let cteProgramServiceDescriptor = primaryIndicatorItem.cteProgramServiceDescriptor;
+          if (cteProgramServiceDescriptor.includes(expectedCteProgramServiceDescriptor) && primaryIndicator === expectedPrimaryIndicator) { 
+              foundPrimaryIndicator = true;
+          }
+      }
+      expect(foundPrimaryIndicator, `'${expectedCteProgramServiceDescriptor}' with '${expectedPrimaryIndicator}' was not found in the primaryIndicator property from cteProgramServices for Student CTE Program Association. Retrieved value is '${JSON.stringify(cteProgramServicesArray.map(item => item.primaryIndicator))}' with '${JSON.stringify(cteProgramServicesArray.map(item => item.cteProgramServiceDescriptor))}'`).to.be.true;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

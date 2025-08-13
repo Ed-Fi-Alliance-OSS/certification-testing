@@ -1,0 +1,120 @@
+meta {
+  name: Scenario 3 PUT - Get Student Section Attendance Event
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{s3StudentSectionAttendanceEventId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Section Attendance Events and getting the ID of the student section attendance event
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentSectionAttendanceEvents`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentSectionAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentSectionAttendanceEventDate = latestStudentSectionAttendanceEvent ? latestStudentSectionAttendanceEvent._lastModifiedDate : null;
+          console.log('latestStudentSectionAttendanceEventDate', latestStudentSectionAttendanceEventDate);
+  
+          bru.setEnvVar("s3StudentSectionAttendanceEventId", latestStudentSectionAttendanceEvent.id);
+          console.log('s3StudentSectionAttendanceEventId', bru.getEnvVar("s3StudentSectionAttendanceEventId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 3 PUT: Test that Student Section Attendance Event request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedLocalCourseCode;
+  let expectedSchoolId = 255901107;
+  let expectedSchoolYear = 2017;
+  let expectedSectionIdentifier;
+  let expectedSessionName = "2016-2017 Fall Semester";
+  let expectedStudentUniqueId = "111111";
+  let expectedAttendanceEventCategoryDescriptor = "Tardy";
+  let expectedEventDate = `${currentYear}-09-16`;
+  let expectedAttendanceEventReason = "Late";
+  
+  let localCourseCodeSystemValueS3 = bru.getEnvVar("localCourseCodeSystemValueS3");
+  
+  if (localCourseCodeSystemValueS3 === "" || localCourseCodeSystemValueS3 === null) {
+      expectedLocalCourseCode = "ELA-01";
+  } else {
+      expectedLocalCourseCode = localCourseCodeSystemValueS3;
+  }
+  
+  test("02 - Scenario 3 PUT: expectedLocalCourseCode value from sectionReference for Student Section Attendance Event is " + expectedLocalCourseCode, () => {
+      expect(response.sectionReference.localCourseCode, `'${expectedLocalCourseCode}' was not found in the localCourseCode from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.localCourseCode}'`).to.eql(expectedLocalCourseCode);
+  });
+  
+  test("03 - Scenario 3 PUT: schoolId value from sectionReference for Student Section Attendance Event is " + expectedSchoolId, () => {
+      expect(response.sectionReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolId}'`).to.eql(expectedSchoolId);
+  });
+  
+  test("04 - Scenario 3 PUT: schoolYear value from sectionReference for Student Section Attendance Event is " + expectedSchoolYear, () => {
+      expect(response.sectionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.schoolYear}'`).to.eql(expectedSchoolYear);
+  });
+  
+  let sectionIdentifierSystemValueS3 = bru.getEnvVar("sectionIdentifierSystemValueS3");
+  
+  if (sectionIdentifierSystemValueS3 === "" || sectionIdentifierSystemValueS3 === null) {
+      expectedSectionIdentifier = "ELA012017RM555";
+  } else {
+      expectedSectionIdentifier = sectionIdentifierSystemValueS3;
+  }
+  
+  test("05 - Scenario 3 PUT: sectionIdentifier value from sectionReference for Student Section Attendance Event is " + expectedSectionIdentifier, () => {
+      expect(response.sectionReference.sectionIdentifier, `'${expectedSectionIdentifier}' was not found in the sectionIdentifier from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sectionIdentifier}'`).to.eql(expectedSectionIdentifier);
+  });
+  
+  test("06 - Scenario 3 PUT: sessionName value from sectionReference for Student Section Attendance Event is " + expectedSessionName, () => {
+      expect(response.sectionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName from sectionReference for Student Section Attendance Event. Retrieved value is '${response.sectionReference.sessionName}'`).to.eql(expectedSessionName);
+  });
+  
+  test("07 - Scenario 3 PUT: studentUniqueId value from studentReference for Student Section Attendance Event is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId from studentReference for Student Section Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("08 - Scenario 3 PUT: attendanceEventCategoryDescriptor value for Student Section Attendance Event is " + expectedAttendanceEventCategoryDescriptor, () => {
+      expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor for Student Section Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);
+  });
+  
+  test("09 - Scenario 3 PUT: eventDate value for Student Section Attendance Event is " + expectedEventDate, () => {
+      expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate for Student Section Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);
+  });
+  
+  test("10 - Scenario 3 PUT: attendanceEventReason value for Student Section Attendance Event is " + expectedAttendanceEventReason, () => {
+      expect(response.attendanceEventReason, `'${expectedAttendanceEventReason}' was not found in the eventDate for Student Section Attendance Event. Retrieved value is '${response.attendanceEventReason}'`).to.eql(expectedAttendanceEventReason);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

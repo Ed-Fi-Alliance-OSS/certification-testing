@@ -1,0 +1,97 @@
+meta {
+  name: Scenario 2 POST - Get Student
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/students/{{s2StudentId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Students and getting the ID of the student
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/students`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudent = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentDate = latestStudent ? latestStudent._lastModifiedDate : null;
+          console.log('latestStudentDate', latestStudentDate);
+  
+          bru.setEnvVar("s2StudentId", latestStudent.id);
+          console.log('s2StudentId', bru.getEnvVar("s2StudentId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Student request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let expectedStudentUniqueId = "222222";
+  let expectedBirthCity = "Grand Bend";
+  let expectedBirthCountryDescriptor = "US";
+  let expectedBirthDate = "2001-01-01";
+  let expectedFirstName = "Madison";
+  let expectedMiddleName = "Mary";
+  let expectedLastSurname = "Johnson";
+  let expectedPersonalTitlePrefix = "Ms.";
+  
+  test("02 - Scenario 2 POST: studentUniqueId value for the Student is " + expectedStudentUniqueId, () => {
+      expect(response.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property. Retrieved value is '${response.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("03 - Scenario 2 POST: birthCity value for the Student is " + expectedBirthCity, () => {
+      expect(response.birthCity, `'${expectedBirthCity}' was not found in the birthCity property. Retrieved value is '${response.birthCity}'`).to.eql(expectedBirthCity);
+  });
+  
+  test("04 - Scenario 2 POST: birthCountryDescriptor value for the Student is " + expectedBirthCountryDescriptor, () => {
+      expect(response.birthCountryDescriptor, `${expectedBirthCountryDescriptor}' was not found in the birthCountryDescriptor property. Retrieved value is '${response.birthCountryDescriptor}'`).to.contain(expectedBirthCountryDescriptor);
+  });
+  
+  test("05 - Scenario 2 POST: birthDate value for the Student is " + expectedBirthDate, () => {
+      expect(response.birthDate, `${expectedBirthDate}' was not found in the birthDate property. Retrieved value is '${response.birthDate}'`).to.eql(expectedBirthDate);
+  });
+  
+  test("06 - Scenario 2 POST: firstName value for the Student is " + expectedFirstName, () => {
+      expect(response.firstName, `${expectedFirstName}' was not found in the firstName property. Retrieved value is '${response.firstName}'`).to.eql(expectedFirstName);
+  });
+  
+  test("07 - Scenario 2 POST: middleName value for the Student is " + expectedMiddleName, () => {
+      expect(response.middleName, `${expectedMiddleName}' was not found in the middleName property. Retrieved value is '${response.middleName}'`).to.eql(expectedMiddleName);
+  });
+  
+  test("08 - Scenario 2 POST: lastSurname value for the Student is " + expectedLastSurname, () => {
+      expect(response.lastSurname, `${expectedLastSurname}' was not found in the lastSurname property. Retrieved value is '${response.lastSurname}'`).to.eql(expectedLastSurname);
+  });
+  
+  test("09 - Scenario 2 POST: personalTitlePrefix value for the Student is " + expectedPersonalTitlePrefix, () => {
+      expect(response.personalTitlePrefix, `${expectedPersonalTitlePrefix}' was not found in the personalTitlePrefix property. Retrieved value is '${response.personalTitlePrefix}'`).to.eql(expectedPersonalTitlePrefix);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

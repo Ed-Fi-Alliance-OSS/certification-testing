@@ -1,0 +1,107 @@
+meta {
+  name: Scenario 1 POST - Get Discipline Action
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineActions/{{s1DisciplineActionId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Discipline Action and getting the ID of the discipline action
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/disciplineActions`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestDisciplineAction = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestDisciplineActionDate = latestDisciplineAction ? latestDisciplineAction._lastModifiedDate : null;
+          console.log('latestDisciplineActionDate', latestDisciplineActionDate);
+  
+          bru.setEnvVar("s1DisciplineActionId", latestDisciplineAction.id);
+          console.log('s1DisciplineActionId', bru.getEnvVar("s1DisciplineActionId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Discipline Action request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedDisciplineActionIdentifier = "11";
+  let expectedDisciplineDescriptor = "Out of School Suspension";
+  let expectedDisciplineDate = `${currentYear}-09-30`;
+  let expectedStudentUniqueId = "111111";
+  let expectedActualDisciplineActionLength = 2;
+  let expectedSchoolId = 255901107;
+  let expectedIepPlacementMeetingIndicator = true;
+  
+  test("02 - Scenario 1 POST: disciplineActionIdentifier value for Discipline Action is " + expectedDisciplineActionIdentifier, () => {
+      expect(response.disciplineActionIdentifier, `'${expectedDisciplineActionIdentifier}' value was not found in the disciplineActionIdentifier property for Discipline Action. Retrieved value is '${response.disciplineActionIdentifier}'.`).to.eql(expectedDisciplineActionIdentifier);
+  });
+  
+  let disciplinesArray = response.disciplines;
+  expect(disciplinesArray).to.be.an("array");
+  
+  test("03 - Scenario 1 POST: expectedDisciplineDescriptor value for Discipline Action is " + expectedDisciplineDescriptor, () => {
+      let foundDisciplineDescriptor = false;
+      for (let i = 0; i < disciplinesArray.length; i++) { 
+          let disciplineDescriptorItem = disciplinesArray[i];
+          let disciplineDescriptor = disciplineDescriptorItem.disciplineDescriptor;
+          if (disciplineDescriptor.includes(expectedDisciplineDescriptor)) {
+              foundDisciplineDescriptor = true;
+          }
+      }
+      expect(foundDisciplineDescriptor, `'${expectedDisciplineDescriptor}' value was not found in the disciplineDescriptor property for Discipline Action. Retrieved value is '${JSON.stringify(disciplinesArray)}'.`).to.be.true;
+  });
+  
+  test("04 - Scenario 1 POST: disciplineDate value for Discipline Action is " + expectedDisciplineDate, () => {
+      expect(response.disciplineDate, `'${expectedDisciplineDate}' was not found in the disciplineDate property for Discipline Action. Retrieved value is '${response.disciplineDate}'`).to.eql(expectedDisciplineDate);
+  });
+  
+  test("05 - Scenario 1 POST: studentUniqueId value for Discipline Action is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Discipline Action. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("06 - Scenario 1 POST: actualDisciplineActionLength value for Discipline Action is " + expectedActualDisciplineActionLength, () => {
+      expect(response.actualDisciplineActionLength, `'${expectedActualDisciplineActionLength}' was not found in the actualDisciplineActionLength property for Discipline Action. Retrieved value is '${response.actualDisciplineActionLength}'`).to.eql(expectedActualDisciplineActionLength);
+  });
+  
+  test("08 - Scenario 1 POST: schoolId value from responsibilitySchoolReference for Discipline Action is: " + expectedSchoolId, () => {
+      expect(response.responsibilitySchoolReference.schoolId, `'${expectedSchoolId}' value was not found in the schoolId property from responsibilitySchoolReference for Discipline Action. Retrieved value is '${response.responsibilitySchoolReference.schoolId}'.`).to.eql(expectedSchoolId);
+  });
+  
+  test("08 - Scenario 1 POST: iepPlacementMeetingIndicator value for Discipline Action is " + expectedIepPlacementMeetingIndicator, () => {
+      expect(response.iepPlacementMeetingIndicator, `'${expectedIepPlacementMeetingIndicator}' was not found in the iepPlacementMeetingIndicator property for Discipline Action. Retrieved value is '${response.iepPlacementMeetingIndicator}'`).to.be.true;
+  });
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

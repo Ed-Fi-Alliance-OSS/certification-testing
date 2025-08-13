@@ -1,0 +1,27 @@
+meta {
+  name: Scenario 04 - Get Student Assessments
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAssessments
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: 25
+  ~totalCount: true
+  ~assessmentIdentifier: null
+  ~namespace: null
+  ~id: null
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+settings {
+  encodeUrl: true
+}

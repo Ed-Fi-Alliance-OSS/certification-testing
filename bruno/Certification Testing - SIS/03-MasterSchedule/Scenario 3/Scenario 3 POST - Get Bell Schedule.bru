@@ -1,0 +1,89 @@
+meta {
+  name: Scenario 3 POST - Get Bell Schedule
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/bellSchedules/{{s3BellScheduleId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Bell Schedule and getting the ID of the bell schedule
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/bellSchedules`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestBellSchedule = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestBellScheduleDate = latestBellSchedule ? latestBellSchedule._lastModifiedDate : null;
+          console.log('latestBellScheduleDate', latestBellScheduleDate);
+  
+          bru.setEnvVar("s3BellScheduleId", latestBellSchedule.id);
+          console.log('s3BellScheduleId', bru.getEnvVar("s3BellScheduleId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 3 PUT: Test that Bell Schedule request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 3 PUT: bellScheduleName value for the bell schedule is 'Early Release A'", () => {
+      expect(response.bellScheduleName, `'Early Release A' was not found in the bellScheduleName property. Retrieved value is '${response.bellScheduleName}'`).to.eql("Early Release A");
+  });
+  
+  test("03 - Scenario 3 PUT: schoolId value for the bell schedule is '255901107'", () =>{
+      expect(response.schoolReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(255901107);
+  });
+  
+  expect(response.classPeriods).to.be.an("array");
+  let classPeriodsArray = response.classPeriods;
+  console.log("classPeriodsArray",classPeriodsArray)
+  
+  test("04 - Scenario 3 PUT: classPeriodName value for the bell schedule is 'Class Period 1'", () => {
+      let classPeriod1 = classPeriodsArray.some(item =>  item.classPeriodReference.classPeriodName.includes("Class Period 1"));
+  
+      console.log("classPeriod1", classPeriod1);
+  
+      expect(classPeriod1, `'Class Period 1' was not found in any of the class period references. Please take a look at the response. For additional information take a look at the console.'`).to.be.true;
+  });
+  
+  test("05 - Scenario 3 PUT: classPeriodName value for the bell schedule is 'Class Period 2'", () => {
+      let classPeriod2 = classPeriodsArray.some(item =>  item.classPeriodReference.classPeriodName.includes("Class Period 2"));
+  
+      console.log("classPeriod2", classPeriod2);
+  
+      expect(classPeriod2, `'Class Period 2' was not found in any of the class period references. Please take a look at the response. For additional information take a look at the console.'`).to.be.true;
+  });
+  
+  test("06 - Scenario 3 PUT: alternateDayName value for the bell schedule is 'A'", () => {
+      expect(response.alternateDayName, `'A' was not found in the alternateDayName property. Retrieved value is '${response.alternateDayName}'`).to.eql("A");
+  });
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

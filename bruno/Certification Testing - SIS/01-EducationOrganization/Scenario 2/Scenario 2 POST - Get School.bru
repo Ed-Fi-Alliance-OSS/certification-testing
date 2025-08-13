@@ -1,0 +1,127 @@
+meta {
+  name: Scenario 2 POST - Get School
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schools/{{s2SchoolId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Schools and getting the ID of the School
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/schools`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestSchool = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestSchoolDate = latestSchool ? latestSchool._lastModifiedDate : null;
+          console.log('latestSchoolDate', latestSchoolDate);
+  
+          bru.setEnvVar("s2SchoolId", latestSchool.id);
+          console.log('s2SchoolId', bru.getEnvVar("s2SchoolId"));
+      }
+  });
+  
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that School request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  expect(response.addresses).to.be.an('array');
+  let addressesArray = response.addresses;
+  
+  test("02 - Scenario 2 POST: addressTypeDescriptor value for the school is 'Physical'", () => {
+      let addressTypeDescriptorValue = addressesArray.some(item => item.addressTypeDescriptor.includes("Physical"));
+      expect(addressTypeDescriptorValue, `'Physical' was not found in the addressTypeDescriptor property. Retrieved value is: ${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}`).to.be.true;
+  });
+  
+  test("03 - Scenario 2 POST: city value for the school is 'Grand Oaks'", () => {
+      let cityValue = addressesArray.some(item => item.city.includes("Grand Oaks"));
+      expect(cityValue, `'Grand Oaks' was not found in the city property. Retrieved value is: ${JSON.stringify(addressesArray.map(item => item.city))}`).to.be.true;
+  });
+  
+  test("04 - Scenario 2 POST: postalCode value for the school is '73334'", () => {
+      let postalCodeValue = addressesArray.some(item => item.postalCode.includes("73334"));
+      expect(postalCodeValue, `'73334' was not found in the city property. Retrieved value is: ${JSON.stringify(addressesArray.map(item => item.postalCode))}`).to.be.true;
+  });
+  
+  test("05 - Scenario 2 POST: stateAbbreviationDescriptor value for the school is 'TX'", () => {
+      let stateAbbreviationDescriptorValue = addressesArray.some(item => item.stateAbbreviationDescriptor.includes("TX"));
+      expect(stateAbbreviationDescriptorValue, `'TX' was not found in the stateAbbreviationDescriptor property. Retrieved value is: ${JSON.stringify(addressesArray.map(item => item.postalCode))}`).to.be.true;
+  });
+  
+  test("06 - Scenario 2 POST: streetNumberName value for the school is '9993 West Blvd.'", () => {
+      let streetNumberNameValue = addressesArray.some(item => item.streetNumberName.includes("9993 West Blvd."));
+      expect(streetNumberNameValue, `'9993 West Blvd.' was not found in the streetNumberName property. Retrieved value is: ${JSON.stringify(addressesArray.map(item => item.streetNumberName))}`).to.be.true;
+  });
+  
+  let certEducationOrganizationCategories = [
+      { "educationOrganizationCategoryDescriptor": "uri://ed-fi.org/EducationOrganizationCategoryDescriptor#School" }
+  ];
+  let educationOrganizationCategoryDescriptorArray = response.educationOrganizationCategories;
+  
+  test("07 - Scenario 2 POST: educationOrganizationCategoryDescriptor value for the school are 'School'", () => {
+      let eocd = educationOrganizationCategoryDescriptorArray.some(item => item.educationOrganizationCategoryDescriptor.includes("School"));
+      expect(eocd, `'School' was not found in any of the educationOrganizationCategoryDescriptor values. The obtained values are: ${JSON.stringify(educationOrganizationCategoryDescriptorArray.map(item => item.educationOrganizationCategoryDescriptor))}`).to.be.true;
+      });
+  
+  let certGradeLevels = [
+      {"gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Sixth grade"},
+      {"gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Seventh grade"},
+      {"gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eighth grade"}
+  ];
+  let gradeLevelDescriptorArray = response.gradeLevels;
+  
+  test("08 - Scenario 2 POST: gradeLevelDescriptor value for the school are Sixth grade', 'Seventh grade', and 'Eighth grade'", () =>{
+      let gradeLevelDescriptors = gradeLevelDescriptorArray.map(item => item.gradeLevelDescriptor);
+      certGradeLevels.forEach(expected => {
+          let gradeLevelFound = gradeLevelDescriptors.includes(expected.gradeLevelDescriptor);
+          expect(gradeLevelFound, `'${expected.gradeLevelDescriptor}' were not completely found. These are the values found: ${JSON.stringify(gradeLevelDescriptors)}`).to.be.true;
+      });
+  });
+  
+  test("09 - Scenario 2 POST: localEducationAgencyId value for the school is '255901'", () =>{
+      expect(response, `'255901' was not found in the localEducationAgencyId property. Retrieved value is: '${response.localEducationAgencyReference}'`).to.have.nested.property('localEducationAgencyReference.localEducationAgencyId', 255901);
+  });
+  
+  test("10 - Scenario 2 POST: nameOfInstitution value for the school is 'Grand Oaks Middle School'", () =>{
+      expect(response.nameOfInstitution, `'Grand Oaks Middle School' was not found in the nameOfInstitution property. Retrieved value is: '${response.nameOfInstitution}'`).to.have.property('nameOfInstitution', "Grand Oaks Middle School");
+  });
+  
+  test("11 - Scenario 2 POST: schoolId value for the school is '255901444'", () =>{
+      expect(response.schoolId, `'255901444' was not found in the schoolId property. Retrieved value is: '${response.schoolId}'`).to.have.property('schoolId', 255901444);
+  });
+  
+  test("12 - Scenario 2 POST: shortNameOfInstitution value for the school is 'GOMS'", () =>{
+      expect(response.shortNameOfInstitution, `'GOMS' was not found in the shortNameOfInstitution property. Retrieved value is: '${response.shortNameOfInstitution}'`).to.have.property('shortNameOfInstitution',"GOMS");
+  });
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

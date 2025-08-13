@@ -1,0 +1,76 @@
+meta {
+  name: Scenario 2 POST - Get Staff School Association
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSchoolAssociations/{{s2staffSchoolAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Staff Section Association and getting the ID of the Staff Education Organization Assignment Association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/staffSchoolAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestBellSchedule = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestBellScheduleDate = latestBellSchedule ? latestBellSchedule._lastModifiedDate : null;
+          console.log('latestBellScheduleDate', latestBellScheduleDate);
+  
+          bru.setEnvVar("s2staffSchoolAssociationId", latestBellSchedule.id);
+          console.log('s2staffSchoolAssociationId', bru.getEnvVar("s2staffSchoolAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Staff School Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 2 POST: schoolId value for the Staff School Association is '255901001'", () => {
+      expect(response.schoolReference.schoolId, `'255901001' value was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(255901001);
+  });
+  
+  let staffUniqueIdSystemValue = bru.getEnvVar("staffUniqueIdSystemValue");
+  let statementStaffUniqueId;
+  
+  if (staffUniqueIdSystemValue === "" || staffUniqueIdSystemValue === null) {
+      statementStaffUnique = "207269";
+  } else {
+      statementStaffUniqueId = staffUniqueIdSystemValue;
+  }
+  
+  test("03 - Scenario 2 POST: staffUniqueId value for the Staff School Association is " + statementStaffUniqueId, () => {
+      expect(response.staffReference.staffUniqueId, `'${statementStaffUniqueId}' was not found in the staffUniqueId property. Retrieved value is '${response.staffReference.staffUniqueId}'`).to.eql(statementStaffUniqueId);
+  });
+  
+  test("04 - Scenario 2 POST: programAssignmentDescriptor value for the Staff School Association is 'Regular Education'", () => {
+      expect(response.programAssignmentDescriptor, `'Regular Education' was not flound in the programAssignmentDescriptor property. Retrieved value is '${response.programAssignmentDescriptor}'`).to.include("Regular Education");
+  });
+}
+
+settings {
+  encodeUrl: true
+}

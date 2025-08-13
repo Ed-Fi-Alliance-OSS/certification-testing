@@ -1,0 +1,78 @@
+meta {
+  name: Scenario 3 PUT - Get Location
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/locations/{{s3Location}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Locations and getting the ID of the location
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/locations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestLocation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestLocationDate = latestLocation ? latestLocation._lastModifiedDate : null;
+          console.log('latestLocationDate', latestLocationDate);
+  
+          bru.setEnvVar("s3Location", latestLocation.id);
+          console.log('s3Location', bru.getEnvVar("s3Location"));
+      }
+  });
+  
+}
+
+script:post-response {
+  test("01 - Scenario 3 POST: Test that Location request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let locationSystemValue = bru.getEnvVar("locationSystemValue");
+  let statementclassroomIdentificationCode = "";
+  
+  if (locationSystemValue === "" || locationSystemValue === null) {
+      statementclassroomIdentificationCode = "Class Period 1";
+  } else {
+      statementclassroomIdentificationCode = locationSystemValue;
+  }
+  
+  test("02 - Scenario 3 POST: classroomIdentificationCode value for the location is " + statementclassroomIdentificationCode, () =>{
+      expect(response.classroomIdentificationCode).to.eql(statementclassroomIdentificationCode, `'${statementclassroomIdentificationCode}' was not found in the classroomIdentificationCode property. Retrieved value is '${response.classroomIdentificationCode}'`);
+  });
+  
+  test("03 - Scenario 3 POST: schoolId value for the location is '255901107'", () =>{
+      expect(response.schoolReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(255901107);
+  });
+  
+  test("04 - Scenario 3 POST: maximumNumberOfSeats value for the course is '20'", () =>{
+      expect(response.maximumNumberOfSeats, `'20' was not found in the maximumNumberOfSeats property. Retrieved value is '${response.maximumNumberOfSeats}'`).to.eql(20);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

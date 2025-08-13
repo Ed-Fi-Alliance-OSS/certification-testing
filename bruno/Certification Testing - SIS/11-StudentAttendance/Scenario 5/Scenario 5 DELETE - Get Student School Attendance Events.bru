@@ -1,0 +1,29 @@
+meta {
+  name: Scenario 5 DELETE - Get Student School Attendance Events
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s5DeletedStudentSchoolAttendanceEventId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:post-response {
+  test("Record " + bru.getEnvVar("s5DeletedStudentSchoolAttendanceEventId") + " does not exist (404 Not Found)", function () {
+       expect(res.getStatus(), "Expected a 404 status code for non-existent record").to.eql(404);
+  });
+  
+  test("Verify empty response for non-existent record", function () {
+      expect(JSON.stringify(res.getBody()), "Expected the response body to be empty for a non-existent record").to.be.empty; // Verify the response body is empty    
+  });
+}
+
+settings {
+  encodeUrl: true
+}

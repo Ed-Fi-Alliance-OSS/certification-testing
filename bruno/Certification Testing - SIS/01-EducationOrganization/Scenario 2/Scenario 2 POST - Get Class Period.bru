@@ -1,0 +1,89 @@
+meta {
+  name: Scenario 2 POST - Get Class Period
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{s2ClassPeriodId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Class Periods and getting the ID of the class period
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/classPeriods`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestClassPeriod = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestClassPeriodDate = latestClassPeriod ? latestClassPeriod._lastModifiedDate : null;
+          console.log('latestClassPeriodDate', latestClassPeriodDate);
+  
+          bru.setEnvVar("s2ClassPeriodId", latestClassPeriod.id);
+          console.log('s2ClassPeriodId', bru.getEnvVar("s2ClassPeriodId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Class Period request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let classPeriodSystemValue = bru.getEnvVar("classPeriodSystemValueS2");
+  let statementClassPeriodName = "";
+  
+  if (classPeriodSystemValue === "" || classPeriodSystemValue === null) {
+      statementClassPeriodName = "Class Period 1";
+  } else {
+      statementClassPeriodName = classPeriodSystemValue;
+  }
+  
+  test("02 - Scenario 2 POST: classPeriodName value for the class period is " + statementClassPeriodName , () =>{
+      expect(response.classPeriodName).to.eql(statementClassPeriodName, `'${statementClassPeriodName}' was not found in the classPeriodName property. Retrieved value is '${response.classPeriodName}'`);
+  });
+  
+  test("03 - Scenario 2 POST: schoolId value for the class period is '255901001'", () =>{
+      expect(response, `'255901001' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.have.nested.property('schoolReference.schoolId');
+  });
+  
+  let meetingTimesArray = response.meetingTimes;
+  expect(meetingTimesArray).to.be.an("array").that.is.not.empty;
+  
+  
+  test("04 - Scenario 2 POST: startTime value for the class period is '08:15:00'", () =>{
+      meetingTimesArray.forEach((meeting) => {
+          expect(meeting.startTime).to.eql("08:15:00", `'08:15:00' was not found in the startTime property. Retrieved value is '${meeting.startTime}'`);
+      });
+  });
+  
+  test("05 - Scenario 2 POST: endTime value for the class period is '09:25:00'", () =>{
+      meetingTimesArray.forEach((meeting) => {
+          expect(meeting.endTime).to.eql("09:25:00", `'09:25:00' was not found in the endTime property. Retrieved value is '${meeting.endTime}'`);
+      });
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,134 @@
+meta {
+  name: Scenario 2 POST - Get Staff
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffs/{{s2StaffId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Staff and getting the ID of the staff
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/staffs`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestBellSchedule = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestBellScheduleDate = latestBellSchedule ? latestBellSchedule._lastModifiedDate : null;
+          console.log('latestBellScheduleDate', latestBellScheduleDate);
+  
+          bru.setEnvVar("s2StaffId", latestBellSchedule.id);
+          console.log('s2StaffId', bru.getEnvVar("s2StaffId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Staff request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let staffUniqueIdSystemValueS2 = bru.getEnvVar("staffUniqueIdSystemValueS2");
+  let statementStaffUniqueId;
+  
+  if (staffUniqueIdSystemValueS2 === "" || staffUniqueIdSystemValueS2 === null) {
+      statementStaffUniqueId = "207269";
+  } else {
+      statementStaffUniqueId = staffUniqueIdSystemValueS2;
+  }
+  
+  test("02 - Scenario 2 POST: staffUniqueId value for the staff is " + statementStaffUniqueId, () => {
+      expect(response.staffUniqueId, `'${statementStaffUniqueId}'  was not found in the staffUniqueId property. Retrieved value is '${response.staffUniqueId}'`).to.eql(statementStaffUniqueId);
+  });
+  
+  test("03 - Scenario 2 POST: firstName value for the staff is 'Jane'", () => {
+      expect(response.firstName, `'Jane' was not found in the staffUniqueId property. Retrieved value is '${response.firstName}'`).to.eql("Jane");
+  });
+  
+  test("04 - Scenario 2 POST: hispanicLatinoEthnicity value for the staff is 'true'", () => {
+      expect(response.hispanicLatinoEthnicity, `'hispanicLatinoEthnicity' is false. Retrieved value is '${response.hispanicLatinoEthnicity}'`).to.be.true;
+  });
+  
+  test("05 - Scenario 2 POST: lastSurname value for the staff is 'Smith'", () => {
+      expect(response.lastSurname, `'Smith' was not found in the lastSurname property . Retrieved value is '${response.lastSurname}'`).to.eql("Smith");
+  });
+  
+  test("06 - Scenario 2 POST: birthDate value for the staff is '1973-07-20'", () => {
+      expect(response.birthDate, `'1973-07-20' was not found in the birthDate property. Retrieved value is '${response.birthDate}'`).to.eql("1973-07-20");
+  });
+  
+  test("07 - Scenario 2 POST: highestCompletedLevelOfEducationDescriptor value for the staff is 'Doctorate'", () => {
+      expect(response.highestCompletedLevelOfEducationDescriptor, `'Doctorate' was not found in the highestCompletedLevelOfEducationDescriptor property. Retrieved value is '${response.highestCompletedLevelOfEducationDescriptor}'`).to.contain("Doctorate");
+  });
+  
+  test("08 - Scenario 2 POST: highlyQualifiedTeacher value for the staff is 'true'", () => {
+      expect(response.highlyQualifiedTeacher, `'highlyQualifiedTeacher' is false. Retrieved value is '${response.hispanicLatinoEthnicity}'`).to.be.true;
+  });
+  
+  test("09 - Scenario 2 POST: middleName value for the staff is 'Marcy'", () => {
+      expect(response.lastSurname, `'Marcy' was not found in the middleName property . Retrieved value is '${response.middleName}'`).to.eql("Marcy");
+  });
+  
+  test("10 - Scenario 2 POST: sexDescriptor value for the staff is 'Female'", () => {
+      expect(response.sexDescriptor, `'Female' was not found in the sexDescriptor property. Retrieved value is '${response.sexDescriptor}'`).to.contain("Female");
+  });
+  
+  let expectedElectronicMailAddress = "janesmith@edficert.org";
+  let expectedElectronicMailTypeDescriptor = "Work";
+  let electronicMailsArray = response.electronicMails;
+  expect(electronicMailsArray).to.be.an("array");
+  
+  test("11 - Scenario 2 POST: electronicMailAddress value for the staff is " + expectedElectronicMailAddress, ()=> {
+      let foundValidStaffElectronicMailAddress = false;
+      for (let i = 0; i < electronicMailsArray.length; i++) {
+          let electronicMailItem = electronicMailsArray[i];
+          let electronicMailAddress = electronicMailItem.electronicMailAddress;
+          if (electronicMailAddress === expectedElectronicMailAddress) {
+              foundValidStaffElectronicMailAddress = true;
+              break;
+          }
+      }
+      expect(foundValidStaffElectronicMailAddress, `'${expectedElectronicMailAddress}' was not found in any of the electronicMailAddress properties. Retrieved value(s) '${JSON.stringify(electronicMailsArray.map(item => item.electronicMailAddress))}'. Please take a look at the response for more information.`).to.be.true;
+  });
+  
+  test("12 - Scenario 2 POST: electronicMailTypeDescriptor value for the staff is " + expectedElectronicMailTypeDescriptor, () => {
+      let foundValidStaffElectronicMailTypeDescriptor = false;
+      for (let i = 0; i < electronicMailsArray.length; i++) {
+          let electronicMailItem = electronicMailsArray[i];
+          let electronicMailTypeDescriptor = electronicMailItem.electronicMailTypeDescriptor;
+          let electronicMailAddress = electronicMailItem.electronicMailAddress;
+          if (electronicMailAddress === expectedElectronicMailAddress && electronicMailTypeDescriptor.includes(expectedElectronicMailTypeDescriptor)) {
+              foundValidStaffElectronicMailTypeDescriptor = true;
+              break;
+          }
+      }
+      expect(foundValidStaffElectronicMailTypeDescriptor, `'${expectedElectronicMailTypeDescriptor}' was not found with '${expectedElectronicMailAddress}'. But found '${JSON.stringify(electronicMailsArray)}'. Please take a look at the response for more information`).to.be.true;
+  });
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

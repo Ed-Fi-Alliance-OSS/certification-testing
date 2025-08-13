@@ -1,0 +1,27 @@
+meta {
+  name: Scenario 02 - Get AssessmentItems
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/assessmentitems
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: null
+  ~totalCount: null
+  ~assessmentIdentifier: null
+  ~namespace: uri://ed-fi.org/Assessment/Assessment.xml
+  ~id: null
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+settings {
+  encodeUrl: true
+}

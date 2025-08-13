@@ -1,0 +1,45 @@
+meta {
+  name: Certification Testing - Assessment
+}
+
+auth {
+  mode: none
+}
+
+vars:pre-request {
+  studentUniqueIdValueSSEACollection: 
+}
+
+script:pre-request {
+  await bru.sendRequest(
+      'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js',
+      async function(err, res) {
+          if (!err && res) {
+              eval(res.data);
+          }
+      }
+  );
+  
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('baseUrl')}/oauth/token`,
+      method: 'POST',
+      headers: {
+          "Content-Type": "application/x-www-form-urlencoded" 
+      },
+      data: {
+          "grant_type": 'client_credentials',
+          "client_id": bru.getEnvVar('edFiClientId'),
+          "client_secret": bru.getEnvVar('edFiClientSecret')
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error when generating the token:', err); 
+      } else {
+          accessToken = res.data.access_token;
+          bru.setEnvVar('certToken',accessToken);
+          console.log("Access token is: ", accessToken);
+      }
+  });
+  
+  
+}

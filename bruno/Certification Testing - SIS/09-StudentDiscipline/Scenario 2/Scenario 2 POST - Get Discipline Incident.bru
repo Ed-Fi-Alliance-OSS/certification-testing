@@ -1,0 +1,113 @@
+meta {
+  name: Scenario 2 POST - Get Discipline Incident
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineIncidents/{{s2DisciplineIncidentId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Discipline Incident and getting the ID of the discipline incident
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/disciplineIncidents`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestDisciplineIncident = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestDisciplineIncidentDate = latestDisciplineIncident ? latestDisciplineIncident._lastModifiedDate : null;
+          console.log('latestDisciplineIncidentDate', latestDisciplineIncidentDate);
+  
+          bru.setEnvVar("s2DisciplineIncidentId", latestDisciplineIncident.id);
+          console.log('s2DisciplineIncidentId', bru.getEnvVar("s2DisciplineIncidentId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Discipline Incident request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedIncidentDate = `${currentYear}-09-25`;
+  let expectedIncidentIdentifier;
+  let expectedSchoolId = 255901001;
+  let expectedBehaviorDescriptor = "State Offense";
+  let expectedIncidentLocationDescriptor = "Library/media center";
+  let expectedReporterDescriptionDescriptor = "Staff";
+  let expectedReporterName = "Smith, Jane";
+  
+  test("02 - Scenario 2 POST: incidentDate value for Discipline Incident is " + expectedIncidentDate, () => {
+      expect(response.incidentDate, `'${expectedIncidentDate}' value was not found in the incidentDate property for Discipline Incident. Retrieved value is '${response.incidentDate}'.`).to.eql(expectedIncidentDate);
+  });
+  
+  let incidentIdentifierSystemValueS2 = bru.getEnvVar("incidentIdentifierSystemValueS2");
+  expectedIncidentIdentifier = "";
+  if (incidentIdentifierSystemValueS2 === "" || incidentIdentifierSystemValueS2 === null) {
+      expectedIncidentIdentifier = "2";
+  } else {
+      expectedIncidentIdentifier = incidentIdentifierSystemValueS2;
+  }
+  
+  test("03 - Scenario 2 POST: incidentIdentifier value for Discipline Incident is " + expectedIncidentIdentifier, () => {
+      expect(response.incidentIdentifier, `'${expectedIncidentIdentifier}' value was not found in the incidentIdentifier property for Discipline Incident. Retrieved value is '${response.incidentIdentifier}'.`).to.eql(expectedIncidentIdentifier);
+  });
+  
+  test("04 - Scenario 2 POST: schoolId value from schoolReference for Discipline Incident is " + expectedSchoolId, () => {
+      expect(response.schoolReference.schoolId, `'${expectedSchoolId}' value was not found in the schoolId property from schoolReference for Discipline Incident. Retrieved value is '${response.schoolReference.schoolId}'.`).to.eql(expectedSchoolId);
+  });
+  
+  let behaviorsArray = response.behaviors;
+  expect(behaviorsArray).to.be.an("array");
+  
+  test("05 - Scenario 2 POST: behaviorDescriptor value for Discipline Incident is " + expectedBehaviorDescriptor, () => {
+      let foundBehaviorDescriptor = false;
+      for (let i = 0; i < behaviorsArray.length; i++) { 
+          let behaviorDescriptorItem = behaviorsArray[i];
+          let behaviorDescriptor = behaviorDescriptorItem.behaviorDescriptor;
+          if (behaviorDescriptor.includes(expectedBehaviorDescriptor)) {
+              foundBehaviorDescriptor = true;
+          }
+      }
+      expect(foundBehaviorDescriptor, `'${expectedBehaviorDescriptor}' value was not found in the behaviorDescriptor property for Discipline Incident. Retrieved value is '${JSON.stringify(behaviorsArray)}'.`).to.be.true;
+  });
+  
+  test("06 - Scenario 2 POST: incidentLocationDescriptor value for Discipline Incident is " + expectedIncidentLocationDescriptor, () => {
+      expect(response.incidentLocationDescriptor, `'${expectedIncidentLocationDescriptor}' value was not found in the incidentLocationDescriptor property for Discipline Incident. Retrieved value is '${response.incidentLocationDescriptor}'.`).to.contain(expectedIncidentLocationDescriptor);
+  });
+  
+  test("07 - Scenario 2 POST: reporterDescriptionDescriptor value for Discipline Incident is " + expectedReporterDescriptionDescriptor, () => {
+      expect(response.reporterDescriptionDescriptor, `'${expectedReporterDescriptionDescriptor}' value was not found in the reporterDescriptionDescriptor property for Discipline Incident. Retrieved value is '${response.reporterDescriptionDescriptor}'.`).to.contain(expectedReporterDescriptionDescriptor);
+  });
+  
+  test("08 - Scenario 2 POST: reporterName value for Discipline Incident is " + expectedReporterName, () => {
+      expect(response.reporterName, `'${expectedReporterName}' value was not found in the reporterName property for Discipline Incident. Retrieved value is '${response.reporterName}'.`).to.eql(expectedReporterName);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

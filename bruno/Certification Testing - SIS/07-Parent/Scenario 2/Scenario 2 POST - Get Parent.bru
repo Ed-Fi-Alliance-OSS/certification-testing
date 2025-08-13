@@ -1,0 +1,201 @@
+meta {
+  name: Scenario 2 POST - Get Parent
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/parents/{{s2ParentId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Parents and getting the ID of the parent
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/parents`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestParent = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestParentDate = latestParent ? latestParent._lastModifiedDate : null;
+          console.log('latestParentDate', latestParentDate);
+  
+          bru.setEnvVar("s2ParentId", latestParent.id);
+          console.log('s2ParentId', bru.getEnvVar("s2ParentId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Parent request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let expectedParentUniqueId;
+  let expectedFirstName = "Alexis";
+  let expectedLastSurname = "Johnson";
+  let expectedSexDescriptor = "Female";
+  let expectedAddressTypeDescriptor = "Home";
+  let expectedCity = "Grand Bend";
+  let expectedPostalCode = 78834;
+  let expectedStateAbbreviationDescriptor = "TX";
+  let expectedStreetNumberName = "456 Cedar Street";
+  let expectedNameOfCounty = "WILLISTON";
+  let expectedElectronicMailAddress = "alexisjohnson@email.com	";
+  let expectedElectronicMailTypeDescriptor = "Home/Personal";
+  
+  let parentUniqueIdSystemValueS2 = bru.getEnvVar("parentUniqueIdSystemValueS2");
+  expectedParentUniqueId = "";
+  if (parentUniqueIdSystemValueS2 === "" || parentUniqueIdSystemValueS2 === null) {
+      expectedParentUniqueId = "444444";
+  } else {
+      expectedParentUniqueId = parentUniqueIdSystemValueS2;
+  }
+  
+  test("02 - Scenario 2 POST: parentUniqueId value for Parent is " + expectedParentUniqueId, () => {
+      expect(response.parentUniqueId, `'${expectedParentUniqueId}' was not found in the parentUniqueId property for the Parent. Retrieved value is '${response.parentUniqueId}.'`).to.eql(expectedParentUniqueId);
+  });
+  
+  test("03 - Scenario 2 POST: firstName value for Parent is " + expectedFirstName, () => {
+      expect(response.firstName, `'${expectedFirstName}' was not found in the firstName property for the Parent. Retrieved value is '${response.firstName}.'`).to.eql(expectedFirstName);
+  });
+  
+  test("04 - Scenario 2 POST: lastSurname value for Parent is " + expectedLastSurname, () => {
+      expect(response.lastSurname, `'${expectedLastSurname}' was not found in the lastSurname property for the Parent. Retrieved value is '${response.lastSurname}.'`).to.eql(expectedLastSurname);
+  });
+  
+  test("05 - Scenario 2 POST: lastSurname value for Parent is " + expectedSexDescriptor, () => {
+      expect(response.sexDescriptor, `'${expectedSexDescriptor}' was not found in the sexDescriptor property for the Parent. Retrieved value is '${response.sexDescriptor}.'`).to.include(expectedSexDescriptor);
+  });
+  
+  let addressesArray = response.addresses;
+  expect(addressesArray).to.be.an("array");
+  
+  test("06 - Scenario 2 POST: addressTypeDescriptor value for the Parent is " + expectedAddressTypeDescriptor, () => {
+      let foundAddressTypeDescriptor = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let addressTypeDescriptorItem = addressesArray[i];
+          let addressTypeDescriptor = addressTypeDescriptorItem.addressTypeDescriptor;
+          if (addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundAddressTypeDescriptor = true;
+          }
+      expect(foundAddressTypeDescriptor, `'${expectedAddressTypeDescriptor}' was not found in the addressTypeDescriptor property from addresses for Parents. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}' `).to.be.true ;   
+      }
+  });
+  
+  test("07 - Scenario 2 POST: city value for the Parent is " + expectedCity, () => {
+      let foundCity = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let cityItem = addressesArray[i];
+          let city = cityItem.city;
+          let addressTypeDescriptor = cityItem.addressTypeDescriptor;
+          if (city === expectedCity && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundCity = true;
+          }
+      expect(foundCity, `'${expectedCity}' with '${expectedAddressTypeDescriptor}' were not found in the city property from addresses for Parents. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.city))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  test("08 - Scenario 2 POST: postalCode value for the Parent is " + expectedPostalCode, () => {
+      let foundPostalCode = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let postalCodeItem = addressesArray[i];
+          let postalCode = postalCodeItem.postalCode;
+          let addressTypeDescriptor = postalCodeItem.addressTypeDescriptor;
+          if (postalCode === expectedPostalCode && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundPostalCode = true;
+          }
+      expect(foundPostalCode, `'${expectedPostalCode}' with '${expectedAddressTypeDescriptor}' were not found in the postalCode property from addresses for Parents. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.postalCode))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  test("09 - Scenario 2 POST: stateAbbreviationDescriptor value for the Parent is " + expectedStateAbbreviationDescriptor, () => {
+      let foundstateAbbreviationDescriptor = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let stateAbbreviationDescriptorItem = addressesArray[i];
+          let stateAbbreviationDescriptor = stateAbbreviationDescriptorItem.stateAbbreviationDescriptor;
+          let addressTypeDescriptor = stateAbbreviationDescriptorItem.addressTypeDescriptor;
+          if (stateAbbreviationDescriptor.includes(expectedStateAbbreviationDescriptor) && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundstateAbbreviationDescriptor = true;
+          }
+      expect(foundstateAbbreviationDescriptor, `'${expectedStateAbbreviationDescriptor}' with '${expectedAddressTypeDescriptor}' were not found in the stateAbbreviationDescriptor property from addresses for Parents. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.stateAbbreviationDescriptor))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  test("10 - Scenario 2 POST: streetNumberName value for the Parent is " + expectedStreetNumberName, () => {
+      let foundStreetNumberName = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let streetNumberNameItem = addressesArray[i];
+          let streetNumberName = streetNumberNameItem.streetNumberName;
+          let addressTypeDescriptor = streetNumberNameItem.addressTypeDescriptor;
+          if (streetNumberName === expectedStreetNumberName && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundStreetNumberName = true;
+          }
+      expect(foundStreetNumberName, `'${expectedStreetNumberName}' with '${expectedAddressTypeDescriptor}' were not found in the postalCode property from addresses for Parenst. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.streetNumberName))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  test("11 - Scenario 2 POST: nameOfCounty value for the Parent is " + expectedNameOfCounty, () => {
+      let foundNameOfCounty = false;
+      for (let i = 0; i < addressesArray.length; i++) {
+          let nameOfCountyItem = addressesArray[i];
+          let nameOfCounty = nameOfCountyItem.nameOfCounty;
+          let addressTypeDescriptor = nameOfCountyItem.addressTypeDescriptor;
+          if (nameOfCounty === expectedNameOfCounty && addressTypeDescriptor.includes(expectedAddressTypeDescriptor)) {
+              foundNameOfCounty = true;
+          }
+      expect(foundNameOfCounty, `'${expectedNameOfCounty}' with '${expectedAddressTypeDescriptor}' was not found in the nameOfCounty property from addresses for Parenst. Retrieved value is '${JSON.stringify(addressesArray.map(item => item.nameOfCounty))}' with '${JSON.stringify(addressesArray.map(item => item.addressTypeDescriptor))}'. Please take a look to the response for more information.`).to.be.true ;   
+      }
+  });
+  
+  let electronicMailsArray = response.electronicMails;
+  expect(electronicMailsArray).to.be.an("array");
+  
+  test("12 - Scenario 2 POST: electronicMailAddress value for the Parent is " + expectedElectronicMailAddress, () => {
+      let foundElectronicMailAddress = false;
+      for (let i = 0; i < electronicMailsArray.length; i++) {
+          let electronicMailAddressItem = electronicMailsArray[i];
+          let electronicMailAddress = electronicMailAddressItem.electronicMailAddress;
+          if (electronicMailAddress === expectedElectronicMailAddress) {
+              foundElectronicMailAddress = true;
+          }
+      expect(foundElectronicMailAddress, `'${expectedElectronicMailAddress}' was not found in the electronicMailAddress property from electronicMails for Parents. Retrieved value is '${JSON.stringify(electronicMailsArray.map(item => item.electronicMailAddress))}'.`).to.be.true;    
+      }
+  });
+  
+  test("13 - Scenario 2 POST: electronicMailTypeDescriptor value for the Parent is " + expectedElectronicMailTypeDescriptor, () => {
+      let foundElectronicMailTypeDescriptor = false;
+      for (let i = 0; i < electronicMailsArray.length; i++) {
+          let electronicMailTypeDescriptorItem = electronicMailsArray[i];
+          let electronicMailTypeDescriptor = electronicMailTypeDescriptorItem.electronicMailTypeDescriptor;
+          let electronicMailAddress = electronicMailTypeDescriptorItem.electronicMailAddress;
+          if (electronicMailTypeDescriptor.includes(expectedElectronicMailTypeDescriptor) && electronicMailAddress === expectedElectronicMailAddress) {
+              foundElectronicMailTypeDescriptor = true;
+          }
+      expect(foundElectronicMailTypeDescriptor, `'${expectedElectronicMailTypeDescriptor}' with '${expectedElectronicMailAddress}' was not found in the electronicMailTypeDescriptor property from electronicMails for Parents. Retrieved values are '${JSON.stringify(electronicMailsArray.map(item => item.electronicMailTypeDescriptor))}' with '${JSON.stringify(electronicMailsArray.map(item => item.electronicMailAddress))}'. Please take a look at the response for more information`).to.be.true;    
+      }
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

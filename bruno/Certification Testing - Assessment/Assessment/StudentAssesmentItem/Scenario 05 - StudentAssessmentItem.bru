@@ -1,0 +1,49 @@
+meta {
+  name: Scenario 05 - StudentAssessmentItem
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAssessments?limit=1
+  body: none
+  auth: bearer
+}
+
+params:query {
+  limit: 1
+  ~totalCount: null
+  ~assessmentIdentifier: null
+  ~namespace: null
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:post-response {
+  // Parse the JSON response
+  let response = res.getBody();
+  
+  // Initialize an array to store all items
+  let allItems = [];
+  
+  // Loop through each object in the array
+  response.forEach(obj => {
+      if (obj.items && Array.isArray(obj.items)) {
+          // Add the items array to allItems
+          allItems = allItems.concat(obj.items);
+      }
+  });
+  
+  // Log the extracted items to the Postman console
+  console.log("Extracted items:", allItems);
+  
+  // Save the items in an environment variable for further use (optional)
+  bru.setEnvVar("studentAssessmentItems", JSON.stringify(allItems));
+  
+}
+
+settings {
+  encodeUrl: true
+}

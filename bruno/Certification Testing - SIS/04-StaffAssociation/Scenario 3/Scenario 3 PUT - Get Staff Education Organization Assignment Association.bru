@@ -1,0 +1,89 @@
+meta {
+  name: Scenario 3 PUT - Get Staff Education Organization Assignment Association
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffEducationOrganizationAssignmentAssociations/{{s3staffEducationOrganizationAssignmentAssociationsId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Staff Education Organization Assignment Association and getting the ID of the Staff Education Organization Assignment Association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/staffEducationOrganizationAssignmentAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestBellSchedule = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestBellScheduleDate = latestBellSchedule ? latestBellSchedule._lastModifiedDate : null;
+          console.log('latestBellScheduleDate', latestBellScheduleDate);
+  
+          bru.setEnvVar("s3staffEducationOrganizationAssignmentAssociationsId", latestBellSchedule.id);
+          console.log('s3staffEducationOrganizationAssignmentAssociationsId', bru.getEnvVar("s3staffEducationOrganizationAssignmentAssociationsId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 3 PUT: Test that Staff Education Organization Assignment Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let staffUniqueIdSystemValueS3 = bru.getEnvVar("staffUniqueIdSystemValueS3");
+  let statementStaffUniqueId;
+  
+  if (staffUniqueIdSystemValueS3 === "" || staffUniqueIdSystemValueS3 === null) {
+      statementStaffUniqueId = "207220";
+  } else {
+      statementStaffUniqueId = staffUniqueIdSystemValueS3;
+  }
+  
+  test("02 - Scenario 3 PUT: staffUniqueId value for the Staff Education Organization Assignment Association is " + statementStaffUniqueId, () => {
+      expect(response.staffReference.staffUniqueId, `'${statementStaffUniqueId}' was not found in the staffUniqueId property. Retrieved value is '${response.staffReference.staffUniqueId}'`).to.eql(statementStaffUniqueId);
+  });
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedBeginDate = `${currentYear}-01-01`;
+  
+  test("03 - Scenario 3 PUT: beginDate value for the Staff Education Organization Assignment Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("04 - Scenario 3 PUT: educationOrganizationId value for the Staff Education Organization Assignment Association is '255901107'", () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'255901107' was not found in the educationOrganizationId property. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(255901107);
+  });
+  
+  test("05 - Scenario 3 PUT: staffClassificationDescriptor value for the Staff Education Organization Assignment Association is 'Teacher'", () => {
+      expect(response.staffClassificationDescriptor, `'Teacher' was not found in the staffClassificationDescriptor property. Retrieved value is '${response.staffClassificationDescriptor}'`).to.contain("Teacher");
+  });
+  
+  test("06 - Scenario 3 PUT: positionTitle value for the Staff Education Organization Assignment Association is '2nd Grade teacher'", () => {
+      expect(response.positionTitle, `'2nd Grade teacher' value was not found for the positionTitle`).to.eql("2nd Grade teacher");
+  });
+}
+
+settings {
+  encodeUrl: true
+}

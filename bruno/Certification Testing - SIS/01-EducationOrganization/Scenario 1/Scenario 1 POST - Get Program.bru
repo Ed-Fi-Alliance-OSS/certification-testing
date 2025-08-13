@@ -1,0 +1,92 @@
+meta {
+  name: Scenario 1 POST - Get Program
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/programs/{{s1ProgramID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+body:json {
+  {
+      "programName": "Grand Bend Bilingual 101",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Bilingual",
+      "educationOrganizationReference": {
+          "educationOrganizationId": 255901
+      },
+      "programId": "101"
+  }
+}
+
+script:pre-request {
+  // Making the GET request of Programs and getting the latest program ID
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/programs`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestProgram = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestProgramDate = latestProgram ? latestProgram._lastModifiedDate : null;
+          console.log('latestProgramDate', latestProgramDate);
+  
+          bru.setEnvVar("s1ProgramID", latestProgram.id);
+          console.log('s1ProgramID', bru.getEnvVar("s1ProgramID"));
+      }
+  });
+  
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Program request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 1 POST: educationOrganizationId value for the program is '255901'", () =>{
+      expect(response.educationOrganizationReference.educationOrganizationId, `'255901' was not found in any educationOrganizationId property. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(255901);
+  });
+  
+  let programSystemValue = bru.getEnvVar("programSystemValue");
+  let statementProgramID = "";
+  
+  if (programSystemValue === "" || programSystemValue === null) {
+      statementProgramID = "101";
+  } else {
+      statementProgramID = programSystemValue;
+  }
+  
+  test("03 - Scenario 1 POST: programId value for the program is " + statementProgramID , () =>{
+      expect(response.programId).to.eql(statementProgramID, `'${statementProgramID}' was not found in the programId property. Retrieved value is '${response.programId}'`);
+  });
+  
+  test("04 - Scenario 1 POST: programName value for the program is 'Grand Bend Bilingual 101'", () =>{
+      expect(response.programName, `'Grand Bend Bilingual 101' was not found in any programName property. Retrieved value is '${response.programName}'`).to.eql("Grand Bend Bilingual 101");
+  });
+  
+  test("05 - Scenario 1 POST: programTypeDescriptor value for the program is 'Bilingual'", () =>{
+      expect(response.programTypeDescriptor, `'Bilingual' was not found in any programTypeDescriptor property. Retrieved value is '${response.programTypeDescriptor}'`).to.contain("Bilingual");
+  });
+}
+
+settings {
+  encodeUrl: true
+}

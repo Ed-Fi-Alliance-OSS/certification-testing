@@ -1,0 +1,99 @@
+meta {
+  name: Scenario 2 POST - Get Course
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courses/{{s2CourseCode}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Courses and getting the ID of the Course
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/courses`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestCourse = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestCourseDate = latestCourse ? latestCourse._lastModifiedDate : null;
+          console.log('latestCourseDate', latestCourseDate);
+  
+          bru.setEnvVar("s2CourseCode", latestCourse.id);
+          console.log('s2CourseCode', bru.getEnvVar("s2CourseCode"));
+      }
+  });
+  
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that School request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 2 POST: academicSubjectDescriptor value for the course is 'Fine and Performing Arts'", () =>{
+      expect(response.academicSubjectDescriptor, `'Fine and Performing Arts' was not found in the academicSubjectDescriptor property. Retrieved value is: '${response.academicSubjectDescriptor}'`).to.contain("Fine and Performing Arts");
+  });
+  
+  test("03 - Scenario 2 POST: courseCode value for the course is 'ART 01'", () =>{
+      expect(response.courseCode, `'ART 01' was not found in the courseCode property. Retrieved value is '${response.courseCode}'`).to.eql("ART 01", );
+  });
+  
+  expect(response.identificationCodes).to.be.an('array');
+  let identificationCodesArray = response.identificationCodes;
+  
+  test("04 - Scenario 2 POST: courseIdentificationSystemDescriptor value for the course is 'LEA course code'", () => {
+      let courseIdentificationSystemDescriptorValue = identificationCodesArray.some(item => item.courseIdentificationSystemDescriptor.includes("LEA course code"));
+      expect(courseIdentificationSystemDescriptorValue, `'LEA course code' was not found in any courseIdentificationSystemDescriptor property. Retrieved value is '${JSON.stringify(identificationCodesArray.map(item => item.courseIdentificationSystemDescriptor))}'`).to.be.true;
+  });
+  
+  test("05 - Scenario 2 POST: identificationCode value for the course is 'ART 01'", () => {
+      let identificationCodeValue = identificationCodesArray.some(item => item.identificationCode.includes("ART 01"));
+      expect(identificationCodeValue, `'ART 01' was not found in any courseIdentificationSystemDescriptor property. Retrieved value is '${JSON.stringify(identificationCodesArray.map(item => item.identificationCode))}'`).to.be.true;
+  });
+  
+  expect(response.levelCharacteristics).to.be.an('array');
+  let levelCharacteristicsArray = response.levelCharacteristics;
+  
+  test("06 - Scenario 2 POST: courseLevelCharacteristicDescriptor value for the course is 'Core Subject'", () =>{
+      let courseLevelCharacteristicDescriptorValue = levelCharacteristicsArray.some(item => item.courseLevelCharacteristicDescriptor.includes("Core Subject"));
+      expect(courseLevelCharacteristicDescriptorValue, `'Core Subject' was not found in any courseLevelCharacteristicDescriptor property. Retrieved value is '${JSON.stringify(levelCharacteristicsArray.map(item => item.courseLevelCharacteristicDescriptor))}'`).to.be.true;
+      expect(courseLevelCharacteristicDescriptorValue).to.be.true;
+  });
+  
+  test("07 - Scenario 2 POST: courseTitle value for the course is 'Art, Grade 1'", () =>{
+      expect(response.courseTitle, `'Art, Grade 1' was not found in any courseTitle property. Retrieved value is '${response.courseTitle}'`).to.eql("Art, Grade 1");
+  });
+  
+  test("08 - Scenario 2 POST: educationOrganizationId value for the course is '255901'", () =>{
+      expect(response.educationOrganizationReference.educationOrganizationId, `'255901' was not found in any educationOrganizationId property. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(255901);
+  });
+  
+  test("09 - Scenario 2 POST: numberOfParts value for the course is '1'", () =>{
+      expect(response.numberOfParts,`'1' was not found in any numberOfParts property. Retrieved value is '${response.numberOfParts}'`).to.eql(1);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,100 @@
+meta {
+  name: Scenario 1 POST - Get Course Offering
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings/{{s1CourseOfferingId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Course Offerings and getting the ID of the course offering
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/courseOfferings`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestCourseOffering = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestCourseOfferingDate = latestCourseOffering ? latestCourseOffering._lastModifiedDate : null;
+          console.log('latestCourseOfferingDate', latestCourseOfferingDate);
+  
+          bru.setEnvVar("s1CourseOfferingId", latestCourseOffering.id);
+          console.log('s1CourseOfferingId', bru.getEnvVar("s1CourseOfferingId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Course Offering request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 1 POST: courseCode value for the course offering is 'ELA-01'", () => {
+      expect(response.courseReference.courseCode, `'ELA-01' was not found in the courseCode property. Retrieved value is '${response.courseReference.courseCode}'`).to.eql("ELA-01");
+  });
+  
+  test("03 - Scenario 1 POST: schoolId value from course reference for the course offering  is '255901107'", () =>{
+      expect(response.courseReference.educationOrganizationId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.courseReference.educationOrganizationId}'`).to.eql(255901107);
+  });
+  
+  test("04 - Scenario 1 POST: schoolId value from school reference for the course offering is '255901107'", () =>{
+      expect(response.schoolReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(255901107);
+  });
+  
+  test("05 - Scenario 1 POST: sessionName value of course reference for the course offering is '2016-2017 Fall Semester'", () =>{
+      expect(response.sessionReference.sessionName, `'2016-2017 Fall Semester' was not found in the sessionName property. Retrieved value is '${response.sessionReference.sessionName}'`).to.eql("2016-2017 Fall Semester");
+  });
+  
+  test("06 - Scenario 1 POST: schoolId value from session reference for the course offering is '255901107'", () =>{
+      expect(response.sessionReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.sessionReference.schoolId}'`).to.eql(255901107);
+  });
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  test("07 - Scenario 1 POST: schoolYear value from session reference for the course offering is " + currentYear, () =>{
+      expect(response.sessionReference.schoolYear, `'${currentYear}' was not found in the schoolYear property. Retrieved value is '${response.sessionReference.schoolYear}'`).to.eql(currentYear);
+  });
+  
+  test("08 - Scenario 1 POST: localCourseTitle value from session reference for the course offering is 'English Language Arts GB Elementary'", () =>{
+      expect(response.localCourseTitle, `'English Language Arts GB Elementary' was not found in the localCourseTitle property. Retrieved value is '${response.localCourseTitle}'`).to.eql("English Language Arts GB Elementary");
+  });
+  
+  let localCourseCodeSystemValue = bru.getEnvVar("localCourseCodeSystemValue");
+  let statementLocalCourseCode;
+  
+  if (localCourseCodeSystemValue === "" || localCourseCodeSystemValue === null) {
+      statementLocalCourseCode = "ELA-01";
+  } else {
+      statementLocalCourseCode = localCourseCodeSystemValue;
+  }
+  console.log("statementLocalCourseCode", statementLocalCourseCode);
+  
+  test("09 - Scenario 1 POST: localCourseCode value from session reference for the course offering is " + statementLocalCourseCode, () =>{
+      expect(response.localCourseTitle, `'${statementLocalCourseCode}' was not found in the localCourseCode property. Retrieved value is '${response.localCourseTitle}'`).to.eql(statementLocalCourseCode);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

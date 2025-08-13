@@ -1,0 +1,126 @@
+meta {
+  name: Scenario 2 POST - Get Student Section Association
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAssociations/{{s2StudentSectionAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Section Association and getting the ID of the student section association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentSectionAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentSectionAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentSectionAssociationDate = latestStudentSectionAssociation ? latestStudentSectionAssociation._lastModifiedDate : null;
+          console.log('latestStudentSectionAssociationDate', latestStudentSectionAssociationDate);
+  
+          bru.setEnvVar("s2StudentSectionAssociationId", latestStudentSectionAssociation.id);
+          console.log('s2StudentSectionAssociationId', bru.getEnvVar("s2StudentSectionAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Student Section Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedLocalCourseCode;
+  let expectedSchoolId = 255901001;
+  let expectedSchoolYear = currentYear;
+  let expectedSectionIdentifier;
+  let expectedSessionName = "2016-2017 Fall Semester";
+  let expectedStudentUniqueId = "222222";
+  let expectedBeginDate = `${currentYear}-08-31`;
+  let expectedEndDate = `${currentYear}-12-16`;
+  let expectedHomeroomIndicator = true;
+  
+  let localCourseCodeSystemValue = bru.getEnvVar("localCourseCodeSystemValue");
+  let statementLocalCourseCode = "";
+  
+  if (localCourseCodeSystemValue === "" || localCourseCodeSystemValue === null) {
+      statementLocalCourseCode = "ALG-2";
+  } else {
+      statementLocalCourseCode = localCourseCodeSystemValue;
+  }
+  
+  expectedLocalCourseCode = statementLocalCourseCode;
+  
+  test("02 - Scenario 2 POST: localCourseCode value from sectionReference for Student Section Association is " + expectedLocalCourseCode, () => {
+      expect(response.sectionReference.localCourseCode, `'${expectedLocalCourseCode}' was not found in the localCourseCode property from sectionReference for Student Section Association. Retrieved value is '${response.sectionReference.localCourseCode}'`).to.eql(expectedLocalCourseCode);
+  });
+  
+  test("03 - Scenario 2 POST: schoolId value from sectionReference for Student Section Association is " + expectedSchoolId, () => {
+      expect(response.sectionReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from sectionReference for Student Section Association. Retrieved value is '${response.sectionReference.schoolId}'`).to.eql(expectedSchoolId);
+  });
+  
+  test("04 - Scenario 2 POST: schoolYear value from sectionReference for Student Section Association is " + expectedSchoolYear, () => {
+      expect(response.sectionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from sectionReference for Student Section Association. Retrieved value is '${response.sectionReference.schoolYear}'`).to.eq(expectedSchoolYear);
+  });
+  
+  let sectionIdentifierSystemValue = bru.getEnvVar("sectionIdentifierSystemValue");
+  let statementSectionIdentifier = "";
+  
+  if (sectionIdentifierSystemValue === "" || sectionIdentifierSystemValue === null) {
+      statementSectionIdentifier = "ALG12017RM901";
+  } else {
+      statementSectionIdentifier = sectionIdentifierSystemValue;
+  }
+  
+  expectedSectionIdentifier = statementSectionIdentifier;
+  
+  test("05 - Scenario 2 POST: sectionIdentifier value from sectionReference for Student Section Association is " + expectedSectionIdentifier, () => {
+      expect(response.sectionReference.sectionIdentifier, `'${expectedSectionIdentifier}' was not found in the sectionIdentifier property from sectionReference for Student Section Association. Retrieved value is '${response.sectionReference.sectionIdentifier}'`).to.eql(expectedSectionIdentifier)
+  });
+  
+  test("06 - Scenario 2 POST: sessionName value from sectionReference for Student Section Association is " + expectedSessionName, () => {
+      expect(response.sectionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName property from sectionReference for Student Section Association. Retrieved value is '${response.sectionReference.sessionName}'`).to.eql(expectedSessionName);
+  });
+  
+  test("07 - Scenario 2 POST: studentUniqueId value from studentReference for Student Section Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Section Association. Retrieved value is '${response.sectionReference.sessionName}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("08 - Scenario 2 POST: beginDate value for Student Section Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Section Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("09 - Scenario 2 POST: endDate value for Student Section Association is " + expectedEndDate, () => {
+      expect(response.endDate, `'${expectedEndDate}' was not found in the endDate property for Student Section Association. Retrieved value is '${response.endDate}'`).to.eql(expectedEndDate);
+  });
+  
+  test("10 - Scenario 2 POST: homeroomIndicator value for the Student Section Association is " + expectedHomeroomIndicator, () => {
+      expect(response.homeroomIndicator, `'${expectedHomeroomIndicator}' was not found in the homeroomIndicator property for Student Section Association. Retrieved value is '${response.homeroomIndicator}'`).to.be.true;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,42 @@
+meta {
+  name: Scenario 06 - Get StudentObjectiveAssessment
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAssessments?limit=1
+  body: none
+  auth: bearer
+}
+
+params:query {
+  limit: 1
+  ~totalCount: 
+  ~assessmentIdentifier: 
+  ~namespace: 
+  ~id: 
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:post-response {
+  // Parse the response body
+  let jsonResponse = res.getBody();
+  
+  // Access studentObjectiveAssessments
+  let studentObjectiveAssessments = jsonResponse[0]?.studentObjectiveAssessments;
+  
+  // Log the studentObjectiveAssessments
+  console.log(studentObjectiveAssessments);
+  test("Student Objective Assessments is retrieved", () => {
+      expect(studentObjectiveAssessments).to.be.an("array");    
+      bru.setEnvVar("studentObjectiveAssessmentsArray", JSON.stringify(studentObjectiveAssessments));
+  });
+}
+
+settings {
+  encodeUrl: true
+}

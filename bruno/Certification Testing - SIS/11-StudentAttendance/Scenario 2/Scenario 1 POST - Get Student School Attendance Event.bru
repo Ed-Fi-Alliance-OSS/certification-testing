@@ -1,0 +1,94 @@
+meta {
+  name: Scenario 1 POST - Get Student School Attendance Event
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{s2StudentSchoolAttendanceEventId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student School Attendance Events and getting the ID of the student school attendance event
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentSchoolAttendanceEvents`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentSchoolAttendanceEvent = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentSchoolAttendanceEventDate = latestStudentSchoolAttendanceEvent ? latestStudentSchoolAttendanceEvent._lastModifiedDate : null;
+          console.log('latestStudentSchoolAttendanceEventDate', latestStudentSchoolAttendanceEventDate);
+  
+          bru.setEnvVar("s2StudentSchoolAttendanceEventId", latestStudentSchoolAttendanceEvent.id);
+          console.log('s2StudentSchoolAttendanceEventId', bru.getEnvVar("s2StudentSchoolAttendanceEventId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Student School Attendance Event request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedSchoolId = 255901001;
+  let expectedSchoolIdSR = 255901001;
+  let expectedSchoolYear = `${currentYear}`;
+  let expectedSessionName = "2016-2017 Fall Semester";
+  let expectedStudentUniqueId = "222222";
+  let expectedAttendanceEventCategoryDescriptor = "Unexcused Absence";
+  let expectedEventDate = `${currentYear}-10-05`;
+  
+  test("02 - Scenario 2 POST: schoolId value from schoolReference for Student School Attendance Event is " + expectedSchoolId, () => {
+      expect(response.schoolReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from schoolReference for Student School Attendance Event. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(expectedSchoolId);
+  });
+  
+  test("03 - Scenario 2 POST: schoolId value from sessionReference for Student School Attendance Event is " + expectedSchoolIdSR, () => {
+      expect(response.sessionReference.schoolId, `'${expectedSchoolIdSR}' was not found in the schoolId property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolId}'`).to.eql(expectedSchoolIdSR);
+  });
+  
+  test("04 - Scenario 2 POST: schoolYear value from sessionReference for Student School Attendance Event is " + expectedSchoolYear, () => {
+      expect(response.sessionReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.schoolYear}'`).to.eql(expectedSchoolYear);
+  });
+  
+  test("05 - Scenario 2 POST: sessionName value from sessionReference for Student School Attendance Event is " + expectedSessionName, () => {
+      expect(response.sessionReference.sessionName, `'${expectedSessionName}' was not found in the sessionName property from sessionReference for Student School Attendance Event. Retrieved value is '${response.sessionReference.sessionName}'`).to.eql(expectedSessionName);
+  });
+  
+  test("06 - Scenario 2 POST: studentUniqueId value from studentReference for Student School Attendance Event is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student School Attendance Event. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("07 - Scenario 2 POST: attendanceEventCategoryDescriptor value for Student School Attendance Event is " + expectedAttendanceEventCategoryDescriptor, () => {
+      expect(response.attendanceEventCategoryDescriptor, `'${expectedAttendanceEventCategoryDescriptor}' was not found in the attendanceEventCategoryDescriptor property for Student School Attendance Event. Retrieved value is '${response.attendanceEventCategoryDescriptor}'`).to.include(expectedAttendanceEventCategoryDescriptor);
+  });
+  
+  test("08 - Scenario 2 POST: eventDate value for Student School Attendance Event is " + expectedEventDate, () => {
+      expect(response.eventDate, `'${expectedEventDate}' was not found in the eventDate property for Student School Attendance Event. Retrieved value is '${response.eventDate}'`).to.eql(expectedEventDate);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

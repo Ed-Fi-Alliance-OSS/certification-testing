@@ -1,0 +1,85 @@
+meta {
+  name: Scenario 2 POST - Get Student Discipline Incident Behavior Association
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentDisciplineIncidentBehaviorAssociations/{{s2StudentDisciplineIncidentBehaviorAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Discipline Incident Behavior Association and getting the ID of student discipline incident behavior association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentDisciplineIncidentBehaviorAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentDisciplineIncidentBehaviorAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentDisciplineIncidentBehaviorAssociationDate = latestStudentDisciplineIncidentBehaviorAssociation ? latestStudentDisciplineIncidentBehaviorAssociation._lastModifiedDate : null;
+          console.log('latestStudentDisciplineIncidentBehaviorAssociationDate', latestStudentDisciplineIncidentBehaviorAssociationDate);
+  
+          bru.setEnvVar("s2StudentDisciplineIncidentBehaviorAssociationId", latestStudentDisciplineIncidentBehaviorAssociation.id);
+          console.log('s2StudentDisciplineIncidentBehaviorAssociationId', bru.getEnvVar("s2StudentDisciplineIncidentBehaviorAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Student Discipline Incident Behavior Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let expectedIncidentIdentifier;
+  let expectedSchoolId = 255901001;
+  let expectedBehaviorDescriptor = "State Offense";
+  let expectedStudentParticipationCodeDescriptor = "Perpetrator"; // studentParticipationCodeDescriptor attibute is not present in the endpoint
+  let expectedStudentUniqueId = "222222";
+  
+  let incidentIdentifierSystemValueS2 = bru.getEnvVar("incidentIdentifierSystemValueS2");
+  
+  if (incidentIdentifierSystemValueS2 === "" || incidentIdentifierSystemValueS2 === null) {
+      expectedIncidentIdentifier = "2";
+  } else {
+      expectedIncidentIdentifier = incidentIdentifierSystemValueS2;
+  }
+  
+  test("02 - Scenario 1 POST: incidentIdentifier value from disciplineIncidentReference for Student Discipline Incident Behavior Association is " + expectedIncidentIdentifier, () => {
+      expect(response.disciplineIncidentReference.incidentIdentifier, `'${expectedIncidentIdentifier}' was not found in the incidentIdentifier property from disciplineIncidentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.disciplineIncidentReference.incidentIdentifier}'`).to.eql(expectedIncidentIdentifier);
+  });
+  
+  test("03 - Scenario 1 POST: schoolId value from disciplineIncidentReference for Student Discipline Incident Behavior Association is " + expectedSchoolId, () => {
+      expect(response.disciplineIncidentReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from disciplineIncidentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.disciplineIncidentReference.schoolId}'`).to.eql(expectedSchoolId);
+  });
+  
+  test("04 - Scenario 1 POST: behaviorDescriptor value for Student Discipline Incident Behavior Association is " + expectedBehaviorDescriptor, () => {
+      expect(response.behaviorDescriptor, `'${expectedBehaviorDescriptor}' was not found in the behaviorDescriptor property for Student Discipline Incident Behavior Association. Retrieved value is '${response.behaviorDescriptor}'`).to.include(expectedBehaviorDescriptor);
+  });
+  
+  test("05 - Scenario 1 POST: studentUniqueId value from studentReference for Student Discipline Incident Behavior Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Discipline Incident Behavior Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

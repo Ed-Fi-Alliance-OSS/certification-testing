@@ -1,0 +1,102 @@
+meta {
+  name: Scenario 3 PUT - Get Student
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/students/{{s3StudentId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Students and getting the ID of the student
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/students`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudent = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentDate = latestStudent ? latestStudent._lastModifiedDate : null;
+          console.log('latestStudentDate', latestStudentDate);
+  
+          bru.setEnvVar("s3StudentId", latestStudent.id);
+          console.log('s3StudentId', bru.getEnvVar("s3StudentId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 3 PUT: Test that Student request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let expectedStudentUniqueId = "111111";
+  let expectedBirthCity = "Grand Bend";
+  let expectedBirthCountryDescriptor = "AG";
+  let expectedBirthDate = "2009-01-02";
+  let expectedFirstName = "Austin";
+  let expectedMiddleName = "Samuel";
+  let expectedLastSurname = "Jones";
+  let expectedGenerationCodeSuffix = "JR";
+  let expectedPersonalTitlePrefix = "Mr.";
+  
+  test("02 - Scenario 3 PUT: studentUniqueId value for the Student is " + expectedStudentUniqueId, () => {
+      expect(response.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property. Retrieved value is '${response.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("03 - Scenario 3 PUT: birthCity value for the Student is " + expectedBirthCity, () => {
+      expect(response.birthCity, `'${expectedBirthCity}' was not found in the birthCity property. Retrieved value is '${response.birthCity}'`).to.eql(expectedBirthCity);
+  });
+  
+  test("04 - Scenario 3 PUT: birthCountryDescriptor value for the Student is " + expectedBirthCountryDescriptor, () => {
+      expect(response.birthCountryDescriptor, `${expectedBirthCountryDescriptor}' was not found in the birthCountryDescriptor property. Retrieved value is '${response.birthCountryDescriptor}'`).to.contain(expectedBirthCountryDescriptor);
+  });
+  
+  test("05 - Scenario 3 PUT: birthDate value for the Student is " + expectedBirthDate, () => {
+      expect(response.birthDate, `${expectedBirthDate}' was not found in the birthDate property. Retrieved value is '${response.birthDate}'`).to.eql(expectedBirthDate);
+  });
+  
+  test("06 - Scenario 3 PUT: firstName value for the Student is " + expectedFirstName, () => {
+      expect(response.firstName, `${expectedFirstName}' was not found in the firstName property. Retrieved value is '${response.firstName}'`).to.eql(expectedFirstName);
+  });
+  
+  test("07 - Scenario 3 PUT: middleName value for the Student is " + expectedMiddleName, () => {
+      expect(response.middleName, `${expectedMiddleName}' was not found in the middleName property. Retrieved value is '${response.middleName}'`).to.eql(expectedMiddleName);
+  });
+  
+  test("08 - Scenario 3 PUT: lastSurname value for the Student is " + expectedLastSurname, () => {
+      expect(response.lastSurname, `${expectedLastSurname}' was not found in the lastSurname property. Retrieved value is '${response.lastSurname}'`).to.eql(expectedLastSurname);
+  });
+  
+  test("09 - Scenario 3 PUT: generationCodeSuffix value for the Student is " + expectedGenerationCodeSuffix, () => {
+      expect(response.generationCodeSuffix, `${expectedGenerationCodeSuffix}' was not found in the generationCodeSuffix property. Retrieved value is '${response.generationCodeSuffix}'`).to.eql(expectedGenerationCodeSuffix);
+  });
+  
+  test("10 - Scenario 3 PUT: personalTitlePrefix value for the Student is " + expectedPersonalTitlePrefix, () => {
+      expect(response.personalTitlePrefix, `${expectedPersonalTitlePrefix}' was not found in the personalTitlePrefix property. Retrieved value is '${response.personalTitlePrefix}'`).to.eql(expectedPersonalTitlePrefix);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

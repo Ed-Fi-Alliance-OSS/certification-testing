@@ -1,0 +1,139 @@
+meta {
+  name: Scenario 1 POST - Get Student Neglected Or Delinquent Program Association
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentNeglectedOrDelinquentProgramAssociations/{{s1StudentNeglectedOrDelinquentProgramAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Neglected or Delinquent Program Association and getting the ID of the student neglected or delinquent program association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentNeglectedOrDelinquentProgramAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentNeglectedOrDelinquentProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentNeglectedOrDelinquentProgramAssociationDate = latestStudentNeglectedOrDelinquentProgramAssociation ? latestStudentNeglectedOrDelinquentProgramAssociation._lastModifiedDate : null;
+          console.log('latestStudentNeglectedOrDelinquentProgramAssociationDate', latestStudentNeglectedOrDelinquentProgramAssociationDate);
+  
+          bru.setEnvVar("s1StudentNeglectedOrDelinquentProgramAssociationId", latestStudentNeglectedOrDelinquentProgramAssociation.id);
+          console.log('s1StudentNeglectedOrDelinquentProgramAssociationId', bru.getEnvVar("s1StudentNeglectedOrDelinquentProgramAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Student Neglected Or Delinquent Program Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedBeginDate = `${currentYear}-08-23`;
+  let expectedEducationOrganizationId = 255901;
+  let expectedProgramName = "Neglected and Delinquent Program";
+  let expectedProgramTypeDescriptor = "Neglected and Delinquent Program";
+  let expectedEducationOrganizationIdPR = 255901;
+  let expectedStudentUniqueId = "222222";
+  let expectedNeglectedOrDelinquentProgramDescriptor = "Neglected Programs";
+  let expectedNeglectedOrDelinquentProgramServiceDescriptor = "Mentoring Programs";
+  let expectedServiceBeginDate = `${currentYear}-08-23`;
+  let expectedPrimaryIndicator = true;
+  
+  test("02 - Scenario 1 POST: beginDate value for Student Neglected Or Delinquent Program Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student Neglected Or Delinquent Program Association is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("04 - Scenario 1 POST: programName value from programReference for Student Neglected Or Delinquent Program Association is " + expectedProgramName, () => {
+      expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);
+  });
+  
+  test("05 - Scenario 1 POST: programTypeDescriptor value from programReference for Student Neglected Or Delinquent Program Association is " + expectedProgramTypeDescriptor, () => {
+      expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);
+  });
+  
+  test("06 - Scenario 1 POST: educationOrganizationId value from programReference for Student Neglected Or Delinquent Program Association is " + expectedEducationOrganizationIdPR, () => {
+      expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);
+  });
+  
+  test("07 - Scenario 1 POST: studentUniqueId value from studentReference for Student Neglected Or Delinquent Program Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("08 - Scenario 1 POST: neglectedOrDelinquentProgramDescriptor value for Student Neglected Or Delinquent Program Association is " + expectedNeglectedOrDelinquentProgramDescriptor, () => {
+      expect(response.neglectedOrDelinquentProgramDescriptor, `'${expectedNeglectedOrDelinquentProgramDescriptor}' was not found in the neglectedOrDelinquentProgramDescriptor property for Student Neglected Or Delinquent Program Association. Retrieved value is '${response.neglectedOrDelinquentProgramDescriptor}'`).to.include(expectedNeglectedOrDelinquentProgramDescriptor);
+  });
+  
+  let neglectedOrDelinquentProgramServicesArray = response.neglectedOrDelinquentProgramServices;
+  expect(neglectedOrDelinquentProgramServicesArray).to.be.an("Array");
+  
+  test("09 - Scenario 1 POST: neglectedOrDelinquentProgramServiceDescriptor value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is " + expectedNeglectedOrDelinquentProgramServiceDescriptor, () => {
+      let foundNeglectedOrDelinquentProgramServiceDescriptor = false;
+      for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {
+          let neglectedOrDelinquentProgramServiceDescriptorItem = neglectedOrDelinquentProgramServicesArray[i];
+          let neglectedOrDelinquentProgramServiceDescriptor = neglectedOrDelinquentProgramServiceDescriptorItem.neglectedOrDelinquentProgramServiceDescriptor;
+          if (neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { 
+              foundNeglectedOrDelinquentProgramServiceDescriptor = true;
+          }
+      }
+      expect(foundNeglectedOrDelinquentProgramServiceDescriptor, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' was not found in the neglectedOrDelinquentProgramServiceDescriptor property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;
+  });
+  
+  test("10 - Scenario 1 POST: serviceBeginDate value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is " + expectedServiceBeginDate, () => {
+      let foundServiceBeginDate = false;
+      for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {
+          let serviceBeginDateItem = neglectedOrDelinquentProgramServicesArray[i];
+          let serviceBeginDate = serviceBeginDateItem.serviceBeginDate;
+          let neglectedOrDelinquentProgramServiceDescriptor = serviceBeginDateItem.neglectedOrDelinquentProgramServiceDescriptor;
+          if (serviceBeginDate === expectedServiceBeginDate && neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { 
+              foundServiceBeginDate = true;
+          }
+      }
+      expect(foundServiceBeginDate, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' neglectedOrDelinquentProgramServiceDescriptor with '${expectedServiceBeginDate}' was not found in the serviceBeginDate property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.serviceBeginDate))}' with '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;
+  });
+  
+  test("11 - Scenario 1 POST: primaryIndicator value from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association is " + expectedPrimaryIndicator, () => {
+      let foundPrimaryIndicator = false;
+      for (let i = 0; i < neglectedOrDelinquentProgramServicesArray.length; i++) {
+          let foundPrimaryIndicatorItem = neglectedOrDelinquentProgramServicesArray[i];
+          let primaryIndicator = foundPrimaryIndicatorItem.primaryIndicator;
+          let neglectedOrDelinquentProgramServiceDescriptor = foundPrimaryIndicatorItem.neglectedOrDelinquentProgramServiceDescriptor;
+          if (primaryIndicator === expectedPrimaryIndicator && neglectedOrDelinquentProgramServiceDescriptor.includes(expectedNeglectedOrDelinquentProgramServiceDescriptor)) { 
+              foundPrimaryIndicator = true;
+          }
+      }
+      expect(foundPrimaryIndicator, `'${expectedNeglectedOrDelinquentProgramServiceDescriptor}' neglectedOrDelinquentProgramServiceDescriptor with '${expectedPrimaryIndicator}' was not found in the primaryIndicator property from neglectedOrDelinquentProgramServices for Student Neglected Or Delinquent Program Association. Retrieved value is '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.primaryIndicator))}' with '${JSON.stringify(neglectedOrDelinquentProgramServicesArray.map(item => item.neglectedOrDelinquentProgramServiceDescriptor))}'`).to.be.true;
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

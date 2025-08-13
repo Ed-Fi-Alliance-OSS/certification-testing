@@ -1,0 +1,89 @@
+meta {
+  name: Scenario 2 POST - Get Student Parent Association
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentParentAssociations/{{s2StudentParentAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Parent Association and getting the ID of the student parent association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentParentAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentParentAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentParentAssociationsDate = latestStudentParentAssociation ? latestStudentParentAssociation._lastModifiedDate : null;
+          console.log('latestStudentParentAssociationsDate', latestStudentParentAssociationsDate);
+  
+          bru.setEnvVar("s2StudentParentAssociationId", latestStudentParentAssociation.id);
+          console.log('s2StudentParentAssociationId', bru.getEnvVar("s2StudentParentAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Student Parent Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let expectedParentUniqueId;
+  let expectedStudentUniqueId = "222222";
+  let expectedEmergencyContactStatus = true;
+  let expectedPrimaryContactStatus = true;
+  let expectedRelationDescriptor = "Mother";
+  
+  let parentUniqueIdSystemValueS2 = bru.getEnvVar("parentUniqueIdSystemValueS2");
+  expectedParentUniqueId = "";
+  if (parentUniqueIdSystemValueS2 === "" || parentUniqueIdSystemValueS2 === null) {
+      expectedParentUniqueId = "444444";
+  } else {
+      expectedParentUniqueId = parentUniqueIdSystemValueS2;
+  }
+  
+  test("02 - Scenario 2 POST: parentUniqueId value for Student Parent Association is " + expectedParentUniqueId, () => {
+      expect(response.parentReference.parentUniqueId, `'${expectedParentUniqueId}' was not found in the parentUniqueId property from parentReference for Student Parent Association. Retrieved value is '${response.parentReference.parentUniqueId}.'`).to.eql(expectedParentUniqueId);
+  });
+  
+  test("03 - Scenario 2 POST: studentUniqueId value for Student Parent Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Parent Association. Retrieved value is '${response.studentReference.studentUniqueId}.'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("04 - Scenario 2 POST: emergencyContactStatus value for Student Parent Association is " + expectedEmergencyContactStatus, () => {
+      expect(response.emergencyContactStatus, `'${expectedEmergencyContactStatus}' was not found in the emergencyContactStatus property for Student Parent Association. Retrieved value is '${response.emergencyContactStatus}.'`).to.be.true;
+  });
+  
+  test("05 - Scenario 2 POST: primaryContactStatus value for Student Parent Association is " + expectedPrimaryContactStatus, () => {
+      expect(response.primaryContactStatus, `'${expectedPrimaryContactStatus}' was not found in the primaryContactStatus property for Student Parent Association. Retrieved value is '${response.primaryContactStatus}.'`).to.be.true;
+  });
+  
+  test("06 - Scenario 2 POST: relationDescriptor value for Student Parent Association is " + expectedRelationDescriptor, () => {
+      expect(response.relationDescriptor, `'${expectedRelationDescriptor}' was not found in the relationDescriptor property for Student Parent Association. Retrieved value is '${response.relationDescriptor}.'`).to.contain(expectedRelationDescriptor);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

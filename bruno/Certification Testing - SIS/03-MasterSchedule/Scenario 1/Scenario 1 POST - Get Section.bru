@@ -1,0 +1,168 @@
+meta {
+  name: Scenario 1 POST - Get Section
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sections/{{s1SectionId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Sections and getting the ID of the section
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/sections`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestCourseOffering = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestCourseOfferingDate = latestCourseOffering ? latestCourseOffering._lastModifiedDate : null;
+          console.log('latestCourseOfferingDate', latestCourseOfferingDate);
+  
+          bru.setEnvVar("s1SectionId", latestCourseOffering.id);
+          console.log('s1SectionId', bru.getEnvVar("s1SectionId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Section request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let classPeriodSystemValue = bru.getEnvVar("classPeriodSystemValue");
+  let statementClassPeriodName = "";
+  
+  if (classPeriodSystemValue === "" || classPeriodSystemValue === null) {
+      statementClassPeriodName = "Class Period 01";
+  } else {
+      statementClassPeriodName = classPeriodSystemValue;
+  }
+  
+  let expectedClassPeriodName = statementClassPeriodName;
+  let expectedSchoolID = 255901107;
+  
+  expect(response.classPeriods).to.be.an("array");
+  let classPeriodsArray = response.classPeriods;
+  console.log("classPeriodsArray",classPeriodsArray);
+  
+  test("02 - Scenario 1 POST: classPeriodName value for the school is " + statementClassPeriodName, () => {
+      let classPeriod = classPeriodsArray.some(item =>  item.classPeriodReference.classPeriodName.includes("Class Period 01"));
+      console.log("classPeriod", classPeriod);
+  
+      expect(classPeriod, `'${statementClassPeriodName}' was not found in any of the class period references. Retrieved value is '${JSON.stringify(classPeriodsArray.map(item => item.classPeriodReference.classPeriodName))}'. Please take a look at the response for additional information .`).to.be.true;
+  });
+  
+  test("03 - Scenario 1 POST: schoolId value from the class period for the section is " + expectedSchoolID, () => {
+      let foundValidPeriod = false
+  
+      for (let i = 0; i < classPeriodsArray.length; i++) {
+          let classPeriodItem = classPeriodsArray[i];
+          let schoolId = classPeriodItem.classPeriodReference.schoolId
+          console.log("schoolId", schoolId);
+          let classPeriodName = classPeriodItem.classPeriodReference.classPeriodName;
+          console.log("classPeriodName", classPeriodName);
+          if ((schoolId === expectedSchoolID) && (classPeriodName === statementClassPeriodName)) {
+              foundValidPeriod = true;
+              break;
+          }
+      }
+      expect(foundValidPeriod, `Expected classPeriodName '${expectedClassPeriodName}' with schoolID '${expectedSchoolID}', but found '${JSON.stringify(classPeriodsArray.map(item => item.classPeriodReference.classPeriodName))}' with '${JSON.stringify(classPeriodsArray.map(item => item.classPeriodReference.schoolId))}'`).to.be.true;
+  });
+  
+  test("04 - Scenario 1 POST: sessionName value for the section is '2016-2017 Fall Semester",  () => {
+      expect(response.courseOfferingReference.sessionName, `'2016-2017 Fall Semester' was not found in the sessionName property. Retrieved value is '${response.courseOfferingReference.sessionName}'`).to.eql("2016-2017 Fall Semester");
+  });
+  
+  let localCourseCodeSystemValue = bru.getEnvVar("localCourseCodeSystemValue");
+  let statementLocalCourseCode;
+  
+  if (localCourseCodeSystemValue === "" || localCourseCodeSystemValue === null) {
+      statementLocalCourseCode = "ELA-01";
+  } else {
+      statementLocalCourseCode = localCourseCodeSystemValue;
+  }
+  console.log("statementLocalCourseCode", statementLocalCourseCode);
+  
+  test("05 - Scenario 1 POST: localCourseCode value from course offering reference for the section is " + statementLocalCourseCode, () =>{
+      expect(response.courseOfferingReference.localCourseCode, `'${statementLocalCourseCode}' was not found in the localCourseCode property. Retrieved value is '${response.courseOfferingReference.localCourseCode}'`).to.eql(statementLocalCourseCode);
+  });
+  
+  test("06 - Scenario 1 POST: schoolId value from course offering reference for the section is '255901107'", () =>{
+      expect(response.courseOfferingReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.courseOfferingReference.schoolId}'`).to.eql(255901107);
+  });
+  
+  test("07 - Scenario 1 POST: schoolYear value from course offering reference for the section is '2017'", () =>{
+      expect(response.courseOfferingReference.schoolYear, `'2017' was not found in the schoolId property. Retrieved value is '${response.courseOfferingReference.schoolYear}'`).to.eql(2017);
+  });
+  
+  let locationSystemValue = bru.getEnvVar("locationSystemValue");
+  let statementclassroomIdentificationCode = "";
+  
+  if (locationSystemValue === "" || locationSystemValue === null) {
+      statementclassroomIdentificationCode = "501";
+  } else {
+      statementclassroomIdentificationCode = locationSystemValue;
+  }
+  
+  test("08 - classroomIdentificationCode value from location reference for the section is " + statementclassroomIdentificationCode, () =>{
+      expect(response.locationReference.classroomIdentificationCode).to.eql(statementclassroomIdentificationCode, `'${statementclassroomIdentificationCode}' was not found in the classroomIdentificationCode property. Retrieved value is '${response.locationReference.classroomIdentificationCode}'`);
+  });
+  
+  test("09 - Scenario 1 POST: schoolId value from location reference for the section is '255901107'", () =>{
+      expect(response.locationReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.locationReference.schoolId}'`).to.eql(255901107);
+  });
+  
+  test("10 - Scenario 1 POST: schoolId value from location school reference for the section is '255901107'", () =>{
+      expect(response.locationSchoolReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.locationSchoolReference.schoolId}'`).to.eql(255901107);
+  });
+  
+  test("11 - Scenario 1 POST: sequenceOfCourse value for the section is '1'", () =>{
+      expect(response.sequenceOfCourse, `'1' was not found in the sequenceOfCourse property. Retrieved value is '${response.sequenceOfCourse}'`).to.eql(1);
+  });
+  
+  let sectionIdentifierSystemValue = bru.getEnvVar("sectionIdentifierSystemValue");
+  let statementSectionIdentifier = "";
+  
+  if (sectionIdentifierSystemValue === "" || sectionIdentifierSystemValue === null) {
+      statementSectionIdentifier = "ELA012017RM555";
+  } else {
+      statementSectionIdentifier = sectionIdentifierSystemValue;
+  }
+  
+  test("12 - Scenario 1 POST: sectionIdentifier value for the section is " + statementSectionIdentifier, () =>{
+      expect(response.sectionIdentifier, `'${statementSectionIdentifier}' was not found in the sectionIdentifier property. Retrieved value is '${response.sectionIdentifier}'`).to.eql(statementSectionIdentifier);
+  });
+  
+  test("13 - Scenario 1 POST: availableCredits value for the section is '1'", () =>{
+      expect(response.availableCredits, `'1' was not found in the sectionIdentifier property. Retrieved value is '${response.availableCredits}'`).to.eql(1);
+  });
+  
+  test("14 - Scenario 1 POST: educationalEnvironmentDescriptor value for the section is 'Classroom'", () =>{
+      expect(response.educationalEnvironmentDescriptor, `'Classroom' was not found in the sectionIdentifier property. Retrieved value is '${response.educationalEnvironmentDescriptor}'`).to.contain("Classroom");
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

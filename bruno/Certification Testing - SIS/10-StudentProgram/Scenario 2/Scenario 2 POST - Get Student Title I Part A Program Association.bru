@@ -1,0 +1,94 @@
+meta {
+  name: Scenario 2 POST - Get Student Title I Part A Program Association
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations/{{s2StudentTitleIPartAProgramAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Title I Part A Program Association and getting the ID of the student title I part A program association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentTitleIPartAProgramAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentTitleIPartAProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentTitleIPartAProgramAssociationDate = latestStudentTitleIPartAProgramAssociation ? latestStudentTitleIPartAProgramAssociation._lastModifiedDate : null;
+          console.log('latestStudentTitleIPartAProgramAssociationDate', latestStudentTitleIPartAProgramAssociationDate);
+  
+          bru.setEnvVar("s2StudentTitleIPartAProgramAssociationId", latestStudentTitleIPartAProgramAssociation.id);
+          console.log('s2StudentTitleIPartAProgramAssociationId', bru.getEnvVar("s2StudentTitleIPartAProgramAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Student Title I Part A Program Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedBeginDate = `${currentYear}-08-23`;
+  let expectedEducationOrganizationId = 255901;
+  let expectedProgramName	= "Title I Part A";
+  let expectedEducationOrganizationIdPR = 255901;
+  let expectedProgramTypeDescriptor = "Title I Part A";
+  let expectedStudentUniqueId = "	222222";
+  let expectedTitleIPartAParticipantDescriptor = "Public Targeted Assistance Program";
+  
+  test("02 - Scenario 2 POST: beginDate value for Student Title I Part A Program Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("03 - Scenario 2 POST: educationOrganizationId value from educationOrganizationReference for Student Title I Part A Program Association is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Title I Part A Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("04 - Scenario 2 POST: programName value from programReference for Student Title I Part A Program Association is " + expectedProgramName, () => {
+      expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);
+  });
+  
+  test("05 - Scenario 2 POST: educationOrganizationId value from programReference for Student Title I Part A Program Association is " + expectedEducationOrganizationIdPR, () => {
+      expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedEducationOrganizationIdPR);
+  });
+  
+  test("06 - Scenario 2 POST: programTypeDescriptor value from programReference for Student Title I Part A Program Association is " + expectedProgramTypeDescriptor, () => {
+      expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Title I Part A Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include	(expectedProgramTypeDescriptor);
+  });
+  
+  test("07 - Scenario 2 POST: studentUniqueId value from studentReference for Student Title I Part A Program Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Title I Part A Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("08 - Scenario 2 POST: titleIPartAParticipantDescriptor value for Student Title I Part A Program Association is " + expectedTitleIPartAParticipantDescriptor, () => {
+      expect(response.titleIPartAParticipantDescriptor, `'${expectedTitleIPartAParticipantDescriptor}' was not found in the beginDate property for Student Title I Part A Program Association. Retrieved value is '${response.titleIPartAParticipantDescriptor}'`).to.include(expectedTitleIPartAParticipantDescriptor);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

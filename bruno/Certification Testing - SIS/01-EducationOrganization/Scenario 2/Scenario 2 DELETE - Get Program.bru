@@ -1,0 +1,40 @@
+meta {
+  name: Scenario 2 DELETE - Get Program
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/programs/{{s2DeletedProgramID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+body:json {
+  {
+      "programName": "Grand Bend Bilingual 101",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Bilingual",
+      "educationOrganizationReference": {
+          "educationOrganizationId": 255901
+      },
+      "programId": "101"
+  }
+}
+
+script:post-response {
+  test("Record " + bru.getEnvVar("s2DeletedProgramID") + " does not exist (404 Not Found)", function () {
+       expect(res.getStatus(), "Expected a 404 status code for non-existent record").to.eql(404);
+  });
+  
+  test("Verify empty response for non-existent record", function () {
+      expect(JSON.stringify(res.getBody()), "Expected the response body to be empty for a non-existent record").to.be.empty; // Verify the response body is empty    
+  });
+}
+
+settings {
+  encodeUrl: true
+}

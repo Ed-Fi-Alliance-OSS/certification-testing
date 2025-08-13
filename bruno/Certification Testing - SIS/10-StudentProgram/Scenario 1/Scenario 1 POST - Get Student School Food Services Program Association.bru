@@ -1,0 +1,107 @@
+meta {
+  name: Scenario 1 POST - Get Student School Food Services Program Association
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolFoodServiceProgramAssociations/{{s1StudentSchoolFoodServiceProgramAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student School Food Services Program Association and getting the ID of the student school food services program association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentSchoolFoodServiceProgramAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentSchoolFoodServiceProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentSchoolFoodServiceProgramAssociationDate = latestStudentSchoolFoodServiceProgramAssociation ? latestStudentSchoolFoodServiceProgramAssociation._lastModifiedDate : null;
+          console.log('latestStudentSchoolFoodServiceProgramAssociationDate', latestStudentSchoolFoodServiceProgramAssociationDate);
+  
+          bru.setEnvVar("s1StudentSchoolFoodServiceProgramAssociationId", latestStudentSchoolFoodServiceProgramAssociation.id);
+          console.log('s1StudentSchoolFoodServiceProgramAssociationId', bru.getEnvVar("s1StudentSchoolFoodServiceProgramAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Student School Food Services Program Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  let currentMonth = dateObject.getMonth() + 1;
+  let currentDate = dateObject.getDate();
+  
+  let expectedBeginDate = `${currentYear}-${currentMonth}-${currentDate}`;
+  let expectedEducationOrganizationId = 255901107;
+  let expectedEducationOrganizationIdPR = 255901;
+  let expectedProgramName = "School Food Service";
+  let expectedProgramTypeDescriptor = "Other";
+  let expectedSchoolFoodServiceProgramServiceDescriptor = "Reduced Price Lunch";
+  let expectedStudentUniqueId = "111111";
+  
+  test("02 - Scenario 1 POST: beginDate value for Student School Food Services Program Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student School Food Services Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("03 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Student School Food Services Program Association is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student School Food Services Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("04 - Scenario 1 POST: educationOrganizationId value from programReference for Student School Food Services Program Association is " + expectedEducationOrganizationIdPR, () => {
+      expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the educationOrganizationId property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);
+  });
+  
+  test("05 - Scenario 1 POST: programName value from programReference for Student School Food Services Program Association is " + expectedProgramName, () => {
+      expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);
+  });
+  
+  test("06 - Scenario 1 POST: programTypeDescriptor value from programReference for Student School Food Services Program Association is " + expectedProgramTypeDescriptor, () => {
+      expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student School Food Services Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.include(expectedProgramTypeDescriptor);
+  });
+  
+  let schoolFoodServiceProgramServicesArray = response.schoolFoodServiceProgramServices;
+  expect(schoolFoodServiceProgramServicesArray).to.be.an("Array");
+  
+  test("07 - Scenario 1 POST: schoolFoodServiceProgramServiceDescriptor value from schoolFoodServiceProgramServices for Student School Food Services Program Association is " + expectedSchoolFoodServiceProgramServiceDescriptor, () => {
+      let foundSchoolFoodServiceProgramServiceDescriptor = false;
+      for (let i = 0; i < schoolFoodServiceProgramServicesArray.length; i++) {
+          let schoolFoodServiceProgramServiceDescriptorItem = schoolFoodServiceProgramServicesArray[i];
+          let schoolFoodServiceProgramServiceDescriptor = schoolFoodServiceProgramServiceDescriptorItem.schoolFoodServiceProgramServiceDescriptor;
+          if (schoolFoodServiceProgramServiceDescriptor.includes(expectedSchoolFoodServiceProgramServiceDescriptor)) {
+              foundSchoolFoodServiceProgramServiceDescriptor = true;
+          }
+      }
+      expect(foundSchoolFoodServiceProgramServiceDescriptor, `'${expectedSchoolFoodServiceProgramServiceDescriptor}' was not found in the schoolFoodServiceProgramServiceDescriptor property from schoolFoodServiceProgramServices for Student School Food Services Program Association. Retrieved value is '${JSON.stringify(schoolFoodServiceProgramServicesArray.map(item => item.schoolFoodServiceProgramServiceDescriptor))}'`).to.be.true;
+  });
+  
+  test("08 - Scenario 1 POST: studentUniqueId value from studentReference for Student School Food Services Program Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student School Food Services Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

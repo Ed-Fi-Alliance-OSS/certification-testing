@@ -1,0 +1,99 @@
+meta {
+  name: Scenario 3 PUT - Get Student School Association
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations/{{s3StudentSchoolAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student School Association and getting the ID of the student school association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentSchoolAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentSchoolAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentSchoolAssociationDate = latestStudentSchoolAssociation ? latestStudentSchoolAssociation._lastModifiedDate : null;
+          console.log('latestStudentSchoolAssociationDate', latestStudentSchoolAssociationDate);
+  
+          bru.setEnvVar("s3StudentSchoolAssociationId", latestStudentSchoolAssociation.id);
+          console.log('s3StudentSchoolAssociationId', bru.getEnvVar("s3StudentSchoolAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("02 - Scenario 3 PUT: Test that Student School Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedSchoolId = 255901107;
+  let expectedStudentUniqueId = "111111";
+  let expectedEntryDate = `${currentYear}-09-01`;
+  let expectedEntryGradeLevelDescriptor = "First grade";
+  let expectedEntryTypeDescriptor = "Next year school";
+  let expectedRepeatGradeIndicator = false;
+  let expectedResidencyStatusDescriptor = "Resident of admin unit and school area";
+  let expectedSchoolChoiceTransfer = false;
+  
+  test("02 - Scenario 3 PUT: schoolId value for the Student School Association is " + expectedSchoolId, () => {
+      expect(response.schoolReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId from the schoolReference for the Student School Association. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(expectedSchoolId);
+  });
+  
+  test("03 - Scenario 3 PUT: studentUniqueId value for the Student School Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId from the studentReference for the Student School Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("04 - Scenario 3 PUT: entryDate value for the Student School Association is " + expectedEntryDate, () => {
+      expect(response.entryDate, `'${expectedEntryDate}' was not found in the entryDate property for the Student School Association. Retrieved value is '${response.entryDate}'`).to.eql(expectedEntryDate);
+  });
+  
+  test("05 - Scenario 3 PUT: entryGradeLevelDescriptor value for the Student School Association is " + expectedEntryGradeLevelDescriptor, () => {
+      expect(response.entryGradeLevelDescriptor, `'${expectedEntryGradeLevelDescriptor}' was not found in the entryGradeLevelDescriptor property for the Student School Association. Retrieved value is '${response.entryGradeLevelDescriptor}'`).to.contain(expectedEntryGradeLevelDescriptor);
+  });
+  
+  test("06 - Scenario 3 PUT: entryTypeDescriptor value for the Student School Association is " + expectedEntryTypeDescriptor, () => {
+      expect(response.entryTypeDescriptor, `'${expectedEntryTypeDescriptor}' was not found in the expectedEntryTypeDescriptor property for the Student School Association. Retrieved value is '${response.entryTypeDescriptor}'`).to.contain(expectedEntryTypeDescriptor);
+  });
+  
+  test("07 - Scenario 3 PUT: repeatGradeIndicator value for the Student School Association is " + expectedRepeatGradeIndicator, () => {
+      expect(response.repeatGradeIndicator, `'${expectedRepeatGradeIndicator}' was not found in the repeatGradeIndicator property for the Student School Association. Retrieved value is '${response.repeatGradeIndicator}'`).to.be.false;
+  });
+  
+  test("08 - Scenario 3 PUT: residencyStatusDescriptor value for the Student School Association is " + expectedResidencyStatusDescriptor, () => {
+      expect(response.residencyStatusDescriptor, `'${expectedResidencyStatusDescriptor}' was not found in the residencyStatusDescriptor property for the Student School Association. Retrieved value is '${response.residencyStatusDescriptor}'`).to.contain(expectedResidencyStatusDescriptor);
+  });
+  
+  test("09 - Scenario 3 PUT: schoolChoiceTransfer value for the Student School Association is " + expectedSchoolChoiceTransfer, () => {
+      expect(response.schoolChoiceTransfer, `'${expectedSchoolChoiceTransfer}' was not found in the schoolChoiceTransfer property for the Student School Association. Retrieved value is '${response.schoolChoiceTransfer}'`).to.be.false;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

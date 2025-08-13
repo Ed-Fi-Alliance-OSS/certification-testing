@@ -1,0 +1,152 @@
+meta {
+  name: Scenario 1 POST - Get Session
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sessions/{{s1SessionId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request of Sessions and getting the ID of the latest session
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/sessions`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestSession = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestSessionDate = latestSession ? latestSession._lastModifiedDate : null;
+          console.log('latestSessionDate', latestSessionDate);
+  
+          bru.setEnvVar("s1SessionId", latestSession.id);
+          console.log('s1SessionId', bru.getEnvVar("s1SessionId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Session request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 1 POST: schoolId value for the session is '255901107'", () =>{
+      expect(response.schoolReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql(255901107);
+  });
+  
+  let currentYear = new Date().getFullYear();
+  console.log("currentYear", currentYear);
+  
+  test("03 - Scenario 1 POST: schoolYear value for the session is " + currentYear, () => {
+      expect(response.schoolYearTypeReference.schoolYear, `${currentYear} was not found in the schoolYear property. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eq(currentYear);
+  });
+  
+  test("04 - Scenario 1 POST: termDescriptor value for the session is 'Fall Semester'", () =>{
+      expect(response.termDescriptor, `'Fall Semester' was not found in the termDescriptor property. Retrieved value is '${response.termDescriptor}'`).to.include("Fall Semester");
+  });
+  
+  test("05 - Scenario 1 POST: sessionName for the session is '2016-2017 Fall Semester'", () => {
+      expect(response.sessionName, `'2016-2017 Fall Semester' was not found in the sessionName property. Retrieved value is '${response.sessionName}'`).to.eql("2016-2017 Fall Semester");
+  });
+  
+  let beginDateString = response.beginDate;
+  console.log("beginDateString", beginDateString);
+  
+  let testBeginDate = new Date(beginDateString);
+  console.log("testBeginDate", testBeginDate);
+  
+  let yearFromBeginDate = testBeginDate.getFullYear();
+  let monthFromBeginDate = testBeginDate.getMonth() + 1;
+  let dayFromBeginDate = testBeginDate.getDate();
+  console.log("yearFromBeginDate: ", yearFromBeginDate, " || monthFromBeginDate: ", monthFromBeginDate, " || dayFromBeginDate: ", dayFromBeginDate);
+  
+  let currentTestBeginDate = `${currentYear}-08-23`;
+  
+  let formattedBeginDate = testBeginDate.toISOString().split('T')[0];
+  console.log("formattedBeginDate", formattedBeginDate);
+  
+  test("06 - Scenario 1 POST: beginDate value for the session is " + currentYear + "-08-23", () => {
+      expect(formattedBeginDate, `'${currentYear}-08-23' was not found in the beginDate property. Retrieved value is: ${formattedBeginDate}`).to.eql(`${currentYear}-08-23`);
+  });
+  
+  let endDateString = response.endDate;
+  console.log("endDateString", endDateString);
+  
+  let testEndDate = new Date(endDateString);
+  console.log("testEndDate", testEndDate);
+  
+  let yearFromEndDate = testEndDate.getFullYear();
+  let monthFromEndDate = testEndDate.getMonth() + 1;
+  let dayFromEndDate = testEndDate.getDate();
+  console.log("yearFromEndDate: ", yearFromEndDate, " || monthFromEndDate: ", monthFromEndDate, " || dayFromEndDate: ", dayFromEndDate);
+  
+  let currentTestEndDate = `${currentYear}-12-15`;
+  
+  let formattedEndDate = testEndDate.toISOString().split('T')[0];
+  console.log("formattedEndDate", formattedEndDate);
+  
+  test("07 - Scenario 1 POST: endDate value for the session is " + currentYear + "-12-15", () => {
+      expect(formattedEndDate, `'${currentYear}-12-15' was not found in the endDate property. Retrieved value is: ${formattedEndDate}`).to.eql(`${currentYear}-12-15`);
+  });
+  
+  let totalInstructionalDaysSystemValue = bru.getEnvVar("totalInstructionalDaysSessionSystemValue");
+  let statementTotalInstructionalDays = 0;
+  
+  if (totalInstructionalDaysSystemValue === "" || totalInstructionalDaysSystemValue === null) {
+      statementTotalInstructionalDays = 88;
+  } else {
+      statementTotalInstructionalDays = totalInstructionalDaysSystemValue;
+  }
+  console.log("statementTotalInstructionalDays", statementTotalInstructionalDays);
+  
+  test("08 - Scenario 1 POST: totalInstructionalDays value for the session is " + statementTotalInstructionalDays , () =>{
+      expect(response.totalInstructionalDays).to.eql(statementTotalInstructionalDays, `'${statementTotalInstructionalDays}' was not found in the totalInstructionalDays property. Retrieved value is: '${response.totalInstructionalDays}'`);
+  });
+  
+  expect(response.gradingPeriods).to.be.an('array');
+  
+  let firstGradingPeriodDescriptor = "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks";
+  let secondGradingPeriodDescriptor = "uri://ed-fi.org/GradingPeriodDescriptor#Second Six Weeks";
+  
+  test("09 - Scenario 1 POST: 'First Six Weeks' as a grading period exists", () => {
+      let firstSixWeeks = response.gradingPeriods.find(gp => gp.gradingPeriodReference.gradingPeriodDescriptor === firstGradingPeriodDescriptor);
+      expect(firstSixWeeks, "'First Six Weeks' was not found in the grading periods. Please take a look on the response body for more information regarding the Grading Periods for this Session").to.not.be.undefined;
+  
+      expect(firstSixWeeks.gradingPeriodReference.schoolId, `'255901107' was not found in the schoolId property for this Grading Period. Retrieved value is '${firstSixWeeks.gradingPeriodReference.schoolId}'`).to.eql(255901107);
+      expect(firstSixWeeks.gradingPeriodReference.schoolYear, `'${currentYear}' was not found in the schoolYear property for this Grading Period. Retrieved value is '${firstSixWeeks.gradingPeriodReference.schoolYear}'`).to.eql(currentYear);
+      expect(firstSixWeeks.gradingPeriodReference.periodSequence, `'1' was not found in the periodSequence property for this Grading Period. Retrieved value is '${firstSixWeeks.gradingPeriodReference.periodSequence}'`).to.eql(1);
+  });
+  
+  test("10 - Scenario 1 POST: 'Second Six Weeks' as a grading period exists", () => {
+      let secondSixWeeks = response.gradingPeriods.find(gp => gp.gradingPeriodReference.gradingPeriodDescriptor === secondGradingPeriodDescriptor);
+      expect(secondSixWeeks, "'Second Six Weeks' was not found in the grading periods. Please take a look on the response body for more information regarding the Grading Periods for this Session").to.not.be.undefined;
+  
+      expect(secondSixWeeks.gradingPeriodReference.schoolId, `'255901107' was not found in the schoolId property for this Grading Period. Retrieved value is '${secondSixWeeks.gradingPeriodReference.schoolId}'`).to.eql(255901107);
+      expect(secondSixWeeks.gradingPeriodReference.schoolYear, `'${currentYear}' was not found in the schoolYear property for this Grading Period. Retrieved value is '${secondSixWeeks.gradingPeriodReference.schoolYear}'`).to.eql(currentYear);
+      expect(secondSixWeeks.gradingPeriodReference.periodSequence, `'2' was not found in the periodSequence property for this Grading Period. Retrieved value is '${secondSixWeeks.gradingPeriodReference.periodSequence}'`).to.eql(2);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

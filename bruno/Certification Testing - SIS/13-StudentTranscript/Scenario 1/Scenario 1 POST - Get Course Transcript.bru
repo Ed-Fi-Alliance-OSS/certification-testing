@@ -1,0 +1,114 @@
+meta {
+  name: Scenario 1 POST - Get Course Transcript
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts/{{s1CourseTranscriptId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Course Transcript and getting the ID of course transcript
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/courseTranscripts`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestCourseTranscript = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestCourseTranscriptDate = latestCourseTranscript ? latestCourseTranscript._lastModifiedDate : null;
+          console.log('latestCourseTranscriptDate', latestCourseTranscriptDate);
+  
+          bru.setEnvVar("s1CourseTranscriptId", latestCourseTranscript.id);
+          console.log('s1CourseTranscriptId', bru.getEnvVar("s1CourseTranscriptId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Course Transcript request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedEducationOrganizationId = 255901001;
+  let expectedCourseCode = "ALG-01";
+  let expectedEducationOrganizationIdSARR = 255901001;
+  let expectedSchoolYear = currentYear;
+  let expectedStudentUniqueId = "222222";
+  let expectedTermDescriptor = "Fall Semester";
+  let expectedCourseAttemptResultDescriptor = "Pass";
+  let expectedAttemptedCredits = 3;
+  let expectedEarnedCredits = 3;
+  let expectedFinalLetterGradeEarned = "A";
+  let expectedFinalNumericGradeEarned = 98;
+  
+  test("02 - Scenario 1 POST: educationOrganizationId value from educationOrganizationId for Student Transcript is " + expectedEducationOrganizationId, () => {
+      expect(response.courseReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from courseReference for Course Transcript. Retrieved value is '${response.courseReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("03 - Scenario 1 POST: courseCode value from educationOrganizationId for Student Transcript is " + expectedEducationOrganizationIdSARR, () => {
+      expect(response.courseReference.courseCode, `'${expectedEducationOrganizationIdSARR}' was not found in the courseCode property from courseReference for Course Transcript. Retrieved value is '${response.courseReference.courseCode}'`).to.eql(expectedEducationOrganizationIdSARR);
+  });
+  
+  test("04 - Scenario 1 POST: educationOrganizationId value from studentAcademicRecordReference for Student Transcript is " + expectedEducationOrganizationIdSARR, () => {
+      expect(response.studentAcademicRecordReference.educationOrganizationId, `'${expectedEducationOrganizationIdSARR}' was not found in the educationOrganizationId property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdSARR);
+  });
+  
+  test("05 - Scenario 1 POST: schoolYear value from studentAcademicRecordReference for Student Transcript is " + expectedSchoolYear, () => {
+      expect(response.studentAcademicRecordReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.schoolYear}'`).to.eql(expectedSchoolYear);
+  });
+  
+  test("06 - Scenario 1 POST: studentUniqueId value from studentAcademicRecordReference for Student Transcript is " + expectedStudentUniqueId, () => {
+      expect(response.studentAcademicRecordReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("07 - Scenario 1 POST: termDescriptor value from studentAcademicRecordReference for Student Transcript is " + expectedTermDescriptor, () => {
+      expect(response.studentAcademicRecordReference.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property from studentAcademicRecordReference for Course Transcript. Retrieved value is '${response.studentAcademicRecordReference.termDescriptor}'`).to.include(expectedTermDescriptor);
+  });
+  
+  test("08 - Scenario 1 POST: courseAttemptResultDescriptor value for Student Transcript is " + expectedCourseAttemptResultDescriptor, () => {
+      expect(response.courseAttemptResultDescriptor, `'${expectedCourseAttemptResultDescriptor}' was not found in the courseAttemptResultDescriptor property for Course Transcript. Retrieved value is '${response.courseAttemptResultDescriptor}'`).to.include(expectedCourseAttemptResultDescriptor);
+  });
+  
+  test("09 - Scenario 1 POST: attemptedCredits value for Student Transcript is " + expectedAttemptedCredits, () => {
+      expect(response.attemptedCredits, `'${expectedAttemptedCredits}' was not found in the attemptedCredits property for Course Transcript. Retrieved value is '${response.attemptedCredits}'`).to.eql(expectedAttemptedCredits);
+  });
+  
+  test("10 - Scenario 1 POST: earnedCredits value for Student Transcript is " + expectedEarnedCredits, () => {
+      expect(response.earnedCredits, `'${expectedEarnedCredits}' was not found in the earnedCredits property for Course Transcript. Retrieved value is '${response.earnedCredits}'`).to.eql(expectedEarnedCredits);
+  });
+  
+  test("11 - Scenario 1 POST: finalLetterGradeEarned value for Student Transcript is " + expectedFinalLetterGradeEarned, () => {
+      expect(response.finalLetterGradeEarned, `'${expectedFinalLetterGradeEarned}' was not found in the finalLetterGradeEarned property for Course Transcript. Retrieved value is '${response.finalLetterGradeEarned}'`).to.eql(expectedFinalLetterGradeEarned);
+  });
+  
+  test("12 - Scenario 1 POST: finalNumericGradeEarned value for Student Transcript is " + expectedFinalNumericGradeEarned, () => {
+      expect(response.finalNumericGradeEarned, `'${expectedFinalNumericGradeEarned}' was not found in the finalNumericGradeEarned property for Course Transcript. Retrieved value is '${response.finalNumericGradeEarned}'`).to.eql(expectedFinalNumericGradeEarned);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

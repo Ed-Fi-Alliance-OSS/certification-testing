@@ -1,0 +1,99 @@
+meta {
+  name: Scenario 2 PUT - Get Student Homeless Program Association
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentHomelessProgramAssociations/{{s2StudentHomelessProgramAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Homeless Program Association and getting the ID of the student homeless program association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentHomelessProgramAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentHomelessProgramAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentHomelessProgramAssociationDate = latestStudentHomelessProgramAssociation ? latestStudentHomelessProgramAssociation._lastModifiedDate : null;
+          console.log('latestStudentHomelessProgramAssociationDate', latestStudentHomelessProgramAssociationDate);
+  
+          bru.setEnvVar("s2StudentHomelessProgramAssociationId", latestStudentHomelessProgramAssociation.id);
+          console.log('s2StudentHomelessProgramAssociationId', bru.getEnvVar("s2StudentHomelessProgramAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 PUT: Test that Student Homeless Program Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedBeginDate = `${currentYear}-08-23`;
+  let expectedEducationOrganizationId = 255901;
+  let expectedProgramName = "Homeless";
+  let expectedProgramTypeDescriptor = "Homeless";
+  let expectedEducationOrganizationIdPR = 255901;
+  let expectedStudentUniqueId = "111111";
+  let expectedHomelessPrimaryNighttimeResidenceDescriptor = "Doubled-up";
+  let expectedHomelessUnaccompaniedYouth = true;
+  
+  test("02 - Scenario 2 PUT: beginDate value for Student Homeless Program Association is " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' was not found in the beginDate property for Student Homeless Program Association. Retrieved value is '${response.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("03 - Scenario 2 PUT: educationOrganizationId value from educationOrganizationReference for Student Homeless Program Association is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Homeless Program Association. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("04 - Scenario 2 PUT: programName value from programReference for Student Homeless Program Association is " + expectedProgramName, () => {
+      expect(response.programReference.programName, `'${expectedProgramName}' was not found in the programName property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.programName}'`).to.eql(expectedProgramName);
+  });
+  
+  test("05 - Scenario 2 PUT: programTypeDescriptor value from programReference for Student Homeless Program Association is " + expectedProgramTypeDescriptor, () => {
+      expect(response.programReference.programTypeDescriptor, `'${expectedProgramTypeDescriptor}' was not found in the programTypeDescriptor property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.programTypeDescriptor}'`).to.contain(expectedProgramTypeDescriptor);
+  });
+  
+  test("06 - Scenario 2 PUT: educationOrganizationId value from programReference for Student Homeless Program Association is " + expectedEducationOrganizationIdPR, () => {
+      expect(response.programReference.educationOrganizationId, `'${expectedEducationOrganizationIdPR}' was not found in the programName property from programReference for Student Homeless Program Association. Retrieved value is '${response.programReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationIdPR);
+  });
+  
+  test("07 - Scenario 2 PUT: studentUniqueId value from studentReference for Student Homeless Program Association is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Homeless Program Association. Retrieved value is '${response.studentReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("08 - Scenario 2 PUT: homelessPrimaryNighttimeResidenceDescriptor value for Student Homeless Program Association is " + expectedHomelessPrimaryNighttimeResidenceDescriptor, () => {
+      expect(response.homelessPrimaryNighttimeResidenceDescriptor, `'${expectedHomelessPrimaryNighttimeResidenceDescriptor}' was not found in the homelessPrimaryNighttimeResidenceDescriptor property for Student Homeless Program Association. Retrieved value is '${response.homelessPrimaryNighttimeResidenceDescriptor}'`).to.contain(expectedHomelessPrimaryNighttimeResidenceDescriptor);
+  });
+  
+  test("09 - Scenario 2 PUT: homelessUnaccompaniedYouth value for Student Homeless Program Association is " + expectedHomelessUnaccompaniedYouth, () => {
+      expect(response.homelessUnaccompaniedYouth, `'${expectedHomelessPrimaryNighttimeResidenceDescriptor}' was not found in the homelessUnaccompaniedYouth property for Student Homeless Program Association. Retrieved value is '${response.homelessUnaccompaniedYouth}'`).to.be.true;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

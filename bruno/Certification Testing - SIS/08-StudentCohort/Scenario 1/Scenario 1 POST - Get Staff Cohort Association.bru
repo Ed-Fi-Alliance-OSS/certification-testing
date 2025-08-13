@@ -1,0 +1,95 @@
+meta {
+  name: Scenario 1 POST - Get Staff Cohort Association
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{s1StaffCohortAssociationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Staff Cohort Association and getting the ID of the staff cohort association
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/staffCohortAssociations`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStaffCohortAssociation = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStaffCohortAssociationDate = latestStaffCohortAssociation ? latestStaffCohortAssociation._lastModifiedDate : null;
+          console.log('latestStaffCohortAssociationDate', latestStaffCohortAssociationDate);
+  
+          bru.setEnvVar("s1StaffCohortAssociationId", latestStaffCohortAssociation.id);
+          console.log('s1StaffCohortAssociationId', bru.getEnvVar("s1StaffCohortAssociationId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 1 POST: Test that Staff Cohort Association request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedEducationOrganizationId = 255901107;
+  let expectedCohortIdentifier;
+  let expectedBeginDate = `${currentYear}-09-14`;
+  let expectedStaffUniqueId;
+  
+  test("02 - Scenario 1 POST: educationOrganizationId value from educationOrganizationReference for Staff Cohort Association is: " + expectedEducationOrganizationId, () => {
+      expect(response.cohortReference.educationOrganizationId, `'${expectedEducationOrganizationId}' value was not found in the educationOrganizationId property from cohortReference for Staff Cohort Association. Retrieved value is '${response.cohortReference.educationOrganizationId}'.`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  let cohortIdentifierSystemValue = bru.getEnvVar("cohortIdentifierSystemValue");
+  expectedCohortIdentifier = "";
+  if (cohortIdentifierSystemValue === "" || cohortIdentifierSystemValue === null) {
+      expectedCohortIdentifier = "1";
+  } else {
+      expectedCohortIdentifier = cohortIdentifierSystemValue;
+  }
+  
+  test("03 - Scenario 1 POST: cohortIdentifier value from cohortReference for Staff Cohort Association is: " + expectedCohortIdentifier, () => {
+      expect(response.cohortReference.cohortIdentifier, `'${expectedCohortIdentifier}' value was not found in the educationOrganizationId property from cohortReference for Staff Cohort Association. Retrieved value is '${response.cohortReference.cohortIdentifier}'.`).to.eql(expectedCohortIdentifier);
+  });
+  
+  test("04 - Scenario 1 POST: beginDate value for Staff Cohort Association is: " + expectedBeginDate, () => {
+      expect(response.beginDate, `'${expectedBeginDate}' value was not found in the beginDate property for Staff Cohort Association. Retrieved value is '${response.beginDate}'.`).to.eql(expectedBeginDate);
+  });
+  
+  let staffUniqueIdSystemValue = bru.getEnvVar("staffUniqueIdSystemValue");
+  expectedStaffUniqueId = "";
+  if (staffUniqueIdSystemValue === "" || staffUniqueIdSystemValue === null) {
+      expectedStaffUniqueId = "207220";
+  } else {
+      expectedStaffUniqueId = staffUniqueIdSystemValue;
+  }
+  
+  test("05 - Scenario 1 POST: staffUniqueId value from staffReference for Staff Cohort Association is: " + expectedStaffUniqueId, () => {
+      expect(response.staffReference.staffUniqueId, `'${expectedStaffUniqueId}' value was not found in the staffUniqueId property from staffReference for Staff Cohort Association. Retrieved value is '${response.staffReference.staffUniqueId}'.`).to.eql(expectedStaffUniqueId);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

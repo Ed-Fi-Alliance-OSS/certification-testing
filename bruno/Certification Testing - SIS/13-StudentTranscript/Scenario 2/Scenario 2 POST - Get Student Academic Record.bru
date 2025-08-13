@@ -1,0 +1,149 @@
+meta {
+  name: Scenario 2 POST - Get Student Academic Record
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{s2StudentAcademicRecordId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Student Academic Record and getting the ID of student academic record
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/studentAcademicRecords`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestStudentAcademicRecord = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestStudentAcademicRecordDate = latestStudentAcademicRecord ? latestStudentAcademicRecord._lastModifiedDate : null;
+          console.log('latestStudentAcademicRecordDate', latestStudentAcademicRecordDate);
+  
+          bru.setEnvVar("s2StudentAcademicRecordId", latestStudentAcademicRecord.id);
+          console.log('s2StudentAcademicRecordId', bru.getEnvVar("s2StudentAcademicRecordId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Student Academic Record request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedEducationOrganizationId = 255901001;
+  let expectedSchoolYear = currentYear - 5;
+  let expectedStudentUniqueId = "222222";
+  let expectedTermDescriptor = "Fall Semester";
+  let expectedCumulativeAttemptedCredits;
+  let expectedCumulativeEarnedCredits;
+  let expectedCumulativeGradePointAverage;
+  let expectedSessionAttemptedCredits;
+  let expectedSessionEarnedCredits;
+  let expectedEducationOrganizationIdGPR = 255901001; //There is no graduation plan reference for the Student Academic Records endpoint
+  let expectedGraduationSchoolYear = currentYear; //There is no graduation plan reference for the Student Academic Records endpoint
+  let expectedGraduationPlanTypeDescriptor = "Recommended"; //There is no graduation plan reference for the Student Academic Records endpoint
+  
+  test("02 - Scenario 2 POST: educationOrganizationId value from educationOrganizationReference for Student Academic Record is " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' was not found in the educationOrganizationId property from educationOrganizationReference for Student Academic Record. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  test("03 - Scenario 2 POST: schoolYear value from schoolYearTypeReference for Student Academic Record is " + expectedSchoolYear, () => {
+      expect(response.schoolYearTypeReference.schoolYear, `'${expectedSchoolYear}' was not found in the schoolYear property from schoolYearTypeReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eql(expectedSchoolYear);
+  });
+  
+  test("04 - Scenario 2 POST: studentUniqueId value from studentReference for Student Academic Record is " + expectedStudentUniqueId, () => {
+      expect(response.studentReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentReference for Student Academic Record. Retrieved value is '${response.schoolYearTypeReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("05 - Scenario 2 POST: termDescriptor value for Student Academic Record is " + expectedTermDescriptor, () => {
+      expect(response.termDescriptor, `'${expectedTermDescriptor}' was not found in the termDescriptor property for Student Academic Record. Retrieved value is '${response.termDescriptor}'`).to.include(expectedTermDescriptor);
+  });
+  
+  let cumulativeAttemptedCreditsSystemValueS2 = bru.getEnvVar("cumulativeAttemptedCreditsSystemValueS2");
+  
+  if (cumulativeAttemptedCreditsSystemValueS2 === null || cumulativeAttemptedCreditsSystemValueS2 === "") {
+      expectedCumulativeAttemptedCredits = 40;
+  } else { 
+      expectedCumulativeAttemptedCredits = cumulativeAttemptedCreditsSystemValueS2;
+  }
+  
+  test("06 - Scenario 2 POST: cumulativeAttemptedCredits value for Student Academic Record is " + expectedCumulativeAttemptedCredits, () => {
+      expect(response.cumulativeAttemptedCredits, `'${expectedCumulativeAttemptedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeAttemptedCredits}'`).to.eql(expectedCumulativeAttemptedCredits);
+  });
+  
+  let cumulativeEarnedCreditsSystemValueS2 = bru.getEnvVar("cumulativeEarnedCreditsSystemValueS2");
+  
+  if (cumulativeEarnedCreditsSystemValueS2 === null || cumulativeEarnedCreditsSystemValueS2 === "") {
+      expectedCumulativeEarnedCredits = 38;
+  } else { 
+      expectedCumulativeEarnedCredits = cumulativeEarnedCreditsSystemValueS2;
+  }
+  
+  test("07 - Scenario 2 POST: cumulativeEarnedCredits value for Student Academic Record is " + expectedCumulativeEarnedCredits, () => {
+      expect(response.cumulativeEarnedCredits, `'${expectedCumulativeEarnedCredits}' was not found in the cumulativeAttemptedCredits property for Student Academic Record. Retrieved value is '${response.cumulativeEarnedCredits}'`).to.eql(expectedCumulativeEarnedCredits);
+  });
+  
+  let cumulativeGradePointAverageSystemValueS2 = bru.getEnvVar("cumulativeGradePointAverageSystemValueS2");
+  
+  if (cumulativeGradePointAverageSystemValueS2 === null || cumulativeGradePointAverageSystemValueS2 === ""){
+      expectedCumulativeGradePointAverage = 3.0;
+  } else {
+      expectedCumulativeGradePointAverage = cumulativeGradePointAverageSystemValueS2;
+  }
+  
+  test("08 - Scenario 2 POST: cumulativeGradePointAverage value for Student Academic Record is " + expectedCumulativeGradePointAverage, () => {
+      expect(response.cumulativeGradePointAverage, `'${expectedCumulativeGradePointAverage}' was not found in the cumulativeGradePointAverage property for Student Academic Record. Retrieved value is '${response.cumulativeGradePointAverage}'`).to.eql(expectedCumulativeGradePointAverage);
+  });
+  
+  let sessionAttemptedCreditsSystemValueS2 = bru.getEnvVar("sessionAttemptedCreditsSystemValueS2");
+  
+  if (sessionAttemptedCreditsSystemValueS2 === null || sessionAttemptedCreditsSystemValueS2 === ""){
+      expectedSessionAttemptedCredits = 3.0;
+  } else {
+      expectedSessionAttemptedCredits = sessionAttemptedCreditsSystemValueS2;
+  }
+  
+  test("09 - Scenario 2 POST: sessionAttemptedCredits value for Student Academic Record is " + expectedSessionAttemptedCredits, () => {
+      expect(response.sessionAttemptedCredits, `'${expectedSessionAttemptedCredits}' was not found in the sessionAttemptedCredits property for Student Academic Record. Retrieved value is '${response.sessionAttemptedCredits}'`).to.eql(expectedSessionAttemptedCredits);
+  });
+  
+  let sessionEarnedCreditsSystemValueS2 = bru.getEnvVar("sessionEarnedCreditsSystemValueS2");
+  
+  if (sessionEarnedCreditsSystemValueS2 === null || sessionEarnedCreditsSystemValueS2 === ""){
+      expectedSessionEarnedCredits = 3;
+  } else {
+      expectedSessionEarnedCredits = sessionEarnedCreditsSystemValueS2;
+  }
+  
+  test("10 - Scenario 2 POST: sessionEarnedCredits value for Student Academic Record is " + expectedSessionEarnedCredits, () => {
+      expect(response.sessionEarnedCredits, `'${expectedSessionEarnedCredits}' was not found in the sessionEarnedCredits property for Student Academic Record. Retrieved value is '${response.sessionEarnedCredits}'`).to.eql(expectedSessionEarnedCredits);
+  });
+  
+  //There is no graduation plan reference for the Student Academic Records endpoint
+}
+
+settings {
+  encodeUrl: true
+}

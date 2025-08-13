@@ -1,0 +1,89 @@
+meta {
+  name: Scenario 4 PUT - Get Cohort
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts/{{s4CohortId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Cohorts and getting the ID of the cohort
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/cohorts`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestCohort = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestCohortDate = latestCohort ? latestCohort._lastModifiedDate : null;
+          console.log('latestCohortDate', latestCohortDate);
+  
+          bru.setEnvVar("s4CohortId", latestCohort.id);
+          console.log('s4CohortId', bru.getEnvVar("s4CohortId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 4 PUT: Test that Cohort request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let expectedEducationOrganizationId = 255901001;
+  let expectedCohortIdentifier;
+  let expectedCohortTypeDescriptor = "Extracurricular Activity";
+  let expectedCohortDescription = "Cohort 2 Description";
+  let expectedCohortScopeDescriptor = "District";
+  
+  test("02 - Scenario 4 PUT: educationOrganizationId value from educationOrganizationReference for Cohort is: " + expectedEducationOrganizationId, () => {
+      expect(response.educationOrganizationReference.educationOrganizationId, `'${expectedEducationOrganizationId}' value was not found in the educationOrganizationId property from educationOrganizationReference for Cohort. Retrieved value is '${response.educationOrganizationReference.educationOrganizationId}'.`).to.eql(expectedEducationOrganizationId);
+  });
+  
+  let cohortIdentifierSystemValueS4 = bru.getEnvVar("cohortIdentifierSystemValueS4");
+  expectedCohortIdentifier = "";
+  if (cohortIdentifierSystemValueS4 === "" || cohortIdentifierSystemValueS4 === null) {
+      expectedCohortIdentifier = "2";
+  } else {
+      expectedCohortIdentifier = cohortIdentifierSystemValueS4;
+  }
+  
+  test("03 - Scenario 4 PUT: cohortIdentifier value for Cohort is: " + expectedCohortIdentifier, () => {
+      expect(response.cohortIdentifier, `'${expectedCohortIdentifier}' value was not found in the cohortIdentifier property for Cohort. Retrieved value is '${response.cohortIdentifier}'.`).to.eql(expectedCohortIdentifier);
+  });
+  
+  test("04 - Scenario 4 PUT: cohortTypeDescriptor value for Cohort is: " + expectedCohortTypeDescriptor, () => {
+      expect(response.cohortTypeDescriptor, `'${expectedCohortTypeDescriptor}' value was not found in the cohortTypeDescriptor property for Cohort. Retrieved value is '${response.cohortTypeDescriptor}'.`).to.contain(expectedCohortTypeDescriptor);
+  });
+  
+  test("05 - Scenario 4 PUT: cohortDescription value for Cohort is: " + expectedCohortDescription, () => {
+      expect(response.cohortDescription, `'${expectedCohortDescription}' value was not found in the cohortDescription property for Cohort. Retrieved value is '${response.cohortDescription}'.`).to.eql(expectedCohortDescription);
+  });
+  
+  test("06 - Scenario 4 PUT: cohortScopeDescriptor value for Cohort is: " + expectedCohortScopeDescriptor, () => {
+      expect(response.cohortScopeDescriptor, `'${expectedCohortScopeDescriptor}' value was not found in the cohortScopeDescriptor property for Cohort. Retrieved value is '${response.cohortScopeDescriptor}'.`).to.contain(expectedCohortScopeDescriptor);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

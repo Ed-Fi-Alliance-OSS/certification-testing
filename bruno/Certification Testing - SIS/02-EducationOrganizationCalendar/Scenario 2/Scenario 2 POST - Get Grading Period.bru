@@ -1,0 +1,129 @@
+meta {
+  name: Scenario 2 POST - Get Grading Period
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods/{{s2GradingPeriodId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request of Grading Periods and getting the ID of the latest calendar date
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/gradingPeriods`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestGradingPeriod = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestGradingPeriodDate = latestGradingPeriod ? latestGradingPeriod._lastModifiedDate : null;
+          console.log('latestGradingPeriodDate', latestGradingPeriodDate);
+  
+          bru.setEnvVar("s2GradingPeriodId", latestGradingPeriod.id);
+          console.log('s2GradingPeriodId', bru.getEnvVar("s2GradingPeriodId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 2 POST: Test that Grading period request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  test("02 - Scenario 2 POST: schoolId value for the grading period dates is '255901107'", () =>{
+      expect(response.schoolReference.schoolId, `'255901107' was not found in the schoolId property. Retrieved value is '${response.schoolReference.schoolId}'`).to.eql('255901107');
+  });
+  
+  let currentYear = new Date().getFullYear();
+  console.log("currentYear", currentYear);
+  
+  test("03 - Scenario 2 POST: schoolYear value for the grading period is " + currentYear, () => {
+      expect(response.schoolYearTypeReference.schoolYear, `${currentYear} was not found in the schoolYear property. Retrieved value is '${response.schoolYearTypeReference.schoolYear}'`).to.eq(currentYear);
+  });
+  
+  let beginDateString = response.beginDate;
+  console.log("beginDateString", beginDateString);
+  
+  let testBeginDate = new Date(beginDateString);
+  console.log("testBeginDate", testBeginDate);
+  
+  let yearFromBeginDate = testBeginDate.getFullYear();
+  let monthFromBeginDate = testBeginDate.getMonth() + 1;
+  let dayFromBeginDate = testBeginDate.getDate();
+  console.log("yearFromBeginDate: ", yearFromBeginDate, " || monthFromBeginDate: ", monthFromBeginDate, " || dayFromBeginDate: ", dayFromBeginDate);
+  
+  let currentTestBeginDate = `${currentYear}-10-06`;
+  
+  let formattedBeginDate = testBeginDate.toISOString().split('T')[0];
+  console.log("formattedBeginDate", formattedBeginDate);
+  
+  test("04 - Scenario 2 POST: beginDate value for the grading period is " + currentYear + "-10-06", () => {
+      expect(formattedBeginDate, `'${currentYear}-10-06' was not found in the beginDate property. Retrieved value is: ${formattedBeginDate}`).to.eql(`${currentYear}-10-06`);
+  });
+  
+  test("05 - Scenario 2 POST: gradingPeriodDescriptor value for the grading period is 'Second Six Weeks'", () =>{
+      expect(response.gradingPeriodDescriptor, `'Second Six Weeks' was not found in the gradingPeriodDescriptor property. Retrieved value is: ${response.gradingPeriodDescriptor}`).to.contain("Second Six Weeks");
+  });
+  
+  let endDateString = response.endDate;
+  console.log("endDateString", endDateString);
+  
+  let testEndDate = new Date(endDateString);
+  console.log("testEndDate", testEndDate);
+  
+  let yearFromEndDate = testEndDate.getFullYear();
+  let monthFromEndDate = testEndDate.getMonth() + 1;
+  let dayFromEndDate = testEndDate.getDate();
+  console.log("yearFromEndDate: ", yearFromEndDate, " || monthFromEndDate: ", monthFromEndDate, " || dayFromEndDate: ", dayFromEndDate);
+  
+  let currentTestEndDate = `${currentYear}-12-15`;
+  
+  let formattedEndDate = testEndDate.toISOString().split('T')[0];
+  console.log("formattedEndDate", formattedEndDate);
+  
+  test("06 - Scenario 2 POST: endDate value for the grading period is " + currentYear + "-12-15", () => {
+      expect(formattedEndDate, `'${currentYear}-12-15' was not found in the endDate property. Retrieved value is: ${formattedEndDate}`).to.eql(`${currentYear}-12-15`);
+  });
+  
+  let totalInstructionalDaysSystemValue = bru.getEnvVar("totalInstructionalDaysSystemValueS2");
+  let statementTotalInstructionalDays = 0;
+  
+  if (totalInstructionalDaysSystemValue === "" || totalInstructionalDaysSystemValue === null) {
+      statementTotalInstructionalDays = 30;
+  } else {
+      statementTotalInstructionalDays = totalInstructionalDaysSystemValue;
+  }
+  console.log("statementTotalInstructionalDays", statementTotalInstructionalDays);
+  
+  test("07 - Scenario 2 POST: totalInstructionalDays value for the grading period is " + statementTotalInstructionalDays , () =>{
+      expect(response.totalInstructionalDays).to.eql(statementTotalInstructionalDays, `'${statementTotalInstructionalDays}' was not found in the totalInstructionalDays property. Retrieved value is: '${response.totalInstructionalDays}'`);
+  });
+  
+  test("08 - Scenario 2 POST: periodSequence value for the grading period is '2'", () => {
+      expect(response.periodSequence, `'2' was not found in the periodSequence property. Retrieved value is '${response.periodSequence}'`).to.eql(2);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

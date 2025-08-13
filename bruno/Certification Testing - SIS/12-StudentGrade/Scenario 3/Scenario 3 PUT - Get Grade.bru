@@ -1,0 +1,159 @@
+meta {
+  name: Scenario 3 PUT - Get Grade
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/grades/{{s3GradeId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{certToken}}
+}
+
+script:pre-request {
+  // Making the GET request to Grades and getting the ID of the grade
+  await bru.sendRequest({
+      url: `${bru.getEnvVar('resourceBaseUrl')}/ed-fi/grades`,
+      method: 'GET',
+      headers: {
+          'Authorization': 'Bearer ' + bru.getEnvVar('certToken'),
+          'Accept': '*/*'
+      }
+  }, async function(err, res) {
+      if (err) {
+          console.log('Error in the Authentication Process:', err);
+      } else {
+          const _ = require('lodash');
+  
+          var jsonData = res.data;
+  
+          let latestGrade = _.maxBy(jsonData, '_lastModifiedDate');
+  
+          let latestGradeDate = latestGrade ? latestGrade._lastModifiedDate : null;
+          console.log('latestGradeDate', latestGradeDate);
+  
+          bru.setEnvVar("s3GradeId", latestGrade.id);
+          console.log('s3GradeId', bru.getEnvVar("s3GradeId"));
+      }
+  });
+}
+
+script:post-response {
+  test("01 - Scenario 3 PUT: Test that Grade request has 200 code status", () => {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  let response = res.getBody();
+  
+  let dateObject = new Date();
+  let currentYear = dateObject.getFullYear();
+  
+  let expectedGradeTypeDescriptor = "Grading Period";
+  let expectedLetterGradeEarned = "A";
+  let expectedNumericGradeEarned = 91;
+  let expectedCurrentGradeIndicator = false;
+  let expectedCurrentGradeAsOfDate = "-12-16";
+  let expectedSchoolId = 255901107;
+  let expectedGradingPeriodDescriptor	= "First Six Weeks";
+  let expectedPeriodSequence = 1;
+  let expectedSchoolYear = currentYear;
+  let expectedBeginDate = `${currentYear}-08-23`;
+  let expectedLocalCourseCode;
+  let expectedSchoolIdSSAR = 255901107;
+  let expectedSchoolYearSSAR = currentYear;
+  let expectedStudentUniqueId = "111111";
+  let expectedSessionName = "2016-2017 Fall Semester";
+  let expectedSectionIdentifier;
+  
+  test("02 - Scenario 3 PUT: gradeTypeDescriptor value for Grade is " + expectedGradeTypeDescriptor, () => {
+      expect(response.gradeTypeDescriptor, `'${expectedGradeTypeDescriptor}' was not found in the gradeTypeDescriptor property for Grade. Retrieved value is '${response.gradeTypeDescriptor}'`).to.include(expectedGradeTypeDescriptor);
+  });
+  
+  test("03 - Scenario 3 PUT: letterGradeEarned value for Grade is " + expectedLetterGradeEarned, () => {
+      expect(response.letterGradeEarned, `'${expectedLetterGradeEarned}' was not found in the letterGradeEarned property for Grade. Retrieved value is '${response.letterGradeEarned}'`).to.eql(expectedLetterGradeEarned);
+  });
+  
+  test("04 - Scenario 3 PUT: numericGradeEarned value for Grade is " + expectedNumericGradeEarned, () => {
+      expect(response.numericGradeEarned, `'${expectedNumericGradeEarned}' was not found in the numericGradeEarned property for Grade. Retrieved value is '${response.numericGradeEarned}'`).to.eql(expectedNumericGradeEarned);
+  });
+  
+  test("05 - Scenario 3 PUT: currentGradeIndicator value for Grade is " + expectedCurrentGradeIndicator, () => {
+      expect(response.currentGradeIndicator, `'${expectedCurrentGradeIndicator}' was not found in the currentGradeIndicator property for Grade. Retrieved value is '${response.currentGradeIndicator}'`).to.eql(expectedCurrentGradeIndicator);
+  });
+  
+  test("06 - Scenario 3 PUT: currentGradeAsOfDate value for Grade is " + expectedCurrentGradeAsOfDate, () => {
+      expect(response.currentGradeAsOfDate, `'${expectedCurrentGradeAsOfDate}' was not found in the currentGradeAsOfDate property for Grade. Retrieved value is '${response.currentGradeAsOfDate}'`).to.include(expectedCurrentGradeAsOfDate);
+  });
+  
+  test("07 - Scenario 3 PUT: schoolId value from gradingPeriodReference for Grade is " + expectedSchoolId, () => {
+      expect(response.gradingPeriodReference.schoolId, `'${expectedSchoolId}' was not found in the schoolId property from gradingPeriodReference for Grade. Retrieved value is '${response.gradingPeriodReference.schoolId}'`).to.eql(expectedSchoolId);
+  });
+  
+  test("08 - Scenario 3 PUT: gradingPeriodDescriptor value from gradingPeriodReference for Grade is " + expectedGradingPeriodDescriptor, () => {
+      expect(response.gradingPeriodReference.gradingPeriodDescriptor, `'${expectedGradingPeriodDescriptor}' was not found in the gradingPeriodDescriptor property from gradingPeriodReference for Grade. Retrieved value is '${response.gradingPeriodReference.gradingPeriodDescriptor}'`).to.include(expectedGradingPeriodDescriptor);
+  });
+  
+  test("09 - Scenario 3 PUT: periodSequence value from gradingPeriodReference for Grade is " + expectedPeriodSequence, () => {
+      expect(response.gradingPeriodReference.periodSequence, `'${expectedPeriodSequence}' was not found in the periodSequence property from gradingPeriodReference for Grade. Retrieved value is '${response.gradingPeriodReference.periodSequence}'`).to.eql(expectedPeriodSequence);
+  });
+  
+  test("10 - Scenario 3 PUT: schoolYear value from gradingPeriodReference for Grade is " + expectedSchoolYearSSAR, () => {
+      expect(response.gradingPeriodReference.schoolYear, `'${expectedSchoolYearSSAR}' was not found in the schoolYear property from gradingPeriodReference for Grade. Retrieved value is '${response.gradingPeriodReference.schoolYear}'`).to.eql(expectedSchoolYearSSAR);
+  });
+  
+  test("11 - Scenario 3 PUT: beginDate value from studentSectionAssociationReference for Grade is " + expectedBeginDate, () => {
+      expect(response.studentSectionAssociationReference.beginDate, `'${expectedBeginDate}' was not found in the beginDate property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  test("12 - Scenario 3 PUT: beginDate value from studentSectionAssociationReference for Grade is " + expectedBeginDate, () => {
+      expect(response.studentSectionAssociationReference.beginDate, `'${expectedBeginDate}' was not found in the beginDate property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.beginDate}'`).to.eql(expectedBeginDate);
+  });
+  
+  let localCourseCodeSystemValueS3 = bru.getEnvVar("localCourseCodeSystemValueS3");
+  
+  if (localCourseCodeSystemValueS3 === "" || localCourseCodeSystemValueS3 === null) {
+      expectedLocalCourseCode = "ELA-01";
+  } else {
+      expectedLocalCourseCode = localCourseCodeSystemValueS3;
+  }
+  
+  test("13 - Scenario 3 PUT: localCourseCode value from studentSectionAssociationReference for Grade is " + expectedLocalCourseCode, () => {
+      expect(response.studentSectionAssociationReference.localCourseCode, `'${expectedLocalCourseCode}' was not found in the localCourseCode property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.localCourseCode}'`).to.eql(expectedLocalCourseCode);
+  });
+  
+  test("14 - Scenario 3 PUT: schoolId value from studentSectionAssociationReference for Grade is " + expectedSchoolIdSSAR, () => {
+      expect(response.studentSectionAssociationReference.schoolId, `'${expectedSchoolIdSSAR}' was not found in the schoolId property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.schoolId}'`).to.eql(expectedSchoolIdSSAR);
+  });
+  
+  test("15 - Scenario 3 PUT: schoolYear value from studentSectionAssociationReference for Grade is " + expectedSchoolYearSSAR, () => {
+      expect(response.studentSectionAssociationReference.schoolYear, `'${expectedSchoolYearSSAR}' was not found in the schoolYear property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.schoolYear}'`).to.eql(expectedSchoolYearSSAR);
+  });
+  
+  test("16 - Scenario 3 PUT: studentUniqueId value from studentSectionAssociationReference for Grade is " + expectedStudentUniqueId, () => {
+      expect(response.studentSectionAssociationReference.studentUniqueId, `'${expectedStudentUniqueId}' was not found in the studentUniqueId property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.studentUniqueId}'`).to.eql(expectedStudentUniqueId);
+  });
+  
+  test("17 - Scenario 3 PUT: sessionName value from studentSectionAssociationReference for Grade is " + expectedSessionName, () => {
+      expect(response.studentSectionAssociationReference.sessionName, `'${expectedSessionName}' was not found in the sessionName property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.sessionName}'`).to.eql(expectedSessionName);
+  });
+  
+  let sectionIdentifierSystemValueS3 = bru.getEnvVar("sectionIdentifierSystemValueS3");
+  
+  if (sectionIdentifierSystemValueS3 === "" || sectionIdentifierSystemValueS3 === null) {
+      expectedSectionIdentifier = "ELA012017RM555";
+  } else {
+      expectedSectionIdentifier = sectionIdentifierSystemValueS3;
+  }
+  
+  test("18 - Scenario 3 PUT: sectionIdentifier value from studentSectionAssociationReference for Grade is " + expectedSectionIdentifier, () => {
+      expect(response.studentSectionAssociationReference.sectionIdentifier, `'${expectedSectionIdentifier}' was not found in the sectionIdentifier property from studentSectionAssociationReference for Grade. Retrieved value is '${response.studentSectionAssociationReference.sectionIdentifier}'`).to.eql(expectedSectionIdentifier);
+  });
+}
+
+settings {
+  encodeUrl: true
+}
