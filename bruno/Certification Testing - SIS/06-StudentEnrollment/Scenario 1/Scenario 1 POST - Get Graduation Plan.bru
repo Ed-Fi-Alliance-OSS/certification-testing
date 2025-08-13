@@ -28,11 +28,7 @@ script:pre-request {
           console.log('Error in the Authentication Process:', err);
       } else {
           var jsonData = res.data;
-
-          // Find the latest item by _lastModifiedDate using native JavaScript
-          let latestGraduationPlan = jsonData.reduce((latest, current) => {
-              return (!latest || current._lastModifiedDate > latest._lastModifiedDate) ? current : latest;
-          }, null);
+          let latestGraduationPlan = bru.findLatestByModifiedDate(jsonData);
   
           let latestGraduationPlanDate = latestGraduationPlan ? latestGraduationPlan._lastModifiedDate : null;
           console.log('latestGraduationPlanDate', latestGraduationPlanDate);

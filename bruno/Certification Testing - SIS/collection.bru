@@ -11,6 +11,21 @@ vars:pre-request {
 }
 
 script:pre-request {
+  // Utility functions for all scenarios in this collection
+  bru.findLatestByModifiedDate = function(data) {
+      if (!Array.isArray(data) || data.length === 0) return null;
+      return data.reduce((latest, current) => {
+          return (!latest || current._lastModifiedDate > latest._lastModifiedDate) ? current : latest;
+      }, null);
+  };
+  
+  bru.findLatestByDateProperty = function(data, dateProperty) {
+      if (!Array.isArray(data) || data.length === 0) return null;
+      return data.reduce((latest, current) => {
+          return (!latest || current[dateProperty] > latest[dateProperty]) ? current : latest;
+      }, null);
+  };
+  
   console.log('collection authentication...')
   await bru.sendRequest({
       url: `${bru.getEnvVar('baseUrl')}/oauth/token`,
