@@ -150,7 +150,7 @@ npm install -g @usebruno/cli
 Run with reports:
 ```bash
 bru run \
-    --env-file "environments/Certification - Joseph.bru" \
+    --env-file "environments/certification.ed-fi.org.bru" \
     --reporter-json results.json \
     --reporter-html results.html \
     --reporter-junit results.xml
@@ -182,15 +182,15 @@ Common variable sources:
 
 Docs: [Variables Overview](https://docs.usebruno.com/variables/overview) • [Environment Vars](https://docs.usebruno.com/variables/environment-variables) • [Dynamic Vars](https://docs.usebruno.com/testing/script/dynamic-variables)
 
-> 🧪 Prefer deriving IDs dynamically (like we do with `findLatestByModifiedDate`) over hard-coding GUIDs—reduces brittle failures.
+> 🧪 Prefer deriving IDs dynamically (like we do with `generateUniqueId`) over hard-coding GUIDs—reduces brittle failures.
 
 ---
 
 ## 8. Contributing Workflow
-1. Pick or create a scenario folder logically (follow numbering / domain grouping)
-2. Add the request `.bru`
+1. Pick or create a scenario folder logically (follow: data standard version / domain grouping / Entity grouping / Numbered Test)
+2. Add the request `.bru` file
 3. Write pre-request script (auth / fetch / derive IDs)
-4. Write meaningful post-response assertions
+4. Write meaningful assertions or post-response assertions for complex scenarios
 5. Re-run locally via CLI with reporters
 6. Commit (GPG-signed) & push
 7. Open a small PR for feedback
