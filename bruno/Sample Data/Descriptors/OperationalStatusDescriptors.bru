@@ -1,0 +1,29 @@
+meta {
+  name: OperationalStatusDescriptors
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/operationalStatusDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~offset: 0
+  ~limit: 25
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~operationalStatusDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

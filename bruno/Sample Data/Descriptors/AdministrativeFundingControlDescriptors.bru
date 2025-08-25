@@ -1,0 +1,29 @@
+meta {
+  name: AdministrativeFundingControlDescriptors
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/administrativeFundingControlDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: 5
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~administrativeFundingControlDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

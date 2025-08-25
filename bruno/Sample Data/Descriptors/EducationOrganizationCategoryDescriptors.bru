@@ -1,0 +1,29 @@
+meta {
+  name: EducationOrganizationCategoryDescriptors
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/educationOrganizationCategoryDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: 5
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~educationOrganizationCategoryDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

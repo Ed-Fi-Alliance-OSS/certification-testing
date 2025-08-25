@@ -1,0 +1,36 @@
+meta {
+  name: 02 - BellSchedules
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/bellSchedules?schoolId=255901001
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: 255901001
+  ~schoolId: 255901001
+  ~bellScheduleName: asdasd
+  ~limit: 10
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: false
+  ~id: {{tempBellScheduleId}}
+  ~alternateDayName: 
+  ~startTime: 
+  ~endTime: 
+  ~totalInstructionalTime: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

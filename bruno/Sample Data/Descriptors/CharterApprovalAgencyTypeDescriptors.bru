@@ -1,0 +1,29 @@
+meta {
+  name: CharterApprovalAgencyTypeDescriptors
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/charterApprovalAgencyTypeDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: 5
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~charterApprovalAgencyTypeDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

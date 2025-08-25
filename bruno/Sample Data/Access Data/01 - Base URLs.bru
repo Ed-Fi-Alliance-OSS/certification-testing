@@ -1,0 +1,15 @@
+meta {
+  name: 01 - Base URLs
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/{{apiVersion}}/api
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,47 @@
+meta {
+  name: 04 - BellSchedules
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/BellSchedules/{{tempBellScheduleId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempBellScheduleId}}",
+    "bellScheduleName": "My Schedule 1",
+    "startTime": "07:00:00",
+    "endTime": "15:55:00",
+    "schoolReference": {
+      "schoolId": "{{tempSchoolUniqueId}}"
+    },
+    "classPeriods": [
+      {
+        "classPeriodReference": {
+          "classPeriodName": "01 - Regular",
+          "schoolId": "{{tempSchoolUniqueId}}"
+        }
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const tempClassPeriodId = locationHeader.split('/').pop();
+    bru.setEnvVar('tempClassPeriodId', tempClassPeriodId);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

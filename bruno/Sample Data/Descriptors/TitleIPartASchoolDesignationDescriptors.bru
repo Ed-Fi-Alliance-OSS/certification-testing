@@ -1,0 +1,29 @@
+meta {
+  name: TitleIPartASchoolDesignationDescriptors
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/titleIPartASchoolDesignationDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~offset: 0
+  ~limit: 25
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~titleIPartASchoolDesignationDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

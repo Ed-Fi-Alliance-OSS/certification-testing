@@ -1,0 +1,29 @@
+meta {
+  name: 07 - Student (Update)
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/students
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentUniqueId": "{{tempStudentUniqueId}}",
+    "firstName": "George",
+    "middleName": "Washington",
+    "lastSurname": "Bunny",
+    "birthDate": "1940-07-27"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

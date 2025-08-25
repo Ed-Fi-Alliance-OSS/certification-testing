@@ -1,0 +1,41 @@
+meta {
+  name: 02 - ClassPeriods
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods?schoolId={{tempSchoolUniqueId}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: {{tempSchoolUniqueId}}
+  ~classPeriodName: 07 - Regular
+  ~schoolId: 255901001
+  ~limit: 10
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: false
+  ~id: aedcdefb90ad4abeb94c755ead9453db
+  ~officialAttendancePeriod: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const response = res.getBody();
+  
+  if((!!response && response.length == 1)) {
+    bru.setEnvVar('tempClassPeriodId', response[0].id);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
