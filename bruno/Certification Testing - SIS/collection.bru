@@ -1,0 +1,48 @@
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  const edFiClientName = bru.getEnvVar('edFiClientName') || bru.getGlobalEnvVar('edFiClientName');
+  let generateToken =  true;
+  
+  if(bru.getEnvVar('edFiCertToken') && bru.getEnvVar('edFiCertTokenExpiration')) {
+      const currentSeconds = new Date().getTime() / 1000;
+
+      if(currentSeconds < bru.getEnvVar('edFiCertTokenExpiration')) {
+          console.log(`Token for "${edFiClientName}" is still valid, no need to fetch a new one`);
+          generateToken = false; // Token is still valid, no need to fetch a new one
+      }
+  }
+  
+  if(generateToken) {
+    console.log(`Fetching new token for "${edFiClientName}"...`);
+    
+    await bru.sendRequest({
+      url: `${bru.getEnvVar('oauthUrl')}`,
+      method: 'POST',
+      headers: {
+          "Content-Type": "application/x-www-form-urlencoded" 
+      },
+      data: {
+            "grant_type": 'client_credentials',
+            "client_id": bru.getEnvVar('edFiClientId') || bru.getGlobalEnvVar('edFiClientId'),
+            "client_secret": bru.getEnvVar('edFiClientSecret') || bru.getGlobalEnvVar('edFiClientSecret')
+      }
+    }, async function(err, res) {
+        if (err) {
+          console.error('Error when generating the token:', err); 
+        } else {
+            const { data } = res;
+            const currentSeconds = Date.now() / 1000;
+            bru.setEnvVar('edFiCertToken', data.access_token);
+            bru.setEnvVar('edFiCertTokenExpiration', currentSeconds + data.expires_in);
+            console.log('Token generated successfully!');
+      }
+    });
+  }
+}

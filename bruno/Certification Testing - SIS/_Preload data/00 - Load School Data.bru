@@ -1,0 +1,37 @@
+meta {
+  name: 00 - Load School Data
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schools
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~schoolId: 255901107
+  ~limit: 
+  ~offset: 
+}
+
+script:post-response {
+  const response = res.getBody();
+  
+  bru.deleteEnvVar('tempSchoolId');
+  bru.deleteEnvVar('tempSchoolUniqueId');
+  bru.deleteEnvVar('tempSchoolName');
+  
+  if(!!response && response.length === 1) {
+    const { id, schoolId, nameOfInstitution: name } = response[0];
+  
+    bru.setEnvVar('tempSchoolId', id);
+    bru.setEnvVar('tempSchoolUniqueId', schoolId);
+    bru.setEnvVar('tempSchoolName', name);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

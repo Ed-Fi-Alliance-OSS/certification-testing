@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Certification Testing - SIS",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
