@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "Certification Testing - SIS",
+  "name": "Assessment",
   "type": "collection",
   "ignore": [
     "node_modules",
