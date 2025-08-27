@@ -12,15 +12,20 @@ script:pre-request {
   
   if(bru.getEnvVar('edFiCertToken') && bru.getEnvVar('edFiCertTokenExpiration')) {
       const currentSeconds = new Date().getTime() / 1000;
-
+  
       if(currentSeconds < bru.getEnvVar('edFiCertTokenExpiration')) {
-          console.log(`Token for "${edFiClientName}" is still valid, no need to fetch a new one`);
           generateToken = false; // Token is still valid, no need to fetch a new one
       }
   }
   
   if(generateToken) {
     console.log(`Fetching new token for "${edFiClientName}"...`);
+
+    if ((!bru.getEnvVar('edFiClientId') || !bru.getEnvVar('edFiClientSecret'))) {
+      const errorMsg = 'The credentials for edFiClientId or edFiClientSecret were not set yet. Please configure them in your global or collection environment variables.';
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
     
     await bru.sendRequest({
       url: `${bru.getEnvVar('oauthUrl')}`,

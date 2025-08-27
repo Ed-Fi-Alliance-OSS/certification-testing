@@ -9,7 +9,7 @@ We use [Bruno](https://docs.usebruno.com/) as our source-controlled API client. 
 
 **Primary goals of this collection:**
 1. Validate Ed-Fi API behavior for certification scenarios
-2. Provide reproducible test flows (auth → lookup → assert)
+2. Provide simple reproducible test flows (auth → fetch data → check scenario → certificate)
 3. Enable richer scripting via Developer Mode (see below)
 
 ---
@@ -19,20 +19,21 @@ Bruno ships with two JavaScript sandbox modes:
 
 | Mode | Use Case | Capabilities |
 |------|----------|--------------|
-| Safe (default) | Quick manual pokes | Limited JS, no external libs |
+| Safe (default) | Rapid ad-hoc tests | Limited JS, no external libs |
 | Developer | Our standard | Full JS, modules (lodash, moment, etc.) |
 
 Turn on Developer Mode:
-1. Open Bruno → Preferences → General
-2. Switch **Safe Mode** OFF
-3. Re-run a request with a script to confirm (no errors about restricted APIs)
+1. Open Bruno → Safe Mode (top right toolbar)
+2. Select **Developer Mode**
+3. Click Save button
+4. Re-run a request with a script to confirm (no errors about restricted APIs)
 
 > 🔐 Why it matters: All advanced scripting, utility functions, external libs, and richer assertions in this repo assume Developer Mode. In Safe Mode some tests silently underperform or fail.
 
 ---
 
 ## 3. External Libraries (Superpower Section)
-Developer Mode lets us `require` a curated set of external libs. Common ones we use (or plan to):
+Developer Mode lets us `require` a curated set of external libs:
 
 | Library | Purpose | Example |
 |---------|---------|---------|
@@ -42,7 +43,11 @@ Developer Mode lets us `require` a curated set of external libs. Common ones we 
 | crypto-js | Hashing/signatures | `CryptoJS.SHA256(payload)` |
 | faker | Synthetic test data | `faker.person.fullName()` |
 
-### Lodash Example
+> These are not in use yet, but are useful examples for future use.
+
+### How to use external libraries
+
+- Lodash Example
 ```javascript
 const _ = require('lodash');
 const users = res.data;
@@ -50,7 +55,7 @@ const active = _.filter(users, { status: 'active' });
 bru.setEnvVar('activeUserCount', active.length);
 ```
 
-### Mixed Example
+- Mixed libraries Example
 ```javascript
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
@@ -70,7 +75,8 @@ Relevant docs: [External Libraries](https://docs.usebruno.com/testing/script/ext
 ## 4. Script Lifecycle (Where Code Runs)
 We leverage both **pre-request** and **post-response** scripts.
 
-### Pre‑Request (Auth, Setup, Chaining)
+### Pre‑Request (Auth, Setup, Chaining, and Validate data requerements)
+- Authentication:
 ```javascript
 await bru.sendRequest({
     url: `${bru.getEnvVar('baseUrl')}/oauth/token`,
@@ -86,33 +92,64 @@ await bru.sendRequest({
     else bru.setEnvVar('accessToken', res.data.access_token);
 });
 ```
-
-### Post‑Response (Assertions, Extraction, Flow)
-```javascript
-test('Status is 200', () => {
-    expect(res.getStatus()).to.equal(200);
-});
-
-const body = res.getBody();
-const latest = bru.findLatestByModifiedDate(body);
-
-test('Latest record exists', () => {
-    expect(latest).to.not.be.null;
-    expect(latest.id).to.not.be.empty;
-});
-
-bru.setEnvVar('recordId', latest.id);
+- Validate data requerements:
 ```
+if (!bru.getEnvVar('tempSchoolUniqueId')) {
+    const errorMsg = 'The variable tempSchoolUniqueId is missing. Please run "Fetch School Data" for the desired school before continuing.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+```
+
+### Post‑Response (Complex Script Assertions, Data Extraction and Validation)
+
+- Complex Script Assertions
+```javascript
+const _ = require('lodash');
+const schools = res.getBody();
+
+// Find schools with more than 3 class periods
+const qualifyingSchools = _.filter(schools, s => Array.isArray(s.classPeriods) && s.classPeriods.length > 3);
+
+// Set their IDs as a comma-separated environment variable
+bru.setEnvVar('schoolsWithManyPeriods', qualifyingSchools.map(s => s.id).join(','));
+
+test('At least one school has more than 3 class periods', () => {
+    expect(qualifyingSchools.length).to.be.greaterThan(0);
+});
+```
+> This scenario cannot be implemented with the assert {} block alone, as it requires external libraries, array filtering and aggregation logic. See  `5. Assertions (Chai Style)` section below.
+
+- Data Extraction and Validation
+```javascript
+  const response = res.getBody();
+  
+  if(!!response && response.length === 1) {
+    const { id, schoolId, nameOfInstitution: name } = response[0];
+
+    bru.setEnvVar('tempSchoolId', id);
+    bru.setEnvVar('tempSchoolUniqueId', schoolId);
+    bru.setEnvVar('tempSchoolName', name);
+
+    console.log('School data was fetched correctly.');
+  } else {
+    bru.setEnvVar('tempSchoolId', null);
+    bru.setEnvVar('tempSchoolUniqueId', null);
+    bru.setEnvVar('tempSchoolName', null);
+    
+    console.warn('School data not found or multiple records returned, please check the input "Params".');
+  }
+```
+
 
 ### Shared Utility Functions (Defined at collection level)
 ```javascript
-bru.findLatestByModifiedDate = data => Array.isArray(data) && data.length
-    ? data.reduce((acc, cur) => !acc || cur._lastModifiedDate > acc._lastModifiedDate ? cur : acc, null)
-    : null;
-
-bru.findLatestByDateProperty = (data, prop) => Array.isArray(data) && data.length
-    ? data.reduce((acc, cur) => !acc || cur[prop] > acc[prop] ? cur : acc, null)
-    : null;
+    // Utility functions for all scenarios in this collection
+    bru.generateUniqueId = function(data) {
+        const base = 1000010000;
+        const maxIncrement = 899999999;
+        return (base + Math.floor(Math.random() * maxIncrement)).toString();
+    };
 ```
 
 Docs: [Script Flow](https://docs.usebruno.com/testing/script/script-flow) • [Request Object](https://docs.usebruno.com/testing/script/request/request-object) • [Response Object](https://docs.usebruno.com/testing/script/response/response-object)
@@ -140,7 +177,7 @@ Docs: [Assertions](https://docs.usebruno.com/testing/tests/assertions)
 ---
 
 ## 6. Reporting & Automation
-We use the Bruno CLI for repeatable batch runs and artifact generation.
+Use the Bruno CLI for repeatable batch runs and artifact generation.
 
 Install once:
 ```bash
@@ -148,18 +185,23 @@ npm install -g @usebruno/cli
 ```
 
 Run with reports:
+
+- CLI:
+```bru run . -r --env-file ./environments/certification.ed-fi.org.bru --output certification-report.html --format html```
+
+- BASH:
 ```bash
 bru run \
     --env-file "environments/certification.ed-fi.org.bru" \
-    --reporter-json results.json \
-    --reporter-html results.html \
-    --reporter-junit results.xml
+    --reporter-json certification-report.json \
+    --reporter-html certification-report.html \
+    --reporter-junit certification-report.xml
 ```
 
 Other patterns:
 ```bash
 # Tag‑scoped
-bru run --tags "smoke,critical" --reporter-html smoke.html
+bru run --tags "smoke,critical" --reporter-html smoke-certification-report.html
 
 # Skip sensitive headers
 bru run --reporter-html report.html --reporter-skip-headers "Authorization" "X-Api-Key"
@@ -176,9 +218,9 @@ We keep environment definition `.bru` files under `environments/`.
 Common variable sources:
 | Scope | When to use | Example |
 |-------|-------------|---------|
-| Environment | Per environment (base URLs, credentials) | `baseUrl`, `clientId` |
-| Collection  | Shared constants | Utility function seeds |
-| Runtime     | Script-calculated | `recordId`, `accessToken` |
+| Global  | Secret shared keys (optional) | `edFiClientId`, `edFiClientId` |
+| Collection  | Per environment (base URLs, credentials and shared constants) | `edFiClientId`, `baseUrl`, `tempSchoolId` |
+| Runtime     | Script-calculated | `calculatedStudentId`, `totalStudents` |
 
 Docs: [Variables Overview](https://docs.usebruno.com/variables/overview) • [Environment Vars](https://docs.usebruno.com/variables/environment-variables) • [Dynamic Vars](https://docs.usebruno.com/testing/script/dynamic-variables)
 

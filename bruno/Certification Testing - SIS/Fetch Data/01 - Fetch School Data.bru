@@ -1,17 +1,17 @@
 meta {
-  name: 00 - Load School Data
+  name: 00 - Fetch School Data
   type: http
   seq: 1
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/schools
+  url: {{resourceBaseUrl}}/ed-fi/schools?schoolId=255901107
   body: none
   auth: inherit
 }
 
 params:query {
-  ~schoolId: 255901107
+  schoolId: 255901107
   ~limit: 
   ~offset: 
 }
@@ -19,16 +19,20 @@ params:query {
 script:post-response {
   const response = res.getBody();
   
-  bru.deleteEnvVar('tempSchoolId');
-  bru.deleteEnvVar('tempSchoolUniqueId');
-  bru.deleteEnvVar('tempSchoolName');
-  
   if(!!response && response.length === 1) {
     const { id, schoolId, nameOfInstitution: name } = response[0];
   
     bru.setEnvVar('tempSchoolId', id);
     bru.setEnvVar('tempSchoolUniqueId', schoolId);
     bru.setEnvVar('tempSchoolName', name);
+    
+    console.log('School data was fetched correctly.');
+  } else {
+      console.warn('School data not found or multiple records returned, please check the input "Params".');
+  
+    bru.setEnvVar('tempSchoolId', null);
+    bru.setEnvVar('tempSchoolUniqueId', null);
+    bru.setEnvVar('tempSchoolName', null);
   }
 }
 

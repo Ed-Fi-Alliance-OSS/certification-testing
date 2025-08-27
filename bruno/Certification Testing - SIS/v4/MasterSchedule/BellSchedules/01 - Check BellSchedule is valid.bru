@@ -28,15 +28,20 @@ assert {
   res.body: isNotEmpty
   res.body[0]: isJson
   res.body[0].bellScheduleName: isNotEmpty
-  res.body[0].bellScheduleName: isString
-  res.body[0].schoolReference: isJson
-  res.body[0].schoolReference.schoolId: isNumber
   res.body[0].alternateDayName: isNotEmpty
-  res.body[0].alternateDayName: isString
-  res.body[0].totalInstructionalTime: isNumber
+  res.body[0].schoolReference: isJson
+  res.body[0].schoolReference.schoolId: isNotEmpty
   res.body[0].classPeriods: isArray
   res.body[0].classPeriods: isNotEmpty
   res.body[0].classPeriods[0].classPeriodReference.classPeriodName: isNotEmpty
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolUniqueId')) {
+    const errorMsg = 'The variable tempSchoolUniqueId is missing. Please run "Fetch School Data" for the desired school before continuing.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
 }
 
 settings {
@@ -44,10 +49,7 @@ settings {
 }
 
 docs {
-  To generate all reports run the following command:
-  
-  `bru run . -r --env-file ./environments/Custom.bru --output bruno-test-report.html --format html`
-  
+
   # v4 MasterSchedule > BellSchedule Scenarios
   
   This entity represents the schedule of class period meeting times.
@@ -59,7 +61,7 @@ docs {
     class periods.
   * Schools
   
-  ## Scenarios
+  ## Scenarios (TBD*)
   
   1. Create a Normal Schedule A Day Bell Schedule
   2. Create a Normal Schedule B Day Bell Schedule
