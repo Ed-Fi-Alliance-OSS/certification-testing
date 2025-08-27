@@ -1,0 +1,29 @@
+meta {
+  name: IndicatorGroupDescriptors
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/indicatorGroupDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~offset: 0
+  ~limit: 25
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~indicatorGroupDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

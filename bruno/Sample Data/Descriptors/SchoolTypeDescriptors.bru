@@ -1,0 +1,29 @@
+meta {
+  name: SchoolTypeDescriptors
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schoolTypeDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~offset: 0
+  ~limit: 25
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~schoolTypeDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

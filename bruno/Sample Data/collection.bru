@@ -1,0 +1,9 @@
+script:pre-request {
+  // Utility functions for all scenarios in this collection
+  
+  bru.generateUniqueId = function(data) {
+    const base = 1000010000;
+    const maxIncrement = 899999999;
+    return (base + Math.floor(Math.random() * maxIncrement)).toString();
+  };
+}

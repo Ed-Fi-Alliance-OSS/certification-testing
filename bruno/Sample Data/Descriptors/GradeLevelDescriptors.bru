@@ -1,0 +1,29 @@
+meta {
+  name: GradeLevelDescriptors
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/gradeLevelDescriptors?offset=0&limit=25
+  body: none
+  auth: bearer
+}
+
+params:query {
+  offset: 0
+  limit: 25
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~gradeLevelDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

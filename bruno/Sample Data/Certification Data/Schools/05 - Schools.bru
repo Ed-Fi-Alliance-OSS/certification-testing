@@ -1,0 +1,38 @@
+meta {
+  name: 05 - Schools
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schools?localEducationAgencyId={{tempLocalEducationAgencieId}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  localEducationAgencyId: {{tempLocalEducationAgencieId}}
+  ~schoolId: {{tempSchoolUniqueId}}
+  ~limit: 1
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~Snapshot-Identifier: 
+  ~charterApprovalSchoolYear: 
+  ~administrativeFundingControlDescriptor: 
+  ~charterApprovalAgencyTypeDescriptor: 
+  ~charterStatusDescriptor: 
+  ~internetAccessDescriptor: 
+  ~magnetSpecialProgramEmphasisSchoolDescriptor: 
+  ~schoolTypeDescriptor: 
+  ~titleIPartASchoolDesignationDescriptor: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

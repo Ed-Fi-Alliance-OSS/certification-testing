@@ -1,0 +1,40 @@
+meta {
+  name: 05 - StudentSchoolAssociation
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "schoolReference": {
+      "schoolId": "{{tempSchoolId}}"
+    },
+    "studentReference": {
+      "studentUniqueId": "{{tempStudentUniqueId}}"
+    },
+    "entryDate": "2025-08-20",
+    "entryGradeLevelDescriptor": "{{tempGradeLevelDescriptorCodeValue}}"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const studentSchoolAssociationId = locationHeader.split('/').pop();
+    bru.setEnvVar('tempStudentSchoolAssociationId', studentSchoolAssociationId);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

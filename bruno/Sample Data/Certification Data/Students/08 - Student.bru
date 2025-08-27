@@ -1,0 +1,30 @@
+meta {
+  name: 08 - Student
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/students/{{tempStudentId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentId}}",
+    "studentUniqueId": "{{tempStudentUniqueId}}",
+    "firstName": "Barack",
+    "middleName": "Hussein",
+    "lastSurname": "Obama II",
+    "birthDate": "1961-08-04"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,29 @@
+meta {
+  name: CharterStatusDescriptors
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/charterStatusDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: 5
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~charterStatusDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

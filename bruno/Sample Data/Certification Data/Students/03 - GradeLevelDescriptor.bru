@@ -1,0 +1,44 @@
+meta {
+  name: 03 - GradeLevelDescriptor
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/gradeLevelDescriptors?offset=0&limit=25
+  body: none
+  auth: bearer
+}
+
+params:query {
+  offset: 0
+  limit: 25
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~gradeLevelDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const response = res.getBody();
+  bru.deleteEnvVar('tempGradeLevelDescriptorId');
+  bru.deleteEnvVar('tempGradeLevelDescriptorName');
+  bru.deleteEnvVar('tempGradeLevelDescriptorCodeValue');
+
+  if((!!response && response.length > 0)) {
+    const { gradeLevelDescriptorId: id, shortDescription: name, codeValue } = response[0];
+
+    bru.setEnvVar('tempGradeLevelDescriptorId', id);
+    bru.setEnvVar('tempGradeLevelDescriptorName', name);
+    bru.setEnvVar('tempGradeLevelDescriptorCodeValue', "uri://ed-fi.org/GradeLevelDescriptor#" + codeValue);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,15 @@
+meta {
+  name: 03 - Dependencies
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/{{apiVersion}}/api/metadata/data/v3/dependencies
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

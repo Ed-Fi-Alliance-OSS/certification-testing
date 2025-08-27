@@ -1,0 +1,19 @@
+meta {
+  name: 05 - BellSchedules
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/BellSchedules/fda7f9f92b534d0691db1a3403d14d14
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

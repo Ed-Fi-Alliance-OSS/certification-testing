@@ -1,0 +1,29 @@
+meta {
+  name: AddressTypeDescriptors
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/addressTypeDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~limit: 5
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~addressTypeDescriptorId: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

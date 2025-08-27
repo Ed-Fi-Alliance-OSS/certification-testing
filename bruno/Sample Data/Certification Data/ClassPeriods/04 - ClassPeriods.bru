@@ -1,0 +1,44 @@
+meta {
+  name: 04 - ClassPeriods
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{tempClassPeriodId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempClassPeriodId}}",
+    "schoolReference": {
+      "schoolId": "{{tempSchoolUniqueId}}"
+    },
+    "classPeriodName": "07 - Regular",
+    "officialAttendancePeriod": true,
+    "meetingTimes": [
+      {
+        "endTime": "14:55:00",
+        "startTime": "14:00:00"
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const tempClassPeriodId = locationHeader.split('/').pop();
+    bru.setEnvVar('tempClassPeriodId', tempClassPeriodId);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
