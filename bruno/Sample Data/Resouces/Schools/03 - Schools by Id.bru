@@ -1,0 +1,38 @@
+meta {
+  name: 03 - Schools by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schools/{{tempSchoolUniqueId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  if(res.getStatus() === 200) {
+    const { id , schoolId, nameOfInstitution: name } = res.getBody();
+  
+    bru.setEnvVar('tempSchoolId', schoolId);
+    bru.setEnvVar('tempSchoolName', name);
+    bru.setEnvVar('tempSchoolUniqueId', id);
+  
+    console.log('School data was fetched correctly.');
+  } else {
+    bru.setEnvVar('tempSchoolId', null);    
+    bru.setEnvVar('tempSchoolName', null);
+    bru.setEnvVar('tempSchoolUniqueId', null);
+    
+    console.warn('School data not found, please check the URL parameter (SchoolUniqueId).');
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

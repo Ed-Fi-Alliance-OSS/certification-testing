@@ -32,17 +32,26 @@ auth:bearer {
 script:post-response {
   const response = res.getBody();
   
-  bru.deleteEnvVar('tempLocalEducationAgencieId');
-  bru.deleteEnvVar('tempLocalEducationAgencieName');
-
   if((!!response && response.length > 0)) {
     const { localEducationAgencyId: id, nameOfInstitution: name } =  response[0];
-
-    bru.setEnvVar('tempLocalEducationAgencieId', id);
-    bru.setEnvVar('tempLocalEducationAgencieName', name);
+  
+    bru.setEnvVar('tempLEAId', id);
+    bru.setEnvVar('tempLEAName', name);
+    
+    console.log('LocalEducationAgency data was fetched correctly.');
+  } else {
+    bru.setEnvVar('tempLEAId', null);
+    bru.setEnvVar('tempLEAName', null);
+    
+    console.warn('LocalEducationAgency data not found, please check the input "Params".');
   }
 }
 
 settings {
   encodeUrl: true
+}
+
+docs {
+  # Dependencies
+  - No dependencies
 }

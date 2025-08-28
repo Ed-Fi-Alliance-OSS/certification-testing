@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/bellSchedules?schoolId={{tempSchoolUniqueId}}
+  url: {{resourceBaseUrl}}/ed-fi/bellSchedules?schoolId={{tempSchoolId}}
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: {{tempSchoolUniqueId}}
+  schoolId: {{tempSchoolId}}
   ~bellScheduleName: 
   ~limit: 10
   ~offset: 0
@@ -38,7 +38,7 @@ assert {
 
 script:pre-request {
   if (!bru.getEnvVar('tempSchoolUniqueId')) {
-    const errorMsg = 'The variable tempSchoolUniqueId is missing. Please run "Fetch School Data" for the desired school before continuing.';
+    const errorMsg = 'The variable tempSchoolId is missing. Please run "Fetch School Data" for the desired school before continuing.';
     console.error(errorMsg);
     throw new Error(errorMsg);
   }
@@ -49,7 +49,6 @@ settings {
 }
 
 docs {
-
   # v4 MasterSchedule > BellSchedule Scenarios
   
   This entity represents the schedule of class period meeting times.

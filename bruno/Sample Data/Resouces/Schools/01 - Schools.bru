@@ -1,0 +1,72 @@
+meta {
+  name: 01 - Schools
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schools?localEducationAgencyId={{tempLEAId}}&schoolId=1549697793
+  body: none
+  auth: bearer
+}
+
+params:query {
+  localEducationAgencyId: {{tempLEAId}}
+  schoolId: 1549697793
+  ~schoolId: {{tempSchoolUniqueId}}
+  ~limit: 1
+  ~offset: 0
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~Snapshot-Identifier: 
+  ~charterApprovalSchoolYear: 
+  ~administrativeFundingControlDescriptor: 
+  ~charterApprovalAgencyTypeDescriptor: 
+  ~charterStatusDescriptor: 
+  ~internetAccessDescriptor: 
+  ~magnetSpecialProgramEmphasisSchoolDescriptor: 
+  ~schoolTypeDescriptor: 
+  ~titleIPartASchoolDesignationDescriptor: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempLEAId')) {
+    const errorMsg = 'The variable tempLEAId is missing. Please run GET "LocalEducationAgencies". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+script:post-response {
+  const response = res.getBody();
+  
+  if((!!response && response.length > 0)) {
+    const { id, schoolId,  nameOfInstitution: name } =  response[0];
+    
+    bru.setEnvVar('tempSchoolId', schoolId);
+    bru.setEnvVar('tempSchoolName', name);
+    bru.setEnvVar('tempSchoolUniqueId', id);
+    
+    console.log('School data was fetched correctly.');
+  } else {
+    bru.setEnvVar('tempSchoolId', null);
+    bru.setEnvVar('tempSchoolName', null);
+    bru.setEnvVar('tempSchoolUniqueId', null);
+    
+    console.warn('School data not found or multiple records returned, please check the input "Params".');
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * `GET` LocalEducationAgencies
+}

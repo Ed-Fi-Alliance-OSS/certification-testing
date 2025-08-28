@@ -1,9 +1,65 @@
 script:pre-request {
-  // Utility functions for all scenarios in this collection
-  
-  bru.generateUniqueId = function(data) {
+  // Utility function - Generates a random 10-digit ID
+  bru.generateId = function(data) {
     const base = 1000010000;
     const maxIncrement = 899999999;
     return (base + Math.floor(Math.random() * maxIncrement)).toString();
   };
+  
+  // Utility function - Generates a random 32-character ID
+  bru.generateUUID = function() {
+    let hex = '';
+    for (let i = 0; i < 32; i++) {
+      hex += Math.floor(Math.random() * 16).toString(16);
+    }
+    return hex;
+  };
+  
+  const edFiClientName = bru.getEnvVar('edFiClientName') || bru.getGlobalEnvVar('edFiClientName');
+  let generateToken =  true;
+  
+  if(bru.getEnvVar('edFiCertToken') && bru.getEnvVar('edFiCertTokenExpiration')) {
+      const currentSeconds = new Date().getTime() / 1000;
+  
+      if(currentSeconds < bru.getEnvVar('edFiCertTokenExpiration')) {
+          generateToken = false; // Token is still valid, no need to fetch a new one
+      }
+  }
+  
+  if(generateToken) {
+    console.log(`Fetching new token for "${edFiClientName}"...`);
+
+    // Get Credentials from Collection or Global environment variables
+    const edFiClientId = bru.getEnvVar('edFiClientId') || bru.getGlobalEnvVar('edFiClientId');
+    const edFiClientSecret = bru.getEnvVar('edFiClientSecret') || bru.getGlobalEnvVar('edFiClientSecret');
+
+    if (!edFiClientId || !edFiClientSecret) {
+      const errorMsg = 'The credentials for edFiClientId or edFiClientSecret were not set yet. Please configure them in your collection or global environment variables.';
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    await bru.sendRequest({
+      url: `${bru.getEnvVar('oauthUrl')}`,
+      method: 'POST',
+      headers: {
+          "Content-Type": "application/x-www-form-urlencoded" 
+      },
+      data: {
+            "grant_type": 'client_credentials',
+            "client_id": bru.getEnvVar('edFiClientId') || bru.getGlobalEnvVar('edFiClientId'),
+            "client_secret": bru.getEnvVar('edFiClientSecret') || bru.getGlobalEnvVar('edFiClientSecret')
+      }
+    }, async function(err, res) {
+        if (err) {
+          console.error('Error when generating the token:', err); 
+        } else {
+            const { data } = res;
+            const currentSeconds = Date.now() / 1000;
+            bru.setEnvVar('edFiCertToken', data.access_token);
+            bru.setEnvVar('edFiCertTokenExpiration', currentSeconds + data.expires_in);
+            console.log('Token generated successfully!');
+      }
+    });
+  }
 }

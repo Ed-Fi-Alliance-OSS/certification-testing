@@ -1,7 +1,7 @@
 meta {
-  name: 03 - ClassPeriods
+  name: 02 - ClassPeriods
   type: http
-  seq: 3
+  seq: 2
 }
 
 post {
@@ -18,7 +18,7 @@ body:json {
   {
     "classPeriodName": "Class Period 6",
     "schoolReference": {
-      "schoolId": "{{tempSchoolUniqueId}}"
+      "schoolId": "{{tempSchoolId}}"
     },
     "meetingTimes": [
       {
@@ -27,6 +27,14 @@ body:json {
       }
     ],
     "officialAttendancePeriod": true
+  }
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
   }
 }
 

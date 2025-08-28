@@ -22,17 +22,17 @@ script:post-response {
   if(!!response && response.length === 1) {
     const { id, schoolId, nameOfInstitution: name } = response[0];
   
-    bru.setEnvVar('tempSchoolId', id);
-    bru.setEnvVar('tempSchoolUniqueId', schoolId);
+    bru.setEnvVar('tempSchoolId', schoolId);
     bru.setEnvVar('tempSchoolName', name);
+    bru.setEnvVar('tempSchoolUniqueId', id);
     
     console.log('School data was fetched correctly.');
   } else {
       console.warn('School data not found or multiple records returned, please check the input "Params".');
   
     bru.setEnvVar('tempSchoolId', null);
-    bru.setEnvVar('tempSchoolUniqueId', null);
     bru.setEnvVar('tempSchoolName', null);
+    bru.setEnvVar('tempSchoolUniqueId', null);
   }
 }
 

@@ -1,5 +1,5 @@
 meta {
-  name: 02 - School
+  name: 02 - Schools
   type: http
   seq: 2
 }
@@ -17,7 +17,7 @@ auth:bearer {
 body:json {
   {
     "id": null,
-    "schoolId": "{{tempSchoolUniqueId}}",
+    "schoolId": "{{tempSchoolId}}",
     "nameOfInstitution": "Saint Joseph High School",
     "shortNameOfInstitution": "SJHS",
     "webSite": "https://www.google.com",
@@ -27,7 +27,7 @@ body:json {
     "charterStatusDescriptor": "uri://ed-fi.org/CharterStatusDescriptor#Not a Charter School",
     "titleIPartASchoolDesignationDescriptor": "uri://ed-fi.org/TitleIPartASchoolDesignationDescriptor#Not A Title I School",
     "localEducationAgencyReference": {
-      "localEducationAgencyId": "{{tempLocalEducationAgencieId}}"
+      "localEducationAgencyId": "{{tempLEAId}}"
     },
     "educationOrganizationCategories": [
       {
@@ -55,7 +55,7 @@ body:json {
     "identificationCodes": [
       {
         "educationOrganizationIdentificationSystemDescriptor": "uri://ed-fi.org/EducationOrganizationIdentificationSystemDescriptor#School",
-        "identificationCode": "{{tempSchoolIdentificationCode}}"
+        "identificationCode": "{{tempSchoolIdCode}}"
       }
     ],
     "indicators": [
@@ -111,19 +111,21 @@ body:json {
 }
 
 script:pre-request {
-  const schoolUniqueId = bru.generateUniqueId();
-  const schoolIdentificationCode = bru.generateUniqueId();
-
-  bru.setEnvVar('tempSchoolUniqueId', schoolUniqueId);
-  bru.setEnvVar('tempSchoolIdentificationCode', schoolIdentificationCode);
+  const schoolId = bru.generateId();
+  const sschoolIdentificationCode = bru.generateId();
+  
+  bru.setEnvVar('tempSchoolId', schoolId);
+  bru.setEnvVar('tempSchoolIdCode', sschoolIdentificationCode);
 }
 
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
   if (locationHeader) {
-    const schoolId = locationHeader.split('/').pop();
-    bru.setEnvVar('tempSchoolId', schoolId);
+    const schoolUniqueId = locationHeader.split('/').pop();
+    bru.setEnvVar('tempSchoolUniqueId', schoolUniqueId);
+    console.log('School data was fetched correctly.');
   }
+  
 }
 
 settings {
