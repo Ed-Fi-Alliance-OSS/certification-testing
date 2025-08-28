@@ -1,0 +1,42 @@
+meta {
+  name: 04 - ClassPeriods
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{tempClassPeriodUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempClassPeriodUniqueId}}",
+    "schoolReference": {
+      "schoolId": "{{tempSchoolId}}"
+    },
+    "classPeriodName": "07 - Regular",
+    "officialAttendancePeriod": true,
+    "meetingTimes": [{
+      "endTime": "14:55:00",
+      "startTime": "14:00:00"
+    }]
+  }
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,57 @@
+meta {
+  name: 01 - BellSchedules
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/bellSchedules?schoolId={{tempSchoolId}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~alternateDayName: 
+  ~bellScheduleName: asdasd
+  ~endTime: 
+  ~id: {{tempBellScheduleId}}
+  ~limit: 10
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  schoolId: {{tempSchoolId}}
+  ~Snapshot-Identifier: 
+  ~startTime: 
+  ~totalCount: false
+  ~totalInstructionalTime: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+script:post-response {
+  const response = res.getBody();
+
+  if ((!!response && response.length > 0)) {
+    bru.setEnvVar('tempBellScheduleUniqueId', response[0].id);
+    bru.setEnvVar('tempBellScheduleName', response[0].bellScheduleName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * `GET` Schools (filtered) or `GET` School by ID
+}

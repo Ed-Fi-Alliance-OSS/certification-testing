@@ -1,0 +1,60 @@
+meta {
+  name: 01 - LocalEducationAgencies
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/localEducationAgencies
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~offset: 0
+  ~limit: 25
+  ~minChangeVersion: 
+  ~maxChangeVersion: 
+  ~totalCount: 
+  ~localEducationAgencyId: 
+  ~educationServiceCenterId: 
+  ~parentLocalEducationAgencyId: 
+  ~stateEducationAgencyId: 
+  ~charterStatusDescriptor: 
+  ~localEducationAgencyCategoryDescriptor: 
+  ~Snapshot-Identifier: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const response = res.getBody();
+
+  if ((!!response && response.length > 0)) {
+    const {
+      localEducationAgencyId: id,
+      nameOfInstitution: name
+    } = response[0];
+
+    bru.setEnvVar('tempLEAId', id);
+    bru.setEnvVar('tempLEAName', name);
+
+    console.log('LocalEducationAgency data was fetched correctly.');
+  } else {
+    bru.setEnvVar('tempLEAId', null);
+    bru.setEnvVar('tempLEAName', null);
+
+    console.warn('LocalEducationAgency data not found, please check the input "Params".');
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+  - No dependencies
+}

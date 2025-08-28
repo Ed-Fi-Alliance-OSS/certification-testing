@@ -1,0 +1,19 @@
+meta {
+  name: 06 - Student by ID
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/students/{{tempStudentUniqueId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

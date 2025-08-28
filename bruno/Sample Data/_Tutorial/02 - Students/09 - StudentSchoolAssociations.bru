@@ -1,0 +1,51 @@
+meta {
+  name: 09 - StudentSchoolAssociations
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations?studentUniqueId={{tempStudentId}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: {{tempStudentId}}
+  ~calendarCode: 
+  ~classOfSchoolYear: 
+  ~educationOrganizationId: 
+  ~employedWhileEnrolled: 
+  ~entryDate: 
+  ~entryGradeLevelDescriptor: 
+  ~entryTypeDescriptor: 
+  ~exitWithdrawDate: 
+  ~exitWithdrawTypeDescriptor: 
+  ~fullTimeEquivalency: 
+  ~graduationPlanTypeDescriptor: 
+  ~graduationSchoolYear: 
+  ~id: 
+  ~primarySchool: 
+  ~repeatGradeIndicator: 
+  ~residencyStatusDescriptor: 
+  ~schoolChoiceTransfer: 
+  ~schoolId: 
+  ~termCompletionIndicator: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const response = res.getBody();
+  bru.deleteEnvVar('tempStudentSchoolAssociationId');
+  
+  if (!!response && response.length > 0) {
+    bru.setEnvVar('tempStudentSchoolAssociationId', response[0].id);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

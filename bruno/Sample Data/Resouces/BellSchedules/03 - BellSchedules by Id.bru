@@ -1,0 +1,38 @@
+meta {
+  name: 03 - BellSchedules by Id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/bellSchedules/{{tempBellScheduleUniqueId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    const {
+      id,
+      bellScheduleName: name
+    } = res.getBody();
+
+    bru.setEnvVar('tempBellScheduleUniqueId', id);
+    bru.setEnvVar('tempBellScheduleName', name);
+
+    console.log('BellSchedule data was fetched correctly.');
+  } else {
+    bru.setEnvVar('tempBellScheduleUniqueId', null);
+    bru.setEnvVar('tempBellScheduleName', null);
+
+    console.warn('BellSchedule data not found, please check the URL parameter (BellScheduleUniqueId).');
+  }
+}
+
+settings {
+  encodeUrl: true
+}

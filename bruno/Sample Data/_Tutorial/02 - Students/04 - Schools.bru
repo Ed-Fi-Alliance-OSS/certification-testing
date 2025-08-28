@@ -1,0 +1,42 @@
+meta {
+  name: 04 - Schools
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schools?localEducationAgencyId={{tempLocalEducationAgencieId}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  localEducationAgencyId: {{tempLocalEducationAgencieId}}
+  ~administrativeFundingControlDescriptor: 
+  ~charterApprovalAgencyTypeDescriptor: 
+  ~charterApprovalSchoolYear: 
+  ~charterStatusDescriptor: 
+  ~internetAccessDescriptor: 
+  ~limit: 1
+  ~magnetSpecialProgramEmphasisSchoolDescriptor: 
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  ~schoolId: 
+  ~schoolTypeDescriptor: 
+  ~Snapshot-Identifier: 
+  ~titleIPartASchoolDesignationDescriptor: 
+  ~totalCount: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  bru.setEnvVar('tempSchoolId', res.getBody()[0].schoolId);
+}
+
+settings {
+  encodeUrl: true
+}

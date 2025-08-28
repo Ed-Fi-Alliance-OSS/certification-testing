@@ -1,0 +1,48 @@
+meta {
+  name: 02 - Bellschedules
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/bellSchedules
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "bellScheduleName": "Normal Schedule C",
+    "startTime": "13:00:00",
+    "endTime": "15:00:00",
+    "totalInstructionalTime": 120,
+    "alternateDayName": "C",
+    "schoolReference": {
+      "schoolId": "{{tempSchoolId}}"
+    }
+  }
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const bellScheduleId = locationHeader.split('/').pop();
+    bru.setEnvVar('tempBellScheduleUniqueId', bellScheduleId);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

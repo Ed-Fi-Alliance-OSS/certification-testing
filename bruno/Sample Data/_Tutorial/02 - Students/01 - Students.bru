@@ -1,0 +1,43 @@
+meta {
+  name: 01 - Students
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/students
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~id: {{tempStudentUniqueId}}
+  ~limit: 10
+  ~studentUniqueId: {{tempStudentId}}
+  ~birthCity: 
+  ~birthCountryDescriptor: 
+  ~birthDate: 
+  ~birthInternationalProvince: 
+  ~birthSexDescriptor: 
+  ~birthStateAbbreviationDescriptor: 
+  ~citizenshipStatusDescriptor: 
+  ~dateEnteredUS: 
+  ~firstName: 
+  ~generationCodeSuffix: 
+  ~lastSurname: Bunny
+  ~maidenName: 
+  ~middleName: 
+  ~multipleBirthStatus: 
+  ~offset: 0
+  ~personId: 
+  ~personalTitlePrefix: 
+  ~sourceSystemDescriptor: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

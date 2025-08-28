@@ -1,0 +1,42 @@
+meta {
+  name: 02 - Student
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/students
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentUniqueId": "{{tempStudentId}}",
+    "firstName": "Bugs",
+    "lastSurname": "Bunny",
+    "birthDate": "1940-07-27"
+  }
+}
+
+script:pre-request {
+  const studentId = bru.generateId();
+  bru.setEnvVar('tempStudentId', studentId);
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const studentId = locationHeader.split('/').pop();
+    bru.setEnvVar('tempStudentUniqueId', studentId);
+    console.log(`Extracted studentId from Location header: ${studentId}`);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

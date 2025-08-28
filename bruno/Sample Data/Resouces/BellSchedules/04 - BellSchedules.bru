@@ -1,0 +1,45 @@
+meta {
+  name: 04 - BellSchedules
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/BellSchedules/{{tempBellScheduleUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempBellScheduleUniqueId}}",
+    "bellScheduleName": "My Schedule 1",
+    "startTime": "07:00:00",
+    "endTime": "15:55:00",
+    "schoolReference": {
+      "schoolId": "{{tempSchoolId}}"
+    },
+    "classPeriods": [{
+      "classPeriodReference": {
+        "classPeriodName": "01 - Regular",
+        "schoolId": "{{tempSchoolId}}"
+      }
+    }]
+  }
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

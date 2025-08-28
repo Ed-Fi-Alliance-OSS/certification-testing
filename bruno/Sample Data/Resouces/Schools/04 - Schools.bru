@@ -1,0 +1,90 @@
+meta {
+  name: 04 - Schools
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/schools/{{tempSchoolUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSchoolUniqueId}}",
+    "schoolId": "{{tempSchoolId}}",
+    "nameOfInstitution": "Saint Joseph High School",
+    "shortNameOfInstitution": "SJHS",
+    "webSite": "https://www.google.com",
+    "operationalStatusDescriptor": "uri://ed-fi.org/OperationalStatusDescriptor#Active",
+    "schoolTypeDescriptor": "uri://ed-fi.org/SchoolTypeDescriptor#Regular",
+    "administrativeFundingControlDescriptor": "uri://ed-fi.org/AdministrativeFundingControlDescriptor#Private School",
+    "charterStatusDescriptor": "uri://ed-fi.org/CharterStatusDescriptor#Not a Charter School",
+    "titleIPartASchoolDesignationDescriptor": "uri://ed-fi.org/TitleIPartASchoolDesignationDescriptor#Not A Title I School",
+    "localEducationAgencyReference": {
+      "localEducationAgencyId": "{{tempLEAId}}"
+    },
+    "educationOrganizationCategories": [{
+      "educationOrganizationCategoryDescriptor": "uri://ed-fi.org/EducationOrganizationCategoryDescriptor#School"
+    }],
+    "addresses": [{
+      "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Physical",
+      "city": "Saint Joseph",
+      "postalCode": "99999",
+      "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+      "streetNumberName": "456 Elm Street",
+      "nameOfCounty": "Williston"
+    }, {
+      "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Mailing",
+      "city": "Saint Joseph",
+      "postalCode": "99999-9999",
+      "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+      "streetNumberName": "P.O. Box 2035",
+      "nameOfCounty": "Williston"
+    }],
+    "identificationCodes": [{
+      "educationOrganizationIdentificationSystemDescriptor": "uri://ed-fi.org/EducationOrganizationIdentificationSystemDescriptor#School",
+      "identificationCode": "{{tempSchoolIdCode}}"
+    }],
+    "institutionTelephones": [{
+      "institutionTelephoneNumberTypeDescriptor": "uri://ed-fi.org/InstitutionTelephoneNumberTypeDescriptor#Main",
+      "telephoneNumber": "(999) 999-9999"
+    }, {
+      "institutionTelephoneNumberTypeDescriptor": "uri://ed-fi.org/InstitutionTelephoneNumberTypeDescriptor#Fax",
+      "telephoneNumber": "(000) 000-0000"
+    }],
+    "schoolCategories": [{
+      "schoolCategoryDescriptor": "uri://ed-fi.org/SchoolCategoryDescriptor#High School"
+    }],
+    "gradeLevels": [{
+      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Seventh grade"
+    }, {
+      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eighth grade"
+    }, {
+      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Ninth grade"
+    }, {
+      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Tenth grade"
+    }, {
+      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eleventh grade"
+    }, {
+      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Twelfth grade"
+    }]
+  }
+}
+
+script:pre-request {
+  const schoolId = bru.generateId();
+  const sschoolIdentificationCode = bru.generateId();
+
+  bru.setEnvVar('tempSchoolId', schoolId);
+  bru.setEnvVar('tempSchoolIdCode', sschoolIdentificationCode);
+}
+
+settings {
+  encodeUrl: true
+}
