@@ -5,37 +5,33 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/students?limit=10
+  url: {{resourceBaseUrl}}/ed-fi/students
   body: none
   auth: bearer
 }
 
 params:query {
-  limit: 10
-  ~offset: 0
-  ~minChangeVersion: 
-  ~maxChangeVersion: 
-  ~totalCount: false
-  ~id: {{tempStudentId}}
-  ~studentUniqueId: {{tempStudentUniqueId}}
-  ~personId: 
-  ~firstName: 
-  ~lastSurname: Bunny
-  ~sourceSystemDescriptor: 
-  ~citizenshipStatusDescriptor: 
-  ~birthCountryDescriptor: 
-  ~birthSexDescriptor: 
-  ~birthStateAbbreviationDescriptor: 
+  ~id: {{tempStudentUniqueId}}
+  ~limit: 10
+  ~studentUniqueId: {{tempStudentId}}
   ~birthCity: 
+  ~birthCountryDescriptor: 
   ~birthDate: 
   ~birthInternationalProvince: 
+  ~birthSexDescriptor: 
+  ~birthStateAbbreviationDescriptor: 
+  ~citizenshipStatusDescriptor: 
   ~dateEnteredUS: 
+  ~firstName: 
   ~generationCodeSuffix: 
+  ~lastSurname: Bunny
   ~maidenName: 
   ~middleName: 
   ~multipleBirthStatus: 
+  ~offset: 0
+  ~personId: 
   ~personalTitlePrefix: 
-  ~Snapshot-Identifier: 
+  ~sourceSystemDescriptor: 
 }
 
 auth:bearer {

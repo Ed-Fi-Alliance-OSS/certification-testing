@@ -5,7 +5,7 @@ meta {
 }
 
 put {
-  url: {{resourceBaseUrl}}/ed-fi/students/{{tempStudentId}}
+  url: {{resourceBaseUrl}}/ed-fi/students/{{tempStudentUniqueId}}
   body: json
   auth: bearer
 }
@@ -16,8 +16,8 @@ auth:bearer {
 
 body:json {
   {
-    "id": "{{tempStudentId}}",
-    "studentUniqueId": "{{tempStudentUniqueId}}",
+    "id": "{{tempStudentUniqueId}}",
+    "studentUniqueId": "{{tempStudentId}}",
     "firstName": "Barack",
     "middleName": "Hussein",
     "lastSurname": "Obama II",

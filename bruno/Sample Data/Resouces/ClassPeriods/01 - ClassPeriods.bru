@@ -11,17 +11,17 @@ get {
 }
 
 params:query {
-  schoolId: {{tempSchoolId}}
   ~classPeriodName: 07 - Regular
-  ~schoolId: 255901001
-  ~limit: 10
-  ~offset: 0
-  ~minChangeVersion: 
-  ~maxChangeVersion: 
-  ~totalCount: false
   ~id: aedcdefb90ad4abeb94c755ead9453db
+  ~limit: 10
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
   ~officialAttendancePeriod: 
+  schoolId: {{tempSchoolId}}
+  ~schoolId: 255901001
   ~Snapshot-Identifier: 
+  ~totalCount: false
 }
 
 auth:bearer {
@@ -38,8 +38,8 @@ script:pre-request {
 
 script:post-response {
   const response = res.getBody();
-  
-  if((!!response && response.length > 0)) {
+
+  if ((!!response && response.length > 0)) {
     bru.setEnvVar('tempClassPeriodUniqueId', response[0].id);
     bru.setEnvVar('tempClassPeriodName', response[0].classPeriodName);
   }

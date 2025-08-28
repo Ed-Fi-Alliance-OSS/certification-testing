@@ -13,16 +13,12 @@ get {
 params:query {
   ~offset: 0
   ~limit: 25
-  ~minChangeVersion: 
-  ~maxChangeVersion: 
-  ~totalCount: 
   ~localEducationAgencyId: 
   ~educationServiceCenterId: 
   ~parentLocalEducationAgencyId: 
   ~stateEducationAgencyId: 
   ~charterStatusDescriptor: 
   ~localEducationAgencyCategoryDescriptor: 
-  ~Snapshot-Identifier: 
 }
 
 auth:bearer {
@@ -34,10 +30,13 @@ script:post-response {
   
   bru.deleteEnvVar('tempLocalEducationAgencieId');
   bru.deleteEnvVar('tempLocalEducationAgencieName');
-
-  if((!!response && response.length > 0)) {
-    const { localEducationAgencyId: id, nameOfInstitution: name } =  response[0];
-
+  
+  if ((!!response && response.length > 0)) {
+    const {
+      localEducationAgencyId: id,
+      nameOfInstitution: name
+    } = response[0];
+  
     bru.setEnvVar('tempLocalEducationAgencieId', id);
     bru.setEnvVar('tempLocalEducationAgencieName', name);
   }

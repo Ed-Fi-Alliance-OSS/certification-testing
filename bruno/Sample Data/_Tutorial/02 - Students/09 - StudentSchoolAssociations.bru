@@ -5,37 +5,31 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations?studentUniqueId={{tempStudentUniqueId}}
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations?studentUniqueId={{tempStudentId}}
   body: none
   auth: bearer
 }
 
 params:query {
-  studentUniqueId: {{tempStudentUniqueId}}
-  ~limit: 1
-  ~offset: 0
-  ~minChangeVersion: 
-  ~maxChangeVersion: 
-  ~totalCount: 
-  ~Snapshot-Identifier: 
-  ~entryDate: 
-  ~schoolId: 
+  studentUniqueId: {{tempStudentId}}
   ~calendarCode: 
+  ~classOfSchoolYear: 
   ~educationOrganizationId: 
+  ~employedWhileEnrolled: 
+  ~entryDate: 
+  ~entryGradeLevelDescriptor: 
+  ~entryTypeDescriptor: 
+  ~exitWithdrawDate: 
+  ~exitWithdrawTypeDescriptor: 
+  ~fullTimeEquivalency: 
   ~graduationPlanTypeDescriptor: 
   ~graduationSchoolYear: 
-  ~classOfSchoolYear: 
-  ~entryTypeDescriptor: 
-  ~exitWithdrawTypeDescriptor: 
-  ~entryGradeLevelDescriptor: 
-  ~residencyStatusDescriptor: 
-  ~employedWhileEnrolled: 
-  ~exitWithdrawDate: 
-  ~fullTimeEquivalency: 
   ~id: 
   ~primarySchool: 
   ~repeatGradeIndicator: 
+  ~residencyStatusDescriptor: 
   ~schoolChoiceTransfer: 
+  ~schoolId: 
   ~termCompletionIndicator: 
 }
 
@@ -46,8 +40,8 @@ auth:bearer {
 script:post-response {
   const response = res.getBody();
   bru.deleteEnvVar('tempStudentSchoolAssociationId');
-
-  if(!!response && response.length > 0) {
+  
+  if (!!response && response.length > 0) {
     bru.setEnvVar('tempStudentSchoolAssociationId', response[0].id);
   }
 }

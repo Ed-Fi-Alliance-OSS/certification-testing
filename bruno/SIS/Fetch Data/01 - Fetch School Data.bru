@@ -1,5 +1,5 @@
 meta {
-  name: 00 - Fetch School Data
+  name: 01 - Fetch School Data
   type: http
   seq: 1
 }
@@ -12,23 +12,25 @@ get {
 
 params:query {
   schoolId: 255901107
-  ~limit: 
-  ~offset: 
 }
 
 script:post-response {
   const response = res.getBody();
   
-  if(!!response && response.length === 1) {
-    const { id, schoolId, nameOfInstitution: name } = response[0];
+  if (!!response && response.length === 1) {
+    const {
+      id,
+      schoolId,
+      nameOfInstitution: name
+    } = response[0];
   
     bru.setEnvVar('tempSchoolId', schoolId);
     bru.setEnvVar('tempSchoolName', name);
     bru.setEnvVar('tempSchoolUniqueId', id);
-    
+  
     console.log('School data was fetched correctly.');
   } else {
-      console.warn('School data not found or multiple records returned, please check the input "Params".');
+    console.warn('School data not found or multiple records returned, please check the input "Params".');
   
     bru.setEnvVar('tempSchoolId', null);
     bru.setEnvVar('tempSchoolName', null);

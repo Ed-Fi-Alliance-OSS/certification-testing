@@ -11,23 +11,23 @@ get {
 }
 
 params:query {
-  localEducationAgencyId: {{tempLEAId}}
-  schoolId: 1549697793
-  ~schoolId: {{tempSchoolUniqueId}}
-  ~limit: 1
-  ~offset: 0
-  ~minChangeVersion: 
-  ~maxChangeVersion: 
-  ~totalCount: 
-  ~Snapshot-Identifier: 
-  ~charterApprovalSchoolYear: 
   ~administrativeFundingControlDescriptor: 
   ~charterApprovalAgencyTypeDescriptor: 
+  ~charterApprovalSchoolYear: 
   ~charterStatusDescriptor: 
   ~internetAccessDescriptor: 
+  ~limit: 1
+  localEducationAgencyId: {{tempLEAId}}
   ~magnetSpecialProgramEmphasisSchoolDescriptor: 
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  schoolId: 1549697793
+  ~schoolId: {{tempSchoolUniqueId}}
   ~schoolTypeDescriptor: 
+  ~Snapshot-Identifier: 
   ~titleIPartASchoolDesignationDescriptor: 
+  ~totalCount: 
 }
 
 auth:bearer {
@@ -44,20 +44,24 @@ script:pre-request {
 
 script:post-response {
   const response = res.getBody();
-  
-  if((!!response && response.length > 0)) {
-    const { id, schoolId,  nameOfInstitution: name } =  response[0];
-    
+
+  if ((!!response && response.length > 0)) {
+    const {
+      id,
+      schoolId,
+      nameOfInstitution: name
+    } = response[0];
+
     bru.setEnvVar('tempSchoolId', schoolId);
     bru.setEnvVar('tempSchoolName', name);
     bru.setEnvVar('tempSchoolUniqueId', id);
-    
+
     console.log('School data was fetched correctly.');
   } else {
     bru.setEnvVar('tempSchoolId', null);
     bru.setEnvVar('tempSchoolName', null);
     bru.setEnvVar('tempSchoolUniqueId', null);
-    
+
     console.warn('School data not found or multiple records returned, please check the input "Params".');
   }
 }

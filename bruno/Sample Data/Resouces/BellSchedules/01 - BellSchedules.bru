@@ -11,19 +11,19 @@ get {
 }
 
 params:query {
-  schoolId: {{tempSchoolId}}
-  ~bellScheduleName: asdasd
-  ~limit: 10
-  ~offset: 0
-  ~minChangeVersion: 
-  ~maxChangeVersion: 
-  ~totalCount: false
-  ~id: {{tempBellScheduleId}}
   ~alternateDayName: 
-  ~startTime: 
+  ~bellScheduleName: asdasd
   ~endTime: 
-  ~totalInstructionalTime: 
+  ~id: {{tempBellScheduleId}}
+  ~limit: 10
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  schoolId: {{tempSchoolId}}
   ~Snapshot-Identifier: 
+  ~startTime: 
+  ~totalCount: false
+  ~totalInstructionalTime: 
 }
 
 auth:bearer {
@@ -40,8 +40,8 @@ script:pre-request {
 
 script:post-response {
   const response = res.getBody();
-  
-  if((!!response && response.length > 0)) {
+
+  if ((!!response && response.length > 0)) {
     bru.setEnvVar('tempBellScheduleUniqueId', response[0].id);
     bru.setEnvVar('tempBellScheduleName', response[0].bellScheduleName);
   }

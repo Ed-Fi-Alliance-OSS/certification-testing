@@ -5,19 +5,15 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/gradeLevelDescriptors?offset=0&limit=25
+  url: {{resourceBaseUrl}}/ed-fi/gradeLevelDescriptors?gradeLevelDescriptorId=972
   body: none
   auth: bearer
 }
 
 params:query {
-  offset: 0
-  limit: 25
-  ~minChangeVersion: 
-  ~maxChangeVersion: 
-  ~totalCount: 
-  ~gradeLevelDescriptorId: 
-  ~Snapshot-Identifier: 
+  gradeLevelDescriptorId: 972
+  ~limit: 25
+  ~offset: 0
 }
 
 auth:bearer {
@@ -29,10 +25,14 @@ script:post-response {
   bru.deleteEnvVar('tempGradeLevelDescriptorId');
   bru.deleteEnvVar('tempGradeLevelDescriptorName');
   bru.deleteEnvVar('tempGradeLevelDescriptorCodeValue');
-
-  if((!!response && response.length > 0)) {
-    const { gradeLevelDescriptorId: id, shortDescription: name, codeValue } = response[0];
-
+  
+  if ((!!response && response.length > 0)) {
+    const {
+      gradeLevelDescriptorId: id,
+      shortDescription: name,
+      codeValue
+    } = response[0];
+  
     bru.setEnvVar('tempGradeLevelDescriptorId', id);
     bru.setEnvVar('tempGradeLevelDescriptorName', name);
     bru.setEnvVar('tempGradeLevelDescriptorCodeValue', "uri://ed-fi.org/GradeLevelDescriptor#" + codeValue);

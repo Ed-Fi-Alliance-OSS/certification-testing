@@ -16,7 +16,7 @@ auth:bearer {
 
 body:json {
   {
-    "studentUniqueId": "{{tempStudentUniqueId}}",
+    "studentUniqueId": "{{tempStudentId}}",
     "firstName": "Bugs",
     "lastSurname": "Bunny",
     "birthDate": "1940-07-27"
@@ -24,19 +24,15 @@ body:json {
 }
 
 script:pre-request {
-  // Generate a 10-digit numeric uniqueId starting from 1000010000
-  const base = 1000010000;
-  const maxIncrement = 899999999;
-  const uniqueId = (base + Math.floor(Math.random() * maxIncrement)).toString();
-  console.log(`Generated numeric uniqueId: ${uniqueId}`);
-  bru.setEnvVar('tempStudentUniqueId', uniqueId);
+  const studentId = bru.generateId();
+  bru.setEnvVar('tempStudentId', studentId);
 }
 
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
   if (locationHeader) {
     const studentId = locationHeader.split('/').pop();
-    bru.setEnvVar('tempStudentId', studentId);
+    bru.setEnvVar('tempStudentUniqueId', studentId);
     console.log(`Extracted studentId from Location header: ${studentId}`);
   }
 }
