@@ -7,7 +7,7 @@ auth:bearer {
 }
 
 script:pre-request {
-  const edFiClientName = bru.getEnvVar('edFiClientName') || bru.getGlobalEnvVar('edFiClientName');
+  const edFiClientName = bru.getGlobalEnvVar('edFiClientName') || bru.getEnvVar('edFiClientName');
   let generateToken =  true;
   
   if(bru.getEnvVar('edFiCertToken') && bru.getEnvVar('edFiCertTokenExpiration')) {
@@ -20,11 +20,11 @@ script:pre-request {
   
   if(generateToken) {
     console.log(`Fetching new token for "${edFiClientName}"...`);
-
+  
     // Get Credentials from Collection or Global environment variables
     const edFiClientId = bru.getGlobalEnvVar('edFiClientId') || bru.getEnvVar('edFiClientId');
     const edFiClientSecret = bru.getGlobalEnvVar('edFiClientSecret') || bru.getEnvVar('edFiClientSecret');
-
+  
     if (!edFiClientId || !edFiClientSecret) {
       const errorMsg = 'The credentials for edFiClientId or edFiClientSecret were not set yet. Please configure them in your collection or global environment variables.';
       console.error(errorMsg);
