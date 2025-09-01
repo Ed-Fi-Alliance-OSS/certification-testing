@@ -1,0 +1,44 @@
+meta {
+  name: 04 - Calendars
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempCalendarUniqueId}}",
+    "schoolReference": {
+      "schoolId": "{{tempSchoolId}}"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "2025"
+    },
+    "calendarCode": "{{tempCalendarCode}}",
+    "calendarTypeDescriptor": "uri://ed-fi.org/CalendarTypeDescriptor#School"
+  }
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+  
+  const calendarCode = bru.generateId();
+  bru.setEnvVar('tempCalendarCode', calendarCode);
+}
+
+settings {
+  encodeUrl: true
+}

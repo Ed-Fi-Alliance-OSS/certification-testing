@@ -1,0 +1,38 @@
+meta {
+  name: 03 - SchoolYearTypes by Id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/SchoolYearTypes/{{tempSchoolYearTypeUniqueId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    const {
+      id,
+      schoolYearDescription: name
+    } = res.getBody();
+  
+    bru.setEnvVar('tempSchoolYearTypeUniqueId', id);
+    bru.setEnvVar('tempSchoolYearTypeName', name);
+  
+    console.log('SchoolYearTypes data was fetched correctly.');
+  } else {
+    bru.setEnvVar('tempSchoolYearTypeUniqueId', null);
+    bru.setEnvVar('tempSchoolYearTypeName', null);
+  
+    console.warn('SchoolYearTypes data not found, please check the URL parameter (SchoolYearTypeUniqueId).');
+  }
+}
+
+settings {
+  encodeUrl: true
+}

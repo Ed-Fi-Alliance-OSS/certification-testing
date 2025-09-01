@@ -1,0 +1,40 @@
+meta {
+  name: 01 - SchoolYearTypes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/SchoolYearTypes?schoolYear=2025
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolYear: 2025
+  ~schoolYearDescription: 
+  ~currentSchoolYear: 
+  ~id: {{tempSchoolYearTypeId}}
+  ~limit: 10
+  ~offset: 0
+  ~totalCount: 
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const response = res.getBody();
+  
+  if ((!!response && response.length > 0)) {
+    bru.setEnvVar('tempSchoolYearTypeUniqueId', response[0].id);
+    bru.setEnvVar('tempSchoolYearTypeName', response[0].SchoolYearTypesName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
