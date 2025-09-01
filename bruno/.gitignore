@@ -8,4 +8,4 @@
 /environments/
 
 # Ignore all .env files
-**/.env
+#**/.env
