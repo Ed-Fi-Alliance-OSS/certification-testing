@@ -1,0 +1,52 @@
+meta {
+  name: 01 - Check CalendarType was updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}?calendarCode=107SS111111&schoolYear=2025
+  body: none
+  auth: inherit
+}
+
+params:query {
+  calendarCode: 107SS111111
+  schoolYear: 2025
+  ~calendarTypeDescriptor: 
+  ~id: {{tempCalendarId}}
+}
+
+assert {
+  res.status: eq 200
+  res.body[0].calendarTypeDescriptor: isString
+}
+
+script:post-response {
+  const response = res.getBody();
+  
+  if (!!response) {
+    const {
+      id,
+      calendarCode,
+      schoolYearTypeReference: schoolYearType,
+      gradeLevels,
+      calendarTypeDescriptor
+    } = response;
+  
+    test('Calendar type was updated correctly', () => {
+      var previousType = bru.getEnvVar('tempCalendarTypeDescriptor');
+      var currentType = calendarTypeDescriptor.split('#').pop();
+  
+      // The current type should not be the same as the previous type (updated)
+      expect(currentType).not.equals(previousType);
+    });
+  
+  } else {
+    
+  }
+}
+
+settings {
+  encodeUrl: true
+}
