@@ -36,15 +36,12 @@ script:post-response {
   
     test('Grade levels were updated correctly', () => {
   
-      const currentGradeLevelDescriptors = gradeLevels.map(gl => gl.gradeLevelDescriptor.split('#').pop());
+      const currentGradeLevelDescriptors = gradeLevels.map(gl => gl.gradeLevelDescriptor.split('#').pop()).join(', ');
       const previousGradeLevelDescriptors = bru.getEnvVar('tempCalendarGradeLevels');
 
       // The current grade levels should not be the same as the previous grade levels (updated)
-      expect(currentGradeLevelDescriptors.join(', ')).not.equals(previousGradeLevelDescriptors.join(', '));
+      expect(currentGradeLevelDescriptors).not.equals(previousGradeLevelDescriptors);
     });
-  
-  } else {
-    
   }
 }
 

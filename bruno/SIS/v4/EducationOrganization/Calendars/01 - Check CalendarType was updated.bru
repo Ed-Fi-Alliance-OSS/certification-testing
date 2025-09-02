@@ -19,7 +19,7 @@ params:query {
 
 assert {
   res.status: eq 200
-  res.body[0].calendarTypeDescriptor: isString
+  res.body.calendarTypeDescriptor: isString
 }
 
 script:post-response {
@@ -41,9 +41,6 @@ script:post-response {
       // The current type should not be the same as the previous type (updated)
       expect(currentType).not.equals(previousType);
     });
-  
-  } else {
-    
   }
 }
 

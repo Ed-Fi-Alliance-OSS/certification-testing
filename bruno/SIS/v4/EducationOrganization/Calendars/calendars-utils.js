@@ -10,8 +10,7 @@ function cacheCalendarResponse(bru, response) {
     } = response[0];
   
     const typeDescriptor = calendarTypeDescriptor.split('#').pop();
-    const gradeLevelDescriptors = gradeLevels.map(gl => gl.gradeLevelDescriptor.split('#').pop());
-    console.log(`Grade Levels: ${gradeLevelDescriptors.join(', ')}`);
+    const gradeLevelDescriptors = gradeLevels.map(gl => gl.gradeLevelDescriptor.split('#').pop()).join(', ');
   
     bru.setEnvVar('tempCalendarUniqueId', id);
     bru.setEnvVar('tempCalendarCode', calendarCode);
