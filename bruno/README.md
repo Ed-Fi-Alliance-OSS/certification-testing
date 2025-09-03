@@ -212,7 +212,21 @@ Docs: [CLI Overview](https://docs.usebruno.com/bru-cli/overview) • [Reporters]
 
 ---
 
-## 7. Variables & Environments
+## 7. Secrets & Environments Variables
+
+To protect sensitive information like API keys and client secrets, we use `.env` files, which are **never** committed to the repository.
+
+### Setup
+
+1.  **Find the template:** Look for an `.env.example` file within a collection folder (e.g., `SIS/.env.example`).
+2.  **Create your local environment file:** Make a copy of `.env.example` and rename it to `.env`.
+3.  **Fill in your secrets:** Open the new `.env` file and replace the placeholder values with your actual credentials.
+
+Bruno will automatically load the variables from your `.env` file, making them available in your requests (e.g., `{{client_secret}}`).
+
+> 🔒 **Important:** The `.gitignore` file is configured to prevent `.env` files from ever being committed. This ensures that your local secrets remain private.
+
+### Environments Variables
 We keep environment definition `.bru` files under `environments/`.
 
 Common variable sources:
@@ -222,7 +236,7 @@ Common variable sources:
 | Collection  | Per environment (base URLs, credentials and shared constants) | `edFiClientId`, `baseUrl`, `tempSchoolId` |
 | Runtime     | Script-calculated | `calculatedStudentId`, `totalStudents` |
 
-Docs: [Variables Overview](https://docs.usebruno.com/variables/overview) • [Environment Vars](https://docs.usebruno.com/variables/environment-variables) • [Dynamic Vars](https://docs.usebruno.com/testing/script/dynamic-variables)
+Docs: [Variables Overview](https://docs.usebruno.com/variables/overview) • [Environment Vars](https://docs.usebruno.com/variables/environment-variables) • [Dynamic Vars](https://docs.usebruno.com/testing/script/dynamic-variables) • [Secrets Management](https://docs.usebruno.com/variables/secrets-management) •
 
 > 🧪 Prefer deriving IDs dynamically (like we do with `generateUniqueId`) over hard-coding GUIDs—reduces brittle failures.
 
