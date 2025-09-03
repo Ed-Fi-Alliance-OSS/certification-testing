@@ -7,7 +7,7 @@ auth:bearer {
 }
 
 script:pre-request {
-  const edFiClientName = bru.getEnvVar('edFiClientName') || bru.getGlobalEnvVar('edFiClientName');
+  const edFiClientName = bru.getGlobalEnvVar('edFiClientName') || bru.getEnvVar('edFiClientName');
   let generateToken =  true;
   
   if(bru.getEnvVar('edFiCertToken') && bru.getEnvVar('edFiCertTokenExpiration')) {
@@ -20,11 +20,11 @@ script:pre-request {
   
   if(generateToken) {
     console.log(`Fetching new token for "${edFiClientName}"...`);
-
+  
     // Get Credentials from Collection or Global environment variables
-    const edFiClientId = bru.getEnvVar('edFiClientId') || bru.getGlobalEnvVar('edFiClientId');
-    const edFiClientSecret = bru.getEnvVar('edFiClientSecret') || bru.getGlobalEnvVar('edFiClientSecret');
-
+    const edFiClientId = bru.getGlobalEnvVar('edFiClientId') || bru.getEnvVar('edFiClientId');
+    const edFiClientSecret = bru.getGlobalEnvVar('edFiClientSecret') || bru.getEnvVar('edFiClientSecret');
+  
     if (!edFiClientId || !edFiClientSecret) {
       const errorMsg = 'The credentials for edFiClientId or edFiClientSecret were not set yet. Please configure them in your collection or global environment variables.';
       console.error(errorMsg);
@@ -39,12 +39,13 @@ script:pre-request {
       },
       data: {
             "grant_type": 'client_credentials',
-            "client_id": bru.getEnvVar('edFiClientId') || bru.getGlobalEnvVar('edFiClientId'),
-            "client_secret": bru.getEnvVar('edFiClientSecret') || bru.getGlobalEnvVar('edFiClientSecret')
+            "client_id": edFiClientId,
+            "client_secret": edFiClientSecret
       }
     }, async function(err, res) {
         if (err) {
           console.error('Error when generating the token:', err); 
+          throw new Error('Error when generating a new token. Please check your credentials in the "Global Environments" or ".env" file, and verify you are using the right "Collection Environment".');
         } else {
             const { data } = res;
             const currentSeconds = Date.now() / 1000;

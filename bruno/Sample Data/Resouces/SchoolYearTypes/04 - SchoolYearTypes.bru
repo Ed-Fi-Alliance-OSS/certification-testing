@@ -1,0 +1,36 @@
+meta {
+  name: 04 - SchoolYearTypes
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/SchoolYearTypes/{{tempSchoolYearTypeUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSchoolYearTypeUniqueId}}",
+    "schoolYear": 2040,
+    "currentSchoolYear": false,
+    "schoolYearDescription": "2039-2040"
+  }
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

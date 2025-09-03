@@ -1,19 +1,19 @@
 meta {
-  name: SchoolTypeDescriptors
+  name: CalendarTypeDescriptors
   type: http
-  seq: 16
+  seq: 3
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/schoolTypeDescriptors
+  url: {{resourceBaseUrl}}/ed-fi/calendarTypeDescriptors
   body: none
   auth: bearer
 }
 
 params:query {
+  ~calendarTypeDescriptorId: 
   ~limit: 25
   ~offset: 0
-  ~schoolTypeDescriptorId: 
   ~totalCount: 
 }
 

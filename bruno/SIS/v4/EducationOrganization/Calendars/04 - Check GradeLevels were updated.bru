@@ -1,0 +1,63 @@
+meta {
+  name: 04 - Check GradeLevels were updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~calendarCode: IEP001
+  ~schoolYear: 2025
+  ~calendarTypeDescriptor: 
+  ~id: {{tempCalendarId}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.gradeLevels: isArray
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempCalendarUniqueId')) {
+    const errorMsg = 'The variable tempCalendarUniqueId is missing. Please run "03 - Check Calendar is valid" before continuing.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+script:post-response {
+  const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
+  const response = res.getBody();
+  
+  if (!!response) {
+    const {
+      calendarCode,
+      gradeLevels
+    } = response;
+  
+    logCalendarResponse('Scenario 4 - Check GradeLevels were updated', response, ['calendarCode', 'gradeLevels']);
+  
+    test('Grade levels were updated correctly', () => {
+  
+      const currentGradeLevelDescriptors = gradeLevels.map(gl => gl.gradeLevelDescriptor.split('#').pop()).join(', ');
+      const previousGradeLevelDescriptors = bru.getEnvVar('tempCalendarGradeLevels');
+  
+      // The current grade levels should not be the same as the previous grade levels (updated)
+      expect(currentGradeLevelDescriptors).not.equals(previousGradeLevelDescriptors);
+    });
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * Scenario 3 - Check Calendar is Valid
+}

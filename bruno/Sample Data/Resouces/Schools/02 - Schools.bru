@@ -79,10 +79,10 @@ body:json {
 
 script:pre-request {
   const schoolId = bru.generateId();
-  const sschoolIdentificationCode = bru.generateId();
-
+  const schoolIdentificationCode = bru.generateId();
+  
   bru.setEnvVar('tempSchoolId', schoolId);
-  bru.setEnvVar('tempSchoolIdCode', sschoolIdentificationCode);
+  bru.setEnvVar('tempSchoolIdCode', schoolIdentificationCode);
 }
 
 script:post-response {

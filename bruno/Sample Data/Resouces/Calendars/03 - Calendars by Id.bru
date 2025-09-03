@@ -1,0 +1,38 @@
+meta {
+  name: 03 - Calendars by Id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    const {
+      id,
+      schoolYearTypeReference: schoolYearType
+    } = res.getBody();
+  
+    bru.setEnvVar('tempCalendarUniqueId', id);
+    bru.setEnvVar('tempCalendarName', schoolYearType.schoolYear);
+  
+    console.log('Calendar data was fetched correctly.');
+  } else {
+    bru.setEnvVar('tempCalendarUniqueId', null);
+    bru.setEnvVar('tempCalendarName', null);
+  
+    console.warn('Calendar data not found, please check the URL parameter (CalendarUniqueId).');
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -3,9 +3,8 @@ vars {
   baseUrl: https://certification.ed-fi.org
   resourceBaseUrl: {{baseUrl}}/{{apiVersion}}/api/data/v3
   oauthUrl: {{baseUrl}}/{{apiVersion}}/api/oauth/token
+  edFiClientName: {{process.env.EDFI_CLIENT_NAME}}
+  edFiClientId: {{process.env.EDFI_CLIENT_ID}}
+  edFiClientSecret: {{process.env.EDFI_CLIENT_SECRET}}
 }
-vars:secret [
-  edFiClientName,
-  edFiClientId,
-  edFiClientSecret
-]
+

@@ -1,0 +1,11 @@
+# The files below are ignored to prevent accidental changes. To update them, comment out the corresponding line.
+
+# BRUNO
+# Ignore local user preferences
+**/bruno.json
+
+# Ignore environment files which may contain secrets
+/environments/
+
+# Ignore all .env files
+**/.env
