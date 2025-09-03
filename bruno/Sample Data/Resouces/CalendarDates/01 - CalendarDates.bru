@@ -1,0 +1,64 @@
+meta {
+  name: 01 - CalendarDates
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates?schoolId={{tempSchoolId}}&calendarCode={{tempCalendarCode}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: {{tempSchoolId}}
+  calendarCode: {{tempCalendarCode}}
+  ~date: 
+  ~schoolYear: 
+  ~id: {{tempCalendarDateUniqueId}}
+  ~limit: 10
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  ~Snapshot-Identifier: 
+  ~totalCount: false
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+  
+  if (!bru.getEnvVar('tempCalendarCode')) {
+    const errorMsg = 'The variable tempCalendarCode is missing. Please run GET "Calendars". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200 && (!!res.getBody() && res.getBody().length == 1)) {
+    bru.setEnvVar('tempCalendarDateUniqueId', res.getBody()[0].id);
+    console.log('Calendar Date data was fetched correctly.');
+  
+  } else {
+    bru.setEnvVar('tempCalendarDateUniqueId', null);
+    console.warn('Calendar Date data not found or multiple records were returned, please check the input "Params".');
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * `GET` Schools (filtered) or `GET` School by ID
+    * `GET` Calendars (filtered) or `GET` Calendar by ID
+}

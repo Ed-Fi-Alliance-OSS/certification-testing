@@ -1,0 +1,58 @@
+meta {
+  name: 04 - CalendarDates
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates/{{tempCalendarDateUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempCalendarDateUniqueId}}",
+    "date": "2025-09-16",
+    "calendarEvents": [
+      {
+        "calendarEventDescriptor": "uri://ed-fi.org/CalendarEventDescriptor#Instructional day"
+      },
+      {
+        "calendarEventDescriptor": "uri://ed-fi.org/CalendarEventDescriptor#Student late arrival/early dismissal"
+      }
+    ],
+  //   "calendarEvents": [
+  //     {
+  //       "calendarEventDescriptor": "uri://ed-fi.org/CalendarEventDescriptor#Holiday"
+  //     }
+  //   ],
+    "calendarReference": {
+      "calendarCode": "{{tempCalendarCode}}",
+      "schoolId": "{{tempSchoolId}}",
+      "schoolYear": 2025
+    }
+  }
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+  
+  if (!bru.getEnvVar('tempCalendarCode')) {
+    const errorMsg = 'The variable tempCalendarCode is missing. Please run GET "Calendars". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
