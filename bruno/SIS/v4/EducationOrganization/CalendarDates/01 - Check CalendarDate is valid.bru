@@ -1,0 +1,75 @@
+meta {
+  name: 01 - Check CalendarDate is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates?schoolId={{tempSchoolId}}&calendarCode={{tempCalendarCode}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: {{tempSchoolId}}
+  calendarCode: {{tempCalendarCode}}
+  ~id: {{tempCalendarDateUniqueId}}
+  ~date: 
+  ~schoolYear: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body[0].id: isDefined
+  res.body[0].date: isString
+  res.body[0].calendarReference: isDefined
+  res.body[0].calendarReference.calendarCode: isString
+  res.body[0].calendarReference.schoolId: isNumber
+  res.body[0].calendarReference.schoolYear: isNumber
+  res.body[0].calendarEvents: isArray
+  res.body[0].calendarEvents: isNotEmpty
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing.  Please run "Fetch School Data" for the desired school before continuing.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+  
+  if (!bru.getEnvVar('tempCalendarCode')) {
+    const errorMsg = 'The variable tempCalendarCode is missing. Please run GET "Fetch Calendar data". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+script:post-response {
+  const { cacheStoreCalendarDateResponse, cacheWipeCalendarDateResponse, logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
+  
+  if (res.status === 200) {
+    const response = res.getBody();
+    
+    if (!!response && response.length === 1) {
+      cacheStoreCalendarDateResponse(bru, response[0]);
+      logCalendarDateResponse('Scenario 1 - Check Calendar Date is valid', response[0]);
+    } else {
+      cacheWipeCalendarDateResponse(bru);
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * `GET` Fetch School Data
+    * `GET` Fetch Calendar data
+}

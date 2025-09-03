@@ -18,15 +18,18 @@ script:post-response {
   if (res.getStatus() === 200) {
     const {
       id,
+      calendarCode,
       schoolYearTypeReference: schoolYearType
     } = res.getBody();
   
     bru.setEnvVar('tempCalendarUniqueId', id);
+    bru.setEnvVar('tempCalendarCode', calendarCode);
     bru.setEnvVar('tempCalendarName', schoolYearType.schoolYear);
   
     console.log('Calendar data was fetched correctly.');
   } else {
     bru.setEnvVar('tempCalendarUniqueId', null);
+    bru.setEnvVar('tempCalendarCode', null);
     bru.setEnvVar('tempCalendarName', null);
   
     console.warn('Calendar data not found, please check the URL parameter (CalendarUniqueId).');

@@ -1,0 +1,69 @@
+meta {
+  name: 02 - Check CalendarEvents were updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates/{{tempCalendarDateUniqueId}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~schoolId: {{tempSchoolId}}
+  ~calendarCode: {{tempCalendarCode}}
+  ~date: 
+  ~schoolYear: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.calendarEvents: isArray
+  res.body.calendarEvents: isNotEmpty
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolId')) {
+    const errorMsg = 'The variable tempSchoolId is missing.  Please run "Fetch School Data" for the desired school before continuing.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+  
+  if (!bru.getEnvVar('tempCalendarCode')) {
+    const errorMsg = 'The variable tempCalendarCode is missing. Please run GET "Fetch Calendar data". Check the dependencies in the "Docs" tab.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+script:post-response {
+  const { cacheStoreCalendarDateResponse, cacheWipeCalendarDateResponse, logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
+  
+  if (res.status === 200 && !!res.body) {
+    const response = res.getBody();
+  
+    logCalendarDateResponse('Scenario 2 - Check CalendarEvents were updated', response, ['calendarCode', 'date', 'calendarEvents']);
+  
+    test('CalendarEvents were updated correctly', () => {
+      var previousEvents = bru.getEnvVar('tempCalendarDateEventDescriptors');
+      var currentEvents = response.calendarEvents.map(e => e.calendarEventDescriptor.split('#').pop()).join(', ');
+  
+      // The current events should not be the same as the previous events (updated)
+      expect(currentEvents).not.equals(previousEvents);
+    });
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * Scenario 1 - Check CalendarDate is Valid
+}

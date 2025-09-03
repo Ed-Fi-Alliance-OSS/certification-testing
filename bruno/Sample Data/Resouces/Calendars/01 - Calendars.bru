@@ -41,7 +41,10 @@ script:post-response {
   
   if ((!!response && response.length > 0)) {
     bru.setEnvVar('tempCalendarUniqueId', response[0].id);
+    bru.setEnvVar('tempCalendarCode', response[0].calendarCode);
     bru.setEnvVar('tempCalendarName', response[0].schoolYearTypeReference.schoolYear);
+    
+    console.log('Calendar data was fetched correctly.');
   }
 }
 

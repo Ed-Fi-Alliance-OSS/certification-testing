@@ -1,0 +1,63 @@
+meta {
+  name: 02 - Fetch Calendar data
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars?schoolId={{tempSchoolId}}&calendarCode=1148479518&schoolYear=2025
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: {{tempSchoolId}}
+  calendarCode: 1148479518
+  schoolYear: 2025
+  ~calendarTypeDescriptor: 
+  ~id: {{tempCalendarId}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body[0].id: isDefined
+  res.body[0].calendarCode: isString
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolYearTypeReference: isDefined
+  res.body[0].schoolYearTypeReference.schoolYear: isNumber
+  res.body[0].calendarTypeDescriptor: isString
+  res.body[0].gradeLevels: isArray
+}
+
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolUniqueId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run "Fetch School Data" for the desired school before continuing.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
+script:post-response {
+  const { cacheStoreCalendarResponse, cacheWipeCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
+  
+  if (res.status === 200) {
+    const response = res.getBody();
+    
+    if (!!response && response.length === 1) {
+      cacheStoreCalendarResponse(bru, response[0]);
+    } else {
+      cacheWipeCalendarResponse(bru);
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * `GET` Fetch School Data
+}
