@@ -22,6 +22,14 @@ assert {
   res.body.gradeLevels: isArray
 }
 
+script:pre-request {
+  if (!bru.getEnvVar('tempCalendarUniqueId')) {
+    const errorMsg = 'The variable tempCalendarUniqueId is missing. Please run "03 - Check Calendar is valid" before continuing.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
 script:post-response {
   const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
   const response = res.getBody();
@@ -47,4 +55,9 @@ script:post-response {
 
 settings {
   encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * Scenario 3 - Check Calendar is Valid
 }

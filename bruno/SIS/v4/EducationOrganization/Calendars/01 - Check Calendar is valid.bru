@@ -31,6 +31,14 @@ assert {
   res.body[0].gradeLevels: isArray
 }
 
+script:pre-request {
+  if (!bru.getEnvVar('tempSchoolUniqueId')) {
+    const errorMsg = 'The variable tempSchoolId is missing. Please run "Fetch School Data" for the desired school before continuing.';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+}
+
 script:post-response {
   const { cacheStoreCalendarResponse, cacheWipeCalendarResponse, logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
   
@@ -48,4 +56,9 @@ script:post-response {
 
 settings {
   encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * `GET` Fetch School Data
 }
