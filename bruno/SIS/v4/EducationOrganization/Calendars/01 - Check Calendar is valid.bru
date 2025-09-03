@@ -32,9 +32,17 @@ assert {
 }
 
 script:post-response {
-  const { cacheCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
+  const { cacheStoreCalendarResponse, cacheWipeCalendarResponse, logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
+  
   if (res.status === 200) {
-    cacheCalendarResponse(bru, res.getBody());
+    const response = res.getBody();
+    
+    if (!!response && response.length === 1) {
+      cacheStoreCalendarResponse(bru, response[0]);
+      logCalendarResponse('Scenario 1 - Check Calendar is valid', response[0]);
+    } else {
+      cacheWipeCalendarResponse(bru);
+    }
   }
 }
 

@@ -1,18 +1,18 @@
 meta {
-  name: 01 - Check CalendarType was updated
+  name: 02 - Check CalendarType was updated
   type: http
   seq: 2
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}?calendarCode=107SS111111&schoolYear=2025
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}
   body: none
   auth: inherit
 }
 
 params:query {
-  calendarCode: 107SS111111
-  schoolYear: 2025
+  ~calendarCode: 107SS111111
+  ~schoolYear: 2025
   ~calendarTypeDescriptor: 
   ~id: {{tempCalendarId}}
 }
@@ -23,16 +23,16 @@ assert {
 }
 
 script:post-response {
+  const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
   const response = res.getBody();
   
   if (!!response) {
     const {
-      id,
       calendarCode,
-      schoolYearTypeReference: schoolYearType,
-      gradeLevels,
-      calendarTypeDescriptor
+      calendarTypeDescriptor,
     } = response;
+  
+    logCalendarResponse('Scenario 2 - Check CalendarType was updated', response, ['calendarCode', 'calendarTypeDescriptor']);
   
     test('Calendar type was updated correctly', () => {
       var previousType = bru.getEnvVar('tempCalendarTypeDescriptor');

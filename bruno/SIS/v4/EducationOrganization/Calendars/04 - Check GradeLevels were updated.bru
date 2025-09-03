@@ -1,18 +1,18 @@
 meta {
-  name: 02 - Check GradeLevels were updated
+  name: 04 - Check GradeLevels were updated
   type: http
   seq: 4
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}?calendarCode=IEP001&schoolYear=2025
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}
   body: none
   auth: inherit
 }
 
 params:query {
-  calendarCode: IEP001
-  schoolYear: 2025
+  ~calendarCode: IEP001
+  ~schoolYear: 2025
   ~calendarTypeDescriptor: 
   ~id: {{tempCalendarId}}
 }
@@ -23,22 +23,22 @@ assert {
 }
 
 script:post-response {
+  const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
   const response = res.getBody();
   
   if (!!response) {
     const {
-      id,
       calendarCode,
-      schoolYearTypeReference: schoolYearType,
-      gradeLevels,
-      calendarTypeDescriptor: calendarType
+      gradeLevels
     } = response;
+  
+    logCalendarResponse('Scenario 4 - Check GradeLevels were updated', response, ['calendarCode', 'gradeLevels']);
   
     test('Grade levels were updated correctly', () => {
   
       const currentGradeLevelDescriptors = gradeLevels.map(gl => gl.gradeLevelDescriptor.split('#').pop()).join(', ');
       const previousGradeLevelDescriptors = bru.getEnvVar('tempCalendarGradeLevels');
-
+  
       // The current grade levels should not be the same as the previous grade levels (updated)
       expect(currentGradeLevelDescriptors).not.equals(previousGradeLevelDescriptors);
     });
