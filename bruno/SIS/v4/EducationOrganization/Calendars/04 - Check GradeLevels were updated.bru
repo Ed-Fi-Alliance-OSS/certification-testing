@@ -32,11 +32,11 @@ script:pre-request {
 
 script:post-response {
   const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
-  const { expectChanged, mapDescriptors } = require('./utils');
+  const { expectChanged, mapDescriptors, joinDescriptors } = require('./utils');
   const response = res.getBody();
 
   if (response) {
-    const currentGradeLevelDescriptors = mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor).join(', ');
+    const currentGradeLevelDescriptors = joinDescriptors(mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor));
     const previousGradeLevelDescriptors = bru.getEnvVar('tempCalendarGradeLevels');
     
     logCalendarResponse('Scenario 4 - Check GradeLevels were updated', response, ['calendarCode', 'gradeLevels']);

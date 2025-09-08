@@ -54,12 +54,20 @@ function filterObjectByKeys(obj, keys) {
 
 // Descriptor helpers -------------------------------------------------
 function extractDescriptor(value) {
+  // keeps pop logic centralized and token standarized 
   return typeof value === 'string' ? value.split('#').pop() : value;
 }
 
 function mapDescriptors(items, accessorFn) {
+  // keeps map logic centralized
   if (!Array.isArray(items)) return [];
   return items.map(it => extractDescriptor(accessorFn(it)));
+}
+
+function joinDescriptors(items) {
+  // keeps join logic centralized and token standarized
+  if (!Array.isArray(items)) return '';
+  return items.join(', ');
 }
 
 // Env var helpers -----------------------------------------------------
@@ -68,7 +76,7 @@ function setVars(bru, kv) {
 }
 
 function setVarsMessage(entityName) {
-  console.warn(`${entityName} data was cached correctly.`);
+  console.info(`${entityName} data was cached correctly.`);
 }
 
 function wipeVars(bru, keys) {
@@ -139,6 +147,7 @@ module.exports = {
   filterObjectByKeys,
   extractDescriptor,
   mapDescriptors,
+  joinDescriptors,
   setVars,
   setVarsMessage,
   wipeVars,

@@ -9,7 +9,7 @@ We use [Bruno](https://docs.usebruno.com/) as our source-controlled API client. 
 
 **Primary goals of this collection:**
 1. Validate Ed-Fi API behavior for certification scenarios
-2. Provide simple reproducible test flows (auth → fetch data → check scenario → certificate)
+2. Provide simple reproducible test flows (auth → fetch data → check scenario → certification)
 3. Enable richer scripting via Developer Mode (see below)
 
 ---
@@ -75,7 +75,7 @@ Relevant docs: [External Libraries](https://docs.usebruno.com/testing/script/ext
 ## 4. Script Lifecycle (Where Code Runs)
 We leverage both **pre-request** and **post-response** scripts.
 
-### Pre‑Request (Auth, Setup, Chaining, and Validate data requerements)
+### Pre‑Request (Auth, Setup, Chaining, and Validate data requirements)
 - Authentication:
 ```javascript
 await bru.sendRequest({

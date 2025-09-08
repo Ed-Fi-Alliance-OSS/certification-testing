@@ -40,12 +40,12 @@ script:pre-request {
 
 script:post-response {
   const { logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
-  const { expectChanged, mapDescriptors } = require('./utils');
+  const { expectChanged, mapDescriptors, joinDescriptors } = require('./utils');
 
   if (res.status === 200 && res.body) {
     const response = res.getBody();
     const previousEvents = bru.getEnvVar('tempCalendarDateEventDescriptors');
-    const currentEvents = mapDescriptors(response.calendarEvents || [], e => e.calendarEventDescriptor).join(', ');
+    const currentEvents = joinDescriptors(mapDescriptors(response.calendarEvents || [], e => e.calendarEventDescriptor));
 
     logCalendarDateResponse('Scenario 2 - Check CalendarEvents were updated', response, ['calendarCode', 'date', 'calendarEvents']);
     expectChanged(previousEvents, currentEvents, 'Calendar events');

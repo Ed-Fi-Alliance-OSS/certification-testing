@@ -1,4 +1,4 @@
-const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, extractDescriptor, mapDescriptors, logScenario, logSpecCalendar } = require('../../../utils');
+const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, extractDescriptor, mapDescriptors, joinDescriptors, logScenario, logSpecCalendar } = require('../../../utils');
 
 // Cache the calendar response values in temporary variables using generic helpers
 function cacheStoreCalendarResponse(bru, response) {
@@ -6,10 +6,10 @@ function cacheStoreCalendarResponse(bru, response) {
     tempCalendarUniqueId: response.id,
     tempCalendarCode: response.calendarCode,
     tempCalendarSchoolYear: response.schoolYearTypeReference.schoolYear,
-    tempCalendarGradeLevels: mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor).join(', '),
+    tempCalendarGradeLevels: joinDescriptors(mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor)),
     tempCalendarTypeDescriptor: extractDescriptor(response.calendarTypeDescriptor)
   });
-  setVarsMessage('Calendar Date');
+  setVarsMessage('Calendar');
 }
 
 function cacheWipeCalendarResponse(bru) {
@@ -20,7 +20,7 @@ function cacheWipeCalendarResponse(bru) {
     'tempCalendarGradeLevels',
     'tempCalendarTypeDescriptor'
   ]);
-  wipeVarsWarning('Calendar Date');
+  wipeVarsWarning('Calendar');
 }
 
 function logCalendarResponse(scenarioName, response, filterArray = null) {

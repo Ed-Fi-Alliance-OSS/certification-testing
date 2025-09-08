@@ -1,10 +1,10 @@
-const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, mapDescriptors, logScenario, logSpecCalendarDate } = require('../../../utils');
+const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, mapDescriptors, joinDescriptors, logScenario, logSpecCalendarDate } = require('../../../utils');
 
 // Cache the calendar date response values using generic helpers
 function cacheStoreCalendarDateResponse(bru, response) {
   setVars(bru, {
     tempCalendarDateUniqueId: response.id,
-    tempCalendarDateEventDescriptors: mapDescriptors(response.calendarEvents || [], ev => ev.calendarEventDescriptor).join(', ')
+    tempCalendarDateEventDescriptors: joinDescriptors(mapDescriptors(response.calendarEvents || [], ev => ev.calendarEventDescriptor))
   });
   setVarsMessage('Calendar Date');
 }
