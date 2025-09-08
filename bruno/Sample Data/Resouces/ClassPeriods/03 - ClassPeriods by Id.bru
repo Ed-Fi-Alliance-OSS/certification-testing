@@ -15,21 +15,16 @@ auth:bearer {
 }
 
 script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('../../utils');
+
   if (res.getStatus() === 200) {
-    const {
-      id,
-      classPeriodName: name
-    } = res.getBody();
-
-    bru.setEnvVar('tempClassPeriodUniqueId', id);
-    bru.setEnvVar('tempClassPeriodName', name);
-
-    console.log('ClassPeriod data was fetched correctly.');
+    const { id, classPeriodName: name } = res.getBody();
+    
+    setVars(bru, { tempClassPeriodUniqueId: id, tempClassPeriodName: name });
+    setVarsMessage('ClassPeriod');
   } else {
-    bru.setEnvVar('tempClassPeriodId', null);
-    bru.setEnvVar('tempClassPeriodName', null);
-
-    console.warn('ClassPeriod data not found, please check the URL parameter (ClassPeriodId).');
+    wipeVars(bru, ['tempClassPeriodUniqueId', 'tempClassPeriodName']);
+    wipeVarsWarning('ClassPeriod');
   }
 }
 

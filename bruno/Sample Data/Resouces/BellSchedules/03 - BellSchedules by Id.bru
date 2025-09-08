@@ -15,21 +15,16 @@ auth:bearer {
 }
 
 script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('../../utils');
+
   if (res.getStatus() === 200) {
-    const {
-      id,
-      bellScheduleName: name
-    } = res.getBody();
-
-    bru.setEnvVar('tempBellScheduleUniqueId', id);
-    bru.setEnvVar('tempBellScheduleName', name);
-
-    console.log('BellSchedule data was fetched correctly.');
+    const { id, bellScheduleName: name } = res.getBody();
+    
+    setVars(bru, { tempBellScheduleUniqueId: id, tempBellScheduleName: name });
+    setVarsMessage('BellSchedule');
   } else {
-    bru.setEnvVar('tempBellScheduleUniqueId', null);
-    bru.setEnvVar('tempBellScheduleName', null);
-
-    console.warn('BellSchedule data not found, please check the URL parameter (BellScheduleUniqueId).');
+    wipeVars(bru, ['tempBellScheduleUniqueId', 'tempBellScheduleName']);
+    wipeVarsWarning('BellSchedule');
   }
 }
 

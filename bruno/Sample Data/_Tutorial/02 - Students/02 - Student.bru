@@ -24,12 +24,15 @@ body:json {
 }
 
 script:pre-request {
-  const studentId = bru.generateId();
+  const { generateId } = require('../../utils');
+  const studentId = generateId();
+
   bru.setEnvVar('tempStudentId', studentId);
 }
 
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
+  
   if (locationHeader) {
     const studentId = locationHeader.split('/').pop();
     bru.setEnvVar('tempStudentUniqueId', studentId);

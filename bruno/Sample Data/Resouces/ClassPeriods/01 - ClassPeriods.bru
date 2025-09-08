@@ -29,19 +29,24 @@ auth:bearer {
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempSchoolId')) {
-    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('../../utils');
+
+  validateDependency(bru, 'tempSchoolId', 'GET Schools');
 }
 
 script:post-response {
-  const response = res.getBody();
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('../../utils');
+  const item = pickSingle(res.getBody());
 
-  if ((!!response && response.length > 0)) {
-    bru.setEnvVar('tempClassPeriodUniqueId', response[0].id);
-    bru.setEnvVar('tempClassPeriodName', response[0].classPeriodName);
+  if (item) {
+    setVars(bru, {
+      tempClassPeriodUniqueId: item.id,
+      tempClassPeriodName: item.classPeriodName
+    });
+    setVarsMessage('ClassPeriod');
+  } else {
+    wipeVars(bru, ['tempClassPeriodUniqueId', 'tempClassPeriodName']);
+    wipeVarsWarning('ClassPeriod');
   }
 }
 

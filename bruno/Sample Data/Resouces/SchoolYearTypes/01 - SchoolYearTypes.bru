@@ -27,11 +27,18 @@ auth:bearer {
 }
 
 script:post-response {
-  const response = res.getBody();
-  
-  if ((!!response && response.length > 0)) {
-    bru.setEnvVar('tempSchoolYearTypeUniqueId', response[0].id);
-    bru.setEnvVar('tempSchoolYearTypeName', response[0].SchoolYearTypesName);
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('../../utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVars(bru, {
+      tempSchoolYearTypeUniqueId: item.id,
+      tempSchoolYearTypeName: item.SchoolYearTypesName
+    });
+    setVarsMessage('SchoolYearType');
+  } else {
+    wipeVars(bru, ['tempSchoolYearTypeUniqueId', 'tempSchoolYearTypeName']);
+    wipeVarsWarning('SchoolYearType');
   }
 }
 

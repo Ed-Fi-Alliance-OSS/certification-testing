@@ -1,4 +1,3 @@
-// utility.js
 /**
  * validateDependency
  * Ensures a required environment variable is present before executing a request.

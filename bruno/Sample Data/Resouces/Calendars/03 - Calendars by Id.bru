@@ -15,24 +15,17 @@ auth:bearer {
 }
 
 script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('../../utils');
+
   if (res.getStatus() === 200) {
-    const {
-      id,
-      calendarCode,
-      schoolYearTypeReference: schoolYearType
-    } = res.getBody();
-  
-    bru.setEnvVar('tempCalendarUniqueId', id);
-    bru.setEnvVar('tempCalendarCode', calendarCode);
-    bru.setEnvVar('tempCalendarName', schoolYearType.schoolYear);
-  
-    console.log('Calendar data was fetched correctly.');
+    const { id, calendarCode, schoolYearTypeReference: schoolYearType } = res.getBody();
+    const calendarName = schoolYearType && schoolYearType.schoolYear;
+    
+    setVars(bru, { tempCalendarUniqueId: id, tempCalendarCode: calendarCode, tempCalendarName: calendarName });
+    setVarsMessage('Calendar');
   } else {
-    bru.setEnvVar('tempCalendarUniqueId', null);
-    bru.setEnvVar('tempCalendarCode', null);
-    bru.setEnvVar('tempCalendarName', null);
-  
-    console.warn('Calendar data not found, please check the URL parameter (CalendarUniqueId).');
+    wipeVars(bru, ['tempCalendarUniqueId', 'tempCalendarCode', 'tempCalendarName']);
+    wipeVarsWarning('Calendar');
   }
 }
 

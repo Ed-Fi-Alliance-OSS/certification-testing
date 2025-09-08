@@ -29,27 +29,22 @@ auth:bearer {
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempSchoolId')) {
-    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
-  
-  if (!bru.getEnvVar('tempCalendarCode')) {
-    const errorMsg = 'The variable tempCalendarCode is missing. Please run GET "Calendars". Check the dependencies in the "Docs" tab.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('../../utils');
+
+  validateDependency(bru, 'tempSchoolId', 'GET Schools');
+  validateDependency(bru, 'tempCalendarCode', 'GET Calendars');
 }
 
 script:post-response {
-  if (res.getStatus() === 200 && (!!res.getBody() && res.getBody().length == 1)) {
-    bru.setEnvVar('tempCalendarDateUniqueId', res.getBody()[0].id);
-    console.log('Calendar Date data was fetched correctly.');
-  
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('../../utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    bru.setEnvVar('tempCalendarDateUniqueId', item.id);
+    setVarsMessage('CalendarDate');
   } else {
-    bru.setEnvVar('tempCalendarDateUniqueId', null);
-    console.warn('Calendar Date data not found or multiple records were returned, please check the input "Params".');
+    wipeVars(bru, ['tempCalendarDateUniqueId']);
+    wipeVarsWarning('CalendarDate');
   }
 }
 

@@ -31,19 +31,24 @@ auth:bearer {
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempSchoolId')) {
-    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('../../utils');
+
+  validateDependency(bru, 'tempSchoolId', 'GET Schools');
 }
 
 script:post-response {
-  const response = res.getBody();
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('../../utils');
+  const item = pickSingle(res.getBody());
 
-  if ((!!response && response.length > 0)) {
-    bru.setEnvVar('tempBellScheduleUniqueId', response[0].id);
-    bru.setEnvVar('tempBellScheduleName', response[0].bellScheduleName);
+  if (item) {
+    setVars(bru, {
+      tempBellScheduleUniqueId: item.id,
+      tempBellScheduleName: item.bellScheduleName
+    });
+    setVarsMessage('BellSchedule');
+  } else {
+    wipeVars(bru, ['tempBellScheduleUniqueId', 'tempBellScheduleName']);
+    wipeVarsWarning('BellSchedule');
   }
 }
 

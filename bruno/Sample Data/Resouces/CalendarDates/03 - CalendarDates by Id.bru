@@ -15,18 +15,16 @@ auth:bearer {
 }
 
 script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('../../utils');
+
   if (res.getStatus() === 200) {
-    const {
-      id,
-    } = res.getBody();
-  
+    const { id } = res.getBody();
+
     bru.setEnvVar('tempCalendarDateUniqueId', id);
-  
-    console.log('Calendar Date data was fetched correctly.');
+    setVarsMessage('CalendarDate');
   } else {
-    bru.setEnvVar('tempCalendarDateUniqueId', null);
-  
-    console.warn('Calendar Date data not found, please check the URL parameter (CalendarUniqueId).');
+    wipeVars(bru, ['tempCalendarDateUniqueId']);
+    wipeVarsWarning('CalendarDate');
   }
 }
 

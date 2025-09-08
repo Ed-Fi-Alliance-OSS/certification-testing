@@ -15,10 +15,10 @@ auth:bearer {
 }
 
 script:post-response {
-  if(res.status == 204){
-    bru.setEnvVar('tempCalendarDateUniqueId', null);
-  
-    console.warn('Calendar Date data was wiped.')
+  if (res.status == 204) {
+    const { wipeVars, wipeVarsWarning } = require('../../utils');
+    wipeVars(bru, ['tempCalendarDateUniqueId']);
+    wipeVarsWarning('Calendar Date');
   }
 }
 
