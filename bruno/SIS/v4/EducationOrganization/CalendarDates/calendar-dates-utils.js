@@ -1,44 +1,24 @@
-// Cache the calendar response values in temporary variables
+const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, mapDescriptors, logScenario, logSpecCalendarDate } = require('../../../utils');
+
+// Cache the calendar date response values using generic helpers
 function cacheStoreCalendarDateResponse(bru, response) {
-    const {
-      id,
-      calendarEvents
-    } = response;
-
-    const eventDescriptors = calendarEvents.map(event => event.calendarEventDescriptor.split('#').pop()).join(', ');
-
-    bru.setEnvVar('tempCalendarDateUniqueId', id);
-    bru.setEnvVar('tempCalendarDateEventDescriptors', eventDescriptors);
-
-    console.log('Calendar Date data was fetched correctly.');
+  setVars(bru, {
+    tempCalendarDateUniqueId: response.id,
+    tempCalendarDateEventDescriptors: mapDescriptors(response.calendarEvents || [], ev => ev.calendarEventDescriptor).join(', ')
+  });
+  setVarsMessage('Calendar Date');
 }
 
 function cacheWipeCalendarDateResponse(bru) {
-  bru.setEnvVar('tempCalendarDateUniqueId', null);
-  bru.setEnvVar('tempCalendarDateEventDescriptors', null);
-
-  console.warn('Calendar Date data was wiped. Because data not found or multiple records returned, please check the input "Params".');
+  wipeVars(bru, [
+    'tempCalendarDateUniqueId',
+    'tempCalendarDateEventDescriptors'
+  ]);
+  wipeVarsWarning('Calendar Date');
 }
 
 function logCalendarDateResponse(scenarioName, response, filterArray = null) {
-  const {
-      date,
-      calendarReference,
-      calendarEvents
-    } = response;
-  
-    const responseToLog = {
-      date,
-      'calendarCode': calendarReference.calendarCode,
-      'schoolId': calendarReference.schoolId,
-      'schoolYear': calendarReference.schoolYear,
-      'calendarEvents': calendarEvents.map(event => event.calendarEventDescriptor.split('#').pop())
-    };
-
-    const { filterObjectByKeys } = require('../../../utils');
-    const objectToLog = filterObjectByKeys(responseToLog, filterArray);
-
-    console.info(scenarioName, JSON.stringify(objectToLog, null, 2));
+  logScenario(scenarioName, response, logSpecCalendarDate, filterArray);
 }
 
 module.exports = {

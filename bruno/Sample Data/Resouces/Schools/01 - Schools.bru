@@ -62,7 +62,7 @@ script:post-response {
     bru.setEnvVar('tempSchoolName', null);
     bru.setEnvVar('tempSchoolUniqueId', null);
   
-    console.warn('School data not found or multiple records returned, please check the input "Params".');
+    console.warn('School data was wiped because no record was found or multiple records were returned. Please check the input "Params".');
   }
 }
 

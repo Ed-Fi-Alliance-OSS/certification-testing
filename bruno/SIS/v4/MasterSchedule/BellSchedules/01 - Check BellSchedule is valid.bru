@@ -24,20 +24,28 @@ assert {
   res.status: eq 200
   res.body: isArray
   res.body: isNotEmpty
-  res.body[0]: isJson
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].bellScheduleName: isString
   res.body[0].bellScheduleName: isNotEmpty
+  res.body[0].alternateDayName: isString
   res.body[0].alternateDayName: isNotEmpty
-  res.body[0].schoolReference: isJson
-  res.body[0].schoolReference.schoolId: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
   res.body[0].classPeriods: isArray
   res.body[0].classPeriods: isNotEmpty
+  res.body[0].classPeriods[0].classPeriodReference: isDefined
+  res.body[0].classPeriods[0].classPeriodReference.classPeriodName: isString
   res.body[0].classPeriods[0].classPeriodReference.classPeriodName: isNotEmpty
 }
 
 script:pre-request {
   const { validateDependency } = require('./utils');
   
-  validateDependency(bru, 'tempSchoolId', 'Fetch School Data');
+  validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
+    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
+  });
 }
 
 settings {

@@ -25,29 +25,22 @@ assert {
 script:pre-request {
   const { validateDependency } = require('./utils');
 
-  validateDependency(bru, 'tempCalendarUniqueId', '03 - Check Calendar is valid');
+  validateDependency(bru, 'tempCalendarUniqueId', '03 - Check Calendar is valid', {
+    actionHint: 'Ensure you ran the calendar validation for the correct calendarCode.'
+  });
 }
 
 script:post-response {
   const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
+  const { expectChanged, mapDescriptors } = require('./utils');
   const response = res.getBody();
-  
-  if (!!response) {
-    const {
-      calendarCode,
-      gradeLevels
-    } = response;
-  
+
+  if (response) {
+    const currentGradeLevelDescriptors = mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor).join(', ');
+    const previousGradeLevelDescriptors = bru.getEnvVar('tempCalendarGradeLevels');
+    
     logCalendarResponse('Scenario 4 - Check GradeLevels were updated', response, ['calendarCode', 'gradeLevels']);
-  
-    test('Grade levels were updated correctly', () => {
-  
-      const currentGradeLevelDescriptors = gradeLevels.map(gl => gl.gradeLevelDescriptor.split('#').pop()).join(', ');
-      const previousGradeLevelDescriptors = bru.getEnvVar('tempCalendarGradeLevels');
-  
-      // The current grade levels should not be the same as the previous grade levels (updated)
-      expect(currentGradeLevelDescriptors).not.equals(previousGradeLevelDescriptors);
-    });
+    expectChanged(previousGradeLevelDescriptors, currentGradeLevelDescriptors, 'Grade levels');
   }
 }
 

@@ -29,25 +29,26 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-  validateDependency(bru, 'tempSchoolId', 'Fetch School Data');
-  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar Data');
+
+  validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
+    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
+  });
+  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar Data', {
+    actionHint: 'Ensure you ran the calendar fetch for the correct calendarCode.'
+  });
 }
 
 script:post-response {
-  const { cacheStoreCalendarDateResponse, cacheWipeCalendarDateResponse, logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
-  
-  if (res.status === 200 && !!res.body) {
+  const { logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
+  const { expectChanged, mapDescriptors } = require('./utils');
+
+  if (res.status === 200 && res.body) {
     const response = res.getBody();
-  
+    const previousEvents = bru.getEnvVar('tempCalendarDateEventDescriptors');
+    const currentEvents = mapDescriptors(response.calendarEvents || [], e => e.calendarEventDescriptor).join(', ');
+
     logCalendarDateResponse('Scenario 2 - Check CalendarEvents were updated', response, ['calendarCode', 'date', 'calendarEvents']);
-  
-    test('CalendarEvents were updated correctly', () => {
-      var previousEvents = bru.getEnvVar('tempCalendarDateEventDescriptors');
-      var currentEvents = response.calendarEvents.map(e => e.calendarEventDescriptor.split('#').pop()).join(', ');
-  
-      // The current events should not be the same as the previous events (updated)
-      expect(currentEvents).not.equals(previousEvents);
-    });
+    expectChanged(previousEvents, currentEvents, 'Calendar events');
   }
 }
 

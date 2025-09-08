@@ -21,32 +21,40 @@ params:query {
 assert {
   res.status: eq 200
   res.body: isArray
-  res.body[0].id: isDefined
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
   res.body[0].calendarCode: isString
+  res.body[0].calendarCode: isNotEmpty
   res.body[0].schoolReference: isDefined
   res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
   res.body[0].schoolYearTypeReference: isDefined
   res.body[0].schoolYearTypeReference.schoolYear: isNumber
+  res.body[0].schoolYearTypeReference.schoolYear: neq 0
   res.body[0].calendarTypeDescriptor: isString
+  res.body[0].calendarTypeDescriptor: isNotEmpty
   res.body[0].gradeLevels: isArray
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempSchoolUniqueId')) {
-    const errorMsg = 'The variable tempSchoolId is missing. Please run "Fetch School Data" for the desired school before continuing.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempSchoolUniqueId', 'Fetch School Data', {
+    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
+  });
 }
 
 script:post-response {
   const { cacheStoreCalendarResponse, cacheWipeCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
+  const { pickSingle } = require('./utils');
   
   if (res.status === 200) {
     const response = res.getBody();
-    
-    if (!!response && response.length === 1) {
-      cacheStoreCalendarResponse(bru, response[0]);
+    const calendarItem = pickSingle(response);
+
+    if (calendarItem) {
+      cacheStoreCalendarResponse(bru, calendarItem);
     } else {
       cacheWipeCalendarResponse(bru);
     }

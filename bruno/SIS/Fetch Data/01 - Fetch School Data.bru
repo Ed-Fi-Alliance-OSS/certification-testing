@@ -16,25 +16,21 @@ params:query {
 
 script:post-response {
   const response = res.getBody();
+  const { pickSingle, setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('./utils');
+  const school = pickSingle(response);
   
-  if (!!response && response.length === 1) {
-    const {
-      id,
-      schoolId,
-      nameOfInstitution: name
-    } = response[0];
+  if (school) {
+    const { id, schoolId, nameOfInstitution: name } = school;
   
-    bru.setEnvVar('tempSchoolId', schoolId);
-    bru.setEnvVar('tempSchoolName', name);
-    bru.setEnvVar('tempSchoolUniqueId', id);
-  
-    console.log('School data was fetched correctly.');
+    setVars(bru, {
+      tempSchoolId: schoolId,
+      tempSchoolName: name,
+      tempSchoolUniqueId: id
+    });
+    setVarsMessage('School');
   } else {
-    console.warn('School data not found or multiple records returned, please check the input "Params".');
-  
-    bru.setEnvVar('tempSchoolId', null);
-    bru.setEnvVar('tempSchoolName', null);
-    bru.setEnvVar('tempSchoolUniqueId', null);
+    wipeVars(bru, ['tempSchoolId', 'tempSchoolName', 'tempSchoolUniqueId']);
+    wipeVarsWarning('School');
   }
 }
 

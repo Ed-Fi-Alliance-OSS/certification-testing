@@ -137,7 +137,7 @@ test('At least one school has more than 3 class periods', () => {
     bru.setEnvVar('tempSchoolUniqueId', null);
     bru.setEnvVar('tempSchoolName', null);
     
-    console.warn('School data not found or multiple records returned, please check the input "Params".');
+    console.warn('School data was wiped because no record was found or multiple records were returned. Please check the input "Params".');
   }
 ```
 
