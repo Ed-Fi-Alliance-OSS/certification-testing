@@ -28,17 +28,9 @@ assert {
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempSchoolId')) {
-    const errorMsg = 'The variable tempSchoolId is missing.  Please run "Fetch School Data" for the desired school before continuing.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
-  
-  if (!bru.getEnvVar('tempCalendarCode')) {
-    const errorMsg = 'The variable tempCalendarCode is missing. Please run GET "Fetch Calendar data". Check the dependencies in the "Docs" tab.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'tempSchoolId', 'Fetch School Data');
+  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar Data');
 }
 
 script:post-response {

@@ -32,11 +32,9 @@ assert {
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempSchoolUniqueId')) {
-    const errorMsg = 'The variable tempSchoolId is missing. Please run "Fetch School Data" for the desired school before continuing.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(bru, 'tempSchoolId', 'Fetch School Data');
 }
 
 script:post-response {

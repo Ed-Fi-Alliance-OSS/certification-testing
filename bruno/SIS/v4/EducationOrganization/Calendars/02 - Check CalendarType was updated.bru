@@ -23,11 +23,9 @@ assert {
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempCalendarUniqueId')) {
-    const errorMsg = 'The variable tempCalendarUniqueId is missing. Please run "01 - Check Calendar is valid" before continuing.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempCalendarUniqueId', '01 - Check Calendar is valid');
 }
 
 script:post-response {

@@ -35,16 +35,8 @@ function logCalendarDateResponse(scenarioName, response, filterArray = null) {
       'calendarEvents': calendarEvents.map(event => event.calendarEventDescriptor.split('#').pop())
     };
 
-    let objectToLog = responseToLog;
-
-    if (filterArray && Array.isArray(filterArray) && filterArray.length > 0) {
-      objectToLog = filterArray.reduce((acc, key) => {
-        if (responseToLog.hasOwnProperty(key)) {
-          acc[key] = responseToLog[key];
-        }
-        return acc;
-      }, {});
-    }
+    const { filterObjectByKeys } = require('../../../utils');
+    const objectToLog = filterObjectByKeys(responseToLog, filterArray);
 
     console.info(scenarioName, JSON.stringify(objectToLog, null, 2));
 }
