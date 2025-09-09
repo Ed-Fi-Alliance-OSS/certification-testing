@@ -16,7 +16,7 @@ auth:bearer {
 
 script:post-response {
   if (res.status == 204) {
-    const { wipeVars, wipeVarsWarning } = require('../../utils');
+    const { wipeVars, wipeVarsWarning } = require('./utils');
     wipeVars(bru, ['tempCalendarDateUniqueId']);
     wipeVarsWarning('Calendar Date');
   }

@@ -31,7 +31,7 @@ body:json {
 }
 
 script:pre-request {
-  const { validateDependency } = require('../../utils');
+  const { validateDependency } = require('./utils');
 
   validateDependency(bru, 'tempSchoolId', 'GET Schools');
   validateDependency(bru, 'tempCalendarCode', 'GET Calendars');

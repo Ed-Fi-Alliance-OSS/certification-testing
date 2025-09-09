@@ -22,7 +22,7 @@ auth:bearer {
 
 script:post-response {
   const response = res.getBody();
-  const { wipeVars, pickSingle, setVars } = require('../../utils');
+  const { wipeVars, pickSingle, setVars } = require('./utils');
   const item = pickSingle(response);
   
   if (item) {

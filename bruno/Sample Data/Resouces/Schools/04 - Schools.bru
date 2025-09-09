@@ -78,7 +78,7 @@ body:json {
 }
 
 script:pre-request {
-  const { generateId } = require('../../utils');
+  const { generateId } = require('./utils');
   const schoolId = generateId();
   const schoolIdentificationCode = generateId();
 

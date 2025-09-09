@@ -24,7 +24,7 @@ body:json {
 }
 
 script:pre-request {
-  const { generateId } = require('../../utils');
+  const { generateId } = require('./utils');
   const studentId = generateId();
 
   bru.setEnvVar('tempStudentId', studentId);
