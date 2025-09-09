@@ -1,0 +1,80 @@
+meta {
+  name: 01 - Check CalendarDate is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates?schoolId={{tempSchoolId}}&calendarCode={{tempCalendarCode}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: {{tempSchoolId}}
+  calendarCode: {{tempCalendarCode}}
+  ~id: {{tempCalendarDateUniqueId}}
+  ~date: 
+  ~schoolYear: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].date: isString
+  res.body[0].date: isNotEmpty
+  res.body[0].calendarReference: isDefined
+  res.body[0].calendarReference.calendarCode: isString
+  res.body[0].calendarReference.calendarCode: isNotEmpty
+  res.body[0].calendarReference.schoolId: isNumber
+  res.body[0].calendarReference.schoolId: neq 0
+  res.body[0].calendarReference.schoolYear: isNumber
+  res.body[0].calendarReference.schoolYear: neq 0
+  res.body[0].calendarEvents: isArray
+  res.body[0].calendarEvents: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
+    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
+  });
+  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar Data', {
+    actionHint: 'Ensure you ran the calendar fetch for the correct calendarCode.'
+  });
+}
+
+script:post-response {
+  const { cacheStoreCalendarDateResponse, cacheWipeCalendarDateResponse, logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
+  const { pickSingle } = require('./utils');
+  
+  if (res.status === 200) {
+    const response = res.getBody();
+    const calendarItem = pickSingle(response);
+
+    if (calendarItem) {
+      cacheStoreCalendarDateResponse(bru, calendarItem);
+      logCalendarDateResponse('Scenario 1 - Check Calendar Date is valid', calendarItem);
+    } else {
+      cacheWipeCalendarDateResponse(bru);
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * `GET` Fetch School Data
+    * `GET` Fetch Calendar data
+}

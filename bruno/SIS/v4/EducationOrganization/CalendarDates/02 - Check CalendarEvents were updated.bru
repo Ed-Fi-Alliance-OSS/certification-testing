@@ -1,0 +1,62 @@
+meta {
+  name: 02 - Check CalendarEvents were updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates/{{tempCalendarDateUniqueId}}
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~schoolId: {{tempSchoolId}}
+  ~calendarCode: {{tempCalendarCode}}
+  ~date: 
+  ~schoolYear: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.calendarEvents: isArray
+  res.body.calendarEvents: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
+    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
+  });
+  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar Data', {
+    actionHint: 'Ensure you ran the calendar fetch for the correct calendarCode.'
+  });
+}
+
+script:post-response {
+  const { logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
+  const { expectChanged, mapDescriptors, joinDescriptors } = require('./utils');
+
+  if (res.status === 200 && res.body) {
+    const response = res.getBody();
+    const previousEvents = bru.getEnvVar('tempCalendarDateEventDescriptors');
+    const currentEvents = joinDescriptors(mapDescriptors(response.calendarEvents || [], e => e.calendarEventDescriptor));
+
+    logCalendarDateResponse('Scenario 2 - Check CalendarEvents were updated', response, ['calendarCode', 'date', 'calendarEvents']);
+    expectChanged(previousEvents, currentEvents, 'Calendar events');
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Dependencies
+    * Scenario 1 - Check CalendarDate is Valid
+}

@@ -1,0 +1,27 @@
+meta {
+  name: 05 - CalendarDates
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates/{{tempCalendarDateUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  if (res.status == 204) {
+    const { wipeVars, wipeVarsWarning } = require('../../utils');
+    wipeVars(bru, ['tempCalendarDateUniqueId']);
+    wipeVarsWarning('Calendar Date');
+  }
+}
+
+settings {
+  encodeUrl: true
+}

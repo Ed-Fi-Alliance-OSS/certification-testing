@@ -1,0 +1,51 @@
+meta {
+  name: 02 - CalendarDates
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "date": "2025-09-01",
+    "calendarEvents": [
+      {
+        "calendarEventDescriptor": "uri://ed-fi.org/CalendarEventDescriptor#Holiday"
+      }
+    ],  
+    "calendarReference": {
+      "calendarCode": "{{tempCalendarCode}}",
+      "schoolId": "{{tempSchoolId}}",
+      "schoolYear": 2025
+    }
+  }
+}
+
+script:pre-request {
+  const { validateDependency } = require('../../utils');
+
+  validateDependency(bru, 'tempSchoolId', 'GET Schools');
+  validateDependency(bru, 'tempCalendarCode', 'GET Calendars');
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  
+  if (locationHeader) {
+    const id = locationHeader.split('/').pop();
+    bru.setEnvVar('tempCalendarDateUniqueId', id);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

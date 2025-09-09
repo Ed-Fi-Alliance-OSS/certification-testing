@@ -1,0 +1,33 @@
+meta {
+  name: 03 - CalendarDates by Id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates/{{tempCalendarDateUniqueId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('../../utils');
+
+  if (res.getStatus() === 200) {
+    const { id } = res.getBody();
+
+    bru.setEnvVar('tempCalendarDateUniqueId', id);
+    setVarsMessage('CalendarDate');
+  } else {
+    wipeVars(bru, ['tempCalendarDateUniqueId']);
+    wipeVarsWarning('CalendarDate');
+  }
+}
+
+settings {
+  encodeUrl: true
+}

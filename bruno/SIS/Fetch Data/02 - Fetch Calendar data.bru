@@ -1,18 +1,18 @@
 meta {
-  name: 03 - Check Calendar is valid
+  name: 02 - Fetch Calendar Data
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/Calendars?schoolId={{tempSchoolId}}&calendarCode=IEP001&schoolYear=2025
+  url: {{resourceBaseUrl}}/ed-fi/Calendars?schoolId={{tempSchoolId}}&calendarCode=107SS111111&schoolYear=2025
   body: none
   auth: inherit
 }
 
 params:query {
   schoolId: {{tempSchoolId}}
-  calendarCode: IEP001
+  calendarCode: 107SS111111
   schoolYear: 2025
   ~calendarTypeDescriptor: 
   ~id: {{tempCalendarId}}
@@ -39,14 +39,14 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-  
-  validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
+
+  validateDependency(bru, 'tempSchoolUniqueId', 'Fetch School Data', {
     actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
   });
 }
 
 script:post-response {
-  const { cacheStoreCalendarResponse, cacheWipeCalendarResponse, logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
+  const { cacheStoreCalendarResponse, cacheWipeCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
   const { pickSingle } = require('./utils');
   
   if (res.status === 200) {
@@ -55,7 +55,6 @@ script:post-response {
 
     if (calendarItem) {
       cacheStoreCalendarResponse(bru, calendarItem);
-      logCalendarResponse('Scenario 3 - Check Calendar is valid', calendarItem);
     } else {
       cacheWipeCalendarResponse(bru);
     }

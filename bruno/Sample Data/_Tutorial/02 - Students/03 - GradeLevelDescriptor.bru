@@ -22,20 +22,23 @@ auth:bearer {
 
 script:post-response {
   const response = res.getBody();
-  bru.deleteEnvVar('tempGradeLevelDescriptorId');
-  bru.deleteEnvVar('tempGradeLevelDescriptorName');
-  bru.deleteEnvVar('tempGradeLevelDescriptorCodeValue');
+  const { wipeVars, pickSingle, setVars } = require('../../utils');
+  const item = pickSingle(response);
   
-  if ((!!response && response.length > 0)) {
-    const {
-      gradeLevelDescriptorId: id,
-      shortDescription: name,
-      codeValue
-    } = response[0];
-  
-    bru.setEnvVar('tempGradeLevelDescriptorId', id);
-    bru.setEnvVar('tempGradeLevelDescriptorName', name);
-    bru.setEnvVar('tempGradeLevelDescriptorCodeValue', "uri://ed-fi.org/GradeLevelDescriptor#" + codeValue);
+  if (item) {
+    const { gradeLevelDescriptorId: id, shortDescription: name, codeValue } = item;
+
+    setVars(bru, {
+      tempGradeLevelDescriptorId: id,
+      tempGradeLevelDescriptorName: name,
+      tempGradeLevelDescriptorCodeValue: 'uri://ed-fi.org/GradeLevelDescriptor#' + codeValue
+    });
+  } else {
+    wipeVars(bru, [
+      'tempGradeLevelDescriptorId',
+      'tempGradeLevelDescriptorName',
+      'tempGradeLevelDescriptorCodeValue'
+    ]);
   }
 }
 

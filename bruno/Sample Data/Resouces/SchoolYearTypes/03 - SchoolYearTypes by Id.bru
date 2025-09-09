@@ -15,21 +15,16 @@ auth:bearer {
 }
 
 script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('../../utils');
+
   if (res.getStatus() === 200) {
-    const {
-      id,
-      schoolYearDescription: name
-    } = res.getBody();
-  
-    bru.setEnvVar('tempSchoolYearTypeUniqueId', id);
-    bru.setEnvVar('tempSchoolYearTypeName', name);
-  
-    console.log('SchoolYearTypes data was fetched correctly.');
+    const { id, schoolYearDescription: name } = res.getBody();
+    
+    setVars(bru, { tempSchoolYearTypeUniqueId: id, tempSchoolYearTypeName: name });
+    setVarsMessage('SchoolYearType');
   } else {
-    bru.setEnvVar('tempSchoolYearTypeUniqueId', null);
-    bru.setEnvVar('tempSchoolYearTypeName', null);
-  
-    console.warn('SchoolYearTypes data not found, please check the URL parameter (SchoolYearTypeUniqueId).');
+    wipeVars(bru, ['tempSchoolYearTypeUniqueId', 'tempSchoolYearTypeName']);
+    wipeVarsWarning('SchoolYearType');
   }
 }
 

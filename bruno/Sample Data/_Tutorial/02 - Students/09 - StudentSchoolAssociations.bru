@@ -38,11 +38,13 @@ auth:bearer {
 }
 
 script:post-response {
+  const { wipeVars } = require('../../utils');
   const response = res.getBody();
-  bru.deleteEnvVar('tempStudentSchoolAssociationId');
-  
-  if (!!response && response.length > 0) {
+
+  if (response && response.length > 0) {
     bru.setEnvVar('tempStudentSchoolAssociationId', response[0].id);
+  } else {
+    wipeVars(bru, ['tempStudentSchoolAssociationId']);
   }
 }
 

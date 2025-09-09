@@ -35,34 +35,25 @@ auth:bearer {
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempLEAId')) {
-    const errorMsg = 'The variable tempLEAId is missing. Please run GET "LocalEducationAgencies". Check the dependencies in the "Docs" tab.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('../../utils');
+  
+  validateDependency(bru, 'tempLEAId', 'GET LocalEducationAgencies');
 }
 
 script:post-response {
-  const response = res.getBody();
-  
-  if ((!!response && response.length > 0)) {
-    const {
-      id,
-      schoolId,
-      nameOfInstitution: name
-    } = response[0];
-  
-    bru.setEnvVar('tempSchoolId', schoolId);
-    bru.setEnvVar('tempSchoolName', name);
-    bru.setEnvVar('tempSchoolUniqueId', id);
-  
-    console.log('School data was fetched correctly.');
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('../../utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVars(bru, {
+      tempSchoolId: item.schoolId,
+      tempSchoolName: item.nameOfInstitution,
+      tempSchoolUniqueId: item.id
+    });
+    setVarsMessage('School');
   } else {
-    bru.setEnvVar('tempSchoolId', null);
-    bru.setEnvVar('tempSchoolName', null);
-    bru.setEnvVar('tempSchoolUniqueId', null);
-  
-    console.warn('School data not found or multiple records returned, please check the input "Params".');
+    wipeVars(bru, ['tempSchoolId', 'tempSchoolName', 'tempSchoolUniqueId']);
+    wipeVarsWarning('School');
   }
 }
 

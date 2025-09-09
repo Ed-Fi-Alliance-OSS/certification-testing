@@ -1,19 +1,19 @@
 meta {
-  name: OperationalStatusDescriptors
+  name: CalendarEventDescriptors
   type: http
-  seq: 14
+  seq: 3
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/operationalStatusDescriptors
+  url: {{resourceBaseUrl}}/ed-fi/calendarEventDescriptors
   body: none
   auth: bearer
 }
 
 params:query {
+  ~calendarEventDescriptorId: 
   ~limit: 25
   ~offset: 0
-  ~operationalStatusDescriptorId: 
   ~totalCount: 
 }
 

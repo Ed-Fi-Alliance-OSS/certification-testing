@@ -78,11 +78,12 @@ body:json {
 }
 
 script:pre-request {
-  const schoolId = bru.generateId();
-  const sschoolIdentificationCode = bru.generateId();
+  const { generateId } = require('../../utils');
+  const schoolId = generateId();
+  const schoolIdentificationCode = generateId();
 
   bru.setEnvVar('tempSchoolId', schoolId);
-  bru.setEnvVar('tempSchoolIdCode', sschoolIdentificationCode);
+  bru.setEnvVar('tempSchoolIdCode', schoolIdentificationCode);
 }
 
 settings {

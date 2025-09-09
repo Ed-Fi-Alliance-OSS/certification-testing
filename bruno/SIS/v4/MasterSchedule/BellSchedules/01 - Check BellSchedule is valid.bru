@@ -24,57 +24,30 @@ assert {
   res.status: eq 200
   res.body: isArray
   res.body: isNotEmpty
-  res.body[0]: isJson
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].bellScheduleName: isString
   res.body[0].bellScheduleName: isNotEmpty
+  res.body[0].alternateDayName: isString
   res.body[0].alternateDayName: isNotEmpty
-  res.body[0].schoolReference: isJson
-  res.body[0].schoolReference.schoolId: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
   res.body[0].classPeriods: isArray
   res.body[0].classPeriods: isNotEmpty
+  res.body[0].classPeriods[0].classPeriodReference: isDefined
+  res.body[0].classPeriods[0].classPeriodReference.classPeriodName: isString
   res.body[0].classPeriods[0].classPeriodReference.classPeriodName: isNotEmpty
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempSchoolUniqueId')) {
-    const errorMsg = 'The variable tempSchoolId is missing. Please run "Fetch School Data" for the desired school before continuing.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
+    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
+  });
 }
 
 settings {
   encodeUrl: true
-}
-
-docs {
-  # v4 MasterSchedule > BellSchedule Scenarios
-  
-  This entity represents the schedule of class period meeting times.
-  
-  ## Prerequisites
-  
-  * ClassPeriods
-  * Prior to completing this scenario please ensure you have set up at  least 6
-    class periods.
-  * Schools
-  
-  ## Scenarios (TBD*)
-  
-  1. Create a Normal Schedule A Day Bell Schedule
-  2. Create a Normal Schedule B Day Bell Schedule
-  3. Create an Early Release  A Day Bell Schedule
-  4. Create an Early Release B Day Bell Schedule
-  
-  | Resource             | Property Name        | Is Collection | Data Type            | Required / Optional | Scenario 1: POST | Scenario 2: POST | Scenario 3: POST | Scenario 4: POST |
-  | -------------------- | -------------------- | ------------- | -------------------- | ------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
-  | BellSchedule         | bellScheduleName     | FALSE         | string               | REQUIRED            | Normal Schedule A  | Normal Schedule B  | Early Release A    | Early Release B    |
-  | BellSchedule         | schoolReference      | FALSE         | schoolReference      | REQUIRED            |                    |                    |                    |                    |
-  | schoolReference      | schoolId             | FALSE         | integer              | REQUIRED            | 255901107          | 255901107          | 255901107          | 255901107          |
-  | BellSchedule         | classPeriodReference | TRUE          | classPeriodReference | REQUIRED            |                    |                    |                    |                    |
-  | classPeriodReference | classPeriodName      | FALSE         | string               | REQUIRED            | Class Period 1     | Class Period 4     | Class Period 1     | Class Period 4     |
-  | classPeriodReference | classPeriodName      | FALSE         | string               | REQUIRED            | Class Period 2     | Class Period 5     | Class Period 2     | Class Period 5     |
-  | classPeriodReference | classPeriodName      | FALSE         | string               | REQUIRED            | Class Period 3     | Class Period 6     |                    |                    |
-  | BellSchedule         | dates                | FALSE         | string               | OPTIONAL            |                    |                    |                    |                    |
-  | BellSchedule         | alternateDayName     | FALSE         | boolean              | REQUIRED            | A                  | B                  | A                  | B                  |
-  | BellSchedule         | totalInstructionalTime| FALSE        | number               | OPTIONAL            |                    |                    |                    |                    |
 }

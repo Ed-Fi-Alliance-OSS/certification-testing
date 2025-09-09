@@ -1,20 +1,4 @@
 script:pre-request {
-  // Utility function - Generates a random 10-digit ID
-  bru.generateId = function(data) {
-    const base = 1000010000;
-    const maxIncrement = 899999999;
-    return (base + Math.floor(Math.random() * maxIncrement)).toString();
-  };
-  
-  // Utility function - Generates a random 32-character hex ID
-  bru.generateUUID = function() {
-    let hex = '';
-    for (let i = 0; i < 32; i++) {
-      hex += Math.floor(Math.random() * 16).toString(16);
-    }
-    return hex;
-  };
-  
   const edFiClientName = bru.getGlobalEnvVar('edFiClientName') || bru.getEnvVar('edFiClientName');
   let generateToken = true;
   

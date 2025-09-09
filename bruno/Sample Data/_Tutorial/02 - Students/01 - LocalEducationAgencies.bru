@@ -26,19 +26,16 @@ auth:bearer {
 }
 
 script:post-response {
+  const { wipeVars } = require('../../utils');
   const response = res.getBody();
-  
-  bru.deleteEnvVar('tempLocalEducationAgencieId');
-  bru.deleteEnvVar('tempLocalEducationAgencieName');
-  
-  if ((!!response && response.length > 0)) {
-    const {
-      localEducationAgencyId: id,
-      nameOfInstitution: name
-    } = response[0];
-  
+
+  if (Array.isArray(response) && response.length > 0) {
+    const { localEducationAgencyId: id, nameOfInstitution: name } = response[0];
+    
     bru.setEnvVar('tempLocalEducationAgencieId', id);
     bru.setEnvVar('tempLocalEducationAgencieName', name);
+  } else {
+    wipeVars(bru, ['tempLocalEducationAgencieId', 'tempLocalEducationAgencieName']);  
   }
 }
 

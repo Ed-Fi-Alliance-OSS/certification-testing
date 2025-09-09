@@ -1,29 +1,27 @@
 meta {
-  name: 01 - BellSchedules
+  name: 01 - CalendarDates
   type: http
   seq: 1
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/bellSchedules?schoolId={{tempSchoolId}}
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates?schoolId={{tempSchoolId}}&calendarCode={{tempCalendarCode}}
   body: none
   auth: bearer
 }
 
 params:query {
-  ~alternateDayName: 
-  ~bellScheduleName: asdasd
-  ~endTime: 
-  ~id: {{tempBellScheduleId}}
+  schoolId: {{tempSchoolId}}
+  calendarCode: {{tempCalendarCode}}
+  ~date: 
+  ~schoolYear: 
+  ~id: {{tempCalendarDateUniqueId}}
   ~limit: 10
   ~maxChangeVersion: 
   ~minChangeVersion: 
   ~offset: 0
-  schoolId: {{tempSchoolId}}
   ~Snapshot-Identifier: 
-  ~startTime: 
   ~totalCount: false
-  ~totalInstructionalTime: 
 }
 
 auth:bearer {
@@ -34,6 +32,7 @@ script:pre-request {
   const { validateDependency } = require('../../utils');
 
   validateDependency(bru, 'tempSchoolId', 'GET Schools');
+  validateDependency(bru, 'tempCalendarCode', 'GET Calendars');
 }
 
 script:post-response {
@@ -41,14 +40,11 @@ script:post-response {
   const item = pickSingle(res.getBody());
 
   if (item) {
-    setVars(bru, {
-      tempBellScheduleUniqueId: item.id,
-      tempBellScheduleName: item.bellScheduleName
-    });
-    setVarsMessage('BellSchedule');
+    bru.setEnvVar('tempCalendarDateUniqueId', item.id);
+    setVarsMessage('CalendarDate');
   } else {
-    wipeVars(bru, ['tempBellScheduleUniqueId', 'tempBellScheduleName']);
-    wipeVarsWarning('BellSchedule');
+    wipeVars(bru, ['tempCalendarDateUniqueId']);
+    wipeVarsWarning('CalendarDate');
   }
 }
 
@@ -59,4 +55,5 @@ settings {
 docs {
   # Dependencies
     * `GET` Schools (filtered) or `GET` School by ID
+    * `GET` Calendars (filtered) or `GET` Calendar by ID
 }

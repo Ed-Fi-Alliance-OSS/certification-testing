@@ -29,6 +29,7 @@ body:json {
 
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
+  
   if (locationHeader) {
     const studentSchoolAssociationId = locationHeader.split('/').pop();
     bru.setEnvVar('tempStudentSchoolAssociationId', studentSchoolAssociationId);

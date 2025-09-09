@@ -20,35 +20,29 @@ params:query {
 assert {
   res.status: eq 200
   res.body.calendarTypeDescriptor: isString
+  res.body.calendarTypeDescriptor: isNotEmpty
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempCalendarUniqueId')) {
-    const errorMsg = 'The variable tempCalendarUniqueId is missing. Please run "01 - Check Calendar is valid" before continuing.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempCalendarUniqueId', '01 - Check Calendar is valid', {
+    actionHint: 'Ensure you ran the calendar validation for the correct calendarCode.'
+  });
 }
 
 script:post-response {
   const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
+  const { expectChanged, extractDescriptor } = require('./utils');
   const response = res.getBody();
-  
-  if (!!response) {
-    const {
-      calendarCode,
-      calendarTypeDescriptor,
-    } = response;
-  
+  const previousType = bru.getEnvVar('tempCalendarTypeDescriptor');
+  const currentType = (response && response.calendarTypeDescriptor)
+    ? extractDescriptor(response.calendarTypeDescriptor)
+    : null;
+
+  if (response) {
     logCalendarResponse('Scenario 2 - Check CalendarType was updated', response, ['calendarCode', 'calendarTypeDescriptor']);
-  
-    test('Calendar type was updated correctly', () => {
-      var previousType = bru.getEnvVar('tempCalendarTypeDescriptor');
-      var currentType = calendarTypeDescriptor.split('#').pop();
-  
-      // The current type should not be the same as the previous type (updated)
-      expect(currentType).not.equals(previousType);
-    });
+    expectChanged(previousType, currentType, 'Calendar type');
   }
 }
 

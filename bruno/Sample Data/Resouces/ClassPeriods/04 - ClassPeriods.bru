@@ -30,11 +30,9 @@ body:json {
 }
 
 script:pre-request {
-  if (!bru.getEnvVar('tempSchoolId')) {
-    const errorMsg = 'The variable tempSchoolId is missing. Please run GET "Schools". Check the dependencies in the "Docs" tab.';
-    console.error(errorMsg);
-    throw new Error(errorMsg);
-  }
+  const { validateDependency } = require('../../utils');
+
+  validateDependency(bru, 'tempSchoolId', 'GET Schools');
 }
 
 settings {

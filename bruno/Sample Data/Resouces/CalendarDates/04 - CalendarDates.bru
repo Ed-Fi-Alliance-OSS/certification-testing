@@ -1,0 +1,46 @@
+meta {
+  name: 04 - CalendarDates
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates/{{tempCalendarDateUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempCalendarDateUniqueId}}",
+    "date": "2025-09-16",
+    "calendarEvents": [
+      {
+        "calendarEventDescriptor": "uri://ed-fi.org/CalendarEventDescriptor#Instructional day"
+      },
+      {
+        "calendarEventDescriptor": "uri://ed-fi.org/CalendarEventDescriptor#Student late arrival/early dismissal"
+      }
+    ],
+    "calendarReference": {
+      "calendarCode": "{{tempCalendarCode}}",
+      "schoolId": "{{tempSchoolId}}",
+      "schoolYear": 2025
+    }
+  }
+}
+
+script:pre-request {
+  const { validateDependency } = require('../../utils');
+
+  validateDependency(bru, 'tempSchoolId', 'GET Schools');
+  validateDependency(bru, 'tempCalendarCode', 'GET Calendars');
+}
+
+settings {
+  encodeUrl: true
+}
