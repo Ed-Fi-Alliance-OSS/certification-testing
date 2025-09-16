@@ -1,0 +1,57 @@
+meta {
+  name: 02 - Check ClassPeriodName was updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{tempClassPeriodId}}
+  body: none
+  auth: inherit
+}
+
+vars:post-response {
+  expectedclassPeriodName: "Class Period 2"
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.classPeriodName: isString
+  res.body.classPeriodName: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(bru, 'tempClassPeriodId', '01 - Check First ClassPeriod is valid', {
+    actionHint: 'Ensure you ran the certification scenario successfully before continuing.'
+  });
+  
+  validateDependency(bru, 'tempClassPeriodName', '01 - Check First ClassPeriod is valid', {
+    actionHint: 'Ensure you ran the certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { expectChanged, logScenario, logSpecClassPeriod, throwNotFoundOrSpecificError } = require('./utils');
+  const scenarioName = this.req.name;
+  const entityName = "ClassPeriod";
+  
+  if (res.status === 200 && res.body) {
+    const response = res.getBody();
+    const previousName = bru.getEnvVar('tempClassPeriodName');
+    const currentName = response.classPeriodName;
+
+    // Check that the name was changed from the previous value
+    expectChanged(previousName, currentName, 'Class Period Name');
+
+    logScenario(entityName, scenarioName, response, logSpecClassPeriod, ['id', 'classPeriodName']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

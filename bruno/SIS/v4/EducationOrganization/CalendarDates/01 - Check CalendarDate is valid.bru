@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/CalendarDates?schoolId={{tempSchoolId}}&calendarCode={{tempCalendarCode}}
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates?schoolId={{tempSchoolId}}&calendarCode={{tempCalendarCode}}&date=[ENTER DATE - format: yyyy-mm-dd]&schoolYear=[ENTER SCHOOL YEAR]
   body: none
   auth: bearer
 }
@@ -13,9 +13,8 @@ get {
 params:query {
   schoolId: {{tempSchoolId}}
   calendarCode: {{tempCalendarCode}}
-  ~id: {{tempCalendarDateUniqueId}}
-  ~date: 
-  ~schoolYear: 
+  date: [ENTER DATE - format: yyyy-mm-dd]
+  schoolYear: [ENTER SCHOOL YEAR]
 }
 
 auth:bearer {
@@ -43,30 +42,37 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-
-  validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
+  
+  validateDependency(bru, 'tempSchoolId', 'Fetch School', {
     actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
   });
-  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar Data', {
+  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar', {
     actionHint: 'Ensure you ran the calendar fetch for the correct calendarCode.'
   });
 }
 
 script:post-response {
-  const { cacheStoreCalendarDateResponse, cacheWipeCalendarDateResponse, logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
-  const { pickSingle } = require('./utils');
+  const { pickSingle, setVars, wipeVars, joinDescriptors, mapDescriptors, logScenario, logSpecCalendarDate } = require('./utils');
+  const scenarioName = this.req.name;
+  const entityName = 'Calendar Date';
   
-  if (res.status === 200) {
-    const response = res.getBody();
-    const calendarItem = pickSingle(response);
-
-    if (calendarItem) {
-      cacheStoreCalendarDateResponse(bru, calendarItem);
-      logCalendarDateResponse('Scenario 1 - Check Calendar Date is valid', calendarItem);
-    } else {
-      cacheWipeCalendarDateResponse(bru);
+  if (res.status === 200 && res.body) {
+    const response = pickSingle(res.getBody());
+  
+    if (response) {
+      // Save useful values for later scenarios
+      setVars(bru, {
+        tempCalendarDateUniqueId: response.id,
+        tempCalendarDateEventDescriptors: joinDescriptors(mapDescriptors(response.calendarEvents || [], ev => ev.calendarEventDescriptor))
+      }, entityName);
+  
+      logScenario(entityName, scenarioName, response, logSpecCalendarDate);
+      return;
     }
   }
+  
+  // If we reach here, something went wrong; clean up and throw an error
+  wipeVars(bru, ['tempCalendarDateUniqueId', 'tempCalendarDateEventDescriptors'], entityName, throwError = true);
 }
 
 settings {

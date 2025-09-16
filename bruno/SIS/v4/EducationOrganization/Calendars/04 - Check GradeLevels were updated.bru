@@ -10,13 +10,6 @@ get {
   auth: inherit
 }
 
-params:query {
-  ~calendarCode: IEP001
-  ~schoolYear: 2025
-  ~calendarTypeDescriptor: 
-  ~id: {{tempCalendarId}}
-}
-
 assert {
   res.status: eq 200
   res.body.gradeLevels: isArray
@@ -31,16 +24,19 @@ script:pre-request {
 }
 
 script:post-response {
-  const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
-  const { expectChanged, mapDescriptors, joinDescriptors } = require('./utils');
-  const response = res.getBody();
-
-  if (response) {
-    const currentGradeLevelDescriptors = joinDescriptors(mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor));
+  const { expectChanged, mapDescriptors, joinDescriptors, logScenario, logSpecCalendar, throwNotFoundOrSpecificError } = require('./utils');
+  const scenarioName = this.req.name;
+  const entityName = "ClassPeriod";
+  
+  if (res.status === 200 && res.body) {
+    const response = res.getBody();
     const previousGradeLevelDescriptors = bru.getEnvVar('tempCalendarGradeLevels');
-    
-    logCalendarResponse('Scenario 4 - Check GradeLevels were updated', response, ['calendarCode', 'gradeLevels']);
+    const currentGradeLevelDescriptors = joinDescriptors(mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor));
+  
     expectChanged(previousGradeLevelDescriptors, currentGradeLevelDescriptors, 'Grade levels');
+    logScenario(entityName, scenarioName, response, logSpecCalendar, ['calendarCode', 'gradeLevels']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
   }
 }
 

@@ -1,25 +1,26 @@
 meta {
-  name: 01 - Fetch School Data
+  name: 01 - Fetch School
   type: http
   seq: 1
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/schools?schoolId=999999999
+  url: {{resourceBaseUrl}}/ed-fi/schools?schoolId=[ENTER SCHOOL ID]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: 999999999
+  schoolId: [ENTER SCHOOL ID]
 }
 
 script:post-response {
   const response = res.getBody();
   const { pickSingle, setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('./utils');
   const school = pickSingle(response);
+  const entityName = 'School';
   
-  if (school) {
+  if (res.status === 200 && school) {
     const { id, schoolId, nameOfInstitution: name } = school;
   
     setVars(bru, {
@@ -27,10 +28,11 @@ script:post-response {
       tempSchoolName: name,
       tempSchoolUniqueId: id
     });
-    setVarsMessage('School');
+    setVarsMessage(entityName);
   } else {
     wipeVars(bru, ['tempSchoolId', 'tempSchoolName', 'tempSchoolUniqueId']);
-    wipeVarsWarning('School');
+    wipeVarsWarning(entityName);
+    throw new Error(`No ${entityName} found, or multiple records were returned. Check your parameters and try again.`);
   }
 }
 

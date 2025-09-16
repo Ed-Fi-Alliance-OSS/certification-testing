@@ -5,19 +5,14 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/bellSchedules?schoolId={{tempSchoolId}}
+  url: {{resourceBaseUrl}}/ed-fi/bellSchedules?schoolId={{tempSchoolId}}&bellScheduleName=[ENTER BELL SCHEDULE NAME]
   body: none
   auth: inherit
 }
 
 params:query {
   schoolId: {{tempSchoolId}}
-  ~id: 999999999
-  ~alternateDayName: 
-  ~bellScheduleName: 
-  ~endTime: 
-  ~startTime: 
-  ~totalInstructionalTime: 
+  bellScheduleName: [ENTER BELL SCHEDULE NAME]
 }
 
 assert {
@@ -46,6 +41,24 @@ script:pre-request {
   validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
     actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
   });
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, logScenario, logSpecBellSchedule, throwNotFoundOrSpecificError } = require('./utils');
+  const scenarioName = this.req.name;
+  const entityName = 'Bell Schedule';
+  
+  if (res.status === 200 && res.body) {
+    const response = pickSingle(res.getBody());
+    
+    if (response) {
+      logScenario(entityName, scenarioName, response, logSpecBellSchedule);
+      return;
+    } 
+  } 
+  
+  // If we reach here, something went wrong; clean up and throw an error
+  throwNotFoundOrSpecificError(entityName);
 }
 
 settings {
