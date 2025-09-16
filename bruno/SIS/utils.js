@@ -4,7 +4,7 @@ try {
   const utc = require('dayjs/plugin/utc');
   dayjs.extend(utc);
 } catch (e) {
-  console.warn('[utils] dayjs load failed:', e.message);
+  //console.warn('[utils] dayjs load failed:', e.message);
 }
 
 // Helper to annotate a date string
@@ -17,7 +17,7 @@ function annotateDate(date) {
   if (!d.isValid()) return date;
   
   if (d.isSame(today, 'day')) return `${date} (today)`;
-  //if (d.isBefore(today, 'day')) return `${date} (before today)`;
+  if (d.isBefore(today, 'day')) return `${date} (before today)`;
   return date;
 }
 
@@ -332,6 +332,7 @@ const logSpecBellSchedule = {
   endTime: r => r?.endTime,
   alternateDayName: r => r?.alternateDayName,
   totalInstructionalTime: r => r?.totalInstructionalTime,
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
 const logSpecCalendar = {
@@ -339,7 +340,8 @@ const logSpecCalendar = {
   schoolId: r => r.schoolReference.schoolId,
   schoolYear: r => r.schoolYearTypeReference.schoolYear,
   calendarTypeDescriptor: r => extractDescriptor(r.calendarTypeDescriptor),
-  gradeLevels: r => mapDescriptors(r.gradeLevels, gl => gl.gradeLevelDescriptor)
+  gradeLevels: r => mapDescriptors(r.gradeLevels, gl => gl.gradeLevelDescriptor),
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
 const logSpecCalendarDate = {
@@ -347,7 +349,8 @@ const logSpecCalendarDate = {
   calendarCode: r => r.calendarReference.calendarCode,
   schoolId: r => r.calendarReference.schoolId,
   schoolYear: r => r.calendarReference.schoolYear,
-  calendarEvents: r => mapDescriptors(r.calendarEvents, ev => ev.calendarEventDescriptor)
+  calendarEvents: r => mapDescriptors(r.calendarEvents, ev => ev.calendarEventDescriptor),
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
 const logSpecClassPeriod = {
@@ -355,6 +358,7 @@ const logSpecClassPeriod = {
   schoolId: r => r?.schoolReference?.schoolId,
   meetingTimes: r => r?.meetingTimes,
   officialAttendancePeriod: r => r?.officialAttendancePeriod,
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
 module.exports = {
