@@ -140,11 +140,11 @@ function buildLogObject(source, spec) {
 
 /**
  * logScenario
- * Extracts a canonical subset of a raw API response (source) using a specification map
+ * Extracts a canonical subset of a raw API response (actualResponse) using a specification map
  * (spec) plus an optional list of keys (filterKeys) and logs it in a consistent format.
  *
  * Flow:
- *  1. buildLogObject(source, spec) produces a flat object of resolved fields.
+ *  1. buildLogObject(actualResponse, spec) produces a flat object of resolved fields.
  *     - Each spec entry can be:
  *         a) A path string: "schoolReference.schoolId"
  *         b) A resolver function: r => r.schoolReference.schoolId
@@ -184,7 +184,7 @@ function logScenario(entityName, scenarioName, actualResponse, spec, filterKeys,
 
 /**
  * logExpectedVsActual
- * Logs two separate JSON blocks: the actual subset (derived from `source`
+ * Logs two separate JSON blocks: the actual subset (derived from `actualResponse`
  * using the `specification` map) and the expected values you provide.
  *
  * Use when you want a simple, unmerged comparison (as opposed to
@@ -237,7 +237,7 @@ function logExpectedVsActual(entityName, actualResponse, specification, expected
  *
  * @param {string} entityName       Logical entity name (e.g. "Class Period").
  * @param {string} scenarioName     Scenario or request name.
- * @param {object} source           Raw response object.
+ * @param {object} actualResponse   Raw response object.
  * @param {object} specification    Spec map used by buildLogObject to extract canonical fields (not all must appear in expected).
  * @param {object} expected         Key/value map of expected values to compare.
  * @param {object} [options]        OPTIONAL settings.
@@ -301,7 +301,7 @@ function logActualAndExpectedMerged(
   });
 
   if (displayLastModifiedDate) {
-    merged['lastModifiedDate'] = annotateDate(source?._lastModifiedDate);
+    merged['lastModifiedDate'] = annotateDate(actualResponse?._lastModifiedDate);
   }
 
   console.info(`${entityName} - ${scenarioName} - Results:`, JSON.stringify(merged, null, 2));
