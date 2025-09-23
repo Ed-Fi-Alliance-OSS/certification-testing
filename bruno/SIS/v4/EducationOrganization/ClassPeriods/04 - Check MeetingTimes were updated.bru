@@ -41,13 +41,13 @@ script:pre-request {
 }
 
 script:post-response {
-  const { expectChanged, logScenario, logSpecClassPeriod, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, logScenario, logSpecClassPeriod, throwNotFoundOrSpecificError } = require('./utils');
   const scenarioName = this.req.name;
   const entityName = 'Class Period';
   
   if (res.status === 200 && res.body) {
     const response = res.getBody();
-    const previousMeetingTimes = bru.getEnvVar('tempClassPeriodMeetingTimes');
+    const previousMeetingTimes = getVar(bru, 'tempClassPeriodMeetingTimes');
     const currentMeetingTimes = response.meetingTimes;
 
     if (!currentMeetingTimes || !currentMeetingTimes.length) {

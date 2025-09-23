@@ -34,13 +34,13 @@ script:pre-request {
 }
 
 script:post-response {
-  const { expectChanged, logScenario, logSpecClassPeriod, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, logScenario, logSpecClassPeriod, throwNotFoundOrSpecificError } = require('./utils');
   const scenarioName = this.req.name;
   const entityName = "ClassPeriod";
   
   if (res.status === 200 && res.body) {
     const response = res.getBody();
-    const previousName = bru.getEnvVar('tempClassPeriodName');
+    const previousName = getVar(bru, 'tempClassPeriodName');
     const currentName = response.classPeriodName;
 
     // Check that the name was changed from the previous value

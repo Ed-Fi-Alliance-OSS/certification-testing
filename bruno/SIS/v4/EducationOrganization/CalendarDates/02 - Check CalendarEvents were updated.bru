@@ -29,13 +29,13 @@ script:pre-request {
 }
 
 script:post-response {
-  const { expectChanged, mapDescriptors, joinDescriptors, logScenario, logSpecCalendarDate, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, mapDescriptors, joinDescriptors, logScenario, logSpecCalendarDate, throwNotFoundOrSpecificError } = require('./utils');
   const scenarioName = this.req.name;
   const entityName = "ClassPeriod";
   
   if (res.status === 200 && res.body) {
     const response = res.getBody();
-    const previousEvents = bru.getEnvVar('tempCalendarDateEventDescriptors');
+    const previousEvents = getVar(bru, 'tempCalendarDateEventDescriptors');
     const currentEvents = joinDescriptors(mapDescriptors(response.calendarEvents || [], e => e.calendarEventDescriptor));
   
     expectChanged(previousEvents, currentEvents, 'Calendar events');

@@ -31,9 +31,21 @@ function validateDependency(bru, variableName, dependencyName, opts = {}) {
   }
 }
 
-// Env var helpers -----------------------------------------------------
+// Var helpers -----------------------------------------------------
+// Just for centralizing the bru var access pattern
+
+function getVar(bru, k) {
+  return bru.getVar(k)
+}
+
+function getVars(bru, kv) {
+  return Object.fromEntries(
+    Object.entries(kv).map(([k]) => [k, getVar(bru, k)])
+  );
+}
+
 function setVars(bru, kv) {
-  Object.entries(kv).forEach(([k, v]) => bru.setEnvVar(k, v));
+  Object.entries(kv).forEach(([k, v]) => bru.setVar(k, v));
 }
 
 function setVarsMessage(entityName) {
@@ -41,7 +53,7 @@ function setVarsMessage(entityName) {
 }
 
 function wipeVars(bru, keys) {
-  keys.forEach(k => bru.setEnvVar(k, null));
+  keys.forEach(k => bru.setVar(k, null));
 }
 
 function wipeVarsWarning(entityName) {
@@ -70,6 +82,8 @@ function generateUUID() {
 
 module.exports = {
   validateDependency,
+  getVar,
+  getVars,
   setVars,
   setVarsMessage,
   wipeVars,

@@ -25,13 +25,13 @@ script:pre-request {
 }
 
 script:post-response {
-  const { expectChanged, extractDescriptor, logScenario, logSpecCalendar, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, extractDescriptor, logScenario, logSpecCalendar, throwNotFoundOrSpecificError } = require('./utils');
   const scenarioName = this.req.name;
   const entityName = "ClassPeriod";
   
   if (res.status === 200 && res.body) {
     const response = res.getBody();
-    const previousType = bru.getEnvVar('tempCalendarTypeDescriptor');
+    const previousType = getVar(bru, 'tempCalendarTypeDescriptor');
     const currentType = (response && response.calendarTypeDescriptor)
       ? extractDescriptor(response.calendarTypeDescriptor)
       : null;

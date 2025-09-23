@@ -24,13 +24,13 @@ script:pre-request {
 }
 
 script:post-response {
-  const { expectChanged, mapDescriptors, joinDescriptors, logScenario, logSpecCalendar, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, mapDescriptors, joinDescriptors, logScenario, logSpecCalendar, throwNotFoundOrSpecificError } = require('./utils');
   const scenarioName = this.req.name;
   const entityName = "ClassPeriod";
   
   if (res.status === 200 && res.body) {
     const response = res.getBody();
-    const previousGradeLevelDescriptors = bru.getEnvVar('tempCalendarGradeLevels');
+    const previousGradeLevelDescriptors = getVar(bru, 'tempCalendarGradeLevels');
     const currentGradeLevelDescriptors = joinDescriptors(mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor));
   
     expectChanged(previousGradeLevelDescriptors, currentGradeLevelDescriptors, 'Grade levels');
