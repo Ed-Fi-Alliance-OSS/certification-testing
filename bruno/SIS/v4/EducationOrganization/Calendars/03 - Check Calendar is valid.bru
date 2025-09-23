@@ -5,17 +5,15 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/Calendars?schoolId={{tempSchoolId}}&calendarCode=IEP001&schoolYear=2025
+  url: {{resourceBaseUrl}}/ed-fi/Calendars?schoolId={{tempSchoolId}}&calendarCode=[ENTER CALENDAR CODE]&schoolYear=[ENTER SCHOOL YEAR]
   body: none
   auth: inherit
 }
 
 params:query {
   schoolId: {{tempSchoolId}}
-  calendarCode: IEP001
-  schoolYear: 2025
-  ~calendarTypeDescriptor: 
-  ~id: {{tempCalendarId}}
+  calendarCode: [ENTER CALENDAR CODE]
+  schoolYear: [ENTER SCHOOL YEAR]
 }
 
 assert {
@@ -46,20 +44,30 @@ script:pre-request {
 }
 
 script:post-response {
-  const { cacheStoreCalendarResponse, cacheWipeCalendarResponse, logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
-  const { pickSingle } = require('./utils');
+  const { pickSingle, setVars, setVarsMessage, wipeVars, wipeVarsWarning, joinDescriptors, mapDescriptors, extractDescriptor, logScenario, logSpecCalendar } = require('./utils');
+  const scenarioName = this.req.name;
+  const entityName = 'Calendar';
   
-  if (res.status === 200) {
-    const response = res.getBody();
-    const calendarItem = pickSingle(response);
-
-    if (calendarItem) {
-      cacheStoreCalendarResponse(bru, calendarItem);
-      logCalendarResponse('Scenario 3 - Check Calendar is valid', calendarItem);
-    } else {
-      cacheWipeCalendarResponse(bru);
+  if (res.status === 200 && res.body) {
+    const response = pickSingle(res.getBody());
+  
+    if(response){
+      // Save useful values for later scenarios
+      setVars(bru, {
+        tempCalendarUniqueId: response.id,
+        tempCalendarCode: response.calendarCode,
+        tempCalendarSchoolYear: response.schoolYearTypeReference.schoolYear,
+        tempCalendarGradeLevels: joinDescriptors(mapDescriptors(response.gradeLevels || [], gl => gl.gradeLevelDescriptor)),
+        tempCalendarTypeDescriptor: extractDescriptor(response.calendarTypeDescriptor)
+      }, entityName);
+      
+      logScenario(entityName, scenarioName, response, logSpecCalendar);
+      return;
     }
   }
+  
+  // If we reach here, something went wrong; clean up and throw an error
+  wipeVars(bru, ['tempCalendarUniqueId', 'tempCalendarCode', 'tempCalendarSchoolYear', 'tempCalendarGradeLevels', 'tempCalendarTypeDescriptor'], entityName, throwError = true);
 }
 
 settings {

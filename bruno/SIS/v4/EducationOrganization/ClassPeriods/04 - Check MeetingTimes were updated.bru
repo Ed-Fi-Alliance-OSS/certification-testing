@@ -1,0 +1,77 @@
+meta {
+  name: 04 - Check MeetingTimes were updated
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{tempClassPeriodId}}
+  body: none
+  auth: inherit
+}
+
+vars:post-response {
+  expectedStartTime_1: "09:30:00"
+  expectedEndTime_1: "10:30:00"
+  expectedStartTime_2: "11:00:00"
+  expectedEndTime_2: "12:00:00"
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.meetingTimes: isArray
+  res.body.meetingTimes: isNotEmpty
+  res.body.meetingTimes[0].startTime: isString
+  res.body.meetingTimes[0].startTime: isNotEmpty
+  res.body.meetingTimes[0].endTime: isString
+  res.body.meetingTimes[0].endTime: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(bru, 'tempClassPeriodId', '03 - Check Second ClassPeriod is valid', {
+    actionHint: 'Ensure you ran the certification scenario successfully before continuing.'
+  });
+  
+  validateDependency(bru, 'tempClassPeriodMeetingTimes', '03 - Check Second ClassPeriod is valid', {
+    actionHint: 'Ensure you ran the certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { expectChanged, logScenario, logSpecClassPeriod, throwNotFoundOrSpecificError } = require('./utils');
+  const scenarioName = this.req.name;
+  const entityName = 'Class Period';
+  
+  if (res.status === 200 && res.body) {
+    const response = res.getBody();
+    const previousMeetingTimes = bru.getEnvVar('tempClassPeriodMeetingTimes');
+    const currentMeetingTimes = response.meetingTimes;
+
+    if (!currentMeetingTimes || !currentMeetingTimes.length) {
+      throw new Error('No meetingTimes returned to validate.');
+    }
+
+    if (currentMeetingTimes.length !== previousMeetingTimes.length) {
+      throw new Error('Meeting times length mismatch.');
+    }
+
+    for (let i = 0; i < currentMeetingTimes.length; i++) {
+      const current = currentMeetingTimes[i];
+      const previous = previousMeetingTimes[i];
+
+      expectChanged(`${previous.startTime}-${previous.endTime}`, `${current.startTime}-${current.endTime}`, 'Class Period Meeting Times (start-end)');
+    }
+  
+    logScenario(entityName, scenarioName, response, logSpecClassPeriod, ['classPeriodName', 'meetingTimes']);
+
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

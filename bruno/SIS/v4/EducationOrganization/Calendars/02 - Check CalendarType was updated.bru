@@ -10,13 +10,6 @@ get {
   auth: inherit
 }
 
-params:query {
-  ~calendarCode: 107SS111111
-  ~schoolYear: 2025
-  ~calendarTypeDescriptor: 
-  ~id: {{tempCalendarId}}
-}
-
 assert {
   res.status: eq 200
   res.body.calendarTypeDescriptor: isString
@@ -32,17 +25,21 @@ script:pre-request {
 }
 
 script:post-response {
-  const { logCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
-  const { expectChanged, extractDescriptor } = require('./utils');
-  const response = res.getBody();
-  const previousType = bru.getEnvVar('tempCalendarTypeDescriptor');
-  const currentType = (response && response.calendarTypeDescriptor)
-    ? extractDescriptor(response.calendarTypeDescriptor)
-    : null;
-
-  if (response) {
-    logCalendarResponse('Scenario 2 - Check CalendarType was updated', response, ['calendarCode', 'calendarTypeDescriptor']);
+  const { expectChanged, extractDescriptor, logScenario, logSpecCalendar, throwNotFoundOrSpecificError } = require('./utils');
+  const scenarioName = this.req.name;
+  const entityName = "ClassPeriod";
+  
+  if (res.status === 200 && res.body) {
+    const response = res.getBody();
+    const previousType = bru.getEnvVar('tempCalendarTypeDescriptor');
+    const currentType = (response && response.calendarTypeDescriptor)
+      ? extractDescriptor(response.calendarTypeDescriptor)
+      : null;
+  
     expectChanged(previousType, currentType, 'Calendar type');
+    logScenario(entityName, scenarioName, response, logSpecCalendar, ['calendarCode', 'calendarTypeDescriptor']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
   }
 }
 

@@ -26,7 +26,7 @@ auth:bearer {
 }
 
 script:post-response {
-  const { wipeVars } = require('../../utils');
+  const { wipeVars } = require('./utils');
   const response = res.getBody();
 
   if (Array.isArray(response) && response.length > 0) {

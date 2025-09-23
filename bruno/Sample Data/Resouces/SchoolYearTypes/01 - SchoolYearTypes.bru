@@ -27,7 +27,7 @@ auth:bearer {
 }
 
 script:post-response {
-  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('../../utils');
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
   const item = pickSingle(res.getBody());
 
   if (item) {

@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 script:post-response {
-  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('../../utils');
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('./utils');
 
   if (res.getStatus() === 200) {
     const { id, classPeriodName: name } = res.getBody();

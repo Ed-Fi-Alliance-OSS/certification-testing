@@ -1,21 +1,19 @@
 meta {
-  name: 02 - Fetch Calendar Data
+  name: 02 - Fetch Calendar
   type: http
   seq: 2
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/Calendars?schoolId={{tempSchoolId}}&calendarCode=107SS111111&schoolYear=2025
+  url: {{resourceBaseUrl}}/ed-fi/Calendars?schoolId={{tempSchoolId}}&calendarCode=[ENTER CALENDAR CODE]&schoolYear=[ENTER SCHOOL YEAR]
   body: none
   auth: inherit
 }
 
 params:query {
   schoolId: {{tempSchoolId}}
-  calendarCode: 107SS111111
-  schoolYear: 2025
-  ~calendarTypeDescriptor: 
-  ~id: {{tempCalendarId}}
+  calendarCode: [ENTER CALENDAR CODE]
+  schoolYear: [ENTER SCHOOL YEAR]
 }
 
 assert {
@@ -39,25 +37,29 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-
+  
   validateDependency(bru, 'tempSchoolUniqueId', 'Fetch School Data', {
     actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
   });
 }
 
 script:post-response {
-  const { cacheStoreCalendarResponse, cacheWipeCalendarResponse } = require('./v4/EducationOrganization/Calendars/calendars-utils');
-  const { pickSingle } = require('./utils');
+  const { pickSingle, setVars, setVarsMessage, wipeVars, wipeVarsWarning } = require('./utils');
+  const response = res.getBody();
+  const calendarItem = pickSingle(response);
+  const entityName = 'Calendar';
   
-  if (res.status === 200) {
-    const response = res.getBody();
-    const calendarItem = pickSingle(response);
-
-    if (calendarItem) {
-      cacheStoreCalendarResponse(bru, calendarItem);
-    } else {
-      cacheWipeCalendarResponse(bru);
-    }
+  if (res.status === 200 && calendarItem) {
+    setVars(bru, {
+      tempCalendarUniqueId: calendarItem.id,
+      tempCalendarCode: calendarItem.calendarCode,
+    });
+    setVarsMessage(entityName);
+  
+  } else {
+    wipeVars(bru, ['tempCalendarUniqueId', 'tempCalendarCode']);
+    wipeVarsWarning(entityName);
+    throw new Error(`No ${entityName} found, or multiple records were returned. Check your parameters and try again.`);
   }
 }
 
