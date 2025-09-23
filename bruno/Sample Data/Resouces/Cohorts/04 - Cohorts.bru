@@ -1,0 +1,15 @@
+meta {
+  name: 04 - Cohorts
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts/{{tempCohortUniqueId}}
+  body: json
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

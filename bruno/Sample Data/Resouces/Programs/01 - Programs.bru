@@ -1,0 +1,51 @@
+meta {
+  name: 01 - Programs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/programs
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
+  ~programId: [ENTER PROGRAM ID]
+  ~programName: 
+  ~programTypeDescriptor: 
+  ~id: 
+  ~limit: 10
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  ~Snapshot-Identifier: 
+  ~totalCount: false
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  
+  if (response) {
+    setVars(bru, {
+      tempProgramUniqueId: response.id,
+      tempProgramId: response.programId,
+      tempProgramName: response.programName,
+      tempProgramTypeDescriptor: response.programTypeDescriptor
+    });
+    setVarsMessage('Programs');
+  } else {
+    wipeVars(bru, ['tempProgramUniqueId', 'tempProgramId', 'tempProgramName', 'tempProgramTypeDescriptor']);
+    wipeVarsWarning('Programs');
+  }
+}
+
+settings {
+  encodeUrl: true
+}

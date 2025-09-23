@@ -1,0 +1,40 @@
+meta {
+  name: AcademicSubjectDescriptors
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/academicSubjectDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~academicSubjectDescriptorId: 40
+  ~limit: 5
+  ~offset: 0
+  ~totalCount: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  
+  if (response) {
+    setVars(bru, {
+      tempAcademicSubjectDescriptorId: response.academicSubjectDescriptorId,
+      tempAcademicSubjectDescriptorUri: `${response.namespace}#${response.codeValue}`,
+    });
+  } else {
+    wipeVars(bru, ['tempAcademicSubjectDescriptorId', 'tempAcademicSubjectDescriptorUri']);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

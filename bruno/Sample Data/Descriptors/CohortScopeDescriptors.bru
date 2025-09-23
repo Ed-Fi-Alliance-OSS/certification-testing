@@ -1,0 +1,40 @@
+meta {
+  name: CohortScopeDescriptors
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohortScopeDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~cohortScopeDescriptorId: 325
+  ~limit: 5
+  ~offset: 0
+  ~totalCount: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  
+  if (response) {
+    setVars(bru, {
+      tempCohortScopeDescriptorId: response.cohortScopeDescriptorId,
+      tempCohortScopeDescriptorUri: `${response.namespace}#${response.codeValue}`,
+    });
+  } else {
+    wipeVars(bru, ['tempCohortScopeDescriptorId', 'tempCohortScopeDescriptorUri']);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

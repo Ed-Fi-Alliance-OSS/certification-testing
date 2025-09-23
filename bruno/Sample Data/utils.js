@@ -53,7 +53,7 @@ function setVarsMessage(entityName) {
 }
 
 function wipeVars(bru, keys) {
-  keys.forEach(k => bru.setVar(k, null));
+  keys.forEach(k => bru.deleteVar(k, null));
 }
 
 function wipeVarsWarning(entityName) {

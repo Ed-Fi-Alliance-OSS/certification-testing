@@ -1,0 +1,53 @@
+meta {
+  name: 01 - Cohorts
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
+  ~cohortIdentifier: [ENTER COHORT IDENTIFIER]
+  ~cohortTypeDescriptor: 
+  ~cohortDescription: 
+  ~id: 
+  ~academicSubjectDescriptor: 
+  ~cohortScopeDescriptor: 
+  ~limit: 10
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  ~Snapshot-Identifier: 
+  ~totalCount: false
+}
+
+script:pre-request {
+  // const { validateDependency } = require('./utils');
+  // validateDependency(bru, 'tempSchoolId', 'GET Schools');
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  
+  if (response) {  
+    setVars(bru, {
+      tempCohortUniqueId: response.id,
+      tempCohortIdentifier: response.cohortIdentifier,
+      tempCohortDescription: response.cohortDescription
+    });
+    setVarsMessage('Cohort');
+  } else {
+    wipeVars(bru, ['tempCohortUniqueId', 'tempCohortIdentifier', 'tempCohortDescription']);
+    wipeVarsWarning('Cohort');
+  }
+}
+
+settings {
+  encodeUrl: true
+}
