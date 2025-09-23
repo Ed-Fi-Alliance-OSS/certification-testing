@@ -37,7 +37,7 @@ function annotateDate(date) {
  */
 function validateDependency(bru, variableName, dependencyName, opts = {}) {
   const { throwOnMissing = true, actionHint } = opts;
-  const value = bru.getEnvVar(variableName);
+  const value = getVar(bru, variableName);
   if (value !== undefined && value !== null && value !== '') {
     return true;
   }
