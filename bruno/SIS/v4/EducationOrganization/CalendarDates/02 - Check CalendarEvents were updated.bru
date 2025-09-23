@@ -22,17 +22,13 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-
-  validateDependency(bru, 'tempSchoolId', 'Fetch School Data', {
-    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
-  });
-  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar Data', {
-    actionHint: 'Ensure you ran the calendar fetch for the correct calendarCode.'
+  
+  validateDependency(bru, 'tempCalendarDateUniqueId', '01 - Check CalendarDate is valid', {
+    actionHint: 'Ensure you ran the certification scenario successfully before continuing.'
   });
 }
 
 script:post-response {
-  //const { logCalendarDateResponse } = require('./v4/EducationOrganization/CalendarDates/calendar-dates-utils');
   const { expectChanged, mapDescriptors, joinDescriptors, logScenario, logSpecCalendarDate, throwNotFoundOrSpecificError } = require('./utils');
   const scenarioName = this.req.name;
   const entityName = "ClassPeriod";
