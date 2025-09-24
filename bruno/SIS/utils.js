@@ -92,9 +92,27 @@ function joinDescriptors(items) {
   return items.join(', ');
 }
 
-// Env var helpers -----------------------------------------------------
+// just wrappers around bru methods for consistency and centralization
+function getVar(bru, key) {
+  return bru.getVar(key);
+}
+
+function setVar(bru, key, value) {
+  bru.setVar(key, value);
+}
+
+function wipeVar(bru, key) {
+  bru.deleteVar(key);
+}
+
+// Variable helpers -----------------------------------------------------
+function getVars(bru, keys = []) {
+  if (!Array.isArray(keys) || keys.length === 0) return {};
+  return Object.fromEntries(keys.map(k => [k, getVar(bru, k)]));
+} 
+
 function setVars(bru, kv, entityName = null) {
-  Object.entries(kv).forEach(([k, v]) => bru.setEnvVar(k, v));
+  Object.entries(kv).forEach(([k, v]) => setVar(bru, k, v));
   if (entityName) setVarsMessage(entityName);
 }
 
@@ -103,7 +121,7 @@ function setVarsMessage(entityName) {
 }
 
 function wipeVars(bru, keys, entityName = null, throwError = false) {
-  keys.forEach(k => bru.setEnvVar(k, null));
+  keys.forEach(k => wipeVar(bru, k));
   if (entityName) wipeVarsWarning(entityName);
   if (throwError) throwNotFoundOrSpecificError(entityName);
 }
@@ -361,14 +379,27 @@ const logSpecClassPeriod = {
   lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
+const logSpecCohorts = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  cohortIdentifier: 'cohortIdentifier',
+  cohortTypeDescriptor: 'cohortTypeDescriptor',
+  cohortDescription: 'cohortDescription',
+  cohortScopeDescriptor: 'cohortScopeDescriptor',
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
+};
+
 module.exports = {
   validateDependency,
   filterObjectByKeys,
   extractDescriptor,
   mapDescriptors,
   joinDescriptors,
+  getVar,
+  getVars,
+  setVar,
   setVars,
   setVarsMessage,
+  wipeVar,
   wipeVars,
   wipeVarsWarning,
   pickSingle,
@@ -382,5 +413,6 @@ module.exports = {
   logSpecCalendar,
   logSpecCalendarDate,
   logSpecClassPeriod,
+  logSpecCohorts,
   throwNotFoundOrSpecificError
 };

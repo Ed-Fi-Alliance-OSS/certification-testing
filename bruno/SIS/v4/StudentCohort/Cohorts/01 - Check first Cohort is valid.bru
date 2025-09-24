@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/cohorts
+  url: {{resourceBaseUrl}}/ed-fi/cohorts?educationOrganizationId=[ENTER EDUCATION ORGANIZATION ID]&cohortIdentifier=[ENTER COHORT IDENTIFIER]
   body: none
   auth: inherit
 }
 
 params:query {
-  ~educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
-  ~cohortIdentifier: [ENTER COHORT IDENTIFIER]
+  educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
+  cohortIdentifier: [ENTER COHORT IDENTIFIER]
 }
 
 assert {
@@ -35,7 +35,7 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, logScenario } = require('./utils');
+  const { pickSingle, setVars, wipeVars, logScenario, logSpecCohorts, extractDescriptor } = require('./utils');
   const entityName = 'Cohort';
   const scenarioName = this.req.name;
   
@@ -46,10 +46,10 @@ script:post-response {
       setVars(bru, {
         cohortId_1: response.id,
         cohortIdentifier_1: response.cohortIdentifier,
-        cohortTypeDescriptor_1: response.cohortTypeDescriptor
+        cohortTypeDescriptor_1: extractDescriptor(response.cohortTypeDescriptor)
       }, entityName);
   
-      logScenario(entityName, scenarioName, response);
+      logScenario(entityName, scenarioName, response, logSpecCohorts);
       return;
     }
   }

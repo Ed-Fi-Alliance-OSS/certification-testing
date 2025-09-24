@@ -34,17 +34,42 @@ script:pre-request {
 script:post-response {
   const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
   const response = pickSingle(res.getBody());
+  const entityName = 'Cohorts';
   
   if (response) {  
     setVars(bru, {
       tempCohortUniqueId: response.id,
       tempCohortIdentifier: response.cohortIdentifier,
-      tempCohortDescription: response.cohortDescription
+      tempCohortDescription: response.cohortDescription,
+      tempAcademicSubjectDescriptorUri: response.academicSubjectDescriptor,
+      tempCohortScopeDescriptorUri: response.cohortScopeDescriptor,
+      tempCohortTypeDescriptorUri: response.cohortTypeDescriptor,
+      
     });
-    setVarsMessage('Cohort');
+
+    if(response.programs && response.programs[0] && response.programs[0].programReference) {
+      const program = response.programs[0].programReference;
+      setVars(bru, {
+        tempProgramName: program.programName,
+        tempProgramTypeDescriptor: program.programTypeDescriptor
+      });
+    }
+
+    setVarsMessage(entityName);
   } else {
-    wipeVars(bru, ['tempCohortUniqueId', 'tempCohortIdentifier', 'tempCohortDescription']);
-    wipeVarsWarning('Cohort');
+    wipeVars(bru, [
+      'tempCohortUniqueId', 
+      'tempCohortIdentifier', 
+      'tempCohortDescription', 
+      'tempAcademicSubjectDescriptorUri', 
+      'tempCohortScopeDescriptorUri', 
+      'tempCohortTypeDescriptorUri', 
+      'tempProgramName', 
+      'tempProgramTypeDescriptor'
+      ], 
+      entityName);
+      
+    wipeVarsWarning(entityName);
   }
 }
 

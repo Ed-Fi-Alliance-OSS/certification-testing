@@ -10,29 +10,23 @@ get {
   auth: inherit
 }
 
-params:query {
-  educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
-  cohortIdentifier: [ENTER COHORT IDENTIFIER]
-}
-
 assert {
   res.status: eq 200
-  res.body: isArray
+  res.body: isDefined
   res.body: isNotEmpty
-  res.body[0].id: isString
-  res.body[0].id: isNotEmpty
-  res.body[0].cohortIdentifier: isString
-  res.body[0].cohortIdentifier: isNotEmpty
-  res.body[0].educationOrganizationReference: isDefined
-  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
-  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
-  res.body[0].cohortTypeDescriptor: isString
-  res.body[0].cohortTypeDescriptor: isNotEmpty
-  res.body[0].cohortTypeDescriptor: neq {{cohortTypeDescriptor_2}}
-  res.body[0].cohortDescription: isString
-  res.body[0].cohortDescription: isNotEmpty
-  res.body[0].cohortScopeDescriptor: isString
-  res.body[0].cohortScopeDescriptor: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.cohortIdentifier: isString
+  res.body.cohortIdentifier: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.cohortTypeDescriptor: isString
+  res.body.cohortTypeDescriptor: isNotEmpty
+  res.body.cohortDescription: isString
+  res.body.cohortDescription: isNotEmpty
+  res.body.cohortScopeDescriptor: isString
+  res.body.cohortScopeDescriptor: isNotEmpty
 }
 
 script:pre-request {
@@ -40,17 +34,21 @@ script:pre-request {
   validateDependency(bru, 'cohortId_2', '02 - Check second Cohort is valid', {
     actionHint: 'Run the second Cohort validation before continuing.'
   });
+  validateDependency(bru, 'cohortTypeDescriptor_2', '02 - Check second Cohort is valid');
 }
 
 script:post-response {
-  const { setVars, logScenario } = require('./utils');
+  const { getVar, expectChanged, extractDescriptor, logScenario, logSpecCohorts, throwNotFoundOrSpecificError } = require('./utils');
   const entityName = 'Cohort';
   const scenarioName = this.req.name;
   
   if (res.status === 200 && res.body) {
     const response = res.getBody();
-
-    logScenario(entityName, scenarioName, response);
+    const previousType = getVar(bru, 'cohortTypeDescriptor_2');
+    const currentType = extractDescriptor(response.cohortTypeDescriptor);
+    
+    expectChanged(previousType, currentType, 'Cohort type');
+    logScenario(entityName, scenarioName, response, logSpecCohorts);
   } else {
     throwNotFoundOrSpecificError(entityName);
   }

@@ -35,25 +35,25 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, logScenario } = require('./utils');
+  const { pickSingle, setVars, wipeVars, logScenario, logSpecCohorts, extractDescriptor } = require('./utils');
   const entityName = 'Cohort';
   const scenarioName = this.req.name;
   
   if (res.status === 200 && res.body) {
     const response = pickSingle(res.getBody());
-
+  
     if (response) {
       setVars(bru, {
         cohortId_2: response.id,
         cohortIdentifier_2: response.cohortIdentifier,
-        cohortTypeDescriptor_2: response.cohortTypeDescriptor
+        cohortTypeDescriptor_2: extractDescriptor(response.cohortTypeDescriptor)
       }, entityName);
-      
-      logScenario(entityName, scenarioName, response);
+  
+      logScenario(entityName, scenarioName, response, logSpecCohorts);
       return;
     }
   }
-
+  
   wipeVars(bru, ['cohortId_2','cohortIdentifier_2','cohortTypeDescriptor_2'], entityName, throwError = true);
 }
 
