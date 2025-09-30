@@ -1,17 +1,17 @@
 meta {
-  name: AcademicSubjectDescriptors
+  name: CareerPathwayDescriptors
   type: http
-  seq: 18
+  seq: 22
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/academicSubjectDescriptors
+  url: {{resourceBaseUrl}}/ed-fi/careerPathwayDescriptors?careerPathwayDescriptorId=300
   body: none
   auth: bearer
 }
 
 params:query {
-  ~academicSubjectDescriptorId: 39
+  careerPathwayDescriptorId: 300
   ~limit: 5
   ~offset: 0
   ~totalCount: 
@@ -27,11 +27,11 @@ script:post-response {
   
   if (response) {
     setVars(bru, {
-      tempAcademicSubjectDescriptorId: response.academicSubjectDescriptorId,
-      tempAcademicSubjectDescriptor: `${response.namespace}#${response.codeValue}`,
+      tempCareerPathwayDescriptorId: response.careerPathwayDescriptorId,
+      tempCareerPathwayDescriptor: `${response.namespace}#${response.codeValue}`,
     });
   } else {
-    wipeVars(bru, ['tempAcademicSubjectDescriptorId', 'tempAcademicSubjectDescriptor']);
+    wipeVars(bru, ['tempCareerPathwayDescriptorId', 'tempCareerPathwayDescriptor']);
   }
 }
 

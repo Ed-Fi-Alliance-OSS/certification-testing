@@ -41,10 +41,10 @@ script:post-response {
       tempCohortUniqueId: response.id,
       tempCohortIdentifier: response.cohortIdentifier,
       tempCohortDescription: response.cohortDescription,
-      tempAcademicSubjectDescriptorUri: response.academicSubjectDescriptor,
-      tempCohortScopeDescriptorUri: response.cohortScopeDescriptor,
-      tempCohortTypeDescriptorUri: response.cohortTypeDescriptor,
-      
+      tempAcademicSubjectDescriptor: response.academicSubjectDescriptor,
+      tempCohortScopeDescriptor: response.cohortScopeDescriptor,
+      tempCohortTypeDescriptor: response.cohortTypeDescriptor,
+
     });
 
     if(response.programs && response.programs[0] && response.programs[0].programReference) {
@@ -61,9 +61,9 @@ script:post-response {
       'tempCohortUniqueId', 
       'tempCohortIdentifier', 
       'tempCohortDescription', 
-      'tempAcademicSubjectDescriptorUri', 
-      'tempCohortScopeDescriptorUri', 
-      'tempCohortTypeDescriptorUri', 
+      'tempAcademicSubjectDescriptor', 
+      'tempCohortScopeDescriptor', 
+      'tempCohortTypeDescriptor', 
       'tempProgramName', 
       'tempProgramTypeDescriptor'
       ], 

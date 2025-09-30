@@ -28,10 +28,10 @@ script:post-response {
   if (response) {
     setVars(bru, {
       tempCohortScopeDescriptorId: response.cohortScopeDescriptorId,
-      tempCohortScopeDescriptorUri: `${response.namespace}#${response.codeValue}`,
+      tempCohortScopeDescriptor: `${response.namespace}#${response.codeValue}`,
     });
   } else {
-    wipeVars(bru, ['tempCohortScopeDescriptorId', 'tempCohortScopeDescriptorUri']);
+    wipeVars(bru, ['tempCohortScopeDescriptorId', 'tempCohortScopeDescriptor']);
   }
 }
 
