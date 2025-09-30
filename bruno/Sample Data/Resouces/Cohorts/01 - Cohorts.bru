@@ -1,0 +1,78 @@
+meta {
+  name: 01 - Cohorts
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
+  ~cohortIdentifier: [ENTER COHORT IDENTIFIER]
+  ~cohortTypeDescriptor: 
+  ~cohortDescription: 
+  ~id: 
+  ~academicSubjectDescriptor: 
+  ~cohortScopeDescriptor: 
+  ~limit: 10
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  ~Snapshot-Identifier: 
+  ~totalCount: false
+}
+
+script:pre-request {
+  // const { validateDependency } = require('./utils');
+  // validateDependency(bru, 'tempSchoolId', 'GET Schools');
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  const entityName = 'Cohorts';
+  
+  if (response) {  
+    setVars(bru, {
+      tempCohortUniqueId: response.id,
+      tempCohortIdentifier: response.cohortIdentifier,
+      tempCohortDescription: response.cohortDescription,
+      tempAcademicSubjectDescriptorUri: response.academicSubjectDescriptor,
+      tempCohortScopeDescriptorUri: response.cohortScopeDescriptor,
+      tempCohortTypeDescriptorUri: response.cohortTypeDescriptor,
+      
+    });
+
+    if(response.programs && response.programs[0] && response.programs[0].programReference) {
+      const program = response.programs[0].programReference;
+      setVars(bru, {
+        tempProgramName: program.programName,
+        tempProgramTypeDescriptor: program.programTypeDescriptor
+      });
+    }
+
+    setVarsMessage(entityName);
+  } else {
+    wipeVars(bru, [
+      'tempCohortUniqueId', 
+      'tempCohortIdentifier', 
+      'tempCohortDescription', 
+      'tempAcademicSubjectDescriptorUri', 
+      'tempCohortScopeDescriptorUri', 
+      'tempCohortTypeDescriptorUri', 
+      'tempProgramName', 
+      'tempProgramTypeDescriptor'
+      ], 
+      entityName);
+      
+    wipeVarsWarning(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

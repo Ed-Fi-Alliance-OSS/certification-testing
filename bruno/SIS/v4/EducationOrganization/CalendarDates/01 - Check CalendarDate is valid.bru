@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/CalendarDates?schoolId={{tempSchoolId}}&calendarCode={{tempCalendarCode}}&date=[ENTER DATE - format: yyyy-mm-dd]&schoolYear=[ENTER SCHOOL YEAR]
+  url: {{resourceBaseUrl}}/ed-fi/CalendarDates?schoolId=[ENTER SCHOOL ID]&calendarCode=[ENTER CALENDAR CODE]&date=[ENTER DATE - format: yyyy-mm-dd]&schoolYear=[ENTER SCHOOL YEAR]
   body: none
   auth: bearer
 }
 
 params:query {
-  schoolId: {{tempSchoolId}}
-  calendarCode: {{tempCalendarCode}}
+  schoolId: [ENTER SCHOOL ID]
+  calendarCode: [ENTER CALENDAR CODE]
   date: [ENTER DATE - format: yyyy-mm-dd]
   schoolYear: [ENTER SCHOOL YEAR]
 }
@@ -38,17 +38,6 @@ assert {
   res.body[0].calendarReference.schoolYear: neq 0
   res.body[0].calendarEvents: isArray
   res.body[0].calendarEvents: isNotEmpty
-}
-
-script:pre-request {
-  const { validateDependency } = require('./utils');
-  
-  validateDependency(bru, 'tempSchoolId', 'Fetch School', {
-    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
-  });
-  validateDependency(bru, 'tempCalendarCode', 'Fetch Calendar', {
-    actionHint: 'Ensure you ran the calendar fetch for the correct calendarCode.'
-  });
 }
 
 script:post-response {
@@ -79,8 +68,3 @@ settings {
   encodeUrl: true
 }
 
-docs {
-  # Dependencies
-    * `GET` Fetch School Data
-    * `GET` Fetch Calendar data
-}

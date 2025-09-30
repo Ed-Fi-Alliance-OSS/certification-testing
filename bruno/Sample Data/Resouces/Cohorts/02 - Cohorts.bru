@@ -1,0 +1,46 @@
+meta {
+  name: 02 - Cohorts
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "cohortIdentifier": "2",
+    "educationOrganizationReference": {
+      "educationOrganizationId": "{{myLEAId}}"
+    },
+    "academicSubjectDescriptor": "{{tempAcademicSubjectDescriptorUri}}",
+    "cohortDescription": "Food service",
+    "cohortScopeDescriptor": "{{tempCohortScopeDescriptorUri}}",
+    "cohortTypeDescriptor": "{{tempCohortTypeDescriptorUri}}",
+    "programs": [
+      {
+        "programReference": {
+          "educationOrganizationId": "{{myLEAId}}",
+          "programName": "{{tempProgramName}}",
+          "programTypeDescriptor": "{{tempProgramTypeDescriptor}}"
+        }
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const { setVars } = require('./utils');
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const cohortId = locationHeader.split('/').pop();
+    setVars(bru, { 'tempCohortUniqueId': cohortId });
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,59 @@
+meta {
+  name: 04 - Check second Cohort was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts/{{cohortId_2}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.cohortIdentifier: isString
+  res.body.cohortIdentifier: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.cohortTypeDescriptor: isString
+  res.body.cohortTypeDescriptor: isNotEmpty
+  res.body.cohortDescription: isString
+  res.body.cohortDescription: isNotEmpty
+  res.body.cohortScopeDescriptor: isString
+  res.body.cohortScopeDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'cohortId_2', '02 - Check second Cohort is valid', {
+    actionHint: 'Run the second Cohort validation before continuing.'
+  });
+  validateDependency(bru, 'cohortTypeDescriptor_2', '02 - Check second Cohort is valid');
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, logScenario, logSpecCohorts, throwNotFoundOrSpecificError } = require('./utils');
+  const entityName = 'Cohort';
+  const scenarioName = this.req.name;
+  
+  if (res.status === 200 && res.body) {
+    const response = res.getBody();
+    const previousType = getVar(bru, 'cohortTypeDescriptor_2');
+    const currentType = extractDescriptor(response.cohortTypeDescriptor);
+    
+    expectChanged(previousType, currentType, 'Cohort type');
+    logScenario(entityName, scenarioName, response, logSpecCohorts);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

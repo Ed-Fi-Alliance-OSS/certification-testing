@@ -1,0 +1,62 @@
+meta {
+  name: 01 - Check first Cohort is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts?educationOrganizationId=[ENTER EDUCATION ORGANIZATION ID]&cohortIdentifier=[ENTER COHORT IDENTIFIER]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
+  cohortIdentifier: [ENTER COHORT IDENTIFIER]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].cohortIdentifier: isString
+  res.body[0].cohortIdentifier: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].cohortTypeDescriptor: isString
+  res.body[0].cohortTypeDescriptor: isNotEmpty
+  res.body[0].cohortDescription: isString
+  res.body[0].cohortDescription: isNotEmpty
+  res.body[0].cohortScopeDescriptor: isString
+  res.body[0].cohortScopeDescriptor: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, logScenario, logSpecCohorts, extractDescriptor } = require('./utils');
+  const entityName = 'Cohort';
+  const scenarioName = this.req.name;
+  
+  if (res.status === 200 && res.body) {
+    const response = pickSingle(res.getBody());
+    
+    if (response) {
+      setVars(bru, {
+        cohortId_1: response.id,
+        cohortIdentifier_1: response.cohortIdentifier,
+        cohortTypeDescriptor_1: extractDescriptor(response.cohortTypeDescriptor)
+      }, entityName);
+  
+      logScenario(entityName, scenarioName, response, logSpecCohorts);
+      return;
+    }
+  }
+  
+  wipeVars(bru, ['cohortId_1','cohortIdentifier_1','cohortTypeDescriptor_1'], entityName, throwError = true);
+}
+
+settings {
+  encodeUrl: true
+}

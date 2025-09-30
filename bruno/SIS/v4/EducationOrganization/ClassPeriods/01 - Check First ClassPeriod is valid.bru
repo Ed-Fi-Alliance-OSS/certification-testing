@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/classPeriods?schoolId={{tempSchoolId}}&classPeriodName=[ENTER CLASS PERIOD NAME]
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods?schoolId=[ENTER SCHOOL ID]&classPeriodName=[ENTER CLASS PERIOD NAME]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: {{tempSchoolId}}
+  schoolId: [ENTER SCHOOL ID]
   classPeriodName: [ENTER CLASS PERIOD NAME]
 }
 
@@ -38,14 +38,6 @@ assert {
   res.body[0].meetingTimes[0].startTime: isNotEmpty
   res.body[0].meetingTimes[0].endTime: isString
   res.body[0].meetingTimes[0].endTime: isNotEmpty
-}
-
-script:pre-request {
-  const { validateDependency } = require('./utils');
-  
-  validateDependency(bru, 'tempSchoolId', 'Fetch School', {
-    actionHint: 'Ensure you ran the school fetch for the correct schoolId.'
-  });
 }
 
 script:post-response {

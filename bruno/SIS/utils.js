@@ -3,22 +3,44 @@ try {
   dayjs = require('dayjs');
   const utc = require('dayjs/plugin/utc');
   dayjs.extend(utc);
+  try {
+    const timezone = require('dayjs/plugin/timezone');
+    dayjs.extend(timezone);
+  } catch (tzErr) {
+    // timezone plugin not available; will fallback
+  }
 } catch (e) {
-  //console.warn('[utils] dayjs load failed:', e.message);
+  // console.warn('[utils] dayjs load failed:', e.message);
 }
 
-// Helper to annotate a date string
-function annotateDate(date) {
-  if (!date) return date;
-  if (!dayjs) return date; // fallback
+const CENTRAL_TZ = 'America/Chicago';
 
-  const d = dayjs(date);
-  const today = dayjs();
-  if (!d.isValid()) return date;
-  
-  if (d.isSame(today, 'day')) return `${date} (today)`;
-  if (d.isBefore(today, 'day')) return `${date} (before today)`;
-  return date;
+// Helper to annotate a date string (adds relative tag + CST conversion)
+function annotateDate(date) {
+  if (!date || !dayjs) return date; // Fallback: no date or no dayjs
+
+  // Parse as UTC first
+  let dUtc = dayjs.utc(date);
+  if (!dUtc.isValid()) return date;
+
+  // Convert to CST (America/Chicago) if tz plugin present; else fallback offset
+  let dCst;
+  if (typeof dUtc.tz === 'function') {
+    dCst = dUtc.tz(CENTRAL_TZ);
+  } else {
+    // Fallback: assume standard -6 offset (does not handle DST)
+    dCst = dUtc.add(-6, 'hour');
+  }
+
+  // Format CST
+  const cstFormatted = dCst.format('YYYY-MM-DDTHH:mm:ss[Z]'); // keep consistent shape
+  const todayCst = (typeof dayjs().tz === 'function') ? dayjs().tz(CENTRAL_TZ) : dayjs();
+
+  let relativeTag = '';
+  if (dCst.isSame(todayCst, 'day')) relativeTag = ' (today)';
+  else if (dCst.isBefore(todayCst, 'day')) relativeTag = ' (before today)';
+
+  return `${cstFormatted} (CST)${relativeTag}`;
 }
 
 /**
@@ -37,7 +59,7 @@ function annotateDate(date) {
  */
 function validateDependency(bru, variableName, dependencyName, opts = {}) {
   const { throwOnMissing = true, actionHint } = opts;
-  const value = bru.getEnvVar(variableName);
+  const value = getVar(bru, variableName);
   if (value !== undefined && value !== null && value !== '') {
     return true;
   }
@@ -92,9 +114,27 @@ function joinDescriptors(items) {
   return items.join(', ');
 }
 
-// Env var helpers -----------------------------------------------------
+// just wrappers around bru methods for consistency and centralization
+function getVar(bru, key) {
+  return bru.getVar(key);
+}
+
+function setVar(bru, key, value) {
+  bru.setVar(key, value);
+}
+
+function wipeVar(bru, key) {
+  bru.deleteVar(key);
+}
+
+// Variable helpers -----------------------------------------------------
+function getVars(bru, keys = []) {
+  if (!Array.isArray(keys) || keys.length === 0) return {};
+  return Object.fromEntries(keys.map(k => [k, getVar(bru, k)]));
+} 
+
 function setVars(bru, kv, entityName = null) {
-  Object.entries(kv).forEach(([k, v]) => bru.setEnvVar(k, v));
+  Object.entries(kv).forEach(([k, v]) => setVar(bru, k, v));
   if (entityName) setVarsMessage(entityName);
 }
 
@@ -103,7 +143,7 @@ function setVarsMessage(entityName) {
 }
 
 function wipeVars(bru, keys, entityName = null, throwError = false) {
-  keys.forEach(k => bru.setEnvVar(k, null));
+  keys.forEach(k => wipeVar(bru, k));
   if (entityName) wipeVarsWarning(entityName);
   if (throwError) throwNotFoundOrSpecificError(entityName);
 }
@@ -361,14 +401,27 @@ const logSpecClassPeriod = {
   lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
+const logSpecCohorts = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  cohortIdentifier: 'cohortIdentifier',
+  cohortTypeDescriptor: 'cohortTypeDescriptor',
+  cohortDescription: 'cohortDescription',
+  cohortScopeDescriptor: 'cohortScopeDescriptor',
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
+};
+
 module.exports = {
   validateDependency,
   filterObjectByKeys,
   extractDescriptor,
   mapDescriptors,
   joinDescriptors,
+  getVar,
+  getVars,
+  setVar,
   setVars,
   setVarsMessage,
+  wipeVar,
   wipeVars,
   wipeVarsWarning,
   pickSingle,
@@ -382,5 +435,6 @@ module.exports = {
   logSpecCalendar,
   logSpecCalendarDate,
   logSpecClassPeriod,
+  logSpecCohorts,
   throwNotFoundOrSpecificError
 };

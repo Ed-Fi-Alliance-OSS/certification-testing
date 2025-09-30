@@ -94,7 +94,7 @@ await bru.sendRequest({
 ```
 - Validate data requerements:
 ```
-if (!bru.getEnvVar('tempSchoolUniqueId')) {
+if (!getVar('tempSchoolUniqueId')) {
     const errorMsg = 'The variable tempSchoolUniqueId is missing. Please run "Fetch School Data" for the desired school before continuing.';
     console.error(errorMsg);
     throw new Error(errorMsg);
