@@ -1,3 +1,11 @@
+/**
+ * NOTE: When trying to share the utils.js file in the parent directory for all collections, 
+ * Bruno sandbox appears to block parent directory traversal for require() in some contexts. 
+ * Because of that, we keep a self‑contained copy of the utilities inside each collection. 
+ * 
+ * Keep this file in sync with the equivalent one under Sample Data and/or Assessment.
+ */
+
 let dayjs;
 try {
   dayjs = require('dayjs');
@@ -10,7 +18,7 @@ try {
     // timezone plugin not available; will fallback
   }
 } catch (e) {
-  // console.warn('[utils] dayjs load failed:', e.message);
+  // optional dependency not installed
 }
 
 const CENTRAL_TZ = 'America/Chicago';
@@ -410,6 +418,15 @@ const logSpecCohorts = {
   lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
+const logSpecCourses = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  courseCode: 'courseCode',
+  courseTitle: 'courseTitle',
+  academicSubjectDescriptor: r => extractDescriptor(r.academicSubjectDescriptor),
+  levelCharacteristicDescriptor: r => extractDescriptor(r.levelCharacteristics[0].courseLevelCharacteristicDescriptor),
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
+};
+
 module.exports = {
   validateDependency,
   filterObjectByKeys,
@@ -436,5 +453,6 @@ module.exports = {
   logSpecCalendarDate,
   logSpecClassPeriod,
   logSpecCohorts,
+  logSpecCourses,
   throwNotFoundOrSpecificError
 };

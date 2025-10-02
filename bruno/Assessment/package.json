@@ -1,8 +1,8 @@
 {
-  "name": "sis-collection",
+  "name": "assessment-collection",
   "private": true,
   "version": "1.0.0",
-  "description": "Local dependencies for SIS Bruno collection (sandbox-safe).",
+  "description": "Local dependencies for Assessment Bruno collection (sandbox-safe).",
   "license": "UNLICENSED",
   "main": "utils.js",
   "dependencies": {
