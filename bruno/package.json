@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "dayjs": "^1.11.18"
+  },
+  "devDependencies": {
+    "simple-git-hooks": "^2.11.1"
+  },
+  "name": "sis",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:bru": "node scripts/lint-bruno.cjs",
+    "lint:bru:json": "node scripts/lint-bruno.cjs --json",
+    "prepare": "npx simple-git-hooks"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run lint:bru"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Root workspace for Bruno certification; includes custom Bruno file linter."
+}

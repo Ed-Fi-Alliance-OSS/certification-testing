@@ -4,6 +4,12 @@ meta {
   seq: 1
 }
 
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+}
+
 get {
   url: {{resourceBaseUrl}}/ed-fi/schools?schoolId=[ENTER SCHOOL ID]
   body: none
