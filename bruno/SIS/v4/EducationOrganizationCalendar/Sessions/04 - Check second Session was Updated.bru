@@ -1,0 +1,55 @@
+meta {
+  name: 04 - Check second Session was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sessions/{{secondSessionUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.endDate: isString
+  res.body.endDate: isNotEmpty
+  res.body.totalInstructionalDays: isNumber
+  res.body.totalInstructionalDays: neq 0
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'secondSessionUniqueId', '02 - Check second Session is valid', {
+    actionHint: 'Run the second Session baseline scenario before this update check.'
+  });
+  validateDependency(bru, 'secondSessionEndDate', '02 - Check second Session is valid');
+  validateDependency(bru, 'secondSessionTotalInstructionalDays', '02 - Check second Session is valid');
+}
+
+script:post-response {
+  const { getVar, expectChanged, logScenario, logSpecSession, throwNotFoundOrSpecificError } = require('./utils');
+  const entityName = 'Session';
+  const scenarioName = this.req.name;
+  if (res.status === 200 && res.body) {
+    const response = res.getBody();
+    expectChanged(getVar(bru, 'secondSessionEndDate'), response.endDate, 'endDate');
+    expectChanged(getVar(bru, 'secondSessionTotalInstructionalDays'), response.totalInstructionalDays, 'totalInstructionalDays');
+    logScenario(entityName, scenarioName, response, logSpecSession, ['sessionName','endDate','totalInstructionalDays']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  # Update 2 (High School)
+  * Verifies endDate and totalInstructionalDays changed from second baseline.
+}

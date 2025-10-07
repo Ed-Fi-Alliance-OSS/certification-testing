@@ -458,6 +458,23 @@ const logSpecGradingPeriod = {
   lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
+// Session logging spec (new for Session certification scenarios)
+const logSpecSession = {
+  sessionName: 'sessionName',
+  schoolId: r => r?.schoolReference?.schoolId,
+  schoolYear: r => r?.schoolYearTypeReference?.schoolYear,
+  termDescriptor: r => extractDescriptor(r?.termDescriptor),
+  beginDate: 'beginDate',
+  endDate: 'endDate',
+  totalInstructionalDays: 'totalInstructionalDays',
+  gradingPeriods: r => (r?.gradingPeriods || []).map(gp => {
+    const ref = gp?.gradingPeriodReference;
+    if (!ref) return null;
+    const desc = extractDescriptor(ref.gradingPeriodDescriptor);
+    return `${desc}:${ref.periodSequence}`;
+  }).filter(Boolean),
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
+};
 
 module.exports = {
   validateDependency,
@@ -489,5 +506,6 @@ module.exports = {
   logSpecCourses,
   logSpecSchool,
   logSpecGradingPeriod,
+  logSpecSession,
   throwNotFoundOrSpecificError
 };

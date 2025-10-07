@@ -1,0 +1,60 @@
+meta {
+  name: 02 - Sessions 2
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/sessions
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": "{{tempSessionUniqueId}}",
+    "schoolReference": {
+      "schoolId": "{{mySchoolId_2}}"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": 2025
+    },
+    "sessionName": "2025-2026 Fall Semester",
+    "beginDate": "2025-10-01",
+    "endDate": "2025-12-31",
+    "termDescriptor": "uri://ed-fi.org/TermDescriptor#Fall Semester",
+    "totalInstructionalDays": 60,
+    "academicWeeks": [],
+    "gradingPeriods": [
+      {
+        "gradingPeriodReference": {
+          "schoolId": "{{mySchoolId_2}}",
+          "schoolYear": 2025,
+          "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+          "periodSequence": 1
+        }
+      },
+      {
+        "gradingPeriodReference": {
+          "schoolId": "{{mySchoolId_2}}",
+          "schoolYear": 2025,
+          "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#Second Six Weeks",
+          "periodSequence": 2
+        }
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const { setVars } = require('./utils');
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const sessionId = locationHeader.split('/').pop();
+    setVars(bru, { 'tempSessionUniqueId': sessionId });
+  }
+}
+
+settings {
+  encodeUrl: true
+}

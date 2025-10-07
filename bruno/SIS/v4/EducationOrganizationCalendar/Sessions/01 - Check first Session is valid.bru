@@ -1,0 +1,69 @@
+meta {
+  name: 01 - Check first Session is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sessions?schoolId=[ENTER SCHOOL ID 1]&schoolYear=[ENTER SCHOOL YEAR]&sessionName=[ENTER SESSION NAME]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL ID 1]
+  schoolYear: [ENTER SCHOOL YEAR]
+  sessionName: [ENTER SESSION NAME]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].sessionName: isString
+  res.body[0].sessionName: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].schoolYearTypeReference: isDefined
+  res.body[0].schoolYearTypeReference.schoolYear: isNumber
+  res.body[0].schoolYearTypeReference.schoolYear: neq 0
+  res.body[0].termDescriptor: isString
+  res.body[0].termDescriptor: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
+  res.body[0].totalInstructionalDays: isNumber
+  res.body[0].totalInstructionalDays: neq 0
+  res.body[0].gradingPeriods: isArray
+  res.body[0].gradingPeriods: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, extractDescriptor, wipeVars, logScenario, logSpecSession } = require('./utils');
+  const entityName = 'Session';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  if (!entity) {
+    wipeVars(bru, [
+      'firstSessionUniqueId',
+      'firstSessionId',
+      'firstSessionEndDate',
+      'firstSessionTotalInstructionalDays'
+    ], entityName, true);
+  }
+  setVars(bru, {
+    firstSessionUniqueId: entity.id,
+    firstSessionId: entity.sessionName,
+    firstSessionEndDate: entity.endDate,
+    firstSessionTotalInstructionalDays: entity.totalInstructionalDays
+  });
+  logScenario(entityName, scenarioName, entity, logSpecSession);
+}
+
+settings {
+  encodeUrl: true
+}
