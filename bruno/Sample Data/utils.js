@@ -166,6 +166,13 @@ function pickSingle(arr) {
   return Array.isArray(arr) && arr.length === 1 ? arr[0] : null;
 }
 
+// ID generators -----------------------------------------------------
+function generateId() {
+  const base = 1000010000;
+  const maxIncrement = 899999999;
+  return (base + Math.floor(Math.random() * maxIncrement)).toString();
+}
+
 // Generic log builder -------------------------------------------------
 function buildLogObject(source, spec) {
   try {
@@ -415,6 +422,29 @@ const logSpecCohorts = {
   lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
+// School logging spec (added for School certification scenarios)
+const logSpecSchool = {
+  schoolId: r => r?.schoolId,
+  localEducationAgencyId: r => r?.localEducationAgencyReference?.localEducationAgencyId,
+  nameOfInstitution: 'nameOfInstitution',
+  gradeLevels: r => mapDescriptors(r?.gradeLevels, gl => gl.gradeLevelDescriptor),
+  educationOrganizationCategories: r => mapDescriptors(r?.educationOrganizationCategories, c => c.educationOrganizationCategoryDescriptor),
+  streetNumberName: r => r?.addresses?.[0]?.streetNumberName,
+  postalCode: r => r?.addresses?.[0]?.postalCode,
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
+};
+
+// Grading Period logging spec
+const logSpecGradingPeriod = {
+  schoolId: r => r?.schoolReference?.schoolId,
+  schoolYear: r => r?.schoolYearTypeReference?.schoolYear,
+  gradingPeriodDescriptor: r => extractDescriptor(r?.gradingPeriodDescriptor),
+  periodSequence: 'periodSequence',
+  beginDate: 'beginDate',
+  endDate: 'endDate',
+  totalInstructionalDays: 'totalInstructionalDays',
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
+};
 module.exports = {
   validateDependency,
   filterObjectByKeys,
@@ -430,6 +460,7 @@ module.exports = {
   wipeVars,
   wipeVarsWarning,
   pickSingle,
+  generateId,
   buildLogObject,
   logScenario,
   logExpectedVsActual,
@@ -441,5 +472,7 @@ module.exports = {
   logSpecCalendarDate,
   logSpecClassPeriod,
   logSpecCohorts,
+  logSpecSchool,
+  logSpecGradingPeriod,
   throwNotFoundOrSpecificError
 };
