@@ -1,0 +1,32 @@
+meta {
+  name: 04 - GradingPeriods
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods/{{tempGradingPeriodUniqueId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": "{{tempGradingPeriodUniqueId}}",
+    "gradingPeriodDescriptor": "{{tempGradingPeriodDescriptor}}",
+    "periodSequence": "{{tempGradingPeriodPeriodSequence}}",
+    "schoolReference": {
+      "schoolId": "{{mySchoolId}}"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "{{tempGradingPeriodSchoolYear}}"
+    },
+    "beginDate": "{{tempGradingPeriodBeginDate}}",
+    "endDate": "2025-11-15",
+    "totalInstructionalDays": 29
+  }
+}
+
+settings {
+  encodeUrl: true
+}

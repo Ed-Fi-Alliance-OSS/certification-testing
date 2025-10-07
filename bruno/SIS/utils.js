@@ -427,6 +427,20 @@ const logSpecCourses = {
   lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
+
+// Grading Period logging spec
+const logSpecGradingPeriod = {
+  schoolId: r => r?.schoolReference?.schoolId,
+  schoolYear: r => r?.schoolYearTypeReference?.schoolYear,
+  gradingPeriodDescriptor: r => extractDescriptor(r?.gradingPeriodDescriptor),
+  periodSequence: 'periodSequence',
+  beginDate: 'beginDate',
+  endDate: 'endDate',
+  totalInstructionalDays: 'totalInstructionalDays',
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
+};
+
+
 module.exports = {
   validateDependency,
   filterObjectByKeys,
@@ -454,5 +468,6 @@ module.exports = {
   logSpecClassPeriod,
   logSpecCohorts,
   logSpecCourses,
+  logSpecGradingPeriod,
   throwNotFoundOrSpecificError
 };

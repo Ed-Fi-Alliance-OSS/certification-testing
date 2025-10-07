@@ -1,0 +1,40 @@
+meta {
+  name: 02 - GradingPeriods 1
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+    "periodSequence": 1,
+    "schoolReference": {
+      "schoolId": "{{mySchoolId}}"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": 2025
+    },
+    "beginDate": "2025-10-01",
+    "endDate": "2026-10-01",
+    "totalInstructionalDays": 29
+  }
+}
+
+script:post-response {
+  const { setVars } = require('./utils');
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const gradingPeriodId = locationHeader.split('/').pop();
+    setVars(bru, { 'tempGradingPeriodUniqueId': gradingPeriodId });
+  }
+}
+
+settings {
+  encodeUrl: true
+}

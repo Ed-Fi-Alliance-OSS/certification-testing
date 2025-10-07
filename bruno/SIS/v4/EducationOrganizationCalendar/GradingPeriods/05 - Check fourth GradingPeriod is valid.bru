@@ -1,0 +1,58 @@
+meta {
+  name: 05 - Check fourth GradingPeriod is valid
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods?periodSequence=2&schoolId=[HIGH SCHOOL ID]&schoolYear=[SCHOOL YEAR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  periodSequence: 2
+  schoolId: [HIGH SCHOOL ID]
+  schoolYear: [SCHOOL YEAR]
+  ~gradingPeriodDescriptor: [SECOND SIX WEEKS DESCRIPTOR URI]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].gradingPeriodDescriptor: isString
+  res.body[0].gradingPeriodDescriptor: isNotEmpty
+  res.body[0].periodSequence: isNumber
+  res.body[0].periodSequence: neq 0
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].schoolYearTypeReference: isDefined
+  res.body[0].schoolYearTypeReference.schoolYear: isNumber
+  res.body[0].schoolYearTypeReference.schoolYear: neq 0
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
+  res.body[0].totalInstructionalDays: isNumber
+  res.body[0].totalInstructionalDays: neq 0
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, logScenario, logSpecGradingPeriod } = require('./utils');
+  const entityName = 'GradingPeriod';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  if (!entity) {
+    wipeVars(bru, [ 'fourthGradingPeriodUniqueId' ], entityName, true);
+  }
+  setVars(bru, { fourthGradingPeriodUniqueId: entity.id }, entityName);
+  if (typeof logScenario === 'function') logScenario(entityName, scenarioName, entity, logSpecGradingPeriod);
+}
+
+settings {
+  encodeUrl: true
+}

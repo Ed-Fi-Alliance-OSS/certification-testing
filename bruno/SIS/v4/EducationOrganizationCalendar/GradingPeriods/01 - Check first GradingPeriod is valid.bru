@@ -1,0 +1,63 @@
+meta {
+  name: 01 - Check first GradingPeriod is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods?periodSequence=1&schoolId=[ELEMENTARY SCHOOL ID]&schoolYear=[SCHOOL YEAR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  periodSequence: 1
+  schoolId: [ELEMENTARY SCHOOL ID]
+  schoolYear: [SCHOOL YEAR]
+  ~gradingPeriodDescriptor: [SECOND SIX WEEKS DESCRIPTOR URI]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].gradingPeriodDescriptor: isString
+  res.body[0].gradingPeriodDescriptor: isNotEmpty
+  res.body[0].periodSequence: isNumber
+  res.body[0].periodSequence: neq 0
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].schoolYearTypeReference: isDefined
+  res.body[0].schoolYearTypeReference.schoolYear: isNumber
+  res.body[0].schoolYearTypeReference.schoolYear: neq 0
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
+  res.body[0].totalInstructionalDays: isNumber
+  res.body[0].totalInstructionalDays: neq 0
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor, logScenario, logSpecGradingPeriod } = require('./utils');
+  const entityName = 'GradingPeriod';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  if (!entity) {
+    wipeVars(bru, [ 'firstGradingPeriodUniqueId','firstGradingPeriodDescriptor','firstGradingPeriodEndDate','firstGradingPeriodTotalInstructionalDays' ], entityName, true);
+  }
+  setVars(bru, {
+    firstGradingPeriodUniqueId: entity.id,
+    firstGradingPeriodDescriptor: extractDescriptor(entity.gradingPeriodDescriptor),
+    firstGradingPeriodEndDate: entity.endDate,
+    firstGradingPeriodTotalInstructionalDays: entity.totalInstructionalDays
+  }, entityName);
+  if (typeof logScenario === 'function') logScenario(entityName, scenarioName, entity, logSpecGradingPeriod);
+}
+
+settings {
+  encodeUrl: true
+}
