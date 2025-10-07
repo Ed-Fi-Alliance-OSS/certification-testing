@@ -1,0 +1,35 @@
+meta {
+  name: 04 - CourseOfferings
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings/{{tempCourseOfferingUniqueId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": "{{tempCourseOfferingUniqueId}}",
+    "localCourseCode": "{{tempCourseOfferingLocalCourseCode}}",
+    "localCourseTitle": "ALGEBRA",
+    "courseReference": {
+      "courseCode": "{{tempCourseOfferingCourseCode}}",
+      "educationOrganizationId": "{{tempCourseOfferingEducationOrganizationId}}"
+    },
+    "schoolReference": {
+      "schoolId": "{{tempCourseOfferingSchoolId}}"
+    },
+    "sessionReference": {
+      "schoolId": "{{tempCourseOfferingSchoolId}}",
+      "schoolYear": 2025,
+      "sessionName": "{{tempCourseOfferingSessionName}}"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+}

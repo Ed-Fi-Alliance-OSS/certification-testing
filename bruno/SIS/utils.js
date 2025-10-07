@@ -434,6 +434,22 @@ const logSpecCourses = {
   lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
 };
 
+// CourseOffering logging spec (needed for CourseOffering certification scenarios)
+const logSpecCourseOffering = {
+  localCourseCode: 'localCourseCode',
+  localCourseTitle: 'localCourseTitle',
+  courseCode: r => r?.courseReference?.courseCode,
+  educationOrganizationId: r => r?.courseReference?.educationOrganizationId,
+  schoolId: r => r?.schoolReference?.schoolId,
+  sessionName: r => r?.sessionReference?.sessionName,
+  sessionSchoolYear: r => r?.sessionReference?.schoolYear,
+  sessionSchoolId: r => r?.sessionReference?.schoolId,
+  courseLevelCharacteristics: r => mapDescriptors(r?.courseLevelCharacteristics, c => c.courseLevelCharacteristicDescriptor),
+  curriculumUseds: r => mapDescriptors(r?.curriculumUseds, u => u.curriculumUsedDescriptor),
+  offeredGradeLevels: r => mapDescriptors(r?.offeredGradeLevels, g => g.gradeLevelDescriptor),
+  lastModifiedDate: r => annotateDate(r?._lastModifiedDate)
+};
+
 // School logging spec (added for School certification scenarios)
 const logSpecSchool = {
   schoolId: r => r?.schoolId,
@@ -504,6 +520,7 @@ module.exports = {
   logSpecClassPeriod,
   logSpecCohorts,
   logSpecCourses,
+  logSpecCourseOffering,
   logSpecSchool,
   logSpecGradingPeriod,
   logSpecSession,
