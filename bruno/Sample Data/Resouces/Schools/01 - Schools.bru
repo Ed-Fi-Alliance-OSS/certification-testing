@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/schools?localEducationAgencyId={{tempLEAId}}&schoolId=1549697793
+  url: {{resourceBaseUrl}}/ed-fi/schools?schoolId=1549697793
   body: none
   auth: bearer
 }
 
 params:query {
-  localEducationAgencyId: {{tempLEAId}}
   schoolId: 1549697793
+  ~localEducationAgencyId: {{tempLEAId}}
   ~administrativeFundingControlDescriptor: 
   ~charterApprovalAgencyTypeDescriptor: 
   ~charterApprovalSchoolYear: 
@@ -34,16 +34,10 @@ auth:bearer {
   token: {{edFiCertToken}}
 }
 
-script:pre-request {
-  const { validateDependency } = require('./utils');
-  
-  validateDependency(bru, 'tempLEAId', 'GET LocalEducationAgencies');
-}
-
 script:post-response {
   const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
   const item = pickSingle(res.getBody());
-
+  
   if (item) {
     setVars(bru, {
       tempSchoolId: item.schoolId,
@@ -59,6 +53,7 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
 
 docs {

@@ -39,18 +39,22 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-  validateDependency(bru, 'firstCourseOfferingUniqueId', '01 - Check first CourseOffering is valid', { actionHint: 'Run baseline first to cache unique id.' });
-  validateDependency(bru, 'firstCourseOfferingLocalCourseTitle', '01 - Check first CourseOffering is valid');
+
+  validateDependency(bru, 'firstCourseOfferingUniqueId', '01 - Check first CourseOffering is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstCourseOfferingLocalCourseTitle', '01 - Check first CourseOffering is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
 }
 
 script:post-response {
-  const { getVar, expectChanged, logScenario, logSpecCourseOffering, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecCourseOffering, logScenario } = require('./logging');
   const entityName = 'CourseOffering';
   const scenarioName = this.req.name;
+
   if (res.status === 200 && res.body) {
     const current = res.getBody();
+    
     expectChanged(getVar(bru, 'firstCourseOfferingLocalCourseTitle'), current.localCourseTitle, 'localCourseTitle');
-    if (typeof logScenario === 'function') logScenario(entityName, scenarioName, current, logSpecCourseOffering);
+    logScenario(entityName, scenarioName, current, logSpecCourseOffering, ['id','localCourseCode','localCourseTitle']);
   } else {
     throwNotFoundOrSpecificError(entityName);
   }

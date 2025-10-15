@@ -24,22 +24,24 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-  validateDependency(bru, 'firstSessionUniqueId', '01 - Check first Session is valid', {
-    actionHint: 'Run the first Session baseline scenario before this update check.'
-  });
-  validateDependency(bru, 'firstSessionEndDate', '01 - Check first Session is valid');
-  validateDependency(bru, 'firstSessionTotalInstructionalDays', '01 - Check first Session is valid');
+
+  validateDependency(bru, 'firstSessionUniqueId', '01 - Check first Session is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstSessionEndDate', '01 - Check first Session is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstSessionTotalInstructionalDays', '01 - Check first Session is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
 }
 
 script:post-response {
-  const { getVar, expectChanged, logScenario, logSpecSession, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecSession, logScenario } = require('./logging');
   const entityName = 'Session';
   const scenarioName = this.req.name;
+
   if (res.status === 200 && res.body) {
     const response = res.getBody();
+
     expectChanged(getVar(bru, 'firstSessionEndDate'), response.endDate, 'endDate');
     expectChanged(getVar(bru, 'firstSessionTotalInstructionalDays'), response.totalInstructionalDays, 'totalInstructionalDays');
-    logScenario(entityName, scenarioName, response, logSpecSession, ['sessionName','endDate','totalInstructionalDays']);
+    logScenario(entityName, scenarioName, response, logSpecSession, ['id','sessionName','endDate','totalInstructionalDays']);
   } else {
     throwNotFoundOrSpecificError(entityName);
   }

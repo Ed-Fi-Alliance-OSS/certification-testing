@@ -36,7 +36,8 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, logScenario, logSpecBellSchedule, throwNotFoundOrSpecificError } = require('./utils');
+  const { pickSingle, setVars, wipeVars, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecBellSchedule, logScenario } = require('./logging');
   const scenarioName = this.req.name;
   const entityName = 'Bell Schedule';
   

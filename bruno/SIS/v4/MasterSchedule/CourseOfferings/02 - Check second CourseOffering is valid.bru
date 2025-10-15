@@ -45,23 +45,27 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, logScenario, logSpecCourseOffering } = require('./utils');
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecCourseOffering, logScenario } = require('./logging');
   const entityName = 'CourseOffering';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
+  
   if (!entity) {
     wipeVars(bru, [
       'secondCourseOfferingUniqueId','secondCourseOfferingId','secondCourseOfferingLocalCourseTitle'
     ], entityName, true);
   }
+  
   setVars(bru, {
     secondCourseOfferingUniqueId: entity.id,
     secondCourseOfferingId: entity.localCourseCode,
     secondCourseOfferingLocalCourseTitle: entity.localCourseTitle
   });
-  if (typeof logScenario === 'function') logScenario(entityName, scenarioName, entity, logSpecCourseOffering);
+  logScenario(entityName, scenarioName, entity, logSpecCourseOffering);
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

@@ -1,0 +1,65 @@
+meta {
+  name: 02 - Check second CalendarDate is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/calendarDates?schoolId=[ENTER SECOND SCHOOL ID]&schoolYear=[ENTER SECOND SCHOOL YEAR]&calendarCode=[ENTER SECOND CALENDAR CODE]&date=[ENTER SECOND DATE YYYY-MM-DD]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER SECOND SCHOOL ID]
+  schoolYear: [ENTER SECOND SCHOOL YEAR]
+  calendarCode: [ENTER SECOND CALENDAR CODE]
+  date: [ENTER SECOND DATE YYYY-MM-DD]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].date: isString
+  res.body[0].date: isNotEmpty
+  res.body[0].calendarReference: isDefined
+  res.body[0].calendarReference.schoolId: isNumber
+  res.body[0].calendarReference.schoolId: neq 0
+  res.body[0].calendarReference.schoolYear: isNumber
+  res.body[0].calendarReference.schoolYear: neq 0
+  res.body[0].calendarReference.calendarCode: isString
+  res.body[0].calendarReference.calendarCode: isNotEmpty
+  res.body[0].calendarEvents: isArray
+  res.body[0].calendarEvents: isNotEmpty
+  res.body[0].calendarEvents[0].calendarEventDescriptor: isString
+  res.body[0].calendarEvents[0].calendarEventDescriptor: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, mapDescriptors, joinDescriptors } = require('./utils');
+  const { logSpecCalendarDate, logScenario } = require('./logging');
+  const entityName = 'CalendarDate';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [ 'secondCalendarDateUniqueId','secondCalendarDateCalendarEventDescriptorList' ], entityName, true);
+  }
+  
+  const descriptors = joinDescriptors(mapDescriptors(single.calendarEvents || [], ev => ev.calendarEventDescriptor));
+  
+  setVars(bru, {
+    secondCalendarDateUniqueId: single.id,
+    secondCalendarDateId: single.calendarReference?.calendarCode,
+    secondCalendarDateCalendarEventDescriptorList: descriptors
+  }, entityName);
+  logScenario(entityName, scenarioName, single, logSpecCalendarDate);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

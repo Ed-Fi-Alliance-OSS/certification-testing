@@ -1,0 +1,57 @@
+meta {
+  name: 03 - Check first ClassPeriod classPeriodName was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{firstClassPeriodUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.classPeriodName: isString
+  res.body.classPeriodName: isNotEmpty
+  res.body.schoolReference: isDefined
+  res.body.schoolReference.schoolId: isNumber
+  res.body.schoolReference.schoolId: neq 0
+  res.body.meetingTimes: isArray
+  res.body.meetingTimes: isNotEmpty
+  res.body.meetingTimes[0].startTime: isString
+  res.body.meetingTimes[0].startTime: isNotEmpty
+  res.body.meetingTimes[0].endTime: isString
+  res.body.meetingTimes[0].endTime: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstClassPeriodUniqueId', '01 - Check first ClassPeriod is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstClassPeriodClassPeriodName', '01 - Check first ClassPeriod is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecClassPeriod, logScenario } = require('./logging');
+  const scenarioName = this.req.name;
+  const entityName = 'ClassPeriod';
+
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+  
+  const current = res.getBody();
+  const previousName = getVar(bru, 'firstClassPeriodClassPeriodName');
+
+  expectChanged(previousName, current.classPeriodName, 'classPeriodName');
+  logScenario(entityName, scenarioName, current, logSpecClassPeriod, ['classPeriodName']);
+}
+
+settings {
+  encodeUrl: true
+}

@@ -50,30 +50,27 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, logScenario, extractDescriptor, logSpecSchool } = require('./utils');
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logSpecSchool, logScenario } = require('./logging');
   const entityName = 'School';
   const scenarioName = this.req.name;
 
   if (res.status === 200 && res.body) {
     const response = pickSingle(res.getBody());
-    if (response) {
-      const addr = Array.isArray(response.addresses) ? response.addresses[0] : {};
-      setVars(bru, {
-        secondSchoolUniqueId: response.id,
-        secondSchoolId: response.schoolId,
-        secondSchoolStreetNumberName: addr?.streetNumberName,
-        secondSchoolPostalCode: addr?.postalCode
-      }, entityName);
-      if (typeof logScenario === 'function') {
-        logScenario(entityName, scenarioName, response, logSpecSchool);
-      }
-      return;
-    }
-  }
 
-  wipeVars(bru, [
-    'secondSchoolUniqueId','secondSchoolId','secondSchoolStreetNumberName','secondSchoolPostalCode'
-  ], entityName, true);
+    if (!response) {
+      wipeVars(bru, ['secondSchoolUniqueId','secondSchoolId','secondSchoolPostalCode'], entityName, true);
+    }
+    
+    const addr = Array.isArray(response.addresses) ? response.addresses[0] : {};
+
+    setVars(bru, {
+      secondSchoolUniqueId: response.id,
+      secondSchoolId: response.schoolId,
+      secondSchoolPostalCode: addr?.postalCode
+    }, entityName);
+    logScenario(entityName, scenarioName, response, logSpecSchool);
+  }
 }
 
 settings {

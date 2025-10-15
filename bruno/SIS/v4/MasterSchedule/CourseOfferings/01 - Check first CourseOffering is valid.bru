@@ -45,23 +45,27 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, extractDescriptor, wipeVars, logScenario, logSpecCourseOffering } = require('./utils');
+  const { pickSingle, setVars, extractDescriptor, wipeVars } = require('./utils');
+  const { logSpecCourseOffering, logScenario } = require('./logging');
   const entityName = 'CourseOffering';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
+  
   if (!entity) {
     wipeVars(bru, [
       'firstCourseOfferingUniqueId','firstCourseOfferingId','firstCourseOfferingLocalCourseTitle'
     ], entityName, true);
   }
+  
   setVars(bru, {
     firstCourseOfferingUniqueId: entity.id,
     firstCourseOfferingId: entity.localCourseCode,
     firstCourseOfferingLocalCourseTitle: entity.localCourseTitle
   });
-  if (typeof logScenario === 'function') logScenario(entityName, scenarioName, entity, logSpecCourseOffering);
+  logScenario(entityName, scenarioName, entity, logSpecCourseOffering);
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

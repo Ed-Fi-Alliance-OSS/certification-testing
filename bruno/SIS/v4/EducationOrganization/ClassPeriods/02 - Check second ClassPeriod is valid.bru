@@ -1,0 +1,69 @@
+meta {
+  name: 02 - Check second ClassPeriod is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods?schoolId=[ENTER SCHOOL ID]&classPeriodName=[ENTER SECOND CLASS PERIOD NAME]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL ID]
+  classPeriodName: [ENTER SECOND CLASS PERIOD NAME]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].classPeriodName: isString
+  res.body[0].classPeriodName: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].meetingTimes: isArray
+  res.body[0].meetingTimes: isNotEmpty
+  res.body[0].meetingTimes[0].startTime: isString
+  res.body[0].meetingTimes[0].startTime: isNotEmpty
+  res.body[0].meetingTimes[0].endTime: isString
+  res.body[0].meetingTimes[0].endTime: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecClassPeriod, logScenario } = require('./logging');
+  const scenarioName = this.req.name;
+  const entityName = 'ClassPeriod';
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'secondClassPeriodUniqueId',
+      'secondClassPeriodId',
+      'secondClassPeriodClassPeriodName',
+      'secondClassPeriodStartTime',
+      'secondClassPeriodEndTime'
+    ], entityName, true);
+  }
+  
+  const mt0 = single.meetingTimes && single.meetingTimes[0] ? single.meetingTimes[0] : {};
+  
+  setVars(bru, {
+    secondClassPeriodUniqueId: single.id,
+    secondClassPeriodId: single.classPeriodName,
+    secondClassPeriodClassPeriodName: single.classPeriodName,
+    secondClassPeriodStartTime: mt0.startTime,
+    secondClassPeriodEndTime: mt0.endTime
+  }, entityName);
+  logScenario(entityName, scenarioName, single, logSpecClassPeriod);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

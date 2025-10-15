@@ -1,0 +1,47 @@
+meta {
+  name: 04 - Check second Cohort cohortTypeDescriptor was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts/{{secondCohortUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.cohortTypeDescriptor: isString
+  res.body.cohortTypeDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondCohortUniqueId', '02 - Check second Cohort is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondCohortCohortTypeDescriptor', '02 - Check second Cohort is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecCohorts, logScenario } = require('./logging');
+  const entityName = 'Cohort';
+  const scenarioName = this.req.name;
+
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+
+  expectChanged(getVar(bru, 'secondCohortCohortTypeDescriptor'), extractDescriptor(current.cohortTypeDescriptor), 'cohortTypeDescriptor');
+  logScenario(entityName, scenarioName, current, logSpecCohorts, ['cohortTypeDescriptor']);
+}
+
+settings {
+  encodeUrl: true
+}

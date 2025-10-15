@@ -20,21 +20,24 @@ body:json {
     "schoolReference": {
       "schoolId": "{{tempSchoolId}}"
     },
-    "classPeriodName": "07 - Regular",
+    "classPeriodName": "Class Period 1",
     "officialAttendancePeriod": true,
-    "meetingTimes": [{
-      "endTime": "14:55:00",
-      "startTime": "14:00:00"
-    }]
+    "meetingTimes": [
+      {
+        "endTime": "08:00:00",
+        "startTime": "10:00:00"
+      }
+    ]
   }
 }
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-
+  
   validateDependency(bru, 'tempSchoolId', 'GET Schools');
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

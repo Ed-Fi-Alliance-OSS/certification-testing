@@ -35,7 +35,8 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, logScenario, logSpecCohorts, extractDescriptor } = require('./utils');
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logSpecCohorts, logScenario } = require('./logging');
   const entityName = 'Cohort';
   const scenarioName = this.req.name;
   
@@ -44,19 +45,19 @@ script:post-response {
     
     if (response) {
       setVars(bru, {
-        cohortId_1: response.id,
-        cohortIdentifier_1: response.cohortIdentifier,
-        cohortTypeDescriptor_1: extractDescriptor(response.cohortTypeDescriptor)
+        firstCohortUniqueId: response.id,
+        firstCohortId: response.cohortIdentifier,
+        firstCohortCohortTypeDescriptor: extractDescriptor(response.cohortTypeDescriptor)
       }, entityName);
-  
       logScenario(entityName, scenarioName, response, logSpecCohorts);
       return;
     }
   }
   
-  wipeVars(bru, ['cohortId_1','cohortIdentifier_1','cohortTypeDescriptor_1'], entityName, throwError = true);
+  wipeVars(bru, ['firstCohortUniqueId','firstCohortId','firstCohortCohortTypeDescriptor'], entityName, true);
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

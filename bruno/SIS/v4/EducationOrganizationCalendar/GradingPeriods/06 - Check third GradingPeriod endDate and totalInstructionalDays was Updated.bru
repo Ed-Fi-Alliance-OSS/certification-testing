@@ -1,0 +1,48 @@
+meta {
+	name: 06 - Check third GradingPeriod endDate and totalInstructionalDays was Updated
+	type: http
+	seq: 6
+}
+
+get {
+	url: {{resourceBaseUrl}}/ed-fi/gradingPeriods/{{thirdGradingPeriodUniqueId}}
+	body: none
+	auth: inherit
+}
+
+script:pre-request {
+	const { validateDependency } = require('./utils');
+	const actionHint = 'Ensure you ran the third certification scenario successfully before continuing.';
+
+	validateDependency(bru,'thirdGradingPeriodUniqueId','03 - Check third GradingPeriod is valid',{ actionHint });
+	validateDependency(bru,'thirdGradingPeriodEndDate','03 - Check third GradingPeriod is valid',{ actionHint });
+	validateDependency(bru,'thirdGradingPeriodTotalInstructionalDays','03 - Check third GradingPeriod is valid',{ actionHint });
+}
+
+assert {
+	res.status: eq 200
+	res.body: isDefined
+	res.body.id: isString
+	res.body.id: isNotEmpty
+	res.body.endDate: isString
+	res.body.endDate: isNotEmpty
+	res.body.totalInstructionalDays: isNumber
+	res.body.totalInstructionalDays: neq 0
+}
+
+script:post-response {
+	const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+	const { logSpecGradingPeriod, logScenario } = require('./logging');
+	const entityName='GradingPeriod';
+	const scenarioName=this.req.name;
+
+	if(res.status!==200||!res.body) throwNotFoundOrSpecificError(entityName);
+	const current=res.getBody();
+	expectChanged(getVar(bru,'thirdGradingPeriodEndDate'),current.endDate,'endDate');
+	expectChanged(getVar(bru,'thirdGradingPeriodTotalInstructionalDays'),current.totalInstructionalDays,'totalInstructionalDays');
+	logScenario(entityName,scenarioName,current,logSpecGradingPeriod,['endDate','totalInstructionalDays']);
+}
+
+settings {
+	encodeUrl: true
+}

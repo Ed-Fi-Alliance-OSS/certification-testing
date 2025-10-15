@@ -5,16 +5,15 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods?periodSequence=1&schoolId=[ELEMENTARY SCHOOL ID]&schoolYear=[SCHOOL YEAR]
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods?schoolId=[ENTER FIRST SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&periodSequence=1
   body: none
   auth: inherit
 }
 
 params:query {
+  schoolId: [ENTER FIRST SCHOOL ID]
+  schoolYear: [ENTER CURRENT SCHOOL YEAR]
   periodSequence: 1
-  schoolId: [ELEMENTARY SCHOOL ID]
-  schoolYear: [SCHOOL YEAR]
-  ~gradingPeriodDescriptor: [SECOND SIX WEEKS DESCRIPTOR URI]
 }
 
 assert {
@@ -42,22 +41,29 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, extractDescriptor, logScenario, logSpecGradingPeriod } = require('./utils');
-  const entityName = 'GradingPeriod';
-  const scenarioName = this.req.name;
-  const entity = pickSingle(res.getBody());
-  if (!entity) {
-    wipeVars(bru, [ 'firstGradingPeriodUniqueId','firstGradingPeriodDescriptor','firstGradingPeriodEndDate','firstGradingPeriodTotalInstructionalDays' ], entityName, true);
-  }
-  setVars(bru, {
-    firstGradingPeriodUniqueId: entity.id,
-    firstGradingPeriodDescriptor: extractDescriptor(entity.gradingPeriodDescriptor),
-    firstGradingPeriodEndDate: entity.endDate,
-    firstGradingPeriodTotalInstructionalDays: entity.totalInstructionalDays
-  }, entityName);
-  if (typeof logScenario === 'function') logScenario(entityName, scenarioName, entity, logSpecGradingPeriod);
+  	const { pickSingle, setVars, wipeVars } = require('./utils');
+  	const { logSpecGradingPeriod, logScenario } = require('./logging');
+  	const entityName = 'GradingPeriod';
+  	const scenarioName = this.req.name;
+  	const gp = pickSingle(res.getBody());
+  	
+  if (!gp) {
+  		wipeVars(bru, [
+  			'firstGradingPeriodUniqueId',
+  			'firstGradingPeriodEndDate',
+  			'firstGradingPeriodTotalInstructionalDays'
+  		], entityName, true);
+  	}
+  
+  	setVars(bru, {
+  		firstGradingPeriodUniqueId: gp.id,
+  		firstGradingPeriodEndDate: gp.endDate,
+  		firstGradingPeriodTotalInstructionalDays: gp.totalInstructionalDays
+  	}, entityName);
+  	logScenario(entityName, scenarioName, gp, logSpecGradingPeriod);
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

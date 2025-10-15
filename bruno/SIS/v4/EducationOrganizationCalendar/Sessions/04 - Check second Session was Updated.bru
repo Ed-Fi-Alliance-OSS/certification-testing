@@ -24,22 +24,24 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-  validateDependency(bru, 'secondSessionUniqueId', '02 - Check second Session is valid', {
-    actionHint: 'Run the second Session baseline scenario before this update check.'
-  });
-  validateDependency(bru, 'secondSessionEndDate', '02 - Check second Session is valid');
-  validateDependency(bru, 'secondSessionTotalInstructionalDays', '02 - Check second Session is valid');
+
+  validateDependency(bru, 'secondSessionUniqueId', '02 - Check second Session is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondSessionEndDate', '02 - Check second Session is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondSessionTotalInstructionalDays', '02 - Check second Session is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
 }
 
 script:post-response {
-  const { getVar, expectChanged, logScenario, logSpecSession, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecSession, logScenario } = require('./logging');
   const entityName = 'Session';
   const scenarioName = this.req.name;
+
   if (res.status === 200 && res.body) {
     const response = res.getBody();
+
     expectChanged(getVar(bru, 'secondSessionEndDate'), response.endDate, 'endDate');
     expectChanged(getVar(bru, 'secondSessionTotalInstructionalDays'), response.totalInstructionalDays, 'totalInstructionalDays');
-    logScenario(entityName, scenarioName, response, logSpecSession, ['sessionName','endDate','totalInstructionalDays']);
+    logScenario(entityName, scenarioName, response, logSpecSession, ['id','sessionName','endDate','totalInstructionalDays']);
   } else {
     throwNotFoundOrSpecificError(entityName);
   }

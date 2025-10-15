@@ -1,0 +1,41 @@
+meta {
+  name: 04 - Courses (Arts)
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/courses/{{tempCourseUniqueId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": "{{tempCourseUniqueId}}",
+    "courseCode": "{{tempCourseCode}}",
+    "courseTitle": "{{tempCourseTitle}}",
+    "courseDescription": "{{tempCourseDescription}}",
+    "identificationCodes": [
+      {
+        "courseIdentificationSystemDescriptor": "{{tempCourseIdentificationSystemDescriptor}}",
+        "identificationCode": "{{tempCourseCode}}"
+      }
+    ],
+    "educationOrganizationReference": {
+      "educationOrganizationId": "{{myLEAId}}"
+    },
+    "academicSubjectDescriptor": "{{tempAcademicSubjectDescriptor}}",
+    "levelCharacteristics": [
+      {
+        "courseLevelCharacteristicDescriptor": "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Basic"
+      }
+    ],
+    "numberOfParts": 1,
+    "maxCompletionsForCredit": 3
+  }
+}
+
+settings {
+  encodeUrl: true
+}
