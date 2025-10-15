@@ -1,0 +1,79 @@
+name: Bruno Lint
+
+on:
+  pull_request:
+    paths:
+      - '**/*.bru'
+      - 'scripts/lint-bruno.cjs'
+      - 'package.json'
+      - '.github/workflows/lint-bruno.yml'
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'scripts/lint-bruno.cjs'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bruno
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: bruno/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run Bruno linter (JSON output)
+        id: lint
+        run: |
+          set -e
+          node scripts/lint-bruno.cjs --json > lint-report.json || true
+          cat lint-report.json
+          ERRORS=$(jq '.summary.errors' lint-report.json)
+          if [ "$ERRORS" != "0" ]; then
+            echo "::error::Bruno lint failed with $ERRORS error(s).";
+            exit 1;
+          fi
+
+      - name: Upload lint report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bruno-lint-report
+          path: bruno/lint-report.json
+          if-no-files-found: warn
+
+      - name: Comment summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('bruno/lint-report.json','utf8'));
+            const { summary } = report;
+            const body = [
+              '### Bruno Lint Report',
+              `Files Scanned: **${summary.filesScanned}**`,
+              `Problems: **${summary.problems}** (Errors: ${summary.errors}, Warnings: ${summary.warnings})`,
+              summary.errors === 0 ? ':white_check_mark: No blocking errors.' : ':x: Errors present. Please fix.',
+              '',
+              'Triggered by workflow: lint-bruno.yml'
+            ].join('\n');
+            github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });

@@ -1,0 +1,15 @@
+meta {
+  name: 05 - Courses
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/courses/{{tempCourseUniqueId}}
+  body: json
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

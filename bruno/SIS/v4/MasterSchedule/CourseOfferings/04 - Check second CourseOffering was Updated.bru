@@ -1,0 +1,64 @@
+meta {
+  name: 04 - Check second CourseOffering was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings/{{secondCourseOfferingUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.localCourseCode: isString
+  res.body.localCourseCode: isNotEmpty
+  res.body.localCourseTitle: isString
+  res.body.localCourseTitle: isNotEmpty
+  res.body.courseReference: isDefined
+  res.body.courseReference.courseCode: isString
+  res.body.courseReference.courseCode: isNotEmpty
+  res.body.courseReference.educationOrganizationId: isNumber
+  res.body.courseReference.educationOrganizationId: neq 0
+  res.body.schoolReference: isDefined
+  res.body.schoolReference.schoolId: isNumber
+  res.body.schoolReference.schoolId: neq 0
+  res.body.sessionReference: isDefined
+  res.body.sessionReference.sessionName: isString
+  res.body.sessionReference.sessionName: isNotEmpty
+  res.body.sessionReference.schoolId: isNumber
+  res.body.sessionReference.schoolId: neq 0
+  res.body.sessionReference.schoolYear: isNumber
+  res.body.sessionReference.schoolYear: neq 0
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'secondCourseOfferingUniqueId', '02 - Check second CourseOffering is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondCourseOfferingLocalCourseTitle', '02 - Check second CourseOffering is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecCourseOffering, logScenario } = require('./logging');
+  const entityName = 'CourseOffering';
+  const scenarioName = this.req.name;
+
+  if (res.status === 200 && res.body) {
+    const current = res.getBody();
+
+    expectChanged(getVar(bru, 'secondCourseOfferingLocalCourseTitle'), current.localCourseTitle, 'localCourseTitle');
+    logScenario(entityName, scenarioName, current, logSpecCourseOffering, ['id','localCourseCode','localCourseTitle']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

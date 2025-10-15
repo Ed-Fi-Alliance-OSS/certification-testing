@@ -1,0 +1,72 @@
+meta {
+  name: 01 - Check first Course is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courses?educationOrganizationId=[ENTER LOCAL EDUCATION AGENCY ID]&courseCode=[ENTER COURSE CODE]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER LOCAL EDUCATION AGENCY ID]
+  courseCode: [ENTER COURSE CODE]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].courseCode: isString
+  res.body[0].courseCode: isNotEmpty
+  res.body[0].courseTitle: isString
+  res.body[0].courseTitle: isNotEmpty
+  res.body[0].academicSubjectDescriptor: isString
+  res.body[0].academicSubjectDescriptor: isNotEmpty
+  res.body[0].identificationCodes: isArray
+  res.body[0].identificationCodes: isNotEmpty
+  res.body[0].identificationCodes[0].courseIdentificationSystemDescriptor: isString
+  res.body[0].identificationCodes[0].courseIdentificationSystemDescriptor: isNotEmpty
+  res.body[0].identificationCodes[0].identificationCode: isString
+  res.body[0].identificationCodes[0].identificationCode: isNotEmpty
+  res.body[0].levelCharacteristics: isArray
+  res.body[0].levelCharacteristics: isNotEmpty
+  res.body[0].levelCharacteristics[0].courseLevelCharacteristicDescriptor: isString
+  res.body[0].levelCharacteristics[0].courseLevelCharacteristicDescriptor: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].numberOfParts: isNumber
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logSpecCourses, logScenario } = require('./logging');
+  const entityName = 'Course';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'firstCourseUniqueId',
+      'firstCourseCourseTitle',
+      'firstCourseCourseLevelCharacteristicDescriptor'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstCourseUniqueId: single.id,
+    firstCourseCourseTitle: single.courseTitle,
+    firstCourseCourseLevelCharacteristicDescriptor: single.levelCharacteristics && single.levelCharacteristics[0] ? extractDescriptor(single.levelCharacteristics[0].courseLevelCharacteristicDescriptor) : undefined
+  }, entityName);
+  logScenario(entityName, scenarioName, single, logSpecCourses);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

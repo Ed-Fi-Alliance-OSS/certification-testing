@@ -1,24 +1,18 @@
 meta {
-  name: 01 - Check First ClassPeriod is valid
+  name: 01 - Check first ClassPeriod is valid
   type: http
   seq: 1
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/classPeriods?schoolId=[ENTER SCHOOL ID]&classPeriodName=[ENTER CLASS PERIOD NAME]
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods?schoolId=[ENTER SCHOOL ID]&classPeriodName=[ENTER FIRST CLASS PERIOD NAME]
   body: none
   auth: inherit
 }
 
 params:query {
   schoolId: [ENTER SCHOOL ID]
-  classPeriodName: [ENTER CLASS PERIOD NAME]
-}
-
-vars:post-response {
-  expectedSchoolId: 15496977934
-  expectedClassPeriodName: "CLASS PERIOD 2"
-  expectedStartTime: "09:00:00"
+  classPeriodName: [ENTER FIRST CLASS PERIOD NAME]
 }
 
 assert {
@@ -41,29 +35,26 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, logScenario, logSpecClassPeriod } = require('./utils');
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecClassPeriod, logScenario } = require('./logging');
   const scenarioName = this.req.name;
-  const entityName = 'Class Period';
+  const entityName = 'ClassPeriod';
+  const single = pickSingle(res.getBody());
   
-  if (res.status === 200 && res.body) {
-    const response = pickSingle(res.getBody());
-    
-    if (response) {
-      // Save useful values for later scenarios
-      setVars(bru, {
-        tempClassPeriodId: response.id,
-        tempClassPeriodName: response.classPeriodName
-      }, entityName);
+  if (!single) {
+    wipeVars(bru, ['firstClassPeriodUniqueId','firstClassPeriodId','firstClassPeriodClassPeriodName','firstClassPeriodStartTime'], entityName, true);
+  }
   
-      logScenario(entityName, scenarioName, response, logSpecClassPeriod);
-      return;
-    } 
-  } 
-  
-  // If we reach here, something went wrong; clean up and throw an error
-  wipeVars(bru, ['tempClassPeriodId', 'tempClassPeriodName'], entityName, throwError = true);
+  setVars(bru, {
+    firstClassPeriodUniqueId: single.id,
+    firstClassPeriodId: single.classPeriodName,
+    firstClassPeriodClassPeriodName: single.classPeriodName,
+    firstClassPeriodStartTime: single.meetingTimes && single.meetingTimes[0] ? single.meetingTimes[0].startTime : undefined
+  }, entityName);
+  logScenario(entityName, scenarioName, single, logSpecClassPeriod);
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

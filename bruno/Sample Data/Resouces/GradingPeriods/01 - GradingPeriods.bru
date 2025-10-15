@@ -1,0 +1,63 @@
+meta {
+  name: 01 - GradingPeriods
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods?schoolId={{mySchoolId}}&schoolYear=2025&periodSequence=1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: {{mySchoolId}}
+  schoolYear: 2025
+  periodSequence: 1
+  ~gradingPeriodDescriptor: First Six Weeks
+  ~id: 
+  ~totalInstructionalDays: 
+  ~beginDate: 
+  ~endDate: 
+  ~limit: 10
+  ~offset: 0
+  ~totalCount: false
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  const entityName = 'GradingPeriod';
+  
+  if (response) {  
+    setVars(bru, {
+      tempGradingPeriodUniqueId: response.id,
+      tempGradingPeriodDescriptor: response.gradingPeriodDescriptor,
+      tempGradingPeriodPeriodSequence: response.periodSequence,
+      tempGradingPeriodSchoolId: response.schoolReference ? response.schoolReference.schoolId : null,
+      tempGradingPeriodSchoolYear: response.schoolYearTypeReference ? response.schoolYearTypeReference.schoolYear : null,
+      tempGradingPeriodBeginDate: response.beginDate,
+      tempGradingPeriodEndDate: response.endDate,
+      tempGradingPeriodTotalInstructionalDays: response.totalInstructionalDays
+    });
+  
+    setVarsMessage(entityName);
+  } else {
+    wipeVars(bru, [
+      'tempGradingPeriodUniqueId', 
+      'tempGradingPeriodDescriptor', 
+      'tempGradingPeriodPeriodSequence', 
+      'tempGradingPeriodSchoolId', 
+      'tempGradingPeriodSchoolYear',
+      'tempGradingPeriodBeginDate', 
+      'tempGradingPeriodEndDate', 
+      'tempGradingPeriodTotalInstructionalDays'
+    ]);
+  
+    wipeVarsWarning(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

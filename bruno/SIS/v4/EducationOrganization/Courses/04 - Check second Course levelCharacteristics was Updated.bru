@@ -1,0 +1,68 @@
+meta {
+  name: 04 - Check second Course levelCharacteristics was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courses/{{secondCourseUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.courseCode: isString
+  res.body.courseCode: isNotEmpty
+  res.body.courseTitle: isString
+  res.body.courseTitle: isNotEmpty
+  res.body.academicSubjectDescriptor: isString
+  res.body.academicSubjectDescriptor: isNotEmpty
+  res.body.identificationCodes: isArray
+  res.body.identificationCodes: isNotEmpty
+  res.body.identificationCodes[0].courseIdentificationSystemDescriptor: isString
+  res.body.identificationCodes[0].courseIdentificationSystemDescriptor: isNotEmpty
+  res.body.identificationCodes[0].identificationCode: isString
+  res.body.identificationCodes[0].identificationCode: isNotEmpty
+  res.body.levelCharacteristics: isArray
+  res.body.levelCharacteristics: isNotEmpty
+  res.body.levelCharacteristics[0].courseLevelCharacteristicDescriptor: isString
+  res.body.levelCharacteristics[0].courseLevelCharacteristicDescriptor: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.numberOfParts: isNumber
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondCourseUniqueId', '02 - Check second Course is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondCourseCourseLevelCharacteristicDescriptor', '02 - Check second Course is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecCourses, logScenario } = require('./logging');
+  const entityName = 'Course';
+  const scenarioName = this.req.name;
+
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousDescriptor = getVar(bru, 'secondCourseCourseLevelCharacteristicDescriptor');
+  const currentDescriptor = current.levelCharacteristics && current.levelCharacteristics[0] ? extractDescriptor(current.levelCharacteristics[0].courseLevelCharacteristicDescriptor) : undefined;
+  
+  expectChanged(previousDescriptor, currentDescriptor, 'courseLevelCharacteristicDescriptor');
+  logScenario(entityName, scenarioName, current, logSpecCourses, ['levelCharacteristics']);
+}
+
+settings {
+  encodeUrl: true
+}

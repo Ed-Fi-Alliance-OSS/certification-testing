@@ -1,0 +1,43 @@
+meta {
+  name: 02 - CourseOfferings 2
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "localCourseCode": "ALG-1",
+    "localCourseTitle": "ALGEBRA 1",
+    "courseReference": {
+      "courseCode": "03100500",
+      "educationOrganizationId": "{{myLEAId}}"
+    },
+    "schoolReference": {
+      "schoolId": "{{mySchoolId}}"
+    },
+    "sessionReference": {
+      "schoolId": "{{mySchoolId}}",
+      "schoolYear": 2025,
+      "sessionName": "2025-2026 Fall Semester"
+    }
+  }
+}
+
+script:post-response {
+  const { setVars } = require('./utils');
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const courseOfferingId = locationHeader.split('/').pop();
+    setVars(bru, { 'tempCourseOfferingUniqueId': courseOfferingId });
+  }
+}
+
+settings {
+  encodeUrl: true
+}

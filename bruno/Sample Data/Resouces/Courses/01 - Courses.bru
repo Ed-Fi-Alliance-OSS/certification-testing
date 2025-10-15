@@ -1,0 +1,69 @@
+meta {
+  name: 01 - Courses
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courses?educationOrganizationId={{myLEAId}}&courseCode=ART 01
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: {{myLEAId}}
+  courseCode: ART 01
+  ~academicSubjectDescriptor: 
+  ~careerPathwayDescriptor: 
+  ~courseDefinedByDescriptor: 
+  ~courseGPAApplicabilityDescriptor: 
+  ~minimumAvailableCreditTypeDescriptor: 
+  ~maximumAvailableCreditTypeDescriptor: 
+  ~courseDescription: 
+  ~courseTitle: 
+  ~limit: 10
+  ~maxChangeVersion: 
+  ~minChangeVersion: 
+  ~offset: 0
+  ~Snapshot-Identifier: 
+  ~totalCount: false
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  const entityName = 'Courses';
+  
+  if (response) {  
+    setVars(bru, {
+      tempCourseUniqueId: response.id,
+      tempCourseCode: response.courseCode,
+      tempCourseTitle: response.courseTitle,
+      tempCourseDescription: response.courseDescription,
+      tempCourseIdentificationSystemDescriptor: response.identificationCodes.length > 0 ? response.identificationCodes[0].courseIdentificationSystemDescriptor : null,
+      tempAcademicSubjectDescriptor: response.academicSubjectDescriptor,
+      tempCareerPathwayDescriptor: response.careerPathwayDescriptor,
+      tempCourseLevelCharacteristicDescriptor: response.levelCharacteristics.length > 0 ? response.levelCharacteristics[0].courseLevelCharacteristicDescriptor : null,
+    });
+  
+    setVarsMessage(entityName);
+  } else {
+    wipeVars(bru, [
+      'tempCourseUniqueId', 
+      'tempCourseCode', 
+      'tempCourseTitle', 
+      'tempCourseDescription', 
+      'tempCourseIdentificationSystemDescriptor', 
+      'tempAcademicSubjectDescriptor', 
+      'tempCareerPathwayDescriptor', 
+      'tempCourseLevelCharacteristicDescriptor'
+      ], 
+      entityName);
+      
+    wipeVarsWarning(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,67 @@
+meta {
+  name: 01 - Check first Calendar is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/calendars?schoolId=[ENTER FIRST SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&calendarCode=[ENTER FIRST CALENDAR CODE]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER FIRST SCHOOL ID]
+  schoolYear: [ENTER CURRENT SCHOOL YEAR]
+  calendarCode: [ENTER FIRST CALENDAR CODE]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].calendarCode: isString
+  res.body[0].calendarCode: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].schoolYearTypeReference: isDefined
+  res.body[0].schoolYearTypeReference.schoolYear: isNumber
+  res.body[0].schoolYearTypeReference.schoolYear: neq 0
+  res.body[0].calendarTypeDescriptor: isString
+  res.body[0].calendarTypeDescriptor: isNotEmpty
+  res.body[0].gradeLevels: isArray
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor, mapDescriptors, joinDescriptors } = require('./utils');
+  const { logSpecCalendar, logScenario } = require('./logging');
+  const entityName = 'Calendar';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+
+  if (!entity) {
+    wipeVars(bru, [
+      'firstCalendarUniqueId',
+      'firstCalendarCalendarTypeDescriptor',
+      'firstCalendarGradeLevelDescriptorList'
+    ], entityName, true);
+  }
+
+  const gradeList = joinDescriptors(mapDescriptors(entity.gradeLevels || [], g => g.gradeLevelDescriptor));
+  
+  setVars(bru, {
+    firstCalendarUniqueId: entity.id,
+    firstCalendarId: entity.calendarCode,
+    firstCalendarCalendarTypeDescriptor: extractDescriptor(entity.calendarTypeDescriptor),
+    firstCalendarGradeLevelDescriptorList: gradeList
+  }, entityName);
+  logScenario(entityName, scenarioName, entity, logSpecCalendar);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

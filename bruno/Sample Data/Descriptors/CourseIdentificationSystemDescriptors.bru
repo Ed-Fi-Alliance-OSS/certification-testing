@@ -1,0 +1,41 @@
+meta {
+  name: CourseIdentificationSystemDescriptors
+  type: http
+  seq: 21
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseIdentificationSystemDescriptors?courseIdentificationSystemDescriptorId=637
+  body: none
+  auth: bearer
+}
+
+params:query {
+  courseIdentificationSystemDescriptorId: 637
+  ~courseIdentificationSystemDescriptorId: 634
+  ~limit: 5
+  ~offset: 0
+  ~totalCount: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  
+  if (response) {
+    setVars(bru, {
+      tempCourseIdentificationSystemDescriptorId: response.courseIdentificationSystemDescriptorId,
+      tempCourseIdentificationSystemDescriptor: `${response.namespace}#${response.codeValue}`,
+    });
+  } else {
+    wipeVars(bru, ['tempCourseIdentificationSystemDescriptorId', 'tempCourseIdentificationSystemDescriptor']);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

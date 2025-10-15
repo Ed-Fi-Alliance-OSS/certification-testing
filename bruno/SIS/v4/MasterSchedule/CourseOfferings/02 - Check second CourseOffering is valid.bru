@@ -1,0 +1,71 @@
+meta {
+  name: 02 - Check second CourseOffering is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings?localCourseCode=[ENTER SECOND LOCAL COURSE CODE]&schoolId=[ENTER SECOND SCHOOL ID]&schoolYear=[ENTER SCHOOL YEAR]&sessionName=[ENTER SESSION NAME]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  localCourseCode: [ENTER SECOND LOCAL COURSE CODE]
+  schoolId: [ENTER SECOND SCHOOL ID]
+  schoolYear: [ENTER SCHOOL YEAR]
+  sessionName: [ENTER SESSION NAME]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].localCourseCode: isString
+  res.body[0].localCourseCode: isNotEmpty
+  res.body[0].localCourseTitle: isString
+  res.body[0].localCourseTitle: isNotEmpty
+  res.body[0].courseReference: isDefined
+  res.body[0].courseReference.courseCode: isString
+  res.body[0].courseReference.courseCode: isNotEmpty
+  res.body[0].courseReference.educationOrganizationId: isNumber
+  res.body[0].courseReference.educationOrganizationId: neq 0
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].sessionReference: isDefined
+  res.body[0].sessionReference.sessionName: isString
+  res.body[0].sessionReference.sessionName: isNotEmpty
+  res.body[0].sessionReference.schoolId: isNumber
+  res.body[0].sessionReference.schoolId: neq 0
+  res.body[0].sessionReference.schoolYear: isNumber
+  res.body[0].sessionReference.schoolYear: neq 0
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecCourseOffering, logScenario } = require('./logging');
+  const entityName = 'CourseOffering';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  
+  if (!entity) {
+    wipeVars(bru, [
+      'secondCourseOfferingUniqueId','secondCourseOfferingId','secondCourseOfferingLocalCourseTitle'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    secondCourseOfferingUniqueId: entity.id,
+    secondCourseOfferingId: entity.localCourseCode,
+    secondCourseOfferingLocalCourseTitle: entity.localCourseTitle
+  });
+  logScenario(entityName, scenarioName, entity, logSpecCourseOffering);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

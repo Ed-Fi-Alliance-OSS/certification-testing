@@ -5,20 +5,21 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/classPeriods?schoolId={{tempSchoolId}}
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods?classPeriodName=Class Period 1&schoolId=1549697793
   body: none
   auth: bearer
 }
 
 params:query {
-  ~classPeriodName: 07 - Regular
+  classPeriodName: Class Period 1
+  schoolId: 1549697793
+  ~schoolId: {{tempSchoolId}}
   ~id: aedcdefb90ad4abeb94c755ead9453db
   ~limit: 10
   ~maxChangeVersion: 
   ~minChangeVersion: 
   ~offset: 0
   ~officialAttendancePeriod: 
-  schoolId: {{tempSchoolId}}
   ~schoolId: 255901001
   ~Snapshot-Identifier: 
   ~totalCount: false
@@ -28,16 +29,10 @@ auth:bearer {
   token: {{edFiCertToken}}
 }
 
-script:pre-request {
-  const { validateDependency } = require('./utils');
-
-  validateDependency(bru, 'tempSchoolId', 'GET Schools');
-}
-
 script:post-response {
   const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
   const item = pickSingle(res.getBody());
-
+  
   if (item) {
     setVars(bru, {
       tempClassPeriodUniqueId: item.id,
@@ -52,6 +47,7 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
 
 docs {

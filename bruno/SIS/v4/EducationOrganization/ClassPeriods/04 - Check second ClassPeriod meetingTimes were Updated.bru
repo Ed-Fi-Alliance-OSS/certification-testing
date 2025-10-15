@@ -1,0 +1,66 @@
+meta {
+  name: 04 - Check second ClassPeriod meetingTimes were Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{secondClassPeriodUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.classPeriodName: isString
+  res.body.classPeriodName: isNotEmpty
+  res.body.schoolReference: isDefined
+  res.body.schoolReference.schoolId: isNumber
+  res.body.schoolReference.schoolId: neq 0
+  res.body.meetingTimes: isArray
+  res.body.meetingTimes: isNotEmpty
+  res.body.meetingTimes[0].startTime: isString
+  res.body.meetingTimes[0].startTime: isNotEmpty
+  res.body.meetingTimes[0].endTime: isString
+  res.body.meetingTimes[0].endTime: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondClassPeriodUniqueId', '02 - Check second ClassPeriod is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondClassPeriodStartTime', '02 - Check second ClassPeriod is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondClassPeriodEndTime', '02 - Check second ClassPeriod is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecClassPeriod, logScenario } = require('./logging');
+  const scenarioName = this.req.name;
+  const entityName = 'ClassPeriod';
+
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  if (!current.meetingTimes || !current.meetingTimes.length) {
+    throw new Error('No meetingTimes returned to validate.');
+  }
+
+  const current0 = current.meetingTimes[0];
+  const previousStart = getVar(bru, 'secondClassPeriodStartTime');
+  const previousEnd = getVar(bru, 'secondClassPeriodEndTime');
+  const currentStart = current0.startTime;
+  const currentEnd = current0.endTime;
+
+  expectChanged(`${previousStart}-${previousEnd}`, `${currentStart}-${currentEnd}`, 'meetingTimes[0] start-end pair');
+  logScenario(entityName, scenarioName, current, logSpecClassPeriod, ['meetingTimes']);
+}
+
+settings {
+  encodeUrl: true
+}

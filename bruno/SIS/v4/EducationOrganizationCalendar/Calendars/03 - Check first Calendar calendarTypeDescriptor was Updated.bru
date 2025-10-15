@@ -1,0 +1,48 @@
+meta {
+  name: 03 - Check first Calendar calendarTypeDescriptor was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/calendars/{{firstCalendarUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.calendarTypeDescriptor: isString
+  res.body.calendarTypeDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstCalendarUniqueId', '01 - Check first Calendar is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstCalendarCalendarTypeDescriptor', '01 - Check first Calendar is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecCalendar, logScenario } = require('./logging');
+  const entityName = 'Calendar';
+  const scenarioName = this.req.name;
+
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+
+  expectChanged(getVar(bru, 'firstCalendarCalendarTypeDescriptor'), extractDescriptor(current.calendarTypeDescriptor), 'calendarTypeDescriptor');
+  logScenario(entityName, scenarioName, current, logSpecCalendar, ['calendarCode','calendarTypeDescriptor']);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

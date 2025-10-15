@@ -1,0 +1,27 @@
+meta {
+  name: GradingPeriodDescriptors
+  type: http
+  seq: 23
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriodDescriptors?gradingPeriodDescriptorId=1011
+  body: none
+  auth: bearer
+}
+
+params:query {
+  gradingPeriodDescriptorId: 1011
+  ~gradingPeriodDescriptorId: 1012
+  ~limit: 25
+  ~offset: 0
+  ~totalCount: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+}

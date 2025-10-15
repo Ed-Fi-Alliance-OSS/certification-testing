@@ -21,13 +21,15 @@ docs {
   
   * None
   
-  ## Scenarios
+  ## Scenarios tasks:
   
-  1. Create Cohort 1.
-  2. Create Cohort 2.
-  3. Update Cohort type for Cohort 1.
-  4. Update Cohort type for Cohort 2.
-  
+  1. __CREATE__ a `first` new `Cohort` with _cohortIdentifier_ as "1".
+  2. __CREATE__ a `second` new `Cohort` with _cohortIdentifier_ as "2".
+  3. __UPDATE__ the _cohortTypeDescriptor_ for the `first` added `Cohort`.
+  4. __UPDATE__ the _cohortTypeDescriptor_ for the `second` added `Cohort`.
+
+  ## Scenarios example data:
+
   | Resource                       | Property Name                  | Is Collection | Data Type                      | Required | Scenario 1: POST                    | Scenario 2: POST                    | Scenario 3: PUT                     | Scenario 4: PUT                     |
   | ------------------------------ | ------------------------------ | ------------- | ------------------------------ | -------- | ----------------------------------- | ----------------------------------- | ----------------------------------- | ----------------------------------- |
   | Cohorts                        | educationOrganizationReference | FALSE         | educationOrganizationReference | REQUIRED |                                     |                                     |                                     |                                     |
@@ -38,8 +40,32 @@ docs {
   | Cohorts                        | cohortDescription              | FALSE         | cohortDescription              | REQUIRED | Cohort 1 Description                | Cohort 2 Description                | Cohort 1 Description                | Cohort 2 Description                |
   | Cohorts                        | cohortScopeDescriptor          | FALSE         | cohortScopeDescriptor          | REQUIRED | District                            | District                            | District                            | District                            |
   | Cohorts                        | programs                       | TRUE          | cohortProgram[]                | OPTIONAL |                                     |                                     |                                     |                                     |
-  | cohortPrograms                 | programReference               | FALSE         | programReference                | OPTIONAL |                                     |                                     |                                     |                                     |
+  | cohortPrograms                 | programReference               | FALSE         | programReference               | OPTIONAL |                                     |                                     |                                     |                                     |
   | programReference               | educationOrganizationId        | FALSE         | integer                        | OPTIONAL |                                     |                                     |                                     |                                     |
-  | programReference               | programName                   | FALSE         | string                         | OPTIONAL |                                     |                                     |                                     |                                     |
+  | programReference               | programName                    | FALSE         | string                         | OPTIONAL |                                     |                                     |                                     |                                     |
   | programReference               | programTypeDescriptor          | FALSE         | programTypeDescriptor          | OPTIONAL |                                     |                                     |                                     |                                     |
+
+  ## API response format
+  ```json
+  {
+    "id": "string",
+    "cohortIdentifier": "string",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 0
+    },
+    "academicSubjectDescriptor": "string",
+    "cohortDescription": "string",
+    "cohortScopeDescriptor": "string",
+    "cohortTypeDescriptor": "string",
+    "programs": [
+      {
+        "programReference": {
+          "educationOrganizationId": 0,
+          "programName": "string",
+          "programTypeDescriptor": "string"
+        }
+      }
+    ]
+  }
+  ```
 }

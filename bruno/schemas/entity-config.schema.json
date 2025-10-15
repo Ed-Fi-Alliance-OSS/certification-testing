@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EdFi Entity Minimal Test Config",
+  "type": "object",
+  "required": ["version", "identity"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "identity": {
+      "type": "object",
+      "required": ["primaryKeyFields"],
+      "properties": {
+        "primaryKeyFields": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 1,
+          "description": "Ordered list of primary key field names as they appear in OpenAPI/path." 
+        },
+        "naturalIdField": {
+          "type": ["string", "null"],
+          "description": "Optional single natural identifier field (omit or null if none)."
+        },
+        "irregularPlural": {
+          "type": "object",
+          "description": "Optional explicit singular/plural override for entities whose folder pluralization cannot be naively derived.",
+          "required": ["singular", "plural"],
+          "properties": {
+            "singular": { "type": "string", "description": "Canonical singular entity name to use in variable prefixes (e.g. 'Person')." },
+            "plural": { "type": "string", "description": "Canonical plural endpoint/entity folder name (e.g. 'People')." },
+            "endpointSegment": { "type": "string", "description": "Optional explicit REST endpoint segment if different from camelCase plural (e.g. 'people')." }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "overrides": {
+      "type": "object",
+      "description": "Optional explicit overrides when inference from docs would be ambiguous.",
+      "properties": {
+        "baselineLabels": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Explicit labels to use instead of inferred first/second/... naming. Index aligned with ordinal." 
+        },
+        "suppressAssertions": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Field paths to skip even if docs mark them required." 
+        },
+        "forceOptionalAsRequired": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Optional fields that should always be asserted as if required." 
+        }
+      },
+      "additionalProperties": false
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "notes": {"type": "string"},
+        "sourceDocsRef": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

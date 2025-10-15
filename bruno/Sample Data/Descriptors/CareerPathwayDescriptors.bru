@@ -1,0 +1,40 @@
+meta {
+  name: CareerPathwayDescriptors
+  type: http
+  seq: 22
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/careerPathwayDescriptors?careerPathwayDescriptorId=300
+  body: none
+  auth: bearer
+}
+
+params:query {
+  careerPathwayDescriptorId: 300
+  ~limit: 5
+  ~offset: 0
+  ~totalCount: 
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  
+  if (response) {
+    setVars(bru, {
+      tempCareerPathwayDescriptorId: response.careerPathwayDescriptorId,
+      tempCareerPathwayDescriptor: `${response.namespace}#${response.codeValue}`,
+    });
+  } else {
+    wipeVars(bru, ['tempCareerPathwayDescriptorId', 'tempCareerPathwayDescriptor']);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

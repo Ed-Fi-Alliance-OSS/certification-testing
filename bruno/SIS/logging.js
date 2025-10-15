@@ -1,0 +1,411 @@
+/**
+ * Centralized logging module for SIS collection.
+ */
+
+const {
+  extractDescriptor,
+  mapDescriptors
+} = require('./utils'); // relies on existing helpers in utils
+
+let dayjs;
+try {
+  dayjs = require('dayjs');
+  const utc = require('dayjs/plugin/utc');
+  dayjs.extend(utc);
+  try {
+    const timezone = require('dayjs/plugin/timezone');
+    dayjs.extend(timezone);
+  } catch (tzErr) {
+    // timezone plugin not available; will fallback
+  }
+} catch (e) {
+  // optional dependency not installed – add a visible warning so it's obvious why date annotations are plain
+  console.warn('[logging] dayjs not available; date annotations will not be enriched. Install dayjs in the active working directory to enable. Error:', e && e.message);
+}
+
+const CENTRAL_TZ = 'America/Chicago';
+
+// Helper to annotate a date string (adds relative tag + CST conversion)
+function annotateDate(date) {
+  if (!date || !dayjs) return date; // Fallback: no date or no dayjs
+
+  // Parse as UTC first
+  let dUtc = dayjs.utc(date);
+  if (!dUtc.isValid()) return date;
+
+  // Convert to CST (America/Chicago) if tz plugin present; else fallback offset
+  let dCst;
+  if (typeof dUtc.tz === 'function') {
+    dCst = dUtc.tz(CENTRAL_TZ);
+  } else {
+    // Fallback: assume standard -6 offset (does not handle DST)
+    dCst = dUtc.add(-6, 'hour');
+  }
+
+  // Format CST
+  const cstFormatted = dCst.format('YYYY-MM-DDTHH:mm:ss[Z]'); // keep consistent shape
+  const todayCst = (typeof dayjs().tz === 'function') ? dayjs().tz(CENTRAL_TZ) : dayjs();
+
+  let relativeTag = '';
+  if (dCst.isSame(todayCst, 'day')) {
+    const diffMinutes = todayCst.diff(dCst, 'minute'); // positive if dCst is earlier (in the past)
+    if (diffMinutes >= 0 && diffMinutes < 60) {
+      if (diffMinutes === 0) relativeTag = ' (just now)';
+      else if (diffMinutes === 1) relativeTag = ' (1 minute ago)';
+      else relativeTag = ` (${diffMinutes} minutes ago)`;
+    } else {
+      // 60+ minutes earlier (still today) OR future timestamp today
+      relativeTag = ' (today)';
+    }
+  } else if (dCst.isBefore(todayCst, 'day')) relativeTag = ' (before today)';
+
+  return `${cstFormatted} (CST)${relativeTag}`;
+}
+
+// ---------------- Core log builders ----------------
+
+/**
+ * filterObjectByKeys
+ * Returns a new object with only the specified keys from the original object.
+ * If the keys array is empty or not provided, returns the original object.
+ *
+ * @param {object} obj - The source object.
+ * @param {array} keys - The keys to pick from the source object.
+ *
+ * @returns {object} A new object with only the picked keys.
+ */
+function filterObjectByKeys(obj, keys) {
+  if (!Array.isArray(keys) || keys.length === 0) return obj;
+
+  // Ensure id and lastModifiedDate are always included
+  keys = keys.includes('id') ? keys : ['id', ...keys];
+  keys = keys.includes('lastModifiedDate') ? keys : [...keys, 'lastModifiedDate'];
+  
+  return keys.reduce((acc, k) => {
+    if (Object.prototype.hasOwnProperty.call(obj, k)) {
+      acc[k] = obj[k];
+    }
+    return acc;
+  }, {});
+}
+
+function buildLogObject(source, spec) {
+  try {
+    // Always ensure base fields are present unless explicitly overridden in the provided spec.
+    // This allows callers to omit id / lastModifiedDate in each spec map while still
+    // guaranteeing they appear in all log outputs.
+    const effectiveSpec = { ...(spec || {}) };
+    if (!Object.prototype.hasOwnProperty.call(effectiveSpec, 'id')) {
+      effectiveSpec.id = r => r?.id;
+    }
+    if (!Object.prototype.hasOwnProperty.call(effectiveSpec, 'lastModifiedDate')) {
+      effectiveSpec.lastModifiedDate = r => annotateDate(r?._lastModifiedDate);
+    }
+
+    return Object.entries(effectiveSpec).reduce((acc, [k, resolver]) => {
+      if (typeof resolver === 'function') acc[k] = resolver(source);
+      else {
+        // path string
+        acc[k] = resolver.split('.').reduce((val, p) => (val ? val[p] : undefined), source);
+      }
+      return acc;
+    }, {});
+  } catch (error) {
+    console.error('Error building log object:', error);
+    return {};
+  }
+}
+
+/**
+ * logScenario
+ * Extracts a canonical subset of a raw API response (actualResponse) using a specification map
+ * (spec) plus an optional list of keys (filterKeys) and logs it in a consistent format.
+ *
+ * Flow:
+ *  1. buildLogObject(actualResponse, spec) produces a flat object of resolved fields.
+ *     - Each spec entry can be:
+ *         a) A path string: "schoolReference.schoolId"
+ *         b) A resolver function: r => r.schoolReference.schoolId
+ *  2. Logs the final subset as JSON for traceability:
+ *       "<EntityName> - Scenario <ScenarioName> - API Response: { ... }"
+ *
+ * Use cases:
+ *  - Standardizing output across different test steps.
+ *  - Ensuring only relevant fields appear in logs (noise reduction).
+ *
+ * @param {string} entityName       Logical entity label (e.g. "Class Period").
+ * @param {string} scenarioName     Scenario / request name (often this.req.name).
+ * @param {object} actualResponse   Raw response object from Bruno (res.getBody()).
+ * @param {object} spec             Field resolution map (see buildLogObject docs).
+ * @param {string[]} filterKeys     Optional - Keys to include in the final log (if omitted, all spec keys kept).
+ *
+ * @returns {object} finalObj       The filtered/logged object (helpful for chaining or assertions).
+ *
+ * @example
+ * // Given:
+ * // const spec = { classPeriodName: r => r.classPeriodName, schoolId: 'schoolReference.schoolId' };
+ * // logScenario('Class Period', '01 - Fetch', responseBody, spec, ['classPeriodName']);
+ * //
+ * // Console:
+ * // Class Period - Scenario 01 - Fetch - API Response: {
+ * //   "classPeriodName": "PERIOD 1"
+ * // }
+ */
+function logScenario(entityName, scenarioName, actualResponse, spec, filterKeys) {
+  const fullObj = buildLogObject(actualResponse, spec);
+  const finalActualResponse = filterObjectByKeys(fullObj, filterKeys);
+  //console.info(`${entityName} - Scenario ${scenarioName} - API Response:`, JSON.stringify(finalActualResponse, null, 2));
+  console.info(`${entityName} > Scenario ${scenarioName} - API Response:`, finalActualResponse);
+  return finalActualResponse;
+}
+
+/**
+ * logExpectedVsActual
+ * Logs two separate JSON blocks: the actual subset (derived from `actualResponse`
+ * using the `specification` map) and the expected values you provide.
+ *
+ * Use when you want a simple, unmerged comparison (as opposed to
+ * logActualAndExpectedMerged which interleaves values).
+ *
+ * Extraction:
+ *  - Each entry in `specification` can be a path string (e.g. "schoolReference.schoolId")
+ *    or a resolver function (r => r.schoolReference.schoolId).
+ *  - Only keys present in `expected` are picked from the built log object.
+ *
+ * @param {string} entityName          Entity name for console output.
+ * @param {object} actualResponse      Raw response object.
+ * @param {object} specification       Map of fields to extract (path strings or resolver fns).
+ * @param {object} expectedResponse    Key/value map of expected values.
+ * @param {Function} [filterFn]        Optional - Filter function (defaults to filterObjectByKeys).
+ *
+ * @returns {object} actualSubset The filtered actual object that was logged.
+ *
+ * @example
+ * logExpectedVsActual(
+ *   'ClassPeriod Check',
+ *   responseBody,
+ *   logSpecClassPeriod,
+ *   { classPeriodName: 'FIRST PERIOD', schoolId: 123 }
+ * );
+ */
+function logExpectedVsActual(entityName, actualResponse, specification, expectedResponse, filterFn = filterObjectByKeys) {
+  const fullObj = buildLogObject(actualResponse, specification);
+  const filterKeys = Object.keys(expectedResponse);
+  const finalActualResponse = filterFn(fullObj, filterKeys);
+  console.info(`${entityName} - Actual:`, JSON.stringify(finalActualResponse, null, 2));
+  console.info(`${entityName} - Expected:`, JSON.stringify(expectedResponse, null, 2));
+  return finalActualResponse;
+}
+
+/**
+ * logActualAndExpectedMerged
+ * Produces a side‑by‑side, ordered structure of actual vs expected values and logs it.
+ * For each key in `expected`, two properties are emitted (in order):
+ *   1) <key>                -> actual value
+ *   2) <✓|✗>-<key>-expected -> expected value (key is prefixed with a match symbol)
+ *
+ * Matching rules:
+ *   - If ignoreCase = true and both values are strings, comparison is case-insensitive.
+ *   - If an expected value is undefined/null/empty, it is shown as "(Not Provided)" and treated as matched.
+ *
+ * Extra:
+ *   - When displayLastModifiedDate = true, adds lastModifiedDate annotated with (today) if applicable.
+ *   - Date annotation uses annotateDate().
+ *
+ * @param {string} entityName       Logical entity name (e.g. "Class Period").
+ * @param {string} scenarioName     Scenario or request name.
+ * @param {object} actualResponse   Raw response object.
+ * @param {object} specification    Spec map used by buildLogObject to extract canonical fields (not all must appear in expected).
+ * @param {object} expected         Key/value map of expected values to compare.
+ * @param {object} [options]        OPTIONAL settings.
+ * @param {string} [options.suffix='-expected']  Suffix appended after the original key before symbol.
+ * @param {Function} [options.filterFn]          Function to filter actual fields (defaults to filterObjectByKeys).
+ * @param {Object} [options.matchSymbols]        Symbols used for match / mismatch (default ✓ / ✗).
+ * @param {boolean} [options.ignoreCase=true]    Case-insensitive comparison for strings.
+ * @param {boolean} [options.displayLastModifiedDate=true] Append annotated lastModifiedDate.
+ *
+ * @returns {object} merged Ordered merged object { actualKey, <symbol>-actualKey-expected, ... }.
+ *
+ * @example
+ * logActualAndExpectedMerged(
+ *   'Class Period',
+ *   'Scenario 02',
+ *   response,
+ *   logSpecClassPeriod,
+ *   { classPeriodName: 'Class Period 1' }
+ * );
+ *
+ * Console output example:
+ * Class Period - Scenario 02 - Results: {
+ *   "classPeriodName": "Class Period 1",
+ *   "✓-classPeriodName-expected": "Class Period 1",
+ *   "lastModifiedDate": "2025-09-16T10:00:00Z (today)"
+ * }
+ */
+function logActualAndExpectedMerged(
+  entityName,
+  scenarioName,
+  actualResponse,
+  specification,
+  expectedResponse,
+  {
+    suffix = '-expected',
+    filterFn = filterObjectByKeys,
+    matchSymbols = { true: '✓', false: '✗' },
+    ignoreCase = true,
+    displayLastModifiedDate = true
+  } = {}
+) {
+  const fullObj = buildLogObject(actualResponse, specification);
+  const keys = Object.keys(expectedResponse);
+  const finalActualResponse = filterFn(fullObj, keys);
+
+  const equals = (a, b) => {
+    if (ignoreCase && typeof a === 'string' && typeof b === 'string') {
+      return a.toLowerCase() === b.toLowerCase();
+    }
+    return a === b;
+  };
+
+  const merged = {};
+  keys.forEach(k => {
+    const actualVal = finalActualResponse[k];
+    const expectedVal = expectedResponse[k] ? expectedResponse[k] : '(Not Provided)';
+    const matched = expectedResponse[k] ? equals(actualVal, expectedVal) : true;
+    const expectedKey = `${matched ? matchSymbols.true : matchSymbols.false}-${k}${suffix}`;
+    merged[k] = actualVal;
+    merged[expectedKey] = expectedVal;
+  });
+
+  if (displayLastModifiedDate) {
+    merged['lastModifiedDate'] = annotateDate(actualResponse?._lastModifiedDate);
+  }
+
+  console.info(`${entityName} - ${scenarioName} - Results:`, JSON.stringify(merged, null, 2));
+  return merged;
+}
+
+// ---------------- Spec Maps ----------------
+const logSpecBellSchedule = {
+  bellScheduleName: r => r?.bellScheduleName,
+  schoolId: r => r?.schoolReference?.schoolId,
+  classPeriods: r => r?.classPeriods.map(cp => cp.classPeriodReference.classPeriodName),
+  dates: r => r?.dates,
+  startTime: r => r?.startTime,
+  endTime: r => r?.endTime,
+  alternateDayName: r => r?.alternateDayName,
+  totalInstructionalTime: r => r?.totalInstructionalTime,
+};
+
+const logSpecCalendar = {
+  calendarCode: 'calendarCode',
+  schoolId: r => r.schoolReference.schoolId,
+  schoolYear: r => r.schoolYearTypeReference.schoolYear,
+  calendarTypeDescriptor: r => extractDescriptor(r.calendarTypeDescriptor),
+  gradeLevels: r => mapDescriptors(r.gradeLevels, gl => gl.gradeLevelDescriptor),
+};
+
+const logSpecCalendarDate = {
+  date: 'date',
+  calendarCode: r => r.calendarReference.calendarCode,
+  schoolId: r => r.calendarReference.schoolId,
+  schoolYear: r => r.calendarReference.schoolYear,
+  calendarEvents: r => mapDescriptors(r.calendarEvents, ev => ev.calendarEventDescriptor),
+};
+
+const logSpecClassPeriod = {
+  classPeriodName: r => r?.classPeriodName,
+  schoolId: r => r?.schoolReference?.schoolId,
+  meetingTimes: r => r?.meetingTimes,
+  officialAttendancePeriod: r => r?.officialAttendancePeriod,
+};
+
+const logSpecCohorts = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  cohortIdentifier: 'cohortIdentifier',
+  cohortTypeDescriptor: r => extractDescriptor(r.cohortTypeDescriptor),
+  cohortDescription: 'cohortDescription',
+  cohortScopeDescriptor: r => extractDescriptor(r.cohortScopeDescriptor),
+};
+
+const logSpecCourses = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  identificationCode: r => r?.courseIdentificationCodes?.[0]?.identificationCode,
+  courseCode: 'courseCode',
+  courseTitle: 'courseTitle',
+  courseIdentificationSystemDescriptor: r => extractDescriptor(r?.courseIdentificationCodes?.[0]?.courseIdentificationSystemDescriptor),
+  academicSubjectDescriptor: r => extractDescriptor(r.academicSubjectDescriptor),
+  levelCharacteristics: r => extractDescriptor(r.levelCharacteristics[0].courseLevelCharacteristicDescriptor),
+  numberOfParts: r => r?.numberOfParts,
+};
+
+const logSpecCourseOffering = {
+  localCourseCode: 'localCourseCode',
+  localCourseTitle: 'localCourseTitle',
+  courseCode: r => r?.courseReference?.courseCode,
+  educationOrganizationId: r => r?.courseReference?.educationOrganizationId,
+  schoolId: r => r?.schoolReference?.schoolId,
+  sessionName: r => r?.sessionReference?.sessionName,
+  sessionSchoolYear: r => r?.sessionReference?.schoolYear,
+  sessionSchoolId: r => r?.sessionReference?.schoolId,
+  courseLevelCharacteristics: r => mapDescriptors(r?.courseLevelCharacteristics, c => c.courseLevelCharacteristicDescriptor),
+  curriculumUseds: r => mapDescriptors(r?.curriculumUseds, u => u.curriculumUsedDescriptor),
+  offeredGradeLevels: r => mapDescriptors(r?.offeredGradeLevels, g => g.gradeLevelDescriptor),
+};
+
+const logSpecSchool = {
+  schoolId: r => r?.schoolId,
+  localEducationAgencyId: r => r?.localEducationAgencyReference?.localEducationAgencyId,
+  nameOfInstitution: 'nameOfInstitution',
+  shortNameOfInstitution: 'shortNameOfInstitution',
+  gradeLevels: r => mapDescriptors(r?.gradeLevels, gl => gl.gradeLevelDescriptor),
+  educationOrganizationCategories: r => mapDescriptors(r?.educationOrganizationCategories, c => c.educationOrganizationCategoryDescriptor),
+  addressTypeDescriptor: r => extractDescriptor(r?.addresses?.[0]?.addressTypeDescriptor),
+  stateAbbreviationDescriptor: r => extractDescriptor(r?.addresses?.[0]?.stateAbbreviationDescriptor),
+  city: r => r?.addresses?.[0]?.city,
+  streetNumberName: r => r?.addresses?.[0]?.streetNumberName,
+  postalCode: r => r?.addresses?.[0]?.postalCode,
+};
+
+const logSpecGradingPeriod = {
+  schoolId: r => r?.schoolReference?.schoolId,
+  schoolYear: r => r?.schoolYearTypeReference?.schoolYear,
+  gradingPeriodDescriptor: r => extractDescriptor(r?.gradingPeriodDescriptor),
+  periodSequence: 'periodSequence',
+  beginDate: 'beginDate',
+  endDate: 'endDate',
+  totalInstructionalDays: 'totalInstructionalDays',
+};
+
+const logSpecSession = {
+  sessionName: 'sessionName',
+  schoolId: r => r?.schoolReference?.schoolId,
+  schoolYear: r => r?.schoolYearTypeReference?.schoolYear,
+  termDescriptor: r => extractDescriptor(r?.termDescriptor),
+  beginDate: 'beginDate',
+  endDate: 'endDate',
+  totalInstructionalDays: 'totalInstructionalDays',
+  gradingPeriods: r => (r?.gradingPeriods || []).map(gp => {
+    const ref = gp?.gradingPeriodReference;
+    if (!ref) return null;
+    const desc = extractDescriptor(ref.gradingPeriodDescriptor);
+    return `${desc}:${ref.periodSequence}`;
+  }).filter(Boolean),
+};
+
+module.exports = {
+  buildLogObject,
+  logScenario,
+  logExpectedVsActual,
+  logActualAndExpectedMerged,
+  logSpecBellSchedule,
+  logSpecCalendar,
+  logSpecCalendarDate,
+  logSpecClassPeriod,
+  logSpecCohorts,
+  logSpecCourses,
+  logSpecCourseOffering,
+  logSpecSchool,
+  logSpecGradingPeriod,
+  logSpecSession
+};

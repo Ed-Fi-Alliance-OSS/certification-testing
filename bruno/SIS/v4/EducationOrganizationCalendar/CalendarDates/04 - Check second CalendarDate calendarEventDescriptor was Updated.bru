@@ -1,0 +1,51 @@
+meta {
+  name: 04 - Check second CalendarDate calendarEventDescriptor was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/calendarDates/{{secondCalendarDateUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.calendarEvents: isArray
+  res.body.calendarEvents: isNotEmpty
+  res.body.calendarEvents[0].calendarEventDescriptor: isString
+  res.body.calendarEvents[0].calendarEventDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondCalendarDateUniqueId', '02 - Check second CalendarDate is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondCalendarDateCalendarEventDescriptorList', '02 - Check second CalendarDate is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, mapDescriptors, joinDescriptors, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecCalendarDate, logScenario } = require('./logging');
+  const entityName = 'CalendarDate';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+ 
+  const current = res.getBody();
+  const previousList = getVar(bru, 'secondCalendarDateCalendarEventDescriptorList');
+  const currentList = joinDescriptors(mapDescriptors(current.calendarEvents || [], ev => ev.calendarEventDescriptor));
+  
+  expectChanged(previousList, currentList, 'calendarEventDescriptor list');
+  logScenario(entityName, scenarioName, current, logSpecCalendarDate, ['id','calendarCode','calendarEvents']);
+}
+
+settings {
+  encodeUrl: true
+}

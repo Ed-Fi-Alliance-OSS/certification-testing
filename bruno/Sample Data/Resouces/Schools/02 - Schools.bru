@@ -17,8 +17,14 @@ auth:bearer {
 body:json {
   {
     "id": null,
-    "schoolId": "{{tempSchoolId}}",
-    "nameOfInstitution": "Saint Joseph High School",
+    "schoolId": "1549697794",
+    "identificationCodes": [
+      {
+        "educationOrganizationIdentificationSystemDescriptor": "uri://ed-fi.org/EducationOrganizationIdentificationSystemDescriptor#School",
+        "identificationCode": "1549697794"
+      }
+    ],
+    "nameOfInstitution": "Saint Joseph Elementary School",
     "shortNameOfInstitution": "SJHS",
     "webSite": "https://www.google.com",
     "operationalStatusDescriptor": "uri://ed-fi.org/OperationalStatusDescriptor#Active",
@@ -29,51 +35,64 @@ body:json {
     "localEducationAgencyReference": {
       "localEducationAgencyId": "{{tempLEAId}}"
     },
-    "educationOrganizationCategories": [{
-      "educationOrganizationCategoryDescriptor": "uri://ed-fi.org/EducationOrganizationCategoryDescriptor#School"
-    }],
-    "addresses": [{
-      "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Physical",
-      "city": "Saint Joseph",
-      "postalCode": "99999",
-      "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
-      "streetNumberName": "456 Elm Street",
-      "nameOfCounty": "Williston"
-    }, {
-      "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Mailing",
-      "city": "Saint Joseph",
-      "postalCode": "99999-9999",
-      "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
-      "streetNumberName": "P.O. Box 2035",
-      "nameOfCounty": "Williston"
-    }],
-    "identificationCodes": [{
-      "educationOrganizationIdentificationSystemDescriptor": "uri://ed-fi.org/EducationOrganizationIdentificationSystemDescriptor#School",
-      "identificationCode": "{{tempSchoolIdCode}}"
-    }],
-    "institutionTelephones": [{
-      "institutionTelephoneNumberTypeDescriptor": "uri://ed-fi.org/InstitutionTelephoneNumberTypeDescriptor#Main",
-      "telephoneNumber": "(999) 999-9999"
-    }, {
-      "institutionTelephoneNumberTypeDescriptor": "uri://ed-fi.org/InstitutionTelephoneNumberTypeDescriptor#Fax",
-      "telephoneNumber": "(000) 000-0000"
-    }],
-    "schoolCategories": [{
-      "schoolCategoryDescriptor": "uri://ed-fi.org/SchoolCategoryDescriptor#High School"
-    }],
-    "gradeLevels": [{
-      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Seventh grade"
-    }, {
-      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eighth grade"
-    }, {
-      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Ninth grade"
-    }, {
-      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Tenth grade"
-    }, {
-      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eleventh grade"
-    }, {
-      "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Twelfth grade"
-    }]
+    "educationOrganizationCategories": [
+      {
+        "educationOrganizationCategoryDescriptor": "uri://ed-fi.org/EducationOrganizationCategoryDescriptor#School"
+      }
+    ],
+    "addresses": [
+      {
+        "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Physical",
+        "city": "Saint Joseph",
+        "postalCode": "99999",
+        "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+        "streetNumberName": "456 Elm Street",
+        "nameOfCounty": "Williston"
+      },
+      {
+        "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Mailing",
+        "city": "Saint Joseph",
+        "postalCode": "99999-9999",
+        "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+        "streetNumberName": "P.O. Box 2035",
+        "nameOfCounty": "Williston"
+      }
+    ],
+    "institutionTelephones": [
+      {
+        "institutionTelephoneNumberTypeDescriptor": "uri://ed-fi.org/InstitutionTelephoneNumberTypeDescriptor#Main",
+        "telephoneNumber": "(999) 999-9999"
+      },
+      {
+        "institutionTelephoneNumberTypeDescriptor": "uri://ed-fi.org/InstitutionTelephoneNumberTypeDescriptor#Fax",
+        "telephoneNumber": "(000) 000-0000"
+      }
+    ],
+    "schoolCategories": [
+      {
+        "schoolCategoryDescriptor": "uri://ed-fi.org/SchoolCategoryDescriptor#High School"
+      }
+    ],
+    "gradeLevels": [
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Seventh grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eighth grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Ninth grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Tenth grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eleventh grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Twelfth grade"
+      }
+    ]
   }
 }
 

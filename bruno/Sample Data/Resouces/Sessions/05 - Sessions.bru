@@ -1,0 +1,15 @@
+meta {
+  name: 05 - Sessions
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/sessions/{{tempSessionUniqueId}}
+  body: json
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

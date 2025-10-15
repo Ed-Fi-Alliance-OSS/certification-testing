@@ -1,0 +1,51 @@
+meta {
+  name: 04 - Check second Calendar gradeLevelDescriptor was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/calendars/{{secondCalendarUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.gradeLevels: isArray
+  res.body.gradeLevels: isNotEmpty
+  res.body.gradeLevels[0].gradeLevelDescriptor: isString
+  res.body.gradeLevels[0].gradeLevelDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondCalendarUniqueId', '02 - Check second Calendar is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondCalendarGradeLevelDescriptorList', '02 - Check second Calendar is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, mapDescriptors, joinDescriptors, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecCalendar, logScenario } = require('./logging');
+  const entityName = 'Calendar';
+  const scenarioName = this.req.name;
+
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const currentList = joinDescriptors(mapDescriptors(current.gradeLevels || [], g => g.gradeLevelDescriptor));
+  
+  expectChanged(getVar(bru, 'secondCalendarGradeLevelDescriptorList'), currentList, 'gradeLevelDescriptor list');
+  logScenario(entityName, scenarioName, current, logSpecCalendar, ['calendarCode','gradeLevels']);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

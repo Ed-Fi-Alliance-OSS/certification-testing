@@ -1,0 +1,62 @@
+meta {
+  name: CalendarDates
+  seq: 2
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 Education Organization Calendar > CalendarDate Scenarios
+  
+  This entity represents the type of scheduled or unscheduled event for the day.
+  
+  ## Prerequisites
+  
+  * Calendar
+  
+  ## Scenarios tasks
+
+  1. __CREATE__ the `first` Holiday `Calendar date` for the calendar at Grand Bend Elementary
+     School
+  2. __CREATE__ the `second` Instructional day `Calendar date` for the calendar at Grand Bend High
+     School
+  3. __UPDATE__ the _calendarEventDescriptor_ on the `first` added `Calendar date` for Grand Bend
+     Elementary School from "Holiday" to "Half Instructional day" and "Half
+     early dismissal".
+  4. __UPDATE__ the _calendarEventDescriptor_ on the `second` added `Calendar date` for Grand Bend High
+     School from "Instructional day" to "Holiday".
+
+  ## Scenarios example data:
+
+  | Resource                   | Property Name           | Is Collection | Data Type               | Required | Scenario 1: POST             | Scenario 2: POST             | Scenario 3: PUT                                                   | Scenario 4: PUT              |
+  | -------------------------- | ----------------------- | ------------- | ----------------------- | -------- | ---------------------------- | ---------------------------- | ----------------------------------------------------------------- | ---------------------------- |
+  | CalendarDates              | date                    | FALSE         | date                    | REQUIRED | 9/16/\[Current School Year\] | 9/16/\[Current School Year\] | 9/16/\[Current School Year\]                                      | 9/16/\[Current School Year\] |
+  | CalendarDates              | calendarReference       | FALSE         | calendarReference       | REQUIRED |                              |                              |                                                                   |                              |
+  | calendarReference          | calendarCode            | FALSE         | int                     | REQUIRED | 107SS111111                  | IEP001                       | 107SS111111                                                       | IEP001                       |
+  | calendarReference          | schoolId                | FALSE         | integer                 | REQUIRED | 255901107                    | 255901001                    | 255901107                                                         | 255901001                    |
+  | calendarReference          | schoolYear              | FALSE         | int                     | REQUIRED | \[Current School Year\]      | \[Current School Year\]      | \[Current School Year\]                                           | \[Current School Year\]      |
+  | CalendarDates              | calendarEvents          | TRUE          | CalendarEvent\[\]       | REQUIRED |                              |                              |                                                                   |                              |
+  | calendarDateCalendarEvents | calendarEventDescriptor | FALSE         | calendarEventDescriptor | REQUIRED | Holiday                      | Instructional Day            | Instructional day &<br/>Student late arrival<br/>/early dismissal | Holiday                      |
+  
+  ## API response format
+  ```json
+   {
+      "id": "string",
+      "calendarCode": "string",
+      "schoolReference": {
+         "schoolId": 0
+      },
+      "schoolYearTypeReference": {
+         "schoolYear": 0
+      },
+      "calendarTypeDescriptor": "string",
+      "gradeLevels": [
+         {
+            "gradeLevelDescriptor": "string"
+         }
+      ]
+   }
+  ```
+}

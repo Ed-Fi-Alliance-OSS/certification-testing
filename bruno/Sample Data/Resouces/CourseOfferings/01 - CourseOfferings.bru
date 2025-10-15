@@ -1,0 +1,64 @@
+meta {
+  name: 01 - CourseOfferings
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings?schoolYear=2025&schoolId={{mySchoolId}}&sessionName=2025-2026 Fall Semester&localCourseTitle=ALGEBRA 1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolYear: 2025
+  schoolId: {{mySchoolId}}
+  sessionName: 2025-2026 Fall Semester
+  localCourseTitle: ALGEBRA 1
+  ~localCourseCode: 
+  ~id: 
+  ~courseCode: 
+  ~educationOrganizationId: 
+  ~instructionalTimePlanned: 
+  ~limit: 10
+  ~offset: 0
+  ~totalCount: false
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  const entityName = 'CourseOffering';
+  
+  if (response) {  
+    setVars(bru, {
+      tempCourseOfferingUniqueId: response.id,
+      tempCourseOfferingSchoolId: response.schoolReference ? response.schoolReference.schoolId : null,
+      tempCourseOfferingSchoolYear: response.schoolYearTypeReference ? response.schoolYearTypeReference.schoolYear : null,
+      tempCourseOfferingSessionName: response.sessionReference ? response.sessionReference.sessionName : null,
+      tempCourseOfferingLocalCourseCode: response.localCourseCode,
+      tempCourseOfferingCourseCode: response.courseReference ? response.courseReference.courseCode : null,
+      tempCourseOfferingEducationOrganizationId: response.courseReference ? response.courseReference.educationOrganizationId : null,
+      tempCourseOfferingLocalCourseTitle: response.localCourseTitle
+    });
+  
+    setVarsMessage(entityName);
+  } else {
+    wipeVars(bru, [
+      'tempCourseOfferingUniqueId', 
+      'tempCourseOfferingSchoolId', 
+      'tempCourseOfferingSchoolYear',
+      'tempCourseOfferingSessionName', 
+      'tempCourseOfferingLocalCourseCode',
+      'tempCourseOfferingCourseCode',
+      'tempCourseOfferingEducationOrganizationId',
+      'tempCourseOfferingLocalCourseTitle'
+    ]);
+  
+    wipeVarsWarning(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "../../../schemas/entity-config.schema.json",
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": ["educationOrganizationId", "courseCode"],
+    "naturalIdField": null
+  }
+}

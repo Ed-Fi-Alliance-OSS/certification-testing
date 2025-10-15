@@ -1,0 +1,66 @@
+meta {
+  name: 02 - Check second Calendar is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/calendars?schoolId=[ENTER SECOND SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&calendarCode=[ENTER SECOND CALENDAR CODE]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER SECOND SCHOOL ID]
+  schoolYear: [ENTER CURRENT SCHOOL YEAR]
+  calendarCode: [ENTER SECOND CALENDAR CODE]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].calendarCode: isString
+  res.body[0].calendarCode: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].schoolYearTypeReference: isDefined
+  res.body[0].schoolYearTypeReference.schoolYear: isNumber
+  res.body[0].schoolYearTypeReference.schoolYear: neq 0
+  res.body[0].calendarTypeDescriptor: isString
+  res.body[0].calendarTypeDescriptor: isNotEmpty
+  res.body[0].gradeLevels: isArray
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor, mapDescriptors, joinDescriptors } = require('./utils');
+  const { logSpecCalendar, logScenario } = require('./logging');
+  const entityName = 'Calendar';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  
+  if (!entity) {
+    wipeVars(bru, [
+      'secondCalendarUniqueId',
+      'secondCalendarCalendarTypeDescriptor',
+      'secondCalendarGradeLevelDescriptorList'
+    ], entityName, true);
+  }
+  
+  const gradeList = joinDescriptors(mapDescriptors(entity.gradeLevels || [], g => g.gradeLevelDescriptor));
+  
+  setVars(bru, {
+    secondCalendarUniqueId: entity.id,
+    secondCalendarId: entity.calendarCode,
+    secondCalendarCalendarTypeDescriptor: extractDescriptor(entity.calendarTypeDescriptor),
+    secondCalendarGradeLevelDescriptorList: gradeList
+  }, entityName);
+  logScenario(entityName, scenarioName, entity, logSpecCalendar);
+}
+
+settings {
+  encodeUrl: true
+}

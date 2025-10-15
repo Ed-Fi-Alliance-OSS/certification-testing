@@ -11,7 +11,7 @@ get {
 }
 
 params:query {
-  ~academicSubjectDescriptorId: 40
+  ~academicSubjectDescriptorId: 39
   ~limit: 5
   ~offset: 0
   ~totalCount: 
@@ -28,10 +28,10 @@ script:post-response {
   if (response) {
     setVars(bru, {
       tempAcademicSubjectDescriptorId: response.academicSubjectDescriptorId,
-      tempAcademicSubjectDescriptorUri: `${response.namespace}#${response.codeValue}`,
+      tempAcademicSubjectDescriptor: `${response.namespace}#${response.codeValue}`,
     });
   } else {
-    wipeVars(bru, ['tempAcademicSubjectDescriptorId', 'tempAcademicSubjectDescriptorUri']);
+    wipeVars(bru, ['tempAcademicSubjectDescriptorId', 'tempAcademicSubjectDescriptor']);
   }
 }
 

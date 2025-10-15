@@ -1,0 +1,65 @@
+meta {
+  name: 01 - Sessions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sessions?schoolYear=2025&schoolId={{mySchoolId}}&sessionName=2025-2026 Fall Semester
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolYear: 2025
+  schoolId: {{mySchoolId}}
+  sessionName: 2025-2026 Fall Semester
+  ~termDescriptor: 
+  ~id: 
+  ~totalInstructionalDays: 
+  ~beginDate: 
+  ~endDate: 
+  ~limit: 10
+  ~offset: 0
+  ~totalCount: false
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const response = pickSingle(res.getBody());
+  const entityName = 'Session';
+  
+  if (response) {  
+    setVars(bru, {
+      tempSessionUniqueId: response.id,
+      tempSessionSessionName: response.sessionName,
+      tempSessionSchoolId: response.schoolReference ? response.schoolReference.schoolId : null,
+      tempSessionSchoolYear: response.schoolYearTypeReference ? response.schoolYearTypeReference.schoolYear : null,
+      tempSessionBeginDate: response.beginDate,
+      tempSessionEndDate: response.endDate,
+      tempSessionTotalInstructionalDays: response.totalInstructionalDays,
+      tempSessionTermDescriptor: response.termDescriptor,
+      tempSessionGradingPeriods: response.gradingPeriods,
+    });
+  
+    setVarsMessage(entityName);
+  } else {
+    wipeVars(bru, [
+      'tempSessionUniqueId', 
+      'tempSessionSessionName', 
+      'tempSessionSchoolId', 
+      'tempSessionSchoolYear',
+      'tempSessionBeginDate', 
+      'tempSessionEndDate', 
+      'tempSessionTotalInstructionalDays',
+      'tempSessionTermDescriptor',
+      'tempSessionGradingPeriods'
+    ]);
+  
+    wipeVarsWarning(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

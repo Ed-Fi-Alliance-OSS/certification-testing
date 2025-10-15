@@ -1,4 +1,9 @@
 /**
+ * IMPORTANT:
+ * Duplicate of SIS/utils.js (see that file for notes). Keep in sync.
+ */
+
+/**
  * validateDependency
  * Ensures a required environment variable is present before executing a request.
  * If missing, it throws a descriptive error instructing the user which prior step to run.
@@ -14,13 +19,13 @@
  */
 function validateDependency(bru, variableName, dependencyName, opts = {}) {
   const { throwOnMissing = true, actionHint } = opts;
-  const value = bru.getEnvVar(variableName);
+  const value = getVar(bru, variableName);
   if (value !== undefined && value !== null && value !== '') {
     return true;
   }
 
-  const baseMsg = `Missing required variable "${variableName}". Run "${dependencyName}" first to populate it.`;
-  const fullMsg = actionHint ? `${baseMsg} ${actionHint}` : baseMsg;
+  const baseMsg = `Run "${dependencyName}" first to populate it. Missing required variable "${variableName}". `;
+  const fullMsg = actionHint ? `${baseMsg} \n\n > ${actionHint}` : baseMsg;
 
   if (throwOnMissing) {
     console.error(fullMsg);
@@ -31,33 +36,64 @@ function validateDependency(bru, variableName, dependencyName, opts = {}) {
   }
 }
 
-// Var helpers -----------------------------------------------------
-// Just for centralizing the bru var access pattern
-
-function getVar(bru, k) {
-  return bru.getVar(k)
+// Descriptor helpers -------------------------------------------------
+function extractDescriptor(value) {
+  // keeps pop logic centralized and token standarized 
+  return typeof value === 'string' ? value.split('#').pop() : value;
 }
 
-function getVars(bru, kv) {
-  return Object.fromEntries(
-    Object.entries(kv).map(([k]) => [k, getVar(bru, k)])
-  );
+function mapDescriptors(items, accessorFn) {
+  // keeps map logic centralized
+  if (!Array.isArray(items)) return [];
+  return items.map(it => extractDescriptor(accessorFn(it)));
 }
 
-function setVars(bru, kv) {
-  Object.entries(kv).forEach(([k, v]) => bru.setVar(k, v));
+function joinDescriptors(items) {
+  // keeps join logic centralized and token standarized
+  if (!Array.isArray(items)) return '';
+  return items.join(', ');
+}
+
+// just wrappers around bru methods for consistency and centralization
+function getVar(bru, key) {
+  return bru.getVar(key);
+}
+
+function setVar(bru, key, value) {
+  bru.setVar(key, value);
+}
+
+function wipeVar(bru, key) {
+  bru.deleteVar(key);
+}
+
+// Variable helpers -----------------------------------------------------
+function getVars(bru, keys = []) {
+  if (!Array.isArray(keys) || keys.length === 0) return {};
+  return Object.fromEntries(keys.map(k => [k, getVar(bru, k)]));
+} 
+
+function setVars(bru, kv, entityName = null) {
+  Object.entries(kv).forEach(([k, v]) => setVar(bru, k, v));
+  if (entityName) setVarsMessage(entityName);
 }
 
 function setVarsMessage(entityName) {
-  console.info(`${entityName} data was cached correctly.`);
+  console.log(`${entityName} data was cached correctly.`);
 }
 
-function wipeVars(bru, keys) {
-  keys.forEach(k => bru.deleteVar(k));
+function wipeVars(bru, keys, entityName = null, throwError = false) {
+  keys.forEach(k => wipeVar(bru, k));
+  if (entityName) wipeVarsWarning(entityName);
+  if (throwError) throwNotFoundOrSpecificError(entityName);
 }
 
 function wipeVarsWarning(entityName) {
   console.warn(`${entityName} cached data was wiped because no record was found or multiple records were returned. Please check the input "Params".`);
+}
+
+function throwNotFoundOrSpecificError(entityName) {
+  throw new Error(`No ${entityName} found, or multiple records were returned. Check your parameters and try again.`);
 }
 
 // Single item picker --------------------------------------------------
@@ -72,23 +108,37 @@ function generateId() {
   return (base + Math.floor(Math.random() * maxIncrement)).toString();
 }
 
-function generateUUID() {
-  let hex = '';
-  for (let i = 0; i < 32; i++) {
-    hex += Math.floor(Math.random() * 16).toString(16);
-  }
-  return hex;
+
+// Change expectation helper ------------------------------------------
+function expectChanged(previous, current, label) {
+  test(`${label} changed`, () => {
+    expect(current).not.equals(previous);
+  });
+}
+
+// Positive (equality) expectation helper --------------------------------
+function expectUnchanged(previous, current, label) {
+  test(`${label} unchanged`, () => {
+    expect(current).equals(previous);
+  });
 }
 
 module.exports = {
   validateDependency,
+  extractDescriptor,
+  mapDescriptors,
+  joinDescriptors,
   getVar,
   getVars,
+  setVar,
   setVars,
   setVarsMessage,
+  wipeVar,
   wipeVars,
   wipeVarsWarning,
   pickSingle,
   generateId,
-  generateUUID
+  expectChanged,
+  expectUnchanged,
+  throwNotFoundOrSpecificError
 };

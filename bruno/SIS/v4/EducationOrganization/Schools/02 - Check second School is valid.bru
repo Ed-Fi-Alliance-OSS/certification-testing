@@ -1,0 +1,78 @@
+meta {
+  name: 02 - Check second School is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schools?schoolId=[ENTER SECOND SCHOOL ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER SECOND SCHOOL ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].schoolId: isNumber
+  res.body[0].schoolId: neq 0
+  res.body[0].nameOfInstitution: isString
+  res.body[0].nameOfInstitution: isNotEmpty
+  res.body[0].localEducationAgencyReference: isDefined
+  res.body[0].localEducationAgencyReference.localEducationAgencyId: isNumber
+  res.body[0].localEducationAgencyReference.localEducationAgencyId: neq 0
+  res.body[0].educationOrganizationCategories: isArray
+  res.body[0].educationOrganizationCategories: isNotEmpty
+  res.body[0].educationOrganizationCategories[0].educationOrganizationCategoryDescriptor: isString
+  res.body[0].educationOrganizationCategories[0].educationOrganizationCategoryDescriptor: isNotEmpty
+  res.body[0].gradeLevels: isArray
+  res.body[0].gradeLevels: isNotEmpty
+  res.body[0].gradeLevels[0].gradeLevelDescriptor: isString
+  res.body[0].gradeLevels[0].gradeLevelDescriptor: isNotEmpty
+  res.body[0].addresses: isArray
+  res.body[0].addresses: isNotEmpty
+  res.body[0].addresses[0].addressTypeDescriptor: isString
+  res.body[0].addresses[0].addressTypeDescriptor: isNotEmpty
+  res.body[0].addresses[0].city: isString
+  res.body[0].addresses[0].city: isNotEmpty
+  res.body[0].addresses[0].postalCode: isString
+  res.body[0].addresses[0].postalCode: isNotEmpty
+  res.body[0].addresses[0].stateAbbreviationDescriptor: isString
+  res.body[0].addresses[0].stateAbbreviationDescriptor: isNotEmpty
+  res.body[0].addresses[0].streetNumberName: isString
+  res.body[0].addresses[0].streetNumberName: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logSpecSchool, logScenario } = require('./logging');
+  const entityName = 'School';
+  const scenarioName = this.req.name;
+
+  if (res.status === 200 && res.body) {
+    const response = pickSingle(res.getBody());
+
+    if (!response) {
+      wipeVars(bru, ['secondSchoolUniqueId','secondSchoolId','secondSchoolPostalCode'], entityName, true);
+    }
+    
+    const addr = Array.isArray(response.addresses) ? response.addresses[0] : {};
+
+    setVars(bru, {
+      secondSchoolUniqueId: response.id,
+      secondSchoolId: response.schoolId,
+      secondSchoolPostalCode: addr?.postalCode
+    }, entityName);
+    logScenario(entityName, scenarioName, response, logSpecSchool);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

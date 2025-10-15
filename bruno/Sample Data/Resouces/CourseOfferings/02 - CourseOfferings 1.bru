@@ -1,0 +1,43 @@
+meta {
+  name: 02 - CourseOfferings 1
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "localCourseCode": "ART-1",
+    "localCourseTitle": "Art, Grade 1",
+    "courseReference": {
+      "courseCode": "ART 01",
+      "educationOrganizationId": "{{myLEAId}}"
+    },
+    "schoolReference": {
+      "schoolId": "{{mySchoolId}}"
+    },
+    "sessionReference": {
+      "schoolId": "{{mySchoolId}}",
+      "schoolYear": 2025,
+      "sessionName": "2025-2026 Fall Semester"
+    }
+  }
+}
+
+script:post-response {
+  const { setVars } = require('./utils');
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const courseOfferingId = locationHeader.split('/').pop();
+    setVars(bru, { 'tempCourseOfferingUniqueId': courseOfferingId });
+  }
+}
+
+settings {
+  encodeUrl: true
+}

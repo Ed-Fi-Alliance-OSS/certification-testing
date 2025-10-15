@@ -1,0 +1,51 @@
+meta {
+  name: 04 - Sessions
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/sessions/{{tempSessionUniqueId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "id": "{{tempSessionUniqueId}}",
+    "schoolReference": {
+      "schoolId": "{{tempSessionSchoolId}}"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": 2025
+    },
+    "sessionName": "2025-2026 Fall Semester",
+    "beginDate": "2025-10-01",
+    "endDate": "2025-12-30",
+    "termDescriptor": "uri://ed-fi.org/TermDescriptor#Fall Semester",
+    "totalInstructionalDays": 59,
+    "academicWeeks": [],
+    "gradingPeriods": [
+      {
+        "gradingPeriodReference": {
+          "schoolId": "{{tempSessionSchoolId}}",
+          "schoolYear": 2025,
+          "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+          "periodSequence": 1
+        }
+      },
+      {
+        "gradingPeriodReference": {
+          "schoolId": "{{tempSessionSchoolId}}",
+          "schoolYear": 2025,
+          "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#Second Six Weeks",
+          "periodSequence": 2
+        }
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+}
