@@ -1,0 +1,94 @@
+meta {
+  name: 01 - Check first StudentEdOrgAssociation is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationAssociations?educationOrganizationId=[ENTER EDUCATION ORGANIZATION ID]&studentUniqueId=[ENTER FIRST STUDENT UNIQUE ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
+  studentUniqueId: [ENTER FIRST STUDENT UNIQUE ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].limitedEnglishProficiencyDescriptor: isString
+  res.body[0].limitedEnglishProficiencyDescriptor: isNotEmpty
+  res.body[0].studentCharacteristics: isArray
+  res.body[0].studentCharacteristics: isNotEmpty
+  res.body[0].studentCharacteristics[0].studentCharacteristicDescriptor: isString
+  res.body[0].studentCharacteristics[0].studentCharacteristicDescriptor: isNotEmpty
+  res.body[0].studentIdentificationCodes: isArray
+  res.body[0].studentIdentificationCodes: isNotEmpty
+  res.body[0].sexDescriptor: isString
+  res.body[0].sexDescriptor: isNotEmpty
+  res.body[0].addresses: isArray
+  res.body[0].addresses: isNotEmpty
+  res.body[0].addresses[0].city: isString
+  res.body[0].addresses[0].city: isNotEmpty
+  res.body[0].addresses[0].postalCode: isString
+  res.body[0].addresses[0].postalCode: isNotEmpty
+  res.body[0].addresses[0].stateAbbreviationDescriptor: isString
+  res.body[0].addresses[0].stateAbbreviationDescriptor: isNotEmpty
+  res.body[0].addresses[0].streetNumberName: isString
+  res.body[0].addresses[0].streetNumberName: isNotEmpty
+  res.body[0].telephones: isArray
+  res.body[0].telephones: isNotEmpty
+  res.body[0].telephones[0].telephoneNumber: isString
+  res.body[0].telephones[0].telephoneNumber: isNotEmpty
+  res.body[0].telephones[0].telephoneNumberTypeDescriptor: isString
+  res.body[0].telephones[0].telephoneNumberTypeDescriptor: isNotEmpty
+  res.body[0].electronicMails: isArray
+  res.body[0].electronicMails: isNotEmpty
+  res.body[0].electronicMails[0].electronicMailAddress: isString
+  res.body[0].electronicMails[0].electronicMailAddress: isNotEmpty
+  res.body[0].electronicMails[0].electronicMailTypeDescriptor: isString
+  res.body[0].electronicMails[0].electronicMailTypeDescriptor: isNotEmpty
+  res.body[0].hispanicLatinoEthnicity: isBoolean
+  res.body[0].races: isArray
+  res.body[0].races: isNotEmpty
+  res.body[0].races[0].raceDescriptor: isString
+  res.body[0].races[0].raceDescriptor: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logSpecStudentEdOrgAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentEdOrgAssociation';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+
+  if (!entity) {
+    wipeVars(bru, [
+      'firstStudentEdOrgAssociationUniqueId','firstStudentEdOrgAssociationEducationOrganizationId','firstStudentEdOrgAssociationStudentUniqueId','firstStudentEdOrgAssociationTelephoneNumber','firstStudentEdOrgAssociationStreetNumberName'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    firstStudentEdOrgAssociationUniqueId: entity.id,
+    firstStudentEdOrgAssociationEducationOrganizationId: entity.educationOrganizationReference.educationOrganizationId,
+    firstStudentEdOrgAssociationStudentUniqueId: entity.studentReference.studentUniqueId,
+    firstStudentEdOrgAssociationTelephoneNumber: entity.telephones?.[0]?.telephoneNumber,
+    firstStudentEdOrgAssociationStreetNumberName: entity.addresses?.[0]?.streetNumberName
+  });logScenario(entityName, scenarioName, entity, logSpecStudentEdOrgAssociation);
+  
+}
+
+settings {
+  encodeUrl: true
+}

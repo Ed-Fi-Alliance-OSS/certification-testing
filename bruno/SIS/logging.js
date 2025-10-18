@@ -443,6 +443,23 @@ const logSpecGraduationPlan = {
   totalRequiredCredits: r => r?.totalRequiredCredits,
 };
 
+// StudentEducationOrganizationAssociation spec map
+// Includes PK constituents, required descriptors, and mutated telephone/address fields.
+const logSpecStudentEdOrgAssociation = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  limitedEnglishProficiencyDescriptor: r => extractDescriptor(r?.limitedEnglishProficiencyDescriptor),
+  sexDescriptor: r => extractDescriptor(r?.sexDescriptor),
+  hispanicLatinoEthnicity: r => r?.hispanicLatinoEthnicity,
+  telephoneNumber: r => r?.telephones?.[0]?.telephoneNumber,
+  streetNumberName: r => r?.addresses?.[0]?.streetNumberName,
+  city: r => r?.addresses?.[0]?.city,
+  postalCode: r => r?.addresses?.[0]?.postalCode,
+  stateAbbreviationDescriptor: r => extractDescriptor(r?.addresses?.[0]?.stateAbbreviationDescriptor),
+  studentIdentificationCodes: r => (r?.studentIdentificationCodes || []).map(c => `${extractDescriptor(c.studentIdentificationSystemDescriptor)}:${c.identificationCode}`),
+  studentCharacteristicDescriptors: r => (r?.studentCharacteristics || []).map(ch => extractDescriptor(ch.studentCharacteristicDescriptor)),
+  raceDescriptors: r => (r?.races || []).map(rc => extractDescriptor(rc.raceDescriptor)),
+};
 module.exports = {
   buildLogObject
   ,logScenario
@@ -462,4 +479,5 @@ module.exports = {
   ,logSpecSection
   ,logSpecStudent
   ,logSpecGraduationPlan
+  ,logSpecStudentEdOrgAssociation
 };
