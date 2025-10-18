@@ -460,4 +460,5 @@ module.exports = {
   ,logSpecLocation
   ,logSpecSection
   ,logSpecStudent
+  ,logSpecGraduationPlan
 };
