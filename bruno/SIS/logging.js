@@ -481,6 +481,22 @@ const logSpecStudentSchoolAssociation = {
   graduationPlanTypeDescriptor: r => extractDescriptor(r?.graduationPlanReference?.graduationPlanTypeDescriptor),
   calendarCode: r => r?.calendarReference?.calendarCode,
 };
+
+// StudentSectionAssociation spec map (StudentEnrollment > StudentSectionAssociations)
+// Primary keys per config: schoolId, schoolYear, localCourseCode, sessionName, sectionIdentifier, studentUniqueId, beginDate
+// Required fields include all sectionReference constituents, studentUniqueId, beginDate, endDate.
+// Mutation target per scenarios: endDate.
+// Optional/conditional fields (homeroomIndicator, repeatIdentifierDescriptor, teacherStudentDataLinkExclusion, attemptStatusDescriptor) omitted unless future mutation added.
+const logSpecStudentSectionAssociation = {
+  schoolId: r => r?.sectionReference?.schoolId,
+  schoolYear: r => r?.sectionReference?.schoolYear,
+  localCourseCode: r => r?.sectionReference?.localCourseCode,
+  sessionName: r => r?.sectionReference?.sessionName,
+  sectionIdentifier: r => r?.sectionReference?.sectionIdentifier,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  beginDate: r => r?.beginDate,
+  endDate: r => r?.endDate,
+};
 module.exports = {
   buildLogObject
   ,logScenario
@@ -502,4 +518,5 @@ module.exports = {
   ,logSpecGraduationPlan
   ,logSpecStudentEdOrgAssociation
   ,logSpecStudentSchoolAssociation
+  ,logSpecStudentSectionAssociation
 };
