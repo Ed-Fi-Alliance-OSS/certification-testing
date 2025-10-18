@@ -1,0 +1,51 @@
+meta {
+  name: Locations
+  seq: 4
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 Education Organization > Location Scenarios
+  
+  This entity represents the physical space where students gather for a particular class/section. The Location may be an indoor or outdoor area designated for the purpose of meeting the educational needs of students.
+  
+  ## Prerequisites
+  
+  * None
+  
+  ## Scenarios tasks
+  
+  1. __CREATE__ a `first` classroom `Location` for Grand Bend Elementary School
+  2. __CREATE__ a `second` classroom `Location` for Grand Bend High School
+  3. __UPDATE__ the _maximumNumberOfSeats_ on the `first` added Grand Bend Elementary
+     School `location`
+  4. __UPDATE__ the _maximumNumberOfSeats_ on the `second` added Grand Bend High
+     School `location`
+  
+  ## Scenarios example data:
+  
+  | Resource        | Property Name               | Is Collection | Data Type       | Required / Optional | Scenario 1: POST                      | Scenario 2: POST                      | Scenario 3: PUT                       | Scenario 4: PUT                       |
+  | --------------- | --------------------------- | ------------- | --------------- | ------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- | ------------------------------------- |
+  | Locations       | classroomIdentificationCode | FALSE         | string          | REQUIRED            | \["501" if possible \| system value\] | \["901" if possible \| system value\] | \["501" if possible \| system value\] | \["901" if possible \| system value\] |
+  | Locations       | schoolReference             | FALSE         | schoolReference | REQUIRED            |                                       |                                       |                                       |                                       |
+  | schoolReference | schoolId                    | FALSE         | integer         | REQUIRED            | 255901107                             | 255901001                             | 255901107                             | 255901001                             |
+  | Locations       | maximumNumberOfSeats        | FALSE         | integer         | REQUIRED            | 22                                    | 22                                    | **20**                                | **18**                                |
+  | Locations       | optimalNumberOfSeats        | FALSE         | integer         | OPTIONAL            |                                       |                                       |                                       |                                       |
+  
+  ## API response format
+  ```json
+  {
+    "id": "string",
+    "classroomIdentificationCode": "string",
+    "schoolReference": {
+      "schoolId": 0
+    },
+    "maximumNumberOfSeats": 0,
+    "optimalNumberOfSeats": 0
+  }
+  ```
+  
+}

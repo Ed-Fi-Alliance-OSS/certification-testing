@@ -81,12 +81,12 @@ From `## Scenarios example data` table (column header may appear as `Required / 
 - Columns: Resource | Property Name | Is Collection | Data Type | Required(/ Optional) | Scenario n columns ...
 - Interpret cell values (case-insensitive):
   - `REQUIRED` → always assert (scalar presence / non-empty OR array presence & non-empty; references & descriptors asserted for presence & type).
-  - `OPTIONAL` → do not assert unless the field is explicitly mutated (underscored in an `__UPDATE__` task) or listed via future override → then treat as optional conditional (assert-if-present) and cache only if mutable.
-  - `CONDITIONAL` → treat identically to `OPTIONAL` for generation (assert-if-present only). Rationale: Without embedded business rule logic, the generator cannot determine runtime satisfaction; escalation would add little value. If later a machine-readable rule set is added, this behavior can be refined.
+  - `OPTIONAL` → NEVER assert (baseline or update), even if mutated. If mutated (underscored) still cache its baseline value and compare in the update script via `expectChanged`, but do not add any presence/type assertion lines.
+  - `CONDITIONAL` → treat identically to `OPTIONAL`: NEVER assert. Mutations are handled only in script-level comparisons. Rationale: Without executable rule logic, presence cannot be evaluated reliably; omitting assertions avoids false negatives.
 - Collections (Is Collection = TRUE / indicator):
   - REQUIRED collections: assert array presence & isNotEmpty.
-  - OPTIONAL / CONDITIONAL collections: assert nothing unless mutated (then apply assert-if-present pattern; still avoid asserting length > 0 unless mutation implies element-level change being compared).
-- Mutated OPTIONAL / CONDITIONAL scalar/descriptor fields: add to optionalConditionals + mutable cache list.
+  - OPTIONAL / CONDITIONAL collections: NEVER assert (even if mutated). If an element-level field inside such a collection is mutated, compare that element's value script-side (index 0 heuristic) without asserting collection presence.
+  - Mutated OPTIONAL / CONDITIONAL scalar/descriptor fields: add to mutable cache list only (no optionalConditionals assertion list concept remains).
 - Do NOT treat primary key fields as mutable even if marked OPTIONAL/CONDITIONAL (if that occurs, escalate; keys should be REQUIRED).
 
 ### 3.4 Primary Key Query Construction
@@ -146,6 +146,8 @@ Baseline assert block (collection): structural presence only:
 - Required collections: isArray + isNotEmpty
 - Required nested descriptors / references: isDefined(leaf) & leaf type checks.
 - No variable declarations inside assert.
+ - NEVER assert OPTIONAL or CONDITIONAL fields (even if mutated); their validation occurs exclusively through script-level value comparison (`expectChanged`).
+ - NO inline comments inside assert blocks (keep them machine-clean).
 
 Update assert block (single resource): similar structural checks for fields under test plus presence of id.
 
@@ -167,7 +169,8 @@ setVars(bru, {
   first<EntityName><MutableField>: entity.<mutableField>,
   first<EntityName><DescriptorField>: extractDescriptor(entity.<descriptorField>)
 });
-logScenario(...)
+// Baseline MUST log full spec (no filtered field list argument)
+logScenario(entityName, scenario, entity, logSpec<Entity>);
 ```
 ### 7.2 Update (script:pre-request)
 Validate prerequisite caches with `validateDependency` for the uniqueId plus each mutable / descriptor cached field.
@@ -196,14 +199,26 @@ expectChanged(getVar(bru, 'first<EntityName><Field>'), current.<field>, '<field>
 ```
 For descriptor mutation: wrap both sides with extractDescriptor.
 
+UPDATE SCENARIO RESOURCE RETRIEVAL STANDARD:
+All update scenarios MUST use the single-resource unique id endpoint form for retrieval rather than a collection query. Pattern:
+```
+get {
+  url: {{resourceBaseUrl}}/ed-fi/<endpoint>/{{<ordinal><EntityName>UniqueId}}
+  body: none
+  auth: inherit
+}
+```
+Assertions therefore reference `res.body.<field>` directly (object form) instead of `res.body[0].<field>`.
+
 ### 7.4 Logging Conventions (naturalId & field selection)
 The logging step (`logScenario`) exists to aid human review and diff triage. To keep logs concise and human-friendly:
 
 Implementation Note: All per-entity logging specification maps (logSpec<Entity>) now reside in a dedicated `logging.js` module (e.g. `const { logScenario, logSpecSchool } = require('./logging');`). Scenarios MUST import the specific spec(s) they use directly from that module instead of relying on a re-export from `utils.js`. This keeps `utils.js` lightweight and makes adding new entity specs a single‑file change.
 
-1. Always include `id` (the GUID/system id) AND the natural identifier (if `naturalIdField` is defined in `entity.config.json`) in the `logScenario` field list for both baseline and update scenarios.
-  - Baseline example field list: `['id','calendarCode','calendarTypeDescriptor','gradeLevels']`
-  - Update example field list (single-field change): `['calendarCode','calendarTypeDescriptor']` (include `id` if helpful for correlation; optional when natural id already present, but recommended for uniformity).
+0. Baseline scenarios MUST log the full spec projection: omit the selective field list parameter entirely (`logScenario(entityName, scenarioName, entity, logSpec<Entity>)`). No baseline filtering.
+1. Ensure the full spec map includes `id` and (if present) the natural identifier. For update scenarios (which DO use filtered lists) always include natural id in the filtered list unless natural id absent.
+  - Baseline (implicit full spec): `logScenario(entityName, scenarioName, entity, logSpecCalendarDate);`
+  - Update example field list (single-field change): `['calendarCode','calendarTypeDescriptor']` (natural id, mutated fields, descriptor lists). The `id` and `lastModifiedDate` fields are implicit and always logged via buildLogObject(...) and filterObjectByKeys(...) internal utility methods, so there is no need to add them.
 2. Prefer logging the scalar natural id over an entire reference object. For example, log `calendarCode` instead of the whole `calendarReference` structure unless a nested piece inside that reference is itself under test.
 3. Do NOT log full large collections or deeply nested objects unless they contain a mutated field you are explicitly verifying. Instead, log only the collection of descriptors or the specific element(s) you compare.
 4. When comparing descriptor lists, you may still log the list (e.g. `gradeLevels`, `calendarEvents`) but avoid additionally logging their parent wrapper if redundant.
@@ -216,9 +231,9 @@ Implementation Note: All per-entity logging specification maps (logSpec<Entity>)
   4. any descriptor lists involved in comparisons
 8. Avoid including unchanged, un-mutated fields simply for verbosity; every logged field should either (a) identify the record (id/natural id) or (b) have been part of the comparison/verification.
 
-Example (CalendarDate baseline):
+Example (CalendarDate baseline – full spec, no field list):
 ```js
-logScenario(entityName, scenarioName, single, logSpecCalendarDate, ['id','calendarCode','calendarEvents']);
+logScenario(entityName, scenarioName, single, logSpecCalendarDate);
 ```
 Example (CalendarDate update of calendarEventDescriptor list):
 ```js
@@ -252,7 +267,7 @@ Outcome: Guarantees every required identifying/changed element is visible in at 
 
 ## 8. MUTABLE FIELD & OPTIONAL / CONDITIONAL CONDITIONAL INFERENCE SUMMARY
 - Mutable fields = all underscored property tokens from `__UPDATE__` tasks.
-- Optional conditional assertions = subset of mutable fields that are OPTIONAL or CONDITIONAL in example table.
+- Optional / Conditional fields are NEVER asserted. If mutated they are still cached (baseline value) and compared in update script via `expectChanged` without assert presence/type lines.
 - Cache only mutable fields + descriptors + id(s).
 
 ## 9. ERROR HANDLING
@@ -324,3 +339,109 @@ This clause ensures the system fails safe—never silently guessing in ways that
 
 ---
 END OF GENERIC CONFIG-DRIVEN PROMPT
+
+## CLARIFICATIONS (LATEST RULES)
+These clarifications supersede any earlier wording implying assert-if-present for optional fields or filtered baseline logging:
+1. OPTIONAL and CONDITIONAL fields are never asserted (baseline or update), even when mutated. Mutations are proven only via script-level comparisons.
+2. No comments inside assert {} blocks.
+3. Baseline (CREATE) scenarios MUST log the full spec (omit filtered field list); update scenarios may use filtered field lists focused on mutated + identifying fields.
+4. Update scenario filtered log field ordering (exclude implicit `id` and `lastModifiedDate` which are auto-added by the logging utility): natural id (if any) → mutated scalar/descriptor fields → relevant descriptor lists.
+
+## 15. DELETE VERIFICATION SCENARIOS (`__DELETE__`)
+Some entity task lines may specify a deletion confirmation scenario using the `__DELETE__` token. These scenarios validate that a previously cached baseline record no longer appears when queried using its primary key fields.
+
+### 15.1 File Naming Pattern
+`NN - Check <ordinal> <EntityName> was Deleted.bru`
+
+### 15.2 Meta Block
+Must mirror other scenarios and include:
+```
+meta {
+  name: NN - Check <ordinal> <EntityName> was Deleted
+  type: http
+  seq: <NN>
+}
+```
+
+### 15.3 GET Block
+Deletion verification uses the single‑resource form by cached unique identifier. The unique id variable name is `<ordinal><EntityName>UniqueId`.
+```
+get {
+  url: {{resourceBaseUrl}}/ed-fi/<endpoint>/<ordinal><EntityName>UniqueId
+  body: none
+  auth: inherit
+}
+```
+Substitute the cached value directly (no brackets) when authoring manually, e.g. `.../studentSchoolAssociations/{{firstStudentSchoolAssociationUniqueId}}` if using Bruno variable interpolation.
+
+### 15.4 Assertions (Minimal)
+Expect the API to return `404 Not Found` for a deleted resource when using the single-resource path. Assertions must reflect that status. No inline comments permitted.
+```
+assert {
+  res.status: eq 404
+}
+```
+If an implementation instead returns `200` with an empty body object or array, escalate (Section 14) to clarify expected deletion semantics before proceeding.
+
+NOTE: The 404 expectation is based on typical REST semantics for a subsequently deleted resource. If an Ed-Fi implementation provides soft-deleted visibility (e.g., returns 200 with a flag), this prompt requires clarification/update before generating further delete scenarios.
+
+### 15.5 Script Blocks
+`script:pre-request` MUST validate the prerequisite baseline unique id (and optionally key field caches if maintained) with `validateDependency` using the standard action hint.
+
+`script:post-response` MUST wipe all cached variables associated with that ordinal for the entity using `wipeVars(bru, [...], entityName, false)` to prevent stale data leakage into subsequent tests. Do not throw if the array is not empty (that would indicate the deletion failed and should be surfaced via follow‑up manual inspection or an explicit mismatch assertion in a future enhancement).
+
+### 15.6 Logging
+DELETE scenarios do NOT log entity field projections (there is no entity present). Omit any `logScenario` invocation.
+
+### 15.7 Ordering
+DELETE scenarios appear after all update scenarios for the same ordinal unless tasks text dictates a different sequence. Maintain increasing `seq` numbering.
+
+## 16. FORMATTING STANDARDS (META / GET / ASSERT COLON SYNTAX)
+To ensure uniform machine and human parsing, all scenarios (baseline, update, delete) MUST conform to the following structural formatting:
+
+### 16.1 Meta Block
+```
+meta {
+  name: <Scenario File Name>
+  type: http
+  seq: <NN>
+}
+```
+`type: http` is mandatory for every scenario.
+
+### 16.2 GET Block
+Every GET block MUST include three lines in this order after `url`:
+```
+get {
+  url: {{resourceBaseUrl}}/ed-fi/<endpoint>?...
+  body: none
+  auth: inherit
+}
+```
+Use `body: none` (no request body for read-only GET) and `auth: inherit` to leverage collection-level auth configuration.
+
+### 16.3 Assert Block Colon Syntax
+All assertion lines MUST use JSON‑like colon syntax:
+```
+res.status: eq 200
+res.body: isArray
+res.body: isNotEmpty
+res.body[0].id: isString
+res.body[0].id: notEmpty
+```
+Legacy space‑separated syntax (e.g., `res.status eq 200`) is disallowed.
+
+### 16.4 No Comments Inside assert {}
+Comments (// ...) are prohibited inside assert blocks to keep them deterministic for automated extraction.
+
+### 16.5 Required‑Only Assertions
+Assertion content must still follow Section 3.3 (REQUIRED ONLY). OPTIONAL / CONDITIONAL fields are never asserted even under colon syntax.
+
+### 16.6 Conversion Guidance
+When migrating existing scenarios, perform:
+1. Add `type: http` where missing.
+2. Insert `body: none` and `auth: inherit` after each GET `url`.
+3. Transform every assertion line to `leftSide: matcher [args]` form.
+4. Remove any inline comments within assert blocks.
+
+This ensures consistent linting and easier downstream static analysis.
