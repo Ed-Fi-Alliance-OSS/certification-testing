@@ -1,0 +1,58 @@
+meta {
+  name: 03 - Check first Student birthDate was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/students/{{firstStudentUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.studentUniqueId: isString
+  res.body.studentUniqueId: isNotEmpty
+  res.body.birthCity: isString
+  res.body.birthCity: isNotEmpty
+  res.body.birthCountryDescriptor: isString
+  res.body.birthCountryDescriptor: isNotEmpty
+  res.body.birthDate: isString
+  res.body.birthDate: isNotEmpty
+  res.body.firstName: isString
+  res.body.firstName: isNotEmpty
+  res.body.middleName: isString
+  res.body.middleName: isNotEmpty
+  res.body.lastSurname: isString
+  res.body.lastSurname: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'firstStudentUniqueId', '01 - Check first Student is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstStudentBirthDate', '01 - Check first Student is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudent, logScenario } = require('./logging');
+  const entityName = 'Student';
+  const scenarioName = this.req.name;
+
+  if (res.status === 200 && res.body) {
+    const current = res.getBody();
+    expectChanged(getVar(bru, 'firstStudentBirthDate'), current.birthDate, 'birthDate');
+    logScenario(entityName, scenarioName, current, logSpecStudent, ['studentUniqueId','birthDate']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

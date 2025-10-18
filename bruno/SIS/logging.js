@@ -418,6 +418,18 @@ const logSpecSection = {
   availableCredits: r => r?.availableCredits,
   educationalEnvironmentDescriptor: r => extractDescriptor(r?.educationalEnvironmentDescriptor),
 };
+
+// Student spec map (Student > Students)
+// Include identifiers and mutated fields (birthDate, birthCity) plus selected required personal info.
+const logSpecStudent = {
+  studentUniqueId: r => r?.studentUniqueId,
+  firstName: r => r?.firstName,
+  middleName: r => r?.middleName,
+  lastSurname: r => r?.lastSurname,
+  birthDate: r => r?.birthDate,
+  birthCity: r => r?.birthCity,
+  birthCountryDescriptor: r => extractDescriptor(r?.birthCountryDescriptor),
+};
 module.exports = {
   buildLogObject
   ,logScenario
@@ -435,4 +447,5 @@ module.exports = {
   ,logSpecSession
   ,logSpecLocation
   ,logSpecSection
+  ,logSpecStudent
 };
