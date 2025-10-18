@@ -1,0 +1,54 @@
+meta {
+  name: 03 - Check first GraduationPlan totalRequiredCredits was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlans/{{firstGraduationPlanUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.graduationSchoolYearTypeReference: isDefined
+  res.body.graduationSchoolYearTypeReference.schoolYear: isNumber
+  res.body.graduationSchoolYearTypeReference.schoolYear: neq 0
+  res.body.graduationPlanTypeDescriptor: isString
+  res.body.graduationPlanTypeDescriptor: isNotEmpty
+  res.body.totalRequiredCredits: isNumber
+  res.body.totalRequiredCredits: neq 0
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'firstGraduationPlanUniqueId', '01 - Check first GraduationPlan is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstGraduationPlanTotalRequiredCredits', '01 - Check first GraduationPlan is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecGraduationPlan, logScenario } = require('./logging');
+  const entityName = 'GraduationPlan';
+  const scenarioName = this.req.name;
+
+  if (res.status === 200 && res.body) {
+    const current = res.getBody();
+    expectChanged(getVar(bru, 'firstGraduationPlanTotalRequiredCredits'), current.totalRequiredCredits, 'totalRequiredCredits');
+    logScenario(entityName, scenarioName, current, logSpecGraduationPlan, ['graduationPlanTypeDescriptor', 'totalRequiredCredits']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
