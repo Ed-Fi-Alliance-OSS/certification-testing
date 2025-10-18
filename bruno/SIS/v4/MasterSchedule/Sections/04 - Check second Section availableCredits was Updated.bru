@@ -1,0 +1,73 @@
+meta {
+  name: 04 - Check second Section availableCredits was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sections/{{secondSectionUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.sectionIdentifier: isString
+  res.body.sectionIdentifier: isNotEmpty
+  res.body.courseOfferingReference: isDefined
+  res.body.courseOfferingReference.localCourseCode: isString
+  res.body.courseOfferingReference.localCourseCode: isNotEmpty
+  res.body.courseOfferingReference.schoolId: isNumber
+  res.body.courseOfferingReference.schoolId: neq 0
+  res.body.courseOfferingReference.schoolYear: isNumber
+  res.body.courseOfferingReference.schoolYear: neq 0
+  res.body.courseOfferingReference.sessionName: isString
+  res.body.courseOfferingReference.sessionName: isNotEmpty
+  res.body.locationReference: isDefined
+  res.body.locationReference.classroomIdentificationCode: isString
+  res.body.locationReference.classroomIdentificationCode: isNotEmpty
+  res.body.locationReference.schoolId: isNumber
+  res.body.locationReference.schoolId: neq 0
+  res.body.classPeriods: isArray
+  res.body.classPeriods: isNotEmpty
+  res.body.classPeriods[0].classPeriodReference: isDefined
+  res.body.classPeriods[0].classPeriodReference.classPeriodName: isString
+  res.body.classPeriods[0].classPeriodReference.classPeriodName: isNotEmpty
+  res.body.classPeriods[0].classPeriodReference.schoolId: isNumber
+  res.body.classPeriods[0].classPeriodReference.schoolId: neq 0
+  res.body.sequenceOfCourse: isNumber
+  res.body.sequenceOfCourse: neq 0
+  res.body.availableCredits: isNumber
+  res.body.availableCredits: neq 0
+  res.body.educationalEnvironmentDescriptor: isString
+  res.body.educationalEnvironmentDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'secondSectionUniqueId', '02 - Check second Section is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondSectionAvailableCredits', '02 - Check second Section is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecSection, logScenario } = require('./logging');
+  const entityName = 'Section';
+  const scenarioName = this.req.name;
+
+  if (res.status === 200 && res.body) {
+    const current = res.getBody();
+    expectChanged(getVar(bru, 'secondSectionAvailableCredits'), current.availableCredits, 'availableCredits');
+    logScenario(entityName, scenarioName, current, logSpecSection, ['availableCredits']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

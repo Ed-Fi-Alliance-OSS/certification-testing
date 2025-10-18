@@ -402,6 +402,22 @@ const logSpecLocation = {
   maximumNumberOfSeats: r => r?.maximumNumberOfSeats,
   optimalNumberOfSeats: r => r?.optimalNumberOfSeats,
 };
+
+// Section spec map (MasterSchedule > Sections)
+// Focus on identifying keys + mutated field availableCredits and key references.
+const logSpecSection = {
+  sectionIdentifier: r => r?.sectionIdentifier,
+  localCourseCode: r => r?.courseOfferingReference?.localCourseCode,
+  schoolId: r => r?.courseOfferingReference?.schoolId, // PK constituent appears multiple places; using courseOfferingReference
+  schoolYear: r => r?.courseOfferingReference?.schoolYear,
+  sessionName: r => r?.courseOfferingReference?.sessionName,
+  classroomIdentificationCode: r => r?.locationReference?.classroomIdentificationCode,
+  locationSchoolId: r => r?.locationReference?.schoolId,
+  classPeriodName: r => r?.classPeriods?.[0]?.classPeriodReference?.classPeriodName,
+  classPeriodSchoolId: r => r?.classPeriods?.[0]?.classPeriodReference?.schoolId,
+  availableCredits: r => r?.availableCredits,
+  educationalEnvironmentDescriptor: r => extractDescriptor(r?.educationalEnvironmentDescriptor),
+};
 module.exports = {
   buildLogObject
   ,logScenario
@@ -418,4 +434,5 @@ module.exports = {
   ,logSpecGradingPeriod
   ,logSpecSession
   ,logSpecLocation
+  ,logSpecSection
 };
