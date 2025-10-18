@@ -1,0 +1,64 @@
+meta {
+  name: 03 - Check first StudentSchoolAssociation entryDate was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations/{{firstStudentSchoolAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.schoolReference: isDefined
+  res.body.schoolReference.schoolId: isNumber
+  res.body.schoolReference.schoolId: neq 0
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.graduationPlanReference: isDefined
+  res.body.graduationPlanReference.educationOrganizationId: isNumber
+  res.body.graduationPlanReference.educationOrganizationId: neq 0
+  res.body.graduationPlanReference.graduationSchoolYear: isNumber
+  res.body.graduationPlanReference.graduationSchoolYear: neq 0
+  res.body.graduationPlanReference.graduationPlanTypeDescriptor: isString
+  res.body.graduationPlanReference.graduationPlanTypeDescriptor: isNotEmpty
+  res.body.entryDate: isString
+  res.body.entryGradeLevelDescriptor: isString
+  res.body.entryGradeLevelDescriptor: isNotEmpty
+  res.body.entryTypeDescriptor: isString
+  res.body.entryTypeDescriptor: isNotEmpty
+  res.body.exitWithdrawDate: isString
+  res.body.exitWithdrawTypeDescriptor: isString
+  res.body.exitWithdrawTypeDescriptor: isNotEmpty
+  res.body.repeatGradeIndicator: isBoolean
+  res.body.residencyStatusDescriptor: isString
+  res.body.residencyStatusDescriptor: isNotEmpty
+  res.body.schoolChoiceTransfer: isBoolean
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'firstStudentSchoolAssociationUniqueId', '01 - Check first StudentSchoolAssociation is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstStudentSchoolAssociationEntryDate', '01 - Check first StudentSchoolAssociation is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor } = require('./utils');
+  const { logSpecStudentSchoolAssociation, logScenario } = require('./logging');
+  const scenarioName = this.req.name;
+  const entityName = 'StudentSchoolAssociation';
+  const current = res.getBody();
+  expectChanged(getVar(bru, 'firstStudentSchoolAssociationEntryDate'), current.entryDate, 'entryDate');
+  // Removals of exitWithdrawDate and exitWithdrawTypeDescriptor are implied; absence will be visible in full spec log.
+  logScenario(entityName, scenarioName, current, logSpecStudentSchoolAssociation, ['entryDate']);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
