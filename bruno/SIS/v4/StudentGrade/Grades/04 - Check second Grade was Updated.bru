@@ -1,0 +1,64 @@
+meta {
+  name: 04 - Check second Grade was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/grades/{{secondGradeUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: isString
+  res.body.id: eq {{secondGradeUniqueId}}
+  res.body.gradeTypeDescriptor: isString
+  res.body.gradeTypeDescriptor: isNotEmpty
+  res.body.gradingPeriodReference: isDefined
+  res.body.gradingPeriodReference.gradingPeriodDescriptor: isString
+  res.body.gradingPeriodReference.gradingPeriodDescriptor: isNotEmpty
+  res.body.gradingPeriodReference.periodSequence: isNumber
+  res.body.gradingPeriodReference.periodSequence: neq 0
+  res.body.gradingPeriodReference.schoolId: isNumber
+  res.body.gradingPeriodReference.schoolId: neq 0
+  res.body.gradingPeriodReference.schoolYear: isNumber
+  res.body.gradingPeriodReference.schoolYear: neq 0
+  res.body.studentSectionAssociationReference: isDefined
+  res.body.studentSectionAssociationReference.studentUniqueId: isString
+  res.body.studentSectionAssociationReference.studentUniqueId: isNotEmpty
+  res.body.studentSectionAssociationReference.schoolId: isNumber
+  res.body.studentSectionAssociationReference.schoolId: neq 0
+  res.body.studentSectionAssociationReference.schoolYear: isNumber
+  res.body.studentSectionAssociationReference.schoolYear: neq 0
+  res.body.studentSectionAssociationReference.localCourseCode: isString
+  res.body.studentSectionAssociationReference.localCourseCode: isNotEmpty
+  res.body.studentSectionAssociationReference.sectionIdentifier: isString
+  res.body.studentSectionAssociationReference.sectionIdentifier: isNotEmpty
+  res.body.studentSectionAssociationReference.sessionName: isString
+  res.body.studentSectionAssociationReference.sessionName: isNotEmpty
+  res.body.studentSectionAssociationReference.beginDate: isString
+  res.body.letterGradeEarned: isString
+  res.body.numericGradeEarned: isString
+}
+
+script:post-response {
+  const { expectChanged, setVars } = require('./utils');
+  const { logScenario, logSpecGrade } = require('./logging');
+  const entityName = 'Grade';
+  const scenarioName = this.req.name;
+  const entity = res.getBody();
+  
+  // Mutation targets: letterGradeEarned and/or numericGradeEarned
+  expectChanged(entity.letterGradeEarned, bru.getVar('secondGradeLetterGradeEarned'), 'letterGradeEarned');
+  expectChanged(entity.numericGradeEarned, bru.getVar('secondGradeNumericGradeEarned'), 'numericGradeEarned');
+
+  // Filtered logging only mutated fields (+ id automatically)
+  logScenario(entityName, scenarioName, entity, logSpecGrade, ['letterGradeEarned', 'numericGradeEarned']);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

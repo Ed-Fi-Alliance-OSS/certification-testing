@@ -1,0 +1,109 @@
+meta {
+  name: Grades
+  seq: 1
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 StudentGrade > Grade Scenarios
+  
+  The Student Grade interchange defines grades for a grading period or group of grading periods. Grades are defined for groups of grading periods in the case where the grade is cumulative over a semester or academic year (also referred to as "final grades").
+  Grade: This educational entity represents an overall score or assessment tied to a course over a period of time (i.e., the grading period).  Student grades are usually a compilation of marks and other scores.
+  
+  ## Prerequisites
+  
+  * Student
+  * Student Enrollment
+  * Section
+  * StudentSectionAssociation
+  * GradingPeriod
+  
+  ## Scenarios
+
+  1. __CREATE__ a `first` `Grade` for the "First Six Weeks" `Grading Period` for an elementary school `Student`.
+  2. __CREATE__ a `second` `Grade` for the "First Six Weeks" `Grading Period` for a high school `Student`.
+  3. __UPDATE__ the _numericGradeEarned_ and/or _letterGradeEarned_ for the `first` added `Grading Period`.
+  4. __UPDATE__ the _numericGradeEarned_ and/or _letterGradeEarned_ for the `second` added `Grading Period`.
+  5. __DELETE__ the `first` added `Grade` for the elementary school `Student`.
+
+  ### Additional Requirements for Grades Earned
+  
+  * If both numeric and letter grades are recorded by the SIS, both are `REQUIRED` for certification.
+  * If only the numeric grade or letter grade is recorded by the SIS, then `only one SHALL` be provided for certification.
+  
+  ## Scenarios example data:
+
+  | Resource                           | Property Name                        | Is Collection | Data Type                            | Required | Scenario 1 POST                               | Scenario 2 POST                      | Scenario 3 PUT                                | Scenario 4 PUT                       |
+  | ---------------------------------- | ------------------------------------ | ------------- | ------------------------------------ | -------- | --------------------------------------------- | ------------------------------------ | --------------------------------------------- | ------------------------------------ |
+  | grade                              | gradeTypeDescriptor                  | FALSE         | GradeTypeDescriptor                  | REQUIRED | Grading Period                                | Grading Period                       | Grading Period                                | Grading Period                       |
+  | grade                              | diagnosticStatement                  | FALSE         | string                               | OPTIONAL |                                               |                                      |                                               |                                      |
+  | grade                              | letterGradeEarned                    | FALSE         | string                               | REQUIRED | B                                             | A                                    | __A__                                         | __B__                                |
+  | grade                              | numericGradeEarned                   | FALSE         | string                               | REQUIRED | 80                                            | 94                                   | __91__                                        | __89__                               |
+  | grade                              | performanceBaseConversionDescriptor  | FALSE         | PerformanceBaseConversionDescriptor  | OPTIONAL |                                               |                                      |                                               |                                      |
+  | grade                              | currentGradeIndicator                | FALSE         | boolean                              | OPTIONAL | False                                         | True                                 | False                                         | True                                 |
+  | grade                              | currentGradeAsOfDate                 | FALSE         | date                                 | OPTIONAL | 12/16                                         | 12/16                                | 12/10                                         | 12/10                                |
+  | grade                              | gradingPeriodReference               | FALSE         | GradingPeriodReference               | REQUIRED |                                               |                                      |                                               |                                      |
+  | gradingPeriodReference             | schoolId                             | FALSE         | integer                              | REQUIRED | 255901107                                     | 255901001                            | 255901107                                     | 255901001                            |
+  | gradingPeriodReference             | gradingPeriodDescriptor              | FALSE         | GradingPeriodDescriptor              | REQUIRED | First Six Weeks                               | First Six Weeks                      | First Six Weeks                               | First Six Weeks                      |
+  | gradingPeriodReference             | periodSequence                       | FALSE         | integer                              | REQUIRED | 1                                             | 1                                    | 1                                             | 1                                    |
+  | gradingPeriodReference             | schoolYear                           | FALSE         | integer                              | REQUIRED | [Current School Year]                         | [Current School Year]                | [Current School Year]                         | [Current School Year]                |
+  | grade                              | studentSectionAssociationReference   | FALSE         | StudentSectionAssociationReference   | REQUIRED |                                               |                                      |                                               |                                      |
+  | studentSectionAssociationReference | beginDate                            | FALSE         | date                                 | REQUIRED | 8/23/[Current School Year]                    | 8/23/[Current School Year]           | 8/23/[Current School Year]                    | 8/23/[Current School Year]           |
+  | studentSectionAssociationReference | localCourseCode                      | FALSE         | string                               | REQUIRED | ["ELA-01" if possible | system value]         | ["ALG-2" if possible | system value] | ["ELA-01" if possible | system value]         | ["ALG-2" if possible | system value] |
+  | studentSectionAssociationReference | schoolId                             | FALSE         | integer                              | REQUIRED | 255901107                                     | 255901001                            | 255901107                                     | 255901001                            |
+  | studentSectionAssociationReference | schoolYear                           | FALSE         | integer                              | REQUIRED | [Current School Year]                         | [Current School Year]                | [Current School Year]                         | [Current School Year]                |
+  | studentSectionAssociationReference | studentUniqueId                      | FALSE         | string                               | REQUIRED | 111111                                        | 222222                               | 111111                                        | 222222                               |
+  | studentSectionAssociationReference | sessionName                          | FALSE         | string                               | REQUIRED | 2016-2017 Fall Semester                       | 2016-2017 Fall Semester              | 2016-2017 Fall Semester                       | 2016-2017 Fall Semester              |
+  | studentSectionAssociationReference | sectionIdentifier                    | FALSE         | string                               | REQUIRED | ["ELA012017RM555" if possible | system value] | ALG12017RM901                        | ["ELA012017RM555" if possible | system value] | ALG12017RM901                        |
+  | grade                              | learningStandardGrades               | TRUE          | LearningStandardGrade[]              | OPTIONAL |                                               |                                      |                                               |                                      |
+  | learningStandardGrades             | learningStandardReference            | FALSE         | LearningStandardReference            | OPTIONAL |                                               |                                      |                                               |                                      |
+  | learningStandardReference          | learningStandardId                   | FALSE         | string                               | OPTIONAL |                                               |                                      |                                               |                                      |
+  | learningStandardGrades             | diagnosticStatement                  | FALSE         | string                               | OPTIONAL |                                               |                                      |                                               |                                      |
+  | learningStandardGrades             | letterGradeEarned                    | FALSE         | string                               | OPTIONAL |                                               |                                      |                                               |                                      |
+  | learningStandardGrades             | numericGradeEarned                   | FALSE         | number                               | OPTIONAL |                                               |                                      |                                               |                                      |
+  | learningStandardGrades             | performanceBasedConversionDescriptor | FALSE         | PerformanceBasedConversionDescriptor | OPTIONAL |                                               |                                      |                                               |                                      |
+
+  ## API response format
+
+  ```json
+  {
+    "id": "string",
+    "gradeTypeDescriptor": "string",
+    "gradingPeriodReference": {
+      "gradingPeriodDescriptor": "string",
+      "periodSequence": 0,
+      "schoolId": 0,
+      "schoolYear": 0
+    },
+    "studentSectionAssociationReference": {
+      "beginDate": "2025-10-18",
+      "localCourseCode": "string",
+      "schoolId": 0,
+      "schoolYear": 0,
+      "sectionIdentifier": "string",
+      "sessionName": "string",
+      "studentUniqueId": "string"
+    },
+    "currentGradeAsOfDate": "2025-10-18",
+    "currentGradeIndicator": true,
+    "diagnosticStatement": "string",
+    "learningStandardGrades": [
+      {
+        "performanceBaseConversionDescriptor": "string",
+        "diagnosticStatement": "string",
+        "letterGradeEarned": "string",
+        "numericGradeEarned": 0,
+        "learningStandardReference": {
+          "learningStandardId": "string"
+        }
+      }
+    ],
+    "letterGradeEarned": "string",
+    "numericGradeEarned": 0,
+    "performanceBaseConversionDescriptor": "string"
+  }
+  ```
+}
