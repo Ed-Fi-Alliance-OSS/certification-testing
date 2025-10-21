@@ -430,6 +430,19 @@ const logSpecStudent = {
   birthCity: r => r?.birthCity,
   birthCountryDescriptor: r => extractDescriptor(r?.birthCountryDescriptor),
 };
+
+// GraduationPlan spec map (StudentEnrollment > GraduationPlans)
+// NaturalIdField is null per config; log system id implicitly and key constituents + mutable field.
+// NOTE: Config uses primaryKeyFields: educationOrganizationId, graduationPlanTypeDescriptorId, graduationSchoolYear.
+// API response + docs use: educationOrganizationReference.educationOrganizationId, graduationSchoolYearTypeReference.schoolYear, graduationPlanTypeDescriptor.
+// Potential mismatch for descriptor key (Id vs descriptor string) and schoolYear field name.
+const logSpecGraduationPlan = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  schoolYear: r => r?.graduationSchoolYearTypeReference?.schoolYear,
+  graduationPlanTypeDescriptor: r => extractDescriptor(r?.graduationPlanTypeDescriptor),
+  totalRequiredCredits: r => r?.totalRequiredCredits,
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -448,4 +461,5 @@ module.exports = {
   ,logSpecLocation
   ,logSpecSection
   ,logSpecStudent
+  ,logSpecGraduationPlan
 };

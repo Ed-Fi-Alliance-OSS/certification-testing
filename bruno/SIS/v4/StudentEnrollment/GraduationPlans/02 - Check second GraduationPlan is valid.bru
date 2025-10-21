@@ -1,0 +1,62 @@
+meta {
+  name: 02 - Check second GraduationPlan is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlans?educationOrganizationId=[ENTER EDUCATION ORGANIZATION ID]&graduationPlanTypeDescriptor=[ENTER SECOND GRADUATION PLAN TYPE DESCRIPTOR]&schoolYear=[ENTER SCHOOL YEAR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
+  schoolYear: [ENTER SCHOOL YEAR]
+  graduationPlanTypeDescriptor: [ENTER SECOND GRADUATION PLAN TYPE DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].graduationSchoolYearTypeReference: isDefined
+  res.body[0].graduationSchoolYearTypeReference.schoolYear: isNumber
+  res.body[0].graduationSchoolYearTypeReference.schoolYear: neq 0
+  res.body[0].graduationPlanTypeDescriptor: isString
+  res.body[0].graduationPlanTypeDescriptor: isNotEmpty
+  res.body[0].totalRequiredCredits: isNumber
+  res.body[0].totalRequiredCredits: neq 0
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logSpecGraduationPlan, logScenario } = require('./logging');
+  const entityName = 'GraduationPlan';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+
+  if (!entity) {
+    wipeVars(bru, [
+      'secondGraduationPlanUniqueId','secondGraduationPlanEducationOrganizationId','secondGraduationPlanGraduationPlanTypeDescriptor','secondGraduationPlanSchoolYear','secondGraduationPlanTotalRequiredCredits'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    secondGraduationPlanUniqueId: entity.id,
+    secondGraduationPlanEducationOrganizationId: entity.educationOrganizationReference.educationOrganizationId,
+    secondGraduationPlanGraduationPlanTypeDescriptor: extractDescriptor(entity.graduationPlanTypeDescriptor),
+    secondGraduationPlanSchoolYear: entity.graduationSchoolYearTypeReference.schoolYear,
+    secondGraduationPlanTotalRequiredCredits: entity.totalRequiredCredits
+  });
+  logScenario(entityName, scenarioName, entity, logSpecGraduationPlan);
+}
+
+settings {
+  encodeUrl: true
+}
