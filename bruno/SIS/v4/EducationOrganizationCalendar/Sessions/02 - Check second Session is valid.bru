@@ -40,6 +40,7 @@ assert {
   res.body[0].totalInstructionalDays: neq 0
   res.body[0].gradingPeriods: isArray
   res.body[0].gradingPeriods: isNotEmpty
+  res.body[0].gradingPeriods.length: gte 2
 }
 
 script:post-response {
