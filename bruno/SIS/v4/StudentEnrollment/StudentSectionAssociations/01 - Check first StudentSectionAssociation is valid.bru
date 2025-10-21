@@ -1,0 +1,70 @@
+meta {
+  name: 01 - Check first StudentSectionAssociation is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAssociations?schoolId=255901001&schoolYear=2022&localCourseCode=ALG-1&sessionName=2021-2022 Fall Semester&sectionIdentifier=25590100102Trad220ALG112011&studentUniqueId=604822&beginDate=2021-08-23
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL_ID]
+  schoolYear: [ENTER SCHOOL_YEAR]
+  localCourseCode: [ENTER LOCAL_COURSE_CODE]
+  sessionName: [ENTER SESSION_NAME]
+  sectionIdentifier: [ENTER SECTION_IDENTIFIER]
+  studentUniqueId: [ENTER STUDENT_UNIQUE_ID]
+  beginDate: [ENTER BEGIN_DATE]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].sectionReference: isDefined
+  res.body[0].sectionReference.schoolId: isNumber
+  res.body[0].sectionReference.schoolId: neq 0
+  res.body[0].sectionReference.schoolYear: isNumber
+  res.body[0].sectionReference.schoolYear: neq 0
+  res.body[0].sectionReference.localCourseCode: isString
+  res.body[0].sectionReference.localCourseCode: isNotEmpty
+  res.body[0].sectionReference.sectionIdentifier: isString
+  res.body[0].sectionReference.sectionIdentifier: isNotEmpty
+  res.body[0].sectionReference.sessionName: isString
+  res.body[0].sectionReference.sessionName: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].endDate: isString
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStudentSectionAssociation } = require('./logging');
+  const entityName = 'StudentSectionAssociation';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  if (!entity) {
+    wipeVars(bru, [
+      'firstStudentSectionAssociationUniqueId',
+      'firstStudentSectionAssociationEndDate'
+    ], entityName, true);
+  }
+  setVars(bru, {
+    firstStudentSectionAssociationUniqueId: entity.id,
+    firstStudentSectionAssociationEndDate: entity.endDate
+  });
+  // Baseline logs full spec projection
+  logScenario(entityName, scenarioName, entity, logSpecStudentSectionAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
