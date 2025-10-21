@@ -418,6 +418,7 @@ const logSpecSection = {
   availableCredits: r => r?.availableCredits,
   educationalEnvironmentDescriptor: r => extractDescriptor(r?.educationalEnvironmentDescriptor),
 };
+
 module.exports = {
   buildLogObject
   ,logScenario
