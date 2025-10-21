@@ -1,0 +1,63 @@
+meta {
+  name: 01 - Check first Student is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/students?studentUniqueId=[ENTER FIRST STUDENT UNIQUE ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  studentUniqueId: [ENTER FIRST STUDENT UNIQUE ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].studentUniqueId: isString
+  res.body[0].studentUniqueId: isNotEmpty
+  res.body[0].birthCity: isString
+  res.body[0].birthCity: isNotEmpty
+  res.body[0].birthCountryDescriptor: isString
+  res.body[0].birthCountryDescriptor: isNotEmpty
+  res.body[0].birthDate: isString
+  res.body[0].birthDate: isNotEmpty
+  res.body[0].firstName: isString
+  res.body[0].firstName: isNotEmpty
+  res.body[0].middleName: isString
+  res.body[0].middleName: isNotEmpty
+  res.body[0].lastSurname: isString
+  res.body[0].lastSurname: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logSpecStudent, logScenario } = require('./logging');
+  const entityName = 'Student';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+
+  if (!entity) {
+    wipeVars(bru, [
+      'firstStudentUniqueId','firstStudentId','firstStudentBirthDate','firstStudentBirthCity'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    firstStudentUniqueId: entity.id,
+    firstStudentId: entity.studentUniqueId,
+    firstStudentBirthDate: entity.birthDate,
+    firstStudentBirthCity: entity.birthCity
+  });
+  logScenario(entityName, scenarioName, entity, logSpecStudent);
+}
+
+settings {
+  encodeUrl: true
+}
