@@ -4,6 +4,7 @@
   "type": "object",
   "required": ["version", "identity"],
   "properties": {
+    "$schema": { "type": "string", "description": "Optional schema annotation for tooling; points back to this file." },
     "version": {"type": "integer", "minimum": 1},
     "identity": {
       "type": "object",
