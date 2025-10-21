@@ -1,0 +1,87 @@
+meta {
+  name: 04 - Check second StudentEdOrgAssociation streetNumberName was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationAssociations/{{secondStudentEdOrgAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.limitedEnglishProficiencyDescriptor: isString
+  res.body.limitedEnglishProficiencyDescriptor: isNotEmpty
+  res.body.studentCharacteristics: isArray
+  res.body.studentCharacteristics: isNotEmpty
+  res.body[0].studentCharacteristics[0].studentCharacteristicDescriptor: isString
+  res.body[0].studentCharacteristics[0].studentCharacteristicDescriptor: isNotEmpty
+  res.body.studentIdentificationCodes: isArray
+  res.body.studentIdentificationCodes: isNotEmpty
+  res.body.sexDescriptor: isString
+  res.body.sexDescriptor: isNotEmpty
+  res.body.addresses: isArray
+  res.body.addresses: isNotEmpty
+  res.body.addresses[0].city: isString
+  res.body.addresses[0].city: isNotEmpty
+  res.body.addresses[0].postalCode: isString
+  res.body.addresses[0].postalCode: isNotEmpty
+  res.body.addresses[0].stateAbbreviationDescriptor: isString
+  res.body.addresses[0].stateAbbreviationDescriptor: isNotEmpty
+  res.body.addresses[0].streetNumberName: isString
+  res.body.addresses[0].streetNumberName: isNotEmpty
+  res.body.telephones: isArray
+  res.body.telephones: isNotEmpty
+  res.body.telephones[0].telephoneNumber: isString
+  res.body.telephones[0].telephoneNumber: isNotEmpty
+  res.body.telephones[0].telephoneNumberTypeDescriptor: isString
+  res.body.telephones[0].telephoneNumberTypeDescriptor: isNotEmpty
+  res.body.electronicMails: isArray
+  res.body.electronicMails: isNotEmpty
+  res.body.electronicMails[0].electronicMailAddress: isString
+  res.body.electronicMails[0].electronicMailAddress: isNotEmpty
+  res.body.electronicMails[0].electronicMailTypeDescriptor: isString
+  res.body.electronicMails[0].electronicMailTypeDescriptor: isNotEmpty
+  res.body.hispanicLatinoEthnicity: isBoolean
+  res.body.races: isArray
+  res.body.races: isNotEmpty
+  res.body.races[0].raceDescriptor: isString
+  res.body.races[0].raceDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'secondStudentEdOrgAssociationUniqueId', '02 - Check second StudentEdOrgAssociation is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondStudentEdOrgAssociationStreetNumberName', '02 - Check second StudentEdOrgAssociation is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudentEdOrgAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentEdOrgAssociation';
+  const scenarioName = this.req.name;
+
+  if (res.status === 200 && res.body) {
+    const current = res.getBody();
+    expectChanged(getVar(bru, 'secondStudentEdOrgAssociationStreetNumberName'), current.addresses?.[0]?.streetNumberName, 'streetNumberName');
+    logScenario(entityName, scenarioName, current, logSpecStudentEdOrgAssociation, ['streetNumberName']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
