@@ -1,0 +1,35 @@
+meta {
+  name: 05 - Check first Grade was Deleted
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/grades/{{firstGradeUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 404
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'Grade';
+
+  // On delete confirmation, clear cached variables for the first Grade
+  if (res.status === 404) {
+    wipeVars(bru, [
+        'firstGradeUniqueId',
+        'firstGradeLetterGradeEarned',
+        'firstGradeNumericGradeEarned'
+    ], entityName, true);
+  }
+  // No logging for delete scenarios per global standard
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

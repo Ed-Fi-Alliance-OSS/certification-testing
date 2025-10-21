@@ -1,0 +1,91 @@
+meta {
+  name: 02 - Check second Grade is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/grades?schoolId=255901001&schoolYear=2022&localCourseCode=ALG-1&sessionName=2021-2022 Fall Semester&sectionIdentifier=25590100102Trad220ALG112011&studentUniqueId=604822&beginDate=2021-08-23&gradingPeriodSchoolYear=2022&gradingPeriodSchoolId=255901001&gradingPeriodSequence=1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: 255901001
+  schoolYear: 2022
+  localCourseCode: ALG-1
+  sessionName: 2021-2022 Fall Semester
+  sectionIdentifier: 25590100102Trad220ALG112011
+  studentUniqueId: 604822
+  beginDate: 2021-08-23
+  gradingPeriodSchoolYear: 2022
+  gradingPeriodSchoolId: 255901001
+  gradingPeriodSequence: 1
+  ~gradingPeriodDescriptor: uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks
+  ~gradeTypeDescriptor: uri://ed-fi.org/GradeTypeDescriptor#Grading Period
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].gradeTypeDescriptor: isString
+  res.body[0].gradeTypeDescriptor: isNotEmpty
+  res.body[0].gradingPeriodReference: isDefined
+  res.body[0].gradingPeriodReference.gradingPeriodDescriptor: isString
+  res.body[0].gradingPeriodReference.gradingPeriodDescriptor: isNotEmpty
+  res.body[0].gradingPeriodReference.periodSequence: isNumber
+  res.body[0].gradingPeriodReference.periodSequence: neq 0
+  res.body[0].gradingPeriodReference.schoolId: isNumber
+  res.body[0].gradingPeriodReference.schoolId: neq 0
+  res.body[0].gradingPeriodReference.schoolYear: isNumber
+  res.body[0].gradingPeriodReference.schoolYear: neq 0
+  res.body[0].studentSectionAssociationReference: isDefined
+  res.body[0].studentSectionAssociationReference.studentUniqueId: isString
+  res.body[0].studentSectionAssociationReference.studentUniqueId: isNotEmpty
+  res.body[0].studentSectionAssociationReference.schoolId: isNumber
+  res.body[0].studentSectionAssociationReference.schoolId: neq 0
+  res.body[0].studentSectionAssociationReference.schoolYear: isNumber
+  res.body[0].studentSectionAssociationReference.schoolYear: neq 0
+  res.body[0].studentSectionAssociationReference.localCourseCode: isString
+  res.body[0].studentSectionAssociationReference.localCourseCode: isNotEmpty
+  res.body[0].studentSectionAssociationReference.sectionIdentifier: isString
+  res.body[0].studentSectionAssociationReference.sectionIdentifier: isNotEmpty
+  res.body[0].studentSectionAssociationReference.sessionName: isString
+  res.body[0].studentSectionAssociationReference.sessionName: isNotEmpty
+  res.body[0].studentSectionAssociationReference.beginDate: isString
+  res.body[0].letterGradeEarned: isNumber
+  res.body[0].numericGradeEarned: isNumber
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecGrade } = require('./logging');
+  const entityName = 'Grade';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+
+  if (!entity) {
+    wipeVars(bru, [
+      'secondGradeUniqueId',
+      'secondGradeLetterGradeEarned',
+      'secondGradeNumericGradeEarned'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    secondGradeUniqueId: entity.id,
+    secondGradeLetterGradeEarned: entity.letterGradeEarned,
+    secondGradeNumericGradeEarned: entity.numericGradeEarned
+  });
+
+  // Baseline logs full spec projection
+  logScenario(entityName, scenarioName, entity, logSpecGrade);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

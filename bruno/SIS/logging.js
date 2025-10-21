@@ -497,6 +497,27 @@ const logSpecStudentSectionAssociation = {
   beginDate: r => r?.beginDate,
   endDate: r => r?.endDate,
 };
+
+
+// Grade spec map (StudentGrade > Grades)
+// REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
+// Mutations target: letterGradeEarned, numericGradeEarned.
+const logSpecGrade = {
+  gradeTypeDescriptor: r => extractDescriptor(r?.gradeTypeDescriptor),
+  gradingPeriodDescriptor: r => extractDescriptor(r?.gradingPeriodReference?.gradingPeriodDescriptor),
+  gradingPeriodPeriodSequence: r => r?.gradingPeriodReference?.periodSequence,
+  gradingPeriodSchoolId: r => r?.gradingPeriodReference?.schoolId,
+  gradingPeriodSchoolYear: r => r?.gradingPeriodReference?.schoolYear,
+  studentUniqueId: r => r?.studentSectionAssociationReference?.studentUniqueId,
+  schoolId: r => r?.studentSectionAssociationReference?.schoolId,
+  localCourseCode: r => r?.studentSectionAssociationReference?.localCourseCode,
+  sectionIdentifier: r => r?.studentSectionAssociationReference?.sectionIdentifier,
+  sessionName: r => r?.studentSectionAssociationReference?.sessionName,
+  beginDate: r => r?.studentSectionAssociationReference?.beginDate,
+  letterGradeEarned: r => r?.letterGradeEarned,
+  numericGradeEarned: r => r?.numericGradeEarned,
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -519,4 +540,5 @@ module.exports = {
   ,logSpecStudentEdOrgAssociation
   ,logSpecStudentSchoolAssociation
   ,logSpecStudentSectionAssociation
+  ,logSpecGrade
 };
