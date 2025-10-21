@@ -1,0 +1,51 @@
+meta {
+  name: 03 - Check first Location maximumNumberOfSeats was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/locations/{{firstLocationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.classroomIdentificationCode: isString
+  res.body.classroomIdentificationCode: isNotEmpty
+  res.body.schoolReference: isDefined
+  res.body.schoolReference.schoolId: isNumber
+  res.body.schoolReference.schoolId: neq 0
+  res.body.maximumNumberOfSeats: isNumber
+  res.body.maximumNumberOfSeats: neq 0
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'firstLocationUniqueId', '01 - Check first Location is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstLocationMaximumNumberOfSeats', '01 - Check first Location is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecLocation, logScenario } = require('./logging');
+  const entityName = 'Location';
+  const scenarioName = this.req.name;
+
+  if (res.status === 200 && res.body) {
+    const current = res.getBody();
+    expectChanged(getVar(bru, 'firstLocationMaximumNumberOfSeats'), current.maximumNumberOfSeats, 'maximumNumberOfSeats');
+    logScenario(entityName, scenarioName, current, logSpecLocation, ['maximumNumberOfSeats']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

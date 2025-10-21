@@ -393,19 +393,29 @@ const logSpecSession = {
   }).filter(Boolean),
 };
 
+// Location spec map (EducationOrganization > Locations)
+// Required identifying fields: classroomIdentificationCode (natural id), schoolId (from reference).
+// Includes both seat counts for potential future optional mutation of optimalNumberOfSeats.
+const logSpecLocation = {
+  classroomIdentificationCode: r => r?.classroomIdentificationCode,
+  schoolId: r => r?.schoolReference?.schoolId,
+  maximumNumberOfSeats: r => r?.maximumNumberOfSeats,
+  optimalNumberOfSeats: r => r?.optimalNumberOfSeats,
+};
 module.exports = {
-  buildLogObject,
-  logScenario,
-  logExpectedVsActual,
-  logActualAndExpectedMerged,
-  logSpecBellSchedule,
-  logSpecCalendar,
-  logSpecCalendarDate,
-  logSpecClassPeriod,
-  logSpecCohorts,
-  logSpecCourses,
-  logSpecCourseOffering,
-  logSpecSchool,
-  logSpecGradingPeriod,
-  logSpecSession
+  buildLogObject
+  ,logScenario
+  ,logExpectedVsActual
+  ,logActualAndExpectedMerged
+  ,logSpecBellSchedule
+  ,logSpecCalendar
+  ,logSpecCalendarDate
+  ,logSpecClassPeriod
+  ,logSpecCohorts
+  ,logSpecCourses
+  ,logSpecCourseOffering
+  ,logSpecSchool
+  ,logSpecGradingPeriod
+  ,logSpecSession
+  ,logSpecLocation
 };
