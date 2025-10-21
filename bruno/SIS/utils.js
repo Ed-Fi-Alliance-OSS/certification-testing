@@ -136,6 +136,27 @@ function encodeDescriptorUri(rawDescriptor) {
   return `${prefix}%23${encodedCode}`;
 }
 
+// Extracts rawDescriptor from query string and encode it
+function encodeDescriptorParameter(originalUrl, parameterName, defaultDescriptorValue = '') {
+  let rawDescriptor = defaultDescriptorValue;
+  
+  if (originalUrl.includes('?')) {
+    const queryString = originalUrl.split('?')[1];
+    const parts = queryString.split('&');
+
+    for (const p of parts) {
+      const [key, value] = p.split('=');
+
+      if (key === parameterName && value) {
+        // To avoid double enconding
+        try { rawDescriptor = decodeURIComponent(value); } catch { rawDescriptor = value; }
+        break;
+      }
+    }
+  }
+  const encodedDescriptor = rawDescriptor.includes('#') && !/%23/.test(rawDescriptor) ? encodeDescriptorUri(rawDescriptor) : rawDescriptor;
+  return encodedDescriptor;
+}
 
 // Change expectation helper ------------------------------------------
 function expectChanged(previous, current, label) {
@@ -169,5 +190,6 @@ module.exports = {
   expectChanged,
   expectUnchanged,
   throwNotFoundOrSpecificError,
-  encodeDescriptorUri
+  encodeDescriptorUri,
+  encodeDescriptorParameter
 };

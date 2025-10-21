@@ -1,0 +1,45 @@
+meta {
+  name: 02 - Check first CourseTranscript finalNumericGradeEarned was Updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts/{{firstCourseTranscriptId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.finalNumericGradeEarned: isNumber
+}
+
+script:post-response {
+  const { getVar, expectChanged, expectUnchanged, setVar } = require('./utils');
+  const { logScenario, logSpecCourseTranscript } = require('./logging');
+  const entityName = 'CourseTranscript';
+  const scenarioName = this.req.name;
+  const entity = res.getBody();
+
+  const previousNumeric = getVar(bru, 'firstCourseTranscriptFinalNumericGradeEarned');
+  if (previousNumeric !== undefined) {
+    expectChanged(previousNumeric, entity.finalNumericGradeEarned, 'finalNumericGradeEarned');
+  }
+  // Cache new numeric grade for potential future scenarios
+  setVar(bru, 'firstCourseTranscriptFinalNumericGradeEarned', entity.finalNumericGradeEarned);
+  logScenario(entityName, scenarioName, entity, logSpecCourseTranscript, [
+    'courseCode',
+    'studentUniqueId',
+    'schoolYear',
+    'termDescriptor',
+    'finalNumericGradeEarned'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

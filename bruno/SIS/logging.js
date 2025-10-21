@@ -537,6 +537,22 @@ const logSpecStudentAcademicRecord = {
   graduationPlanTypeDescriptor: r => extractDescriptor(r?.graduationPlans?.[0]?.graduationPlanTypeDescriptor),
 };
 
+// CourseTranscript spec map (StudentTranscript > CourseTranscript)
+// Primary key constituents (per config): educationOrganizationId, courseEducationOrganizationId, schoolYear, termDescriptor, studentUniqueId, courseCode, courseAttemptResultDescriptor
+// Include key academic performance fields + attempted/earned credits and final grades.
+const logSpecCourseTranscript = {
+  educationOrganizationId: r => r?.courseReference?.educationOrganizationId,
+  courseCode: r => r?.courseReference?.courseCode,
+  schoolYear: r => r?.studentAcademicRecordReference?.schoolYear,
+  termDescriptor: r => extractDescriptor(r?.studentAcademicRecordReference?.termDescriptor),
+  studentUniqueId: r => r?.studentAcademicRecordReference?.studentUniqueId,
+  courseAttemptResultDescriptor: r => extractDescriptor(r?.courseAttemptResultDescriptor),
+  attemptedCredits: r => r?.attemptedCredits,
+  earnedCredits: r => r?.earnedCredits,
+  finalLetterGradeEarned: r => r?.finalLetterGradeEarned,
+  finalNumericGradeEarned: r => r?.finalNumericGradeEarned,
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -561,4 +577,5 @@ module.exports = {
   ,logSpecStudentSectionAssociation
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
+  ,logSpecCourseTranscript
 };
