@@ -111,6 +111,31 @@ function generateId() {
   return (base + Math.floor(Math.random() * maxIncrement)).toString();
 }
 
+// Descriptor URI encoder -------------------------------------------------
+// Accepts either a full descriptor URI (uri://...#Code Value) or just the raw code value.
+// Returns a properly percent-encoded descriptor URI safe for inclusion as a query param.
+// Rules:
+//  - Preserve the prefix up to and excluding '#'
+//  - Encode '#', spaces and any other reserved characters after '#'
+//  - If no '#', treat input as a raw code value and require a prefix argument (optional later enhancement)
+function encodeDescriptorUri(rawDescriptor) {
+  if (typeof rawDescriptor !== 'string' || rawDescriptor.trim() === '') return rawDescriptor;
+  // If already encoded (%23 present), assume it's fine.
+  if (/%23/.test(rawDescriptor)) return rawDescriptor;
+  // Split into prefix + codeValue
+  const parts = rawDescriptor.split('#');
+  if (parts.length === 1) {
+    // No '#': raw might just be the code value; we can't safely build without knowing the namespace.
+    // Return unchanged; caller can decide.
+    return rawDescriptor;
+  }
+  const prefix = parts.slice(0, -1).join('#'); // In case multiple '#'
+  const codeValue = parts[parts.length - 1];
+  // Encode codeValue; also encode '#'
+  const encodedCode = encodeURIComponent(codeValue);
+  return `${prefix}%23${encodedCode}`;
+}
+
 
 // Change expectation helper ------------------------------------------
 function expectChanged(previous, current, label) {
@@ -143,5 +168,6 @@ module.exports = {
   generateId,
   expectChanged,
   expectUnchanged,
-  throwNotFoundOrSpecificError
+  throwNotFoundOrSpecificError,
+  encodeDescriptorUri
 };

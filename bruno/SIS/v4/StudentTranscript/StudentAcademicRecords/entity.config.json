@@ -3,13 +3,10 @@
   "version": 1,
   "identity": {
     "primaryKeyFields": [
-      "schoolId",
+      "educationOrganizationId",
       "schoolYear",
-      "localCourseCode",
-      "sessionName",
-      "sectionIdentifier",
       "studentUniqueId",
-      "beginDate"
+      "termDescriptor"
     ],
     "naturalIdField": null
   }

@@ -1,0 +1,27 @@
+{
+  "$schema": "../schemas/entity-config.schema.json",
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": [
+      "<REPLACE_WITH_PRIMARY_KEY_FIELD_1>",
+      "<REPLACE_WITH_PRIMARY_KEY_FIELD_2>"
+    ],
+    "naturalIdField": null
+  },
+  "overrides": {
+    "baselineLabels": [
+      "<OPTIONAL_FIRST_LABEL>",
+      "<OPTIONAL_SECOND_LABEL>"
+    ],
+    "suppressAssertions": [
+      "<OPTIONAL_FIELD_PATH_TO_SUPPRESS>"
+    ],
+    "forceOptionalAsRequired": [
+      "<OPTIONAL_FIELD_PATH_TO_FORCE_AS_REQUIRED>"
+    ]
+  },
+  "meta": {
+    "notes": "Add any explanatory notes for this entity's peculiarities.",
+    "sourceDocsRef": "Link or reference to the original docs section if helpful."
+  }
+}
