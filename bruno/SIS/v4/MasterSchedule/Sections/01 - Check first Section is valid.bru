@@ -1,0 +1,83 @@
+meta {
+  name: 01 - Check first Section is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sections?schoolId=255901001&schoolYear=2022&localCourseCode=ALG-1&sessionName=2021-2022 Fall Semester&sectionIdentifier=25590100102Trad220ALG112011
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: 255901001
+  schoolYear: 2022
+  localCourseCode: ALG-1
+  sessionName: 2021-2022 Fall Semester
+  sectionIdentifier: 25590100102Trad220ALG112011
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].sectionIdentifier: isString
+  res.body[0].sectionIdentifier: isNotEmpty
+  res.body[0].courseOfferingReference: isDefined
+  res.body[0].courseOfferingReference.localCourseCode: isString
+  res.body[0].courseOfferingReference.localCourseCode: isNotEmpty
+  res.body[0].courseOfferingReference.schoolId: isNumber
+  res.body[0].courseOfferingReference.schoolId: neq 0
+  res.body[0].courseOfferingReference.schoolYear: isNumber
+  res.body[0].courseOfferingReference.schoolYear: neq 0
+  res.body[0].courseOfferingReference.sessionName: isString
+  res.body[0].courseOfferingReference.sessionName: isNotEmpty
+  res.body[0].locationReference: isDefined
+  res.body[0].locationReference.classroomIdentificationCode: isString
+  res.body[0].locationReference.classroomIdentificationCode: isNotEmpty
+  res.body[0].locationReference.schoolId: isNumber
+  res.body[0].locationReference.schoolId: neq 0
+  res.body[0].classPeriods: isArray
+  res.body[0].classPeriods: isNotEmpty
+  res.body[0].classPeriods[0].classPeriodReference: isDefined
+  res.body[0].classPeriods[0].classPeriodReference.classPeriodName: isString
+  res.body[0].classPeriods[0].classPeriodReference.classPeriodName: isNotEmpty
+  res.body[0].classPeriods[0].classPeriodReference.schoolId: isNumber
+  res.body[0].classPeriods[0].classPeriodReference.schoolId: neq 0
+  res.body[0].sequenceOfCourse: isNumber
+  res.body[0].sequenceOfCourse: neq 0
+  res.body[0].availableCredits: isNumber
+  res.body[0].availableCredits: neq 0
+  res.body[0].educationalEnvironmentDescriptor: isString
+  res.body[0].educationalEnvironmentDescriptor: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecSection, logScenario } = require('./logging');
+  const entityName = 'Section';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  
+  if (!entity) {
+    wipeVars(bru, [
+      'firstSectionUniqueId','firstSectionId','firstSectionAvailableCredits'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstSectionUniqueId: entity.id,
+    firstSectionId: entity.sectionIdentifier,
+    firstSectionAvailableCredits: entity.availableCredits
+  });
+  // Logging identifiers + mutated candidate field
+  logScenario(entityName, scenarioName, entity, logSpecSection);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,131 @@
+meta {
+  name: Sections
+  seq: 3
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 MasterSchedule > Section Scenarios
+  
+  The Master Schedule interchange loads education course offerings and their schedule. It can be used to exchange data regarding the course offerings, sections, and bell schedule for a school.
+  
+  The Section entity represents a setting in which organized instruction of course content is provided, in-person or otherwise, to one or more students for a given period of time. A course offering may be associated to more than one section.
+  
+  ## Prerequisites
+  
+  * Class Period
+  * Location
+  * Course Offering
+  
+  ## Scenarios tasks
+  
+  1. __CREATE__ a `first` `Section` for Grand Bend Elementary School which references the `Course Offering` added for "English Language Arts, Grade 1"
+  2. __CREATE__ a `second` `Section` for Grand Bend High School which references the `Course Offering` added for  "ALGEBRA 1"
+  3. __UPDATE__ the _availableCredits_ for the `first` Grand Bend Elementary School `Section`
+  4. __UPDATE__ the _availableCredits_ for the `second` Grand Bend High School `Section`
+  
+  ## Scenarios example data:
+  
+  | Resource                  | Property Name                       | Is Collection | Data Type                           | Required / Optional | Scenario 1: POST                                | Scenario 2: POST                                | Scenario 3: PUT                                 | Scenario 4: PUT                                 |
+  | ------------------------- | ----------------------------------- | ------------- | ----------------------------------- | ------------------- | ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+  | Sections                  | classPeriods                        | TRUE          | classPeriods{}                      | REQUIRED            | classPeriods                                    | classPeriods                                    | classPeriods                                    | classPeriods                                    |
+  | classPeriods              | classPeriodReference                | FALSE         | classPeriodReference                | REQUIRED            |                                                 |                                                 |                                                 |                                                 |
+  | classPeriodReference      | classPeriodName                     | FALSE         | string                              | REQUIRED            | ["Class Period 01" if possible \| system value] | ["Class Period 01" if possible \| system value] | ["Class Period 01" if possible \| system value] | ["Class Period 01" if possible \| system value] |
+  | classPeriodReference      | schoolId                            | FALSE         | integer                             | REQUIRED            | 255901107                                       | 255901001                                       | 255901107                                       | 255901001                                       |
+  | Sections                  | courseOfferingReference             | FALSE         | courseOfferingReference             | REQUIRED            |                                                 |                                                 |                                                 |                                                 |
+  | courseOfferingReference   | sessionName                         | FALSE         | string                              | REQUIRED            | 2016-2017 Fall Semester                         | 2016-2017 Fall Semester                         | 2016-2017 Fall Semester                         | 2016-2017 Fall Semester                         |
+  | courseOfferingReference   | localCourseCode                     | FALSE         | string                              | REQUIRED            | ["ELA-01" if possible \| system value]          | ["ALG-2" if possible \| system value]           | ["ELA-01" if possible \| system value]          | ["ALG-2" if possible \| system value]           |
+  | courseOfferingReference   | schoolId                            | FALSE         | integer                             | REQUIRED            | 255901107                                       | 255901001                                       | 255901107                                       | 255901001                                       |
+  | courseOfferingReference   | schoolYear                          | FALSE         | integer                             | REQUIRED            | 2017                                            | 2017                                            | 2017                                            | 2017                                            |
+  | Sections                  | locationReference                   | FALSE         | locationReference                   | REQUIRED            |                                                 |                                                 |                                                 |                                                 |
+  | locationReference         | classroomIdentificationCode         | FALSE         | string                              | REQUIRED            | ["501" if possible \| system value]             | ["901" if possible \| system value]             | ["501" if possible \| system value]             | ["901" if possible \| system value]             |
+  | locationReference         | schoolId                            | FALSE         | integer                             | REQUIRED            | 255901107                                       | 255901001                                       | 255901107                                       | 255901001                                       |
+  | Sections                  | programs                            | TRUE          | Programs[]                          | OPTIONAL            | sectionPrograms                                 | sectionPrograms                                 | sectionPrograms                                 | sectionPrograms                                 |
+  | programReference          | educationOrganizationId             | FALSE         | integer                             | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | programReference          | programName                         | FALSE         | string                              | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | programReference          | programTypeDescriptor               | FALSE         | programTypeDescriptor               | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | characteristics                     | TRUE          | sectionCharacteristic[]             | OPTIONAL            | sectionCharacteristics                          | sectionCharacteristics                          | sectionCharacteristics                          | sectionCharacteristics                          |
+  | sectionCharacteristic     | sectionCharacteristicDescriptor     | FALSE         | sectionCharacteristicDescriptor     | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | sequenceOfCourse                    | FALSE         | integer                             | REQUIRED            | 1                                               | 1                                               | 1                                               | 1                                               |
+  | Sections                  | sectionIdentifier                   | FALSE         | nvarchar                            | REQUIRED            | ["ELA012017RM555" if possible \| system value]  | ["ALG12017RM901" if possible \| system value]   | ["ELA012017RM555" if possible \| system value]  | ["ALG12017RM901" if possible \| system value]   |
+  | Sections                  | availableCreditConversion           | FALSE         | number                              | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | availableCredits                    | FALSE         | number                              | REQUIRED            | 1                                               | 1                                               | 2                                               | 3                                               |
+  | Sections                  | availableCreditTypeDescriptor       | FALSE         | availableCreditTypeDescriptor       | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | courseLevelCharacteristics          | TRUE          | courseLevelCharacteristic[]         | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | courseLevelCharacteristics| courseLevelCharacteristicDescriptor | FALSE         | courseLevelCharacteristicDescriptor | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | educationalEnvironmentDescriptor    | FALSE         | educationalEnvironmentDescriptor    | REQUIRED            | Classroom                                       | Classroom                                       | Classroom                                       | Classroom                                       |
+  | Sections                  | instructionLanguageDescriptor       | FALSE         | instructionLanguageDescriptor       | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | mediumOfInstructionDescriptor       | FALSE         | mediumOfInstructionDescriptor       | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | offeredGradeLevels                  | TRUE          | offeredGradeLevel[]                 | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | offeredGradeLevel         | gradeLevelDescriptor                | FALSE         | gradeLevelDescriptor                | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | populationServedDescriptor          | FALSE         | populationServedDescriptor          | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | sectionName                         | FALSE         | string                              | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+  | Sections                  | officialAttendancePeriod            | FALSE         | boolean                             | OPTIONAL            |                                                 |                                                 |                                                 |                                                 |
+
+  ## API response format
+  
+  ```json
+  {
+    "id": "string",
+    "sectionIdentifier": "string",
+    "courseOfferingReference": {
+      "localCourseCode": "string",
+      "schoolId": 0,
+      "schoolYear": 0,
+      "sessionName": "string"
+    },
+    "locationReference": {
+      "classroomIdentificationCode": "string",
+      "schoolId": 0
+    },
+    "locationSchoolReference": {
+      "schoolId": 0
+    },
+    "availableCreditConversion": 0,
+    "availableCredits": 0,
+    "availableCreditTypeDescriptor": "string",
+    "characteristics": [
+      {
+        "sectionCharacteristicDescriptor": "string"
+      }
+    ],
+    "classPeriods": [
+      {
+        "classPeriodReference": {
+          "classPeriodName": "string",
+          "schoolId": 0
+        }
+      }
+    ],
+    "courseLevelCharacteristics": [
+      {
+        "courseLevelCharacteristicDescriptor": "string"
+      }
+    ],
+    "educationalEnvironmentDescriptor": "string",
+    "instructionLanguageDescriptor": "string",
+    "mediumOfInstructionDescriptor": "string",
+    "offeredGradeLevels": [
+      {
+        "gradeLevelDescriptor": "string"
+      }
+    ],
+    "officialAttendancePeriod": true,
+    "populationServedDescriptor": "string",
+    "programs": [
+      {
+        "programReference": {
+          "educationOrganizationId": 0,
+          "programName": "string",
+          "programTypeDescriptor": "string"
+        }
+      }
+    ],
+    "sectionName": "string",
+    "sequenceOfCourse": 0
+  }
+  ```
+}
