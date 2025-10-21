@@ -1,0 +1,103 @@
+meta {
+  name: 02 - Check second StudentAcademicRecord is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords?educationOrganizationId=255901001&schoolYear=2022&studentUniqueId=604822&termDescriptor={{termDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/TermDescriptor#Spring Semester
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR_FIVE_YEARS_AGO]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  termDescriptor: {{termDescriptorEncoded}}
+  termDescriptor_KEEP_IT_AT_THE_END: [ENTER_TERM_DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].educationOrganizationId: isNumber
+  res.body[0].educationOrganizationId: neq 0
+  res.body[0].schoolYear: isNumber
+  res.body[0].schoolYear: neq 0
+  res.body[0].studentUniqueId: isString
+  res.body[0].studentUniqueId: isNotEmpty
+  res.body[0].termDescriptor: isString
+  res.body[0].termDescriptor: isNotEmpty
+  res.body[0].cumulativeAttemptedCredits: isNumber
+  res.body[0].cumulativeEarnedCredits: isNumber
+  res.body[0].cumulativeGradePointAverage: isNumber
+  res.body[0].sessionAttemptedCredits: isNumber
+  res.body[0].sessionEarnedCredits: isNumber
+  res.body[0].graduationPlans: isArray
+  res.body[0].graduationPlans: isNotEmpty
+  res.body[0].graduationPlans[0].educationOrganizationId: isNumber
+  res.body[0].graduationPlans[0].educationOrganizationId: neq 0
+  res.body[0].graduationPlans[0].graduationSchoolYear: isNumber
+  res.body[0].graduationPlans[0].graduationSchoolYear: neq 0
+  res.body[0].graduationPlans[0].graduationPlanTypeDescriptor: isString
+  res.body[0].graduationPlans[0].graduationPlanTypeDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  // Extract rawDescriptor from query string, encode, and set termDescriptorEncoded.
+  const { encodeDescriptorUri } = require('./utils');
+  const DEFAULT_RAW = 'uri://ed-fi.org/TermDescriptor#Fall Semester';
+  const originalUrl = req.url;
+  let raw = DEFAULT_RAW;
+  if (originalUrl.includes('?')) {
+    const qs = originalUrl.split('?')[1];
+    const parts = qs.split('&');
+    for (const p of parts) {
+      const [k, v] = p.split('=');
+      if (k === 'termDescriptor_KEEP_IT_AT_THE_END' && v) {
+        try { raw = decodeURIComponent(v); } catch { raw = v; }
+        break;
+      }
+    }
+  }
+  const encoded = raw.includes('#') && !/%23/.test(raw) ? encodeDescriptorUri(raw) : raw;
+  bru.setVar('termDescriptorEncoded', encoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStudentAcademicRecord } = require('./logging');
+  const entityName = 'StudentAcademicRecord';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  if (!entity) {
+    wipeVars(bru, [
+      'secondStudentAcademicRecordUniqueId',
+      'secondStudentAcademicRecordSchoolYear',
+      'secondStudentAcademicRecordCumulativeAttemptedCredits',
+      'secondStudentAcademicRecordCumulativeEarnedCredits',
+      'secondStudentAcademicRecordSessionAttemptedCredits',
+      'secondStudentAcademicRecordSessionEarnedCredits'
+    ], entityName, true);
+  }
+  setVars(bru, {
+    secondStudentAcademicRecordUniqueId: entity.id,
+    secondStudentAcademicRecordSchoolYear: entity.schoolYear,
+    secondStudentAcademicRecordCumulativeAttemptedCredits: entity.cumulativeAttemptedCredits,
+    secondStudentAcademicRecordCumulativeEarnedCredits: entity.cumulativeEarnedCredits,
+    secondStudentAcademicRecordSessionAttemptedCredits: entity.sessionAttemptedCredits,
+    secondStudentAcademicRecordSessionEarnedCredits: entity.sessionEarnedCredits
+  });
+  logScenario(entityName, scenarioName, entity, logSpecStudentAcademicRecord);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}

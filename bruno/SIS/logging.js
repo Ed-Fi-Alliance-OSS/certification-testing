@@ -518,6 +518,25 @@ const logSpecGrade = {
   numericGradeEarned: r => r?.numericGradeEarned,
 };
 
+// StudentAcademicRecord spec map (StudentTranscript > StudentAcademicRecords)
+// Primary keys: educationOrganizationId, schoolYear, studentUniqueId, termDescriptor
+// Required credit & GPA fields plus graduation plan reference fields (only present for second baseline)
+// Mutation scenario targets cumulativeAttemptedCredits, cumulativeEarnedCredits, sessionEarnedCredits (+ sessionAttemptedCredits implicitly)
+const logSpecStudentAcademicRecord = {
+  educationOrganizationId: r => r?.educationOrganizationId || r?.educationOrganizationReference?.educationOrganizationId,
+  schoolYear: r => r?.schoolYear,
+  studentUniqueId: r => r?.studentUniqueId || r?.studentReference?.studentUniqueId,
+  termDescriptor: r => extractDescriptor(r?.termDescriptor),
+  cumulativeAttemptedCredits: r => r?.cumulativeAttemptedCredits,
+  cumulativeEarnedCredits: r => r?.cumulativeEarnedCredits,
+  cumulativeGradePointAverage: r => r?.cumulativeGradePointAverage,
+  sessionAttemptedCredits: r => r?.sessionAttemptedCredits,
+  sessionEarnedCredits: r => r?.sessionEarnedCredits,
+  graduationPlanEducationOrganizationId: r => r?.graduationPlans?.[0]?.educationOrganizationId,
+  graduationPlanSchoolYear: r => r?.graduationPlans?.[0]?.graduationSchoolYear,
+  graduationPlanTypeDescriptor: r => extractDescriptor(r?.graduationPlans?.[0]?.graduationPlanTypeDescriptor),
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -541,4 +560,5 @@ module.exports = {
   ,logSpecStudentSchoolAssociation
   ,logSpecStudentSectionAssociation
   ,logSpecGrade
+  ,logSpecStudentAcademicRecord
 };
