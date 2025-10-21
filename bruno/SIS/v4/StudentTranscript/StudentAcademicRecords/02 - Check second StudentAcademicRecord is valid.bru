@@ -48,24 +48,9 @@ assert {
 }
 
 script:pre-request {
-  // Extract rawDescriptor from query string, encode, and set termDescriptorEncoded.
-  const { encodeDescriptorUri } = require('./utils');
-  const DEFAULT_RAW = 'uri://ed-fi.org/TermDescriptor#Fall Semester';
-  const originalUrl = req.url;
-  let raw = DEFAULT_RAW;
-  if (originalUrl.includes('?')) {
-    const qs = originalUrl.split('?')[1];
-    const parts = qs.split('&');
-    for (const p of parts) {
-      const [k, v] = p.split('=');
-      if (k === 'termDescriptor_KEEP_IT_AT_THE_END' && v) {
-        try { raw = decodeURIComponent(v); } catch { raw = v; }
-        break;
-      }
-    }
-  }
-  const encoded = raw.includes('#') && !/%23/.test(raw) ? encodeDescriptorUri(raw) : raw;
-  bru.setVar('termDescriptorEncoded', encoded);
+	const { encodeDescriptorParameter, setVar } = require('./utils');
+	const termDescriptorEncoded = encodeDescriptorParameter(req.url, parameterName = 'termDescriptor_KEEP_IT_AT_THE_END');
+	setVar(bru, 'termDescriptorEncoded', termDescriptorEncoded);
 }
 
 script:post-response {

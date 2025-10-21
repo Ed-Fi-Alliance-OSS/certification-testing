@@ -1,0 +1,74 @@
+meta {
+  name: 01 - Check first CourseTranscript is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts?educationOrganizationId=255901001&schoolYear=2022&studentUniqueId=604822&courseCode=03100500&termDescriptor={{termDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/TermDescriptor#Fall Semester
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  courseCode: [ENTER_COURSE_CODE]
+  termDescriptor: {{secondTermDescriptorEncoded}}
+  termDescriptor_KEEP_IT_AT_THE_END: [ENTER_TERM_DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].courseReference.courseCode: isString
+  res.body[0].courseReference.courseCode: isNotEmpty
+  res.body[0].courseReference.educationOrganizationId: isNumber
+  res.body[0].studentAcademicRecordReference.educationOrganizationId: isNumber
+  res.body[0].studentAcademicRecordReference.schoolYear: isNumber
+  res.body[0].studentAcademicRecordReference.studentUniqueId: isString
+  res.body[0].studentAcademicRecordReference.studentUniqueId: isNotEmpty
+  res.body[0].studentAcademicRecordReference.termDescriptor: isString
+  res.body[0].studentAcademicRecordReference.termDescriptor: isNotEmpty
+  res.body[0].courseAttemptResultDescriptor: isString
+  res.body[0].courseAttemptResultDescriptor: isNotEmpty
+  res.body[0].attemptedCredits: isNumber
+  res.body[0].earnedCredits: isNumber
+  res.body[0].finalLetterGradeEarned: isString
+  res.body[0].finalLetterGradeEarned: isNotEmpty
+  res.body[0].finalNumericGradeEarned: isNumber
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const termDescriptorEncoded = encodeDescriptorParameter(req.url, parameterName = 'termDescriptor_KEEP_IT_AT_THE_END');
+  setVar(bru, 'firstTermDescriptorEncoded', termDescriptorEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecCourseTranscript } = require('./logging');
+  const entityName = 'CourseTranscript';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  if (!entity) {
+    wipeVars(bru, [
+      'firstCourseTranscriptId',
+      'firstCourseTranscriptFinalNumericGradeEarned'
+    ], entityName, true);
+  }
+  setVars(bru, {
+    firstCourseTranscriptId: entity.id,
+    firstCourseTranscriptFinalNumericGradeEarned: entity.finalNumericGradeEarned
+  });
+  logScenario(entityName, scenarioName, entity, logSpecCourseTranscript);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
