@@ -1,0 +1,88 @@
+meta {
+  name: 02 - Check second StudentSchoolAssociation is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations?schoolId=255901001&studentUniqueId=604822&entryDate=2021-08-23
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL_ID]
+  studentUniqueId: [ENTER STUDENT_UNIQUE_ID]
+  entryDate: [ENTER ENTRY_DATE]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].graduationPlanReference: isDefined
+  res.body[0].graduationPlanReference.educationOrganizationId: isNumber
+  res.body[0].graduationPlanReference.educationOrganizationId: neq 0
+  res.body[0].graduationPlanReference.graduationSchoolYear: isNumber
+  res.body[0].graduationPlanReference.graduationSchoolYear: neq 0
+  res.body[0].graduationPlanReference.graduationPlanTypeDescriptor: isString
+  res.body[0].graduationPlanReference.graduationPlanTypeDescriptor: isNotEmpty
+  res.body[0].entryDate: isString
+  res.body[0].entryGradeLevelDescriptor: isString
+  res.body[0].entryGradeLevelDescriptor: isNotEmpty
+  res.body[0].entryTypeDescriptor: isString
+  res.body[0].entryTypeDescriptor: isNotEmpty
+  res.body[0].exitWithdrawDate: isString
+  res.body[0].exitWithdrawTypeDescriptor: isString
+  res.body[0].exitWithdrawTypeDescriptor: isNotEmpty
+  res.body[0].repeatGradeIndicator: isBoolean
+  res.body[0].residencyStatusDescriptor: isString
+  res.body[0].residencyStatusDescriptor: isNotEmpty
+  res.body[0].schoolChoiceTransfer: isBoolean
+  res.body[0].calendarReference: isDefined
+  res.body[0].calendarReference.calendarCode: isString
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logScenario, logSpecStudentSchoolAssociation } = require('./logging');
+  const entityName = 'StudentSchoolAssociation';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  
+    if (!entity) {
+      wipeVars(bru, [
+        'secondStudentSchoolAssociationUniqueId',
+        'secondStudentSchoolAssociationEntryDate',
+        'secondStudentSchoolAssociationExitWithdrawDate',
+        'secondStudentSchoolAssociationGraduationPlanEducationOrganizationId',
+        'secondStudentSchoolAssociationGraduationPlanSchoolYear',
+        'secondStudentSchoolAssociationGraduationPlanTypeDescriptor',
+        'secondStudentSchoolAssociationCalendarCode'
+      ], entityName, true);
+    }
+
+    setVars(bru, {
+      secondStudentSchoolAssociationUniqueId: entity.id,
+      secondStudentSchoolAssociationEntryDate: entity.entryDate,
+      secondStudentSchoolAssociationExitWithdrawDate: entity.exitWithdrawDate,
+      secondStudentSchoolAssociationGraduationPlanEducationOrganizationId: entity.graduationPlanReference?.educationOrganizationId,
+      secondStudentSchoolAssociationGraduationPlanSchoolYear: entity.graduationPlanReference?.graduationSchoolYear,
+      secondStudentSchoolAssociationGraduationPlanTypeDescriptor: extractDescriptor(entity.graduationPlanReference?.graduationPlanTypeDescriptor),
+      secondStudentSchoolAssociationCalendarCode: entity.calendarReference?.calendarCode
+    });
+    logScenario(entityName, scenarioName, entity, logSpecStudentSchoolAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

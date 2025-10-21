@@ -460,6 +460,27 @@ const logSpecStudentEdOrgAssociation = {
   studentCharacteristicDescriptors: r => (r?.studentCharacteristics || []).map(ch => extractDescriptor(ch.studentCharacteristicDescriptor)),
   raceDescriptors: r => (r?.races || []).map(rc => extractDescriptor(rc.raceDescriptor)),
 };
+
+// StudentSchoolAssociation spec map (StudentEnrollment > StudentSchoolAssociations)
+// Primary keys per config: schoolId, studentUniqueId, entryDate (naturalIdField null)
+// Include required descriptors & mutated-capable fields (entryDate, exitWithdrawDate, exitWithdrawTypeDescriptor, graduationPlanReference constituents, calendarReference.calendarCode)
+// Optional/conditional fields omitted unless mutated; calendarCode included due to explicit update scenario mutation.
+const logSpecStudentSchoolAssociation = {
+  schoolId: r => r?.schoolReference?.schoolId,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  entryDate: r => r?.entryDate,
+  entryGradeLevelDescriptor: r => extractDescriptor(r?.entryGradeLevelDescriptor),
+  entryTypeDescriptor: r => extractDescriptor(r?.entryTypeDescriptor),
+  repeatGradeIndicator: r => r?.repeatGradeIndicator,
+  residencyStatusDescriptor: r => extractDescriptor(r?.residencyStatusDescriptor),
+  schoolChoiceTransfer: r => r?.schoolChoiceTransfer,
+  exitWithdrawDate: r => r?.exitWithdrawDate,
+  exitWithdrawTypeDescriptor: r => extractDescriptor(r?.exitWithdrawTypeDescriptor),
+  graduationPlanEducationOrganizationId: r => r?.graduationPlanReference?.educationOrganizationId,
+  graduationPlanSchoolYear: r => r?.graduationPlanReference?.graduationSchoolYear,
+  graduationPlanTypeDescriptor: r => extractDescriptor(r?.graduationPlanReference?.graduationPlanTypeDescriptor),
+  calendarCode: r => r?.calendarReference?.calendarCode,
+};
 module.exports = {
   buildLogObject
   ,logScenario
@@ -480,4 +501,5 @@ module.exports = {
   ,logSpecStudent
   ,logSpecGraduationPlan
   ,logSpecStudentEdOrgAssociation
+  ,logSpecStudentSchoolAssociation
 };

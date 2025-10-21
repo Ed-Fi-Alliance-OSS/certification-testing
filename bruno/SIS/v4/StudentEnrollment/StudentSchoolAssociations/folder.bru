@@ -1,0 +1,130 @@
+meta {
+  name: StudentSchoolAssociations
+  seq: 3
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 Student Enrollment > StudentSchoolAssociation Scenarios
+
+  The Student Enrollment interchange describes student enrollments in schools and in sections.
+  This association represents the School in which a student is enrolled. The semantics of enrollment may differ slightly by state. Non-enrollment relationships between a student and an education organization may be described using the StudentEducationOrganizationAssociation.
+
+  ## Prerequisites
+
+  * Student
+  * EdOrg
+  * Graduation Plan (if applicable)
+
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` `Student School Association` (school enrollment) for a `Student` at Grand Bend Elementary School.
+  2. __CREATE__ a `second` `Student School Association` (school enrollment) for a `Student` at Grand Bend High School.
+  3. __UPDATE__ the _entryDate_ for the `first` elementary student's `Student School Association`. And, remove the _exitWithdrawDate_ and _exitWithdrawTypeDescriptor_.
+  4. __UPDATE__ the _graduationPlanReference_ and _calendarCode_ to the`second` High School student's `Student School Association`.
+  5. __UPDATE__ the _exitWithdrawDate_ for the `first` elementary school `Student`.
+  6. __DELETE__ the `Student School Association` for the `first` elementary school `Student`.
+
+  ## Additional Requirements for StudentSchoolAssociation
+
+  * The studentEducationOrganizationAssociations record should remain after the student withdraws in Scenario 5.  The association should not be deleted if the student enrollment in the education organization changes, or at the end of a school year.  Rather, the association should be thought of as a core part of the student record, but scoped to the education organization.
+  * A student must have an association with a Calendar and the association should not be deleted, only updated.
+
+  ## Scenarios example data:
+
+  | Resource                                | Property Name                   | Is Collection | Data Type                               | Required / Optional | Scenario 1: POST                | Scenario 2: POST                | Scenario 3: PUT                 | Scenario 4: PUT                   | Scenario 5: PUT                 |
+  | --------------------------------------- | ------------------------------- | ------------- | --------------------------------------- | ------------------- | ------------------------------- | ------------------------------- | ------------------------------- | --------------------------------- | ------------------------------- |
+  | StudentSchoolAssociations               | schoolReference                 | FALSE         | schoolReference                         | REQUIRED            |                                 |                                 |                                 |                                   |                                 |
+  | schoolReference                         | schoolId                        | FALSE         | integer                                 | REQUIRED            | 255901107                       | 255901001                       | 255901107                       | 255901001                         | 255901107                       |
+  | StudentSchoolAssociations               | studentReference                | FALSE         | studentReference                        | REQUIRED            |                                 |                                 |                                 |                                   |                                 |
+  | studentReference                        | studentUniqueId                 | FALSE         | string                                  | REQUIRED            | 111111                          | 222222                          | 111111                          | 222222                            | 111111                          |
+  | StudentSchoolAssociations               | graduationPlanReference         | FALSE         | graduationPlanReference                 | REQUIRED            |                                 |                                 |                                 | __255901001__                     |                                 |
+  | graduationPlanReference                 | educationOrganizationId         | FALSE         | integer                                 | REQUIRED            |                                 |                                 |                                 | __255901001__                     |                                 |
+  | graduationPlanReference                 | graduationSchoolYear            | FALSE         | integer                                 | REQUIRED            |                                 |                                 |                                 | __2020__                          |                                 |
+  | graduationPlanReference                 | graduationPlanTypeDescriptor    | FALSE         | graduationPlanTypeDescriptor            | REQUIRED            |                                 |                                 |                                 | __Recommended__                   |                                 |
+  | StudentSchoolAssociations               | educationPlans                  | TRUE          | studentSchoolAssociationEducationPlan[] | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | studentSchoolAssociationEducationPlans  | educationPlanDescriptor         | FALSE         | educationPlanDescriptor                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | entryDate                       | FALSE         | date                                    | REQUIRED            | 08/31/[Current School Year]     | 08/31/[Current School Year]     | __09/01/[Current School Year]__ | 08/31/[Current School Year]       | 08/31/[Current School Year]     |
+  | StudentSchoolAssociations               | entryGradeLevelDescriptor       | FALSE         | entryGradeLevelDescriptor               | REQUIRED            | First Grade                     | Ninth grade                     | First Grade                     | Ninth grade                       | First Grade                     |
+  | StudentSchoolAssociations               | classOfSchoolYearTypeReference  | FALSE         | schoolYearTypeReference                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | schoolYearTypeReference         | FALSE         | schoolYearTypeReference                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | employedWhileEnrolled           | FALSE         | boolean                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | entryGradeLevelReasonDescriptor | FALSE         | entryGradeLevelReasonDescriptor         | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | entryTypeDescriptor             | FALSE         | entryTypeDescriptor                     | REQUIRED            | Next year school                | Next year school                | Next year school                | Next year school                  | Next year school                |
+  | StudentSchoolAssociations               | exitWithdrawDate                | FALSE         | date                                    | REQUIRED            | 09/1/[Current School Year]      |                                 |                                 |                                   | __11/1/[Current School Year]__  |
+  | StudentSchoolAssociations               | exitWithdrawTypeDescriptor      | FALSE         | exitWithdrawTypeDescriptor              | REQUIRED            | Transferred                     |                                 |                                 |                                   | Transferred                     |
+  | StudentSchoolAssociations               | primarySchool                   | FALSE         | boolean                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | repeatGradeIndicator            | FALSE         | boolean                                 | REQUIRED            | FALSE                           | FALSE                           | FALSE                           | FALSE                             | FALSE                           |
+  | StudentSchoolAssociations               | residencyStatusDescriptor       | FALSE         | residencyStatusDescriptor               | REQUIRED            | Resident of admin unit and school area | Resident of admin unit and school area | Resident of admin unit and school area | Resident of admin unit and school area | Resident of admin unit and school area |
+  | StudentSchoolAssociations               | schoolChoiceTransfer            | FALSE         | boolean                                 | REQUIRED            | FALSE                           | FALSE                           | FALSE                           | FALSE                             | FALSE                           |
+  | StudentSchoolAssociations               | calendarReference               | FALSE         | calendarReference                       | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | calendarReference                       | calendarCode                    | FALSE         | string                                  | OPTIONAL            |                                 | [High School calendarCode]      |                                 |__[New High School calendarCode]__ |                                 |
+  | calendarReference                       | schoolId                        | FALSE         | integer                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | calendarReference                       | schoolYear                      | FALSE         | integer                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | alternativeGraduationPlanReference | TRUE       | alternativeGraduationPlanReference      | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | alternativeGraduationPlanReference      | educationOrganizationId         | FALSE         | integer                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | alternativeGraduationPlanReference      | graduationSchoolYear            | FALSE         | integer                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | alternativeGraduationPlanReference      | graduationPlanTypeDescriptor    | FALSE         | graduationPlanTypeDescriptor            | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | fullTimeEquivalency             | FALSE         | decimal                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+  | StudentSchoolAssociations               | termCompletionIndicator         | FALSE         | boolean                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
+
+  ## API response format
+  
+  ```json
+  {
+    "id": "string",
+    "entryDate": "2025-10-17",
+    "calendarReference": {
+      "calendarCode": "string",
+      "schoolId": 0,
+      "schoolYear": 0
+    },
+    "classOfSchoolYearTypeReference": {
+      "schoolYear": 0
+    },
+    "graduationPlanReference": {
+      "educationOrganizationId": 0,
+      "graduationPlanTypeDescriptor": "string",
+      "graduationSchoolYear": 0
+    },
+    "schoolReference": {
+      "schoolId": 0
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": 0
+    },
+    "studentReference": {
+      "studentUniqueId": "string"
+    },
+    "alternativeGraduationPlans": [
+      {
+        "alternativeGraduationPlanReference": {
+          "educationOrganizationId": 0,
+          "graduationPlanTypeDescriptor": "string",
+          "graduationSchoolYear": 0
+        }
+      }
+    ],
+    "educationPlans": [
+      {
+        "educationPlanDescriptor": "string"
+      }
+    ],
+    "employedWhileEnrolled": true,
+    "entryGradeLevelDescriptor": "string",
+    "entryGradeLevelReasonDescriptor": "string",
+    "entryTypeDescriptor": "string",
+    "exitWithdrawDate": "2025-10-17",
+    "exitWithdrawTypeDescriptor": "string",
+    "fullTimeEquivalency": 0,
+    "primarySchool": true,
+    "repeatGradeIndicator": true,
+    "residencyStatusDescriptor": "string",
+    "schoolChoiceTransfer": true,
+    "termCompletionIndicator": true
+  }
+  ``` 
+}
