@@ -442,6 +442,7 @@ const logSpecGraduationPlan = {
   graduationPlanTypeDescriptor: r => extractDescriptor(r?.graduationPlanTypeDescriptor),
   totalRequiredCredits: r => r?.totalRequiredCredits,
 };
+
 module.exports = {
   buildLogObject
   ,logScenario
