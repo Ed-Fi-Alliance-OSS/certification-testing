@@ -610,6 +610,21 @@ const logSpecDisciplineIncident = {
   reporterName: r => r?.reporterName
 };
 
+// DisciplineAction spec map (StudentDiscipline > DisciplineAction)
+// Include identifiers and mutated field (disciplineDescriptor in disciplines collection) plus required info.
+const logSpecDisciplineAction = {
+  responsibilitySchoolId: r => r?.responsibilitySchoolReference?.schoolId,
+  assignmentSchoolId: r => r?.assignmentSchoolReference?.schoolId, // optional
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  disciplineDate: r => r?.disciplineDate,
+  disciplineActionIdentifier: r => r?.disciplineActionIdentifier,
+  disciplines: r => r?.disciplines && r.disciplines.length > 0
+    ? mapDescriptors(r.disciplines, d => d.disciplineDescriptor).join(', ')
+    : undefined,
+  actualDisciplineActionLength: r => r?.actualDisciplineActionLength, // optional
+  iepPlacementMeetingIndicator: r => r?.iepPlacementMeetingIndicator, // optional
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -639,4 +654,5 @@ module.exports = {
   ,logSpecStaffEdOrgAssociation
   ,logSpecStaffSchoolAssociation
   ,logSpecDisciplineIncident
+  ,logSpecDisciplineAction
 };
