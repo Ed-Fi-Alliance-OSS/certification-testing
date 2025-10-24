@@ -1,0 +1,65 @@
+meta {
+  name: 01 - Check first StaffSchoolAssociation is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSchoolAssociations?schoolId=255901001&programAssignmentDescriptorId={{firstProgramAssignmentDescriptorIdEncoded}}&staffUniqueId=207269&programAssignmentDescriptorId_KEEP_IT_AT_THE_END=uri://ed-fi.org/ProgramAssignmentDescriptor#Regular Education
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER_SCHOOL_ID]
+  programAssignmentDescriptorId: {{firstProgramAssignmentDescriptorIdEncoded}}
+  staffUniqueId: [ENTER_STAFF_UNIQUE_ID]
+  programAssignmentDescriptorId_KEEP_IT_AT_THE_END: [ENTER_PROGRAM_ASSIGNMENT_DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: length 1
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].staffReference: isDefined
+  res.body[0].staffReference.staffUniqueId: isString
+  res.body[0].staffReference.staffUniqueId: isNotEmpty
+  res.body[0].programAssignmentDescriptor: isString
+  res.body[0].programAssignmentDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const programAssignmentDescriptorIdEncoded = encodeDescriptorParameter(req.url, 'programAssignmentDescriptorId_KEEP_IT_AT_THE_END');
+  setVar(bru, 'firstProgramAssignmentDescriptorIdEncoded', programAssignmentDescriptorIdEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStaffSchoolAssociation } = require('./logging');
+  
+  const entityName = 'StaffSchoolAssociation';
+  const scenarioName = '01 - Check first StaffSchoolAssociation is valid';
+  const entity = pickSingle(res.getBody());
+  
+  if (!entity) {
+    wipeVars(bru, [
+      'firstStaffSchoolAssociationUniqueId',
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstStaffSchoolAssociationUniqueId: entity.id,
+  });
+  
+  logScenario(entityName, scenarioName, entity, logSpecStaffSchoolAssociation);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

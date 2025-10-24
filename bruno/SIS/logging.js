@@ -579,6 +579,22 @@ const logSpecStaffEdOrgAssociation = {
   orderOfAssignment: r => r?.orderOfAssignment,
 };
 
+// StaffSchoolAssociation spec map (StaffAssociation > StaffSchoolAssociations)
+// Include identifiers and programAssignmentDescriptor
+const logSpecStaffSchoolAssociation = {
+  staffUniqueId: r => r?.staffReference?.staffUniqueId,
+  schoolId: r => r?.schoolReference?.schoolId,
+  programAssignmentDescriptor: r => extractDescriptor(r?.programAssignmentDescriptor),
+  schoolYear: r => r?.schoolYearTypeReference?.schoolYear,
+  calendarCode: r => r?.calendarReference?.calendarCode,
+  academicSubjects: r => r?.academicSubjects && r.academicSubjects.length > 0
+    ? mapDescriptors(r.academicSubjects, s => s.academicSubjectDescriptor).join(', ')
+    : undefined,
+  gradeLevels: r => r?.gradeLevels && r.gradeLevels.length > 0
+    ? mapDescriptors(r.gradeLevels, g => g.gradeLevelDescriptor).join(', ')
+    : undefined,
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -606,4 +622,5 @@ module.exports = {
   ,logSpecCourseTranscript
   ,logSpecStaff
   ,logSpecStaffEdOrgAssociation
+  ,logSpecStaffSchoolAssociation
 };
