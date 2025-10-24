@@ -95,6 +95,120 @@ Use `identity.primaryKeyFields` ordered list. For each baseline scenario build c
 Natural key caching (if `naturalIdField` defined) → `<ordinal><EntityName>Id`.
 Mandatory unique id caching (entity.id) → `<ordinal><EntityName>UniqueId`.
 
+### 3.5 Descriptor Parameter Encoding (Fragment URI Pattern)
+Some Ed-Fi descriptor query parameters require sending a full descriptor URI containing a `#` fragment (e.g. `uri://ed-fi.org/TermDescriptor#Fall Semester`). Browsers and many HTTP tooling layers treat `#` as a fragment delimiter and everything after it is not transmitted unless percent‑encoded (`%23`). To ensure consistent, user‑friendly authoring while still transmitting the encoded value, scenarios MUST follow the Sentinel Encoding Pattern:
+
+#### 3.5.1 Sentinel Encoding Pattern
+For any descriptor parameter `<descriptorParam>` whose raw value includes a `#` fragment:
+1. Provide TWO query parameters in the GET URL (collection baseline scenarios only):
+   - The actual query parameter consumed by the API: `<descriptorParam>={{<ordinal>DescriptorParamEncoded}}`
+   - A sentinel raw parameter placed LAST in the query string: `<descriptorParam>_KEEP_IT_AT_THE_END=<rawDescriptorValue>`
+2. The sentinel parameter name MUST append `_KEEP_IT_AT_THE_END` exactly (case‑sensitive) to the original parameter name.
+3. The sentinel MUST be last to simplify parsing and avoid accidental encoding of subsequent parameters.
+4. The pre‑request script extracts the raw value from the sentinel parameter, encodes it (replacing `#` with `%23`, spaces with `%20`, etc.), and stores it in a Bruno variable `<ordinal>DescriptorParamEncoded` used by the actual API parameter.
+5. `settings { encodeUrl: false }` MUST be set for these scenarios to avoid Bruno re‑processing already encoded content.
+
+Example (Term Descriptor on CourseTranscript baseline):
+```
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts?...&termDescriptor={{firstTermDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/TermDescriptor#Fall Semester
+  body: none
+  auth: inherit
+}
+```
+
+`script:pre-request` pattern (utility‑based):
+```
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  // Encodes the raw descriptor found in the sentinel param; falls back to default if missing.
+  const encoded = encodeDescriptorParameter(
+    req.url,
+    'termDescriptor_KEEP_IT_AT_THE_END',
+    'uri://ed-fi.org/TermDescriptor#Fall Semester'
+  );
+  setVar(bru, 'firstTermDescriptorEncoded', encoded);
+}
+```
+
+#### 3.5.2 Params Block Placeholders
+In `params:query` for these baselines, show user‑editable placeholders while preserving the encoded interpolation variable:
+```
+params:query {
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  courseCode: [ENTER_COURSE_CODE]
+  termDescriptor: {{firstTermDescriptorEncoded}}
+  termDescriptor_KEEP_IT_AT_THE_END: [ENTER_TERM_DESCRIPTOR]
+}
+```
+
+Users edit only the placeholder `[ENTER_TERM_DESCRIPTOR]` (raw URI with `#`). The encoded variable (`{{firstTermDescriptorEncoded}}`) is populated automatically by the script.
+
+#### 3.5.3 Variable Naming Rules (Descriptor Encoding)
+Follow existing ordinal prefix rules:
+`firstTermDescriptorEncoded`, `secondTermDescriptorEncoded`, etc.
+If multiple distinct descriptor parameters are encoded in the same scenario, append a semantic suffix (e.g. `firstSessionTermDescriptorEncoded`) to avoid collisions.
+
+#### 3.5.4 Utility Functions
+Two helpers SHOULD exist in `utils.js`:
+
+1) Low-level fragment encoder (used internally by the parameter helper):
+```
+function encodeDescriptorUri(rawDescriptor) {
+  if (typeof rawDescriptor !== 'string' || !rawDescriptor.trim()) return rawDescriptor;
+  if (/%23/.test(rawDescriptor)) return rawDescriptor; // already encoded
+  const parts = rawDescriptor.split('#');
+  if (parts.length < 2) return rawDescriptor; // no fragment
+  const prefix = parts.slice(0, -1).join('#');
+  const fragment = parts[parts.length - 1];
+  return `${prefix}%23${encodeURIComponent(fragment)}`;
+}
+```
+
+2) High-level parameter extractor + encoder (preferred in scenarios):
+```
+function encodeDescriptorParameter(originalUrl, parameterName, defaultDescriptorValue = '') {
+  let raw = defaultDescriptorValue;
+  if (originalUrl.includes('?')) {
+    const qs = originalUrl.split('?')[1];
+    for (const part of qs.split('&')) {
+      const [k, v] = part.split('=');
+      if (k === parameterName && v) {
+        try { raw = decodeURIComponent(v); } catch { raw = v; }
+        break;
+      }
+    }
+  }
+  const encoded = raw.includes('#') && !/%23/.test(raw) ? encodeDescriptorUri(raw) : raw;
+  return encoded;
+}
+```
+Export both and consume ONLY `encodeDescriptorParameter` in scenario pre‑request scripts for clarity.
+
+#### 3.5.5 Constraints & Rationale
+| Concern | Resolution |
+|---------|------------|
+| Bruno mutates/encodes prematurely | Explicit `encodeUrl: false` + manual encoding prevents fragment loss. |
+| User clarity on input format | Sentinel raw param shows unencoded human value; encoded variable hidden. |
+| Avoid double encoding | Skip encoding if `%23` already present. |
+| Ordering guarantee | `_KEEP_IT_AT_THE_END` enforces sentinel final position for easy parsing. |
+
+#### 3.5.6 Update Scenarios
+Single-resource update scenarios typically do not require descriptor query reconstruction; they use the unique id path form. If a descriptor itself is mutated (rare) and must be re‑queried via collection, apply the same sentinel pattern with a new ordinal variable or escalate (Section 14) if API constraints disallow filtering on the mutated descriptor.
+
+#### 3.5.7 Multiple Descriptor Sentinels
+If multiple different descriptor parameters require encoding in one request, each gets its own sentinel:
+```
+...&termDescriptor={{firstTermDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/TermDescriptor#Fall Semester&sessionDescriptor={{firstSessionDescriptorEncoded}}&sessionDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/SessionDescriptor#2024-2025
+```
+Process them sequentially in the script; encoding order does not matter.
+
+#### 3.5.8 Escalation
+If the API begins rejecting additional unknown sentinel parameters (e.g. strict query validation), migrate to an alternative pattern (temporary raw placeholder replaced before interpolation) and document deviation—trigger ambiguity escalation (Section 14) first.
+
+
 ## 4. VARIABLE NAMING RULES
 - UniqueId: firstClassPeriodUniqueId
 - Natural Id: firstClassPeriodId (only if naturalIdField exists)

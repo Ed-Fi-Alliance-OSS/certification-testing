@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../schemas/entity-config.schema.json",
+  "$schema": "../../../../schemas/entity-config.schema.json",
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": ["staffUniqueId"],
+    "naturalIdField": "staffUniqueId"
+  }
+}
