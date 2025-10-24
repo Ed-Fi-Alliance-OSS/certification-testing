@@ -567,6 +567,18 @@ const logSpecStaff = {
   electronicMailAddress: r => r?.electronicMails?.[0]?.electronicMailAddress,
 };
 
+// StaffEducationOrganizationAssignmentAssociation spec map (StaffAssociation > StaffEdOrgAssociation)
+// Include identifiers and mutated fields (positionTitle, endDate) plus selected required info.
+const logSpecStaffEdOrgAssociation = {
+  staffUniqueId: r => r?.staffReference?.staffUniqueId,
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  beginDate: r => r?.beginDate,
+  endDate: r => r?.endDate,
+  staffClassificationDescriptor: r => extractDescriptor(r?.staffClassificationDescriptor),
+  positionTitle: r => r?.positionTitle,
+  orderOfAssignment: r => r?.orderOfAssignment,
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -593,4 +605,5 @@ module.exports = {
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
   ,logSpecStaff
+  ,logSpecStaffEdOrgAssociation
 };

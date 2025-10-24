@@ -42,11 +42,29 @@ Based on the specification in #file:spec.md, parse the configuration and infer e
    - Primary key fields (in order)
    - Natural ID field (if present)
    - Irregular plural configuration (if present)
+   - Entity name override (overrides.entityName if present)
+   - Endpoint segment override (overrides.endpointSegment if present)
+   - Logging spec name override (overrides.loggingSpecName if present)
+   - File name alias override (overrides.fileNameAlias if present)
 
-2. Infer from folder path or configuration:
-   - Entity name (singular)
-   - Entity folder name (plural)
-   - API endpoint segment (camelCase)
+2. Determine entity naming (following precedence rules from spec.md Section 2.2):
+   - Entity name (singular):
+     a. Use overrides.entityName if present
+     b. Else use identity.irregularPlural.singular if present
+     c. Else infer by removing trailing 's' from folder name
+   
+   - API endpoint segment:
+     a. Use overrides.endpointSegment if present
+     b. Else use identity.irregularPlural.endpointSegment if present
+     c. Else infer by lowercasing first letter of folder name
+   
+   - File name entity (for scenario file names):
+     a. Use overrides.fileNameAlias if present
+     b. Else use entityName (from step above)
+   
+   - Logging spec name (for logging.js variable):
+     a. Use overrides.loggingSpecName if present
+     b. Else use entityName (from step above)
 
 3. Generate variable naming examples:
    - Unique ID variable pattern: <ordinal><EntityName>UniqueId
@@ -55,9 +73,11 @@ Based on the specification in #file:spec.md, parse the configuration and infer e
 
 OUTPUT FORMAT:
 Provide a structured summary:
-- Entity Name: [singular]
+- Entity Name: [singular] (source: override/irregularPlural/inferred)
 - Entity Folder: [plural]
-- Endpoint: [camelCase]
+- Endpoint: [camelCase] (source: override/irregularPlural/inferred)
+- File Name Entity: [name for files] (source: override/entityName)
+- Logging Spec Name: [name for logSpec] (source: override/entityName)
 - Primary Keys: [ordered array]
 - Natural ID Field: [field name or null]
 - Sample Variables:
@@ -208,15 +228,25 @@ Generate complete baseline scenario file for the FIRST ordinal following spec.md
 
 2. GET BLOCK:
    - URL: collection endpoint with primary key query parameters
-   - Use placeholders: [ENTER FIRST <FIELD NAME>]
+   - For descriptor parameters: use sentinel pattern with {{<ordinal>DescriptorParamEncoded}} and _KEEP_IT_AT_THE_END
+   - For non-descriptor parameters: use actual values in URL
    - body: none
    - auth: inherit
 
 3. PARAMS:QUERY BLOCK:
-   - List all primary key parameters
-   - Use placeholders with type hints (dates: YYYY-MM-DD, etc.)
+   - List all primary key parameters with placeholders: [ENTER_<FIELD_NAME>]
+   - For descriptor parameters: 
+     - Add encoded variable: {{<ordinal>DescriptorParamEncoded}}
+     - Add sentinel parameter: <param>_KEEP_IT_AT_THE_END: [ENTER_DESCRIPTOR]
+   - Add pagination: offset: 0, limit: 25, totalCount: false
 
-4. ASSERT BLOCK:
+4. SCRIPT:PRE-REQUEST BLOCK (if descriptor parameters exist):
+   - Require { encodeDescriptorParameter, setVar } from utils
+   - For each descriptor parameter:
+     - Call encodeDescriptorParameter(req.url, '<param>_KEEP_IT_AT_THE_END')
+     - Store in variable: setVar(bru, '<ordinal>DescriptorParamEncoded', encoded)
+
+5. ASSERT BLOCK:
    - res.status: eq 200
    - res.body: isArray, isNotEmpty
    - res.body[0].id: isString, isNotEmpty
@@ -226,20 +256,21 @@ Generate complete baseline scenario file for the FIRST ordinal following spec.md
      - Collections: isArray + isNotEmpty + element[0] checks
    - NO assertions for OPTIONAL/CONDITIONAL fields
 
-5. SCRIPT:POST-RESPONSE BLOCK:
-   - Require utils and logging
-   - Use pickSingle() to validate single record
-   - wipeVars() on failure
-   - setVars() to cache:
-     - Unique ID (always)
-     - Natural ID (if exists)
-     - All mutable fields (including OPTIONAL/CONDITIONAL if they mutate later)
-   - Use extractDescriptor() for descriptor fields
-   - Use mapDescriptors() + joinDescriptors() for descriptor collections
-   - logScenario() without filtered list (full spec)
+6. SCRIPT:POST-RESPONSE BLOCK:
+   - Require { pickSingle, setVars, wipeVars } from utils
+   - Require { logScenario, logSpec<Entity> } from logging
+   - Declare entityName and scenarioName constants
+   - Use pickSingle(res.getBody()) to extract single entity from array
+   - If entity is null/undefined:
+     - Call wipeVars(bru, [array of variable names], entityName, true)
+     - Return/stop execution
+   - Use setVars(bru, { object mapping variable names to entity fields })
+   - For descriptor fields: no extractDescriptor needed (store raw values)
+   - Call logScenario(entityName, scenarioName, entity, logSpec<Entity>)
 
-6. SETTINGS BLOCK:
-   - encodeUrl: true (or false if descriptor encoding needed)
+7. SETTINGS BLOCK:
+   - encodeUrl: false (always false when using sentinel pattern)
+   - timeout: 0
 
 OUTPUT:
 Complete .bru file content ready to save.
@@ -412,8 +443,8 @@ If no DELETE tasks exist, output: "No delete scenarios required for this entity.
 
 ### Prompt 9: Handle Descriptor Encoding (if needed)
 
-```html
-Check if descriptor parameter encoding is needed and adjust baseline scenarios.
+```markdown
+Verify descriptor parameter encoding is correctly applied in baseline scenarios.
 
 CONTEXT:
 [Paste entity metadata from Prompt 1]
@@ -421,36 +452,34 @@ CONTEXT:
 [Paste all generated baseline scenarios]
 
 TASK:
-Check if any primary key fields are descriptors (contain "#" fragment in values):
+Verify that baseline scenarios with descriptor primary keys follow the sentinel pattern:
 
 1. Review primary key fields from entity.config.json
-2. Check field data types from example data table
-3. If descriptor parameters exist:
-   - Identify which baseline scenarios use them
-   - Apply sentinel encoding pattern (spec.md Section 8)
-
-4. For each affected baseline scenario, modify:
+2. Check if any are descriptor types (end with "Descriptor" or "DescriptorId")
+3. For scenarios with descriptor parameters, verify they include:
    
-   GET BLOCK:
-   - Add encoded variable: &<param>={{<ordinal><Param>Encoded}}
-   - Add sentinel: &<param>_KEEP_IT_AT_THE_END=<defaultValue>
+   ✅ GET BLOCK:
+   - Encoded variable in URL: &<param>={{<ordinal><Param>Encoded}}
+   - Sentinel parameter at end: &<param>_KEEP_IT_AT_THE_END=<actualValue>
    
-   PARAMS:QUERY BLOCK:
-   - Add both parameters
+   ✅ PARAMS:QUERY BLOCK:
+   - Use placeholders for all values: [ENTER_<FIELD_NAME>]
+   - Encoded variable: <param>: {{<ordinal><Param>Encoded}}
+   - Sentinel parameter: <param>_KEEP_IT_AT_THE_END: [ENTER_DESCRIPTOR]
    
-   SCRIPT:PRE-REQUEST BLOCK (add before post-response):
-   - Require encodeDescriptorParameter and setVar
-   - Extract from sentinel and encode
-   - Store in variable
+   ✅ SCRIPT:PRE-REQUEST BLOCK:
+   - const { encodeDescriptorParameter, setVar } = require('./utils');
+   - const encoded = encodeDescriptorParameter(req.url, '<param>_KEEP_IT_AT_THE_END');
+   - setVar(bru, '<ordinal><Param>Encoded', encoded);
    
-   SETTINGS BLOCK:
-   - Change encodeUrl to false
+   ✅ SETTINGS BLOCK:
+   - encodeUrl: false
    - Add timeout: 0
 
 OUTPUT:
-If descriptor encoding needed:
-- List affected scenarios
-- Provide modified versions with encoding applied
+Either:
+- "All descriptor encoding correctly applied" (if scenarios follow pattern)
+- OR list any corrections needed
 
 If not needed:
 - Output: "No descriptor parameter encoding required."
@@ -470,16 +499,22 @@ CONTEXT:
 TASK:
 Create a logSpec object that will be added to the collection's logging.js file.
 
-1. Analyze required fields for logging:
+1. Determine logging spec variable name:
+   - Use overrides.loggingSpecName if present (for shorter names)
+   - Otherwise use entityName
+   - Example: `CalendarDate` → `logSpecCalendarDate`
+   - Example with override: `StaffEdOrgAssociation` (from loggingSpecName) → `logSpecStaffEdOrgAssociation`
+
+2. Analyze required fields for logging:
    - Natural ID field (if exists)
    - All mutable fields from update scenarios
    - Key identifying fields (firstName, lastName, etc.)
    - Selected required descriptors
 
-2. Generate logSpec object following the pattern:
+3. Generate logSpec object following the pattern:
 
       ```javascript
-      const logSpec<EntityName> = {
+      const logSpec<EntityOrLoggingName> = {
       <naturalIdField>: r => r?.<naturalIdField>,
       <identifyingField1>: r => r?.<field1>,
       <identifyingField2>: r => r?.<field2>,
@@ -491,7 +526,7 @@ Create a logSpec object that will be added to the collection's logging.js file.
       };
       ```
 
-3. For each field type:
+4. For each field type:
 
    - **Scalar fields**: Direct access with optional chaining: `r => r?.fieldName`
    - **Descriptor fields**: Wrap with extractDescriptor: `r => extractDescriptor(r?.descriptorField)`
@@ -521,8 +556,10 @@ const logSpec<EntityName> = {
 Also provide the export statement addition for the module.exports at the end of logging.js:
 
 ```javascript
-  ,logSpec<EntityName>
+  ,logSpec<EntityOrLoggingName>
 ```
+
+**Note:** Use the loggingSpecName if provided in overrides, otherwise use entityName.
 
 ````
 
