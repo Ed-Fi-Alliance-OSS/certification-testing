@@ -1,0 +1,97 @@
+meta {
+  name: DisciplineIncident
+  seq: 1
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 Student Discipline > DisciplineIncident Scenarios
+  
+  This interchange defines discipline incidents and discipline actions.
+  `DisciplineIncident`: This event entity represents an occurrence of an infraction ranging from a minor behavioral problem that disrupts the orderly functioning of a school or classroom (such as tardiness) to a criminal act that results in the involvement of a law enforcement official (such as robbery). A single event (e.g., a fight) is one incident regardless of how many perpetrators or victims are involved. Discipline incidents are events classified as warranting discipline action.
+  
+  ## Prerequisites
+  
+  * Student
+  * Staff
+  * Enrollment
+  
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` School Code of Conduct `DisciplineIncident` event for an elementary school student.
+  2. __CREATE__ a `second` State Offense `DisciplineIncident` event for a high school student.
+  3. __UPDATE__ for the `first` added `DisciplineIncident` the _reporterName_ on the elementary school.
+  4. __UPDATE__ for the `second` added `DisciplineIncident` the _incidentLocationDescriptor_ for the high school.
+
+  ### Additional Requirements for behavior requirements:
+
+  * A discipline incident Behavior may be recorded either at the `DisciplineIncident` level or at the `StudentDisciplineIncidentAssociation` level.
+
+  ## Scenarios example data
+
+  | Resource                    | Property Name                 | Is Collection | Data Type                     | Required | Scenario 1: POST                  | Scenario 2: POST                   | Scenario 3: PUT                   | Scenario 4: PUT                   |
+  | --------------------------- | ----------------------------- | ------------- | ----------------------------- | -------- | --------------------------------- | ---------------------------------- | --------------------------------- | --------------------------------- |
+  | DisciplineIncidents         | incidentDate                  | FALSE         | date                          | REQUIRED | 9/25/[Current School Year]        | 9/25/[Current School Year]         | 9/25/[Current School Year]        | 9/25/[Current School Year]        |
+  | DisciplineIncidents         | incidentIdentifier            | FALSE         | string                        | REQUIRED | ["1" if possible \| system value] | ["2" if possible  \| system value] | ["1" if possible \| system value] | ["2" if possible \| system value] |
+  | DisciplineIncidents         | schoolReference               | FALSE         | schoolReference               | REQUIRED |                                   |                                    |                                   |                                   |
+  | schoolReference             | schoolId                      | FALSE         | integer                       | REQUIRED | 255901107                         | 255901001                          | 255901107                         | 255901001                         |
+  | DisciplineIncidents         | behaviors                     | TRUE          | disciplineIncidentBehavior[]  | REQUIRED |                                   |                                    |                                   |                                   |
+  | disciplineIncidentBehaviors | behaviorDescriptor            | FALSE         | behaviorDescriptor            | REQUIRED | School Code of Conduct            | State Offense                      | School Code of Conduct            | State Offense                     |
+  | DisciplineIncidents         | incidentLocationDescriptor    | FALSE         | incidentLocationDescriptor    | REQUIRED | School bus                        | Library/media center               | School bus                        | Classroom                         |
+  | DisciplineIncidents         | reporterDescriptionDescriptor | FALSE         | reporterDescriptionDescriptor | REQUIRED | Staff                             | Staff                              | Staff                             | Staff                             |
+  | DisciplineIncidents         | reporterName                  | FALSE         | string                        | REQUIRED | Loyo, John                        | Smith, Jane                        | Villa, Mark                       | Smith, Jane                       |
+  | DisciplineIncidents         | caseNumber                    | FALSE         | string                        | OPTIONAL |                                   |                                    |                                   |                                   |
+  | DisciplineIncidents         | incidentCost                  | FALSE         | money                         | OPTIONAL |                                   |                                    |                                   |                                   |
+  | DisciplineIncidents         | incidentDescription           | FALSE         | string                        | OPTIONAL |                                   |                                    |                                   |                                   |
+  | DisciplineIncidents         | incidentTime                  | FALSE         | string                        | OPTIONAL |                                   |                                    |                                   |                                   |
+  | DisciplineIncidents         | reportedToLawEnforcement      | FALSE         | boolean                       | OPTIONAL |                                   |                                    |                                   |                                   |
+  | DisciplineIncidents         | staffReference                | FALSE         | integer                       | OPTIONAL |                                   |                                    |                                   |                                   |
+  | staffReference              | staffUniqueId                 | FALSE         | string                        | OPTIONAL |                                   |                                    |                                   |                                   |
+  | DisciplineIncidents         | weapons                       | TRUE          | disciplineIncidentWeapon[]    | OPTIONAL |                                   |                                    |                                   |                                   |
+  | disciplineIncidentWeapons   | weaponDescriptor              | FALSE         | weaponDescriptor              | OPTIONAL |                                   |                                    |                                   |                                   |
+
+  ## API response format
+
+  ```json
+  {
+    "id": "string",
+    "incidentIdentifier": "string",
+    "schoolReference": {
+      "schoolId": 0
+    },
+    "staffReference": {
+      "staffUniqueId": "string"
+    },
+    "behaviors": [
+      {
+        "behaviorDescriptor": "string",
+        "behaviorDetailedDescription": "string"
+      }
+    ],
+    "caseNumber": "string",
+    "externalParticipants": [
+      {
+        "disciplineIncidentParticipationCodeDescriptor": "string",
+        "firstName": "string",
+        "lastSurname": "string"
+      }
+    ],
+    "incidentCost": 0,
+    "incidentDate": "2025-10-24",
+    "incidentDescription": "string",
+    "incidentLocationDescriptor": "string",
+    "incidentTime": "string",
+    "reportedToLawEnforcement": true,
+    "reporterDescriptionDescriptor": "string",
+    "reporterName": "string",
+    "weapons": [
+      {
+        "weaponDescriptor": "string"
+      }
+    ]
+  }
+  ```
+}

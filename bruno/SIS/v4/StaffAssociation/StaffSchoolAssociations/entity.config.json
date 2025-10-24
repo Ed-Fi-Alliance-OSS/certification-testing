@@ -2,7 +2,7 @@
   "$schema": "../../../../schemas/entity-config.schema.json",
   "version": 1,
   "identity": {
-    "primaryKeyFields": ["schoolId", "bellScheduleName"],
+    "primaryKeyFields": ["schoolId", "programAssignmentDescriptorId", "staffUniqueId"],
     "naturalIdField": null
   }
 }
