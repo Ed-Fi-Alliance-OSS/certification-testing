@@ -1,0 +1,49 @@
+meta {
+  name: 04 - Check second DisciplineIncident incidentLocationDescriptor was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineIncidents/{{secondDisciplineIncidentUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.incidentLocationDescriptor: isString
+  res.body.incidentLocationDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondDisciplineIncidentUniqueId', '02 - Check second DisciplineIncident is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondDisciplineIncidentIncidentLocationDescriptor', '02 - Check second DisciplineIncident is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecDisciplineIncident, logScenario } = require('./logging');
+  const entityName = 'DisciplineIncident';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousIncidentLocationDescriptor = getVar(bru, 'secondDisciplineIncidentIncidentLocationDescriptor');
+  const currentIncidentLocationDescriptor = extractDescriptor(current.incidentLocationDescriptor);
+  
+  expectChanged(previousIncidentLocationDescriptor, currentIncidentLocationDescriptor, 'incidentLocationDescriptor should have been updated', true);
+  logScenario(entityName, scenarioName, current, logSpecDisciplineIncident, ['id','incidentIdentifier','incidentLocationDescriptor']);
+}
+
+settings {
+  encodeUrl: true
+}
