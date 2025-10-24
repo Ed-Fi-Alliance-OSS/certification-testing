@@ -1,0 +1,72 @@
+meta {
+  name: 02 - Check second StaffEdOrgAssociation is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffEducationOrganizationAssignmentAssociations?educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]&staffClassificationDescriptorId={{secondStaffClassificationDescriptorIdEncoded}}&beginDate=[ENTER_BEGIN_DATE]&staffUniqueId=[ENTER_STAFF_UNIQUE_ID]&staffClassificationDescriptorId_KEEP_IT_AT_THE_END=[ENTER_STAFF_CLASSIFICATION_DESCRIPTOR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+  staffClassificationDescriptorId: {{secondStaffClassificationDescriptorIdEncoded}}
+  beginDate: [ENTER_BEGIN_DATE]
+  staffUniqueId: [ENTER_STAFF_UNIQUE_ID]
+  staffClassificationDescriptorId_KEEP_IT_AT_THE_END: [ENTER_STAFF_CLASSIFICATION_DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: length 1
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].staffReference: isDefined
+  res.body[0].staffReference.staffUniqueId: isString
+  res.body[0].staffReference.staffUniqueId: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].staffClassificationDescriptor: isString
+  res.body[0].staffClassificationDescriptor: isNotEmpty
+  res.body[0].positionTitle: isString
+  res.body[0].positionTitle: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const staffClassificationDescriptorIdEncoded = encodeDescriptorParameter(req.url, 'staffClassificationDescriptorId_KEEP_IT_AT_THE_END');
+  setVar(bru, 'secondStaffClassificationDescriptorIdEncoded', staffClassificationDescriptorIdEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStaffEdOrgAssociation } = require('./logging');
+  
+  const entityName = 'StaffEducationOrganizationAssignmentAssociation';
+  const scenarioName = '02 - Check second StaffEdOrgAssociation is valid';
+  const entity = pickSingle(res.getBody());
+  
+  if (!entity) {
+    wipeVars(bru, [
+      'secondStaffEducationOrganizationAssignmentAssociationUniqueId',
+      'secondStaffEducationOrganizationAssignmentAssociationPositionTitle',
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    secondStaffEducationOrganizationAssignmentAssociationUniqueId: entity.id,
+    secondStaffEducationOrganizationAssignmentAssociationPositionTitle: entity.positionTitle,
+  });
+  
+  logScenario(entityName, scenarioName, entity, logSpecStaffEdOrgAssociation);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
