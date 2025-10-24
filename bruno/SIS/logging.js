@@ -553,6 +553,78 @@ const logSpecCourseTranscript = {
   finalNumericGradeEarned: r => r?.finalNumericGradeEarned,
 };
 
+// Staff spec map (StaffAssociation > Staffs)
+// Include identifiers and mutated fields (highlyQualifiedTeacher, hispanicLatinoEthnicity) plus selected required personal info.
+const logSpecStaff = {
+  staffUniqueId: r => r?.staffUniqueId,
+  firstName: r => r?.firstName,
+  middleName: r => r?.middleName,
+  lastSurname: r => r?.lastSurname,
+  highlyQualifiedTeacher: r => r?.highlyQualifiedTeacher,
+  hispanicLatinoEthnicity: r => r?.hispanicLatinoEthnicity,
+  sexDescriptor: r => extractDescriptor(r?.sexDescriptor),
+  highestCompletedLevelOfEducationDescriptor: r => extractDescriptor(r?.highestCompletedLevelOfEducationDescriptor),
+  electronicMailAddress: r => r?.electronicMails?.[0]?.electronicMailAddress,
+};
+
+// StaffEducationOrganizationAssignmentAssociation spec map (StaffAssociation > StaffEdOrgAssociation)
+// Include identifiers and mutated fields (positionTitle, endDate) plus selected required info.
+const logSpecStaffEdOrgAssociation = {
+  staffUniqueId: r => r?.staffReference?.staffUniqueId,
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  beginDate: r => r?.beginDate,
+  endDate: r => r?.endDate,
+  staffClassificationDescriptor: r => extractDescriptor(r?.staffClassificationDescriptor),
+  positionTitle: r => r?.positionTitle,
+  orderOfAssignment: r => r?.orderOfAssignment,
+};
+
+// StaffSchoolAssociation spec map (StaffAssociation > StaffSchoolAssociations)
+// Include identifiers and programAssignmentDescriptor
+const logSpecStaffSchoolAssociation = {
+  staffUniqueId: r => r?.staffReference?.staffUniqueId,
+  schoolId: r => r?.schoolReference?.schoolId,
+  programAssignmentDescriptor: r => extractDescriptor(r?.programAssignmentDescriptor),
+  schoolYear: r => r?.schoolYearTypeReference?.schoolYear,
+  calendarCode: r => r?.calendarReference?.calendarCode,
+  academicSubjects: r => r?.academicSubjects && r.academicSubjects.length > 0
+    ? mapDescriptors(r.academicSubjects, s => s.academicSubjectDescriptor).join(', ')
+    : undefined,
+  gradeLevels: r => r?.gradeLevels && r.gradeLevels.length > 0
+    ? mapDescriptors(r.gradeLevels, g => g.gradeLevelDescriptor).join(', ')
+    : undefined,
+};
+
+// DisciplineIncident spec map (StudentDiscipline > DisciplineIncident)
+// Include identifiers and mutated fields (reporterName, incidentLocationDescriptor) plus required info.
+const logSpecDisciplineIncident = {
+  schoolId: r => r?.schoolReference?.schoolId,
+  incidentIdentifier: r => r?.incidentIdentifier,
+  incidentDate: r => r?.incidentDate,
+  behaviors: r => r?.behaviors && r.behaviors.length > 0
+    ? mapDescriptors(r.behaviors, b => b.behaviorDescriptor).join(', ')
+    : undefined,
+  incidentLocationDescriptor: r => extractDescriptor(r?.incidentLocationDescriptor),
+  reporterDescriptionDescriptor: r =>      extractDescriptor(r?.reporterDescriptionDescriptor),
+  incidentDescription: r => r?.incidentDescription,
+  reporterName: r => r?.reporterName
+};
+
+// DisciplineAction spec map (StudentDiscipline > DisciplineAction)
+// Include identifiers and mutated field (disciplineDescriptor in disciplines collection) plus required info.
+const logSpecDisciplineAction = {
+  responsibilitySchoolId: r => r?.responsibilitySchoolReference?.schoolId,
+  assignmentSchoolId: r => r?.assignmentSchoolReference?.schoolId, // optional
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  disciplineDate: r => r?.disciplineDate,
+  disciplineActionIdentifier: r => r?.disciplineActionIdentifier,
+  disciplines: r => r?.disciplines && r.disciplines.length > 0
+    ? mapDescriptors(r.disciplines, d => d.disciplineDescriptor).join(', ')
+    : undefined,
+  actualDisciplineActionLength: r => r?.actualDisciplineActionLength, // optional
+  iepPlacementMeetingIndicator: r => r?.iepPlacementMeetingIndicator, // optional
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -578,4 +650,9 @@ module.exports = {
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
+  ,logSpecStaff
+  ,logSpecStaffEdOrgAssociation
+  ,logSpecStaffSchoolAssociation
+  ,logSpecDisciplineIncident
+  ,logSpecDisciplineAction
 };

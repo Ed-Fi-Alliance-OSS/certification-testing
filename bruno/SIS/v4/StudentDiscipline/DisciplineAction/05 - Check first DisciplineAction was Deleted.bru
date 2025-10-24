@@ -1,0 +1,36 @@
+meta {
+  name: 05 - Check first DisciplineAction was Deleted
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineActions/{{firstDisciplineActionUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 404
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstDisciplineActionUniqueId', '01 - Check first DisciplineAction is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const entityName = 'DisciplineAction';
+  const scenarioName = this.req.name;
+  
+  if (res.status === 404) {
+    console.log(`✓ ${entityName} was successfully deleted (404 Not Found)`);
+  } else {
+    console.warn(`⚠ Expected 404 but got ${res.status}. ${entityName} may not have been deleted.`);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

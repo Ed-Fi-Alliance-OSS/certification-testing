@@ -1,0 +1,110 @@
+meta {
+  name: DisciplineAction
+  seq: 2
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 Student Discipline > DisciplineAction Scenarios
+  
+  This interchange defines discipline incidents and discipline actions.
+  `DisciplineAction`: This event entity represents actions taken by an education organization after a disruptive event that is recorded as a discipline incident.
+
+  ## Prerequisites
+  
+  * Student
+  * Staff
+  * Enrollment
+  * Discipline Incident
+  
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` new `Discipline Action` for an elementary school student's `Discipline Incident`.
+  2. __CREATE__ a `second` new `Discipline Action` for a high school student's `Discipline Incident`.
+  3. __UPDATE__ the `first` added elementary student's `Discipline Action` the _disciplineDescriptor_ from "Out of School Suspension" to "In School Suspension".
+  4. __UPDATE__ the `second` added high school student's `Discipline Action` the _disciplineDescriptor_ from "In School Suspension" to "Community Service".
+  5. __DELETE__ the `first` added `Discipline Action` for the elementary school student.
+
+  ## Scenarios example data
+
+  | Resource                                              | Property Name                                     | Is Collection | Data Type                                       | Required | Scenario 1: POST                  | Scenario 2: POST                  | Scenario 3: PUT                   | Scenario 4: PUT                   |
+  | ----------------------------------------------------- | ------------------------------------------------- | ------------- | ----------------------------------------------- | -------- | --------------------------------- | --------------------------------- | --------------------------------- | --------------------------------- |
+  | DisciplineActions                                     | disciplineActionIdentifier                        | FALSE         | nvarchar                                        | REQUIRED | 11                                | 22                                | 11                                | 22                                |
+  | DisciplineActions                                     | disciplines                                       | TRUE          | disciplineActionDiscipline[]                    | REQUIRED |                                   |                                   |                                   |                                   |
+  | disciplineActionDisciplines                           | disciplineDescriptor                              | FALSE         | disciplineDescriptor                            | REQUIRED | Out of School Suspension          | In School Suspension              | In School Suspension              | Community Service                 |
+  | DisciplineActions                                     | disciplineDate                                    | FALSE         | date                                            | REQUIRED | 9/30/<br/>[Current School Year]   | 9/30/<br/>[Current School Year]   | 9/30/<br/>[Current School Year]   | 9/30/<br/>[Current School Year]   |
+  | DisciplineActions                                     | studentReference                                  | FALSE         | integer                                         | REQUIRED |                                   |                                   |                                   |                                   |
+  | studentReference                                      | studentUniqueId                                   | FALSE         | string                                          | REQUIRED | 111111                            | 222222                            | 111111                            | 222222                            |
+  | DisciplineActions                                     | actualDisciplineActionLength                      | FALSE         | number                                          | REQUIRED | 2                                 | 5                                 | 2                                 | 5                                 |
+  | DisciplineActions                                     | assignmentSchoolReference                         | FALSE         | schoolReference                                 | OPTIONAL |                                   |                                   |                                   |                                   |
+  | assignmentSchoolReference                             | schoolId                                          | FALSE         | integer                                         | OPTIONAL |                                   |                                   |                                   |                                   |
+  | DisciplineActions                                     | disciplineActionLength                            | FALSE         | number                                          | OPTIONAL |                                   |                                   |                                   |                                   |
+  | DisciplineActions                                     | disciplineActionLengthDifferenceReasonDescriptor  | FALSE         | disciplineActionLengthDifferenceReasonDescriptor| OPTIONAL |                                   |                                   |                                   |                                   |
+  | DisciplineActions                                     | relatedToZeroTolerancePolicy                      | FALSE         | boolean                                         | OPTIONAL |                                   |                                   |                                   |                                   |
+  | DisciplineActions                                     | studentDisciplineIncidentAssociations             | TRUE          | studentDisciplineIncidentAssociation[]          | REQUIRED |                                   |                                   |                                   |                                   |
+  | disciplineActionStudentDisciplineIncidentAssociations | studentDisciplineIncidentAssociationReference     | FALSE         | studentDisciplineIncidentAssociationReference   | REQUIRED |                                   |                                   |                                   |                                   |
+  | DisciplineActions                                     | responsibilitySchoolReference                     | FALSE         | responsibilitySchoolReference                   | REQUIRED |                                   |                                   |                                   |                                   |
+  | responsibilityschoolReference                         | schoolId                                          | FALSE         | integer                                         | REQUIRED | 255901107                         | 255901001                         | 255901107                         | 255901001                         |
+  | DisciplineActions                                     | staffs                                            | TRUE          | disciplineActionStaff[]                         | OPTIONAL |                                   |                                   |                                   |                                   |
+  | disciplineActionStaffs                                | staffReference                                    | FALSE         | integer                                         | OPTIONAL |                                   |                                   |                                   |                                   |
+  | staffReference                                        | staffUniqueId                                     | FALSE         | string                                          | OPTIONAL |                                   |                                   |                                   |                                   |
+  | DisciplineActions                                     | iepPlacementMeetingIndicator                      | TRUE          | boolean                                         | REQUIRED | TRUE                              |                                   | TRUE                              |                                   |
+
+  ## API response format
+  ```json
+  {
+    "id": "string",
+    "disciplineActionIdentifier": "string",
+    "disciplineDate": "2025-10-24",
+    "disciplines": [
+      {
+        "disciplineDescriptor": "string"
+      }
+    ],
+    "assignmentSchoolReference": {
+      "schoolId": 0
+    },
+    "responsibilitySchoolReference": {
+      "schoolId": 0
+    },
+    "studentReference": {
+      "studentUniqueId": "string"
+    },
+    "actualDisciplineActionLength": 0,
+    "disciplineActionLength": 0,
+    "disciplineActionLengthDifferenceReasonDescriptor": "string",
+    "iepPlacementMeetingIndicator": true,
+    "receivedEducationServicesDuringExpulsion": true,
+    "relatedToZeroTolerancePolicy": true,
+    "staffs": [
+      {
+        "staffReference": {
+          "staffUniqueId": "string"
+        }
+      }
+    ],
+    "studentDisciplineIncidentAssociations": [
+      {
+        "studentDisciplineIncidentAssociationReference": {
+          "incidentIdentifier": "string",
+          "schoolId": 0,
+          "studentUniqueId": "string"
+        }
+      }
+    ],
+    "studentDisciplineIncidentBehaviorAssociations": [
+      {
+        "studentDisciplineIncidentBehaviorAssociationReference": {
+          "behaviorDescriptor": "string",
+          "incidentIdentifier": "string",
+          "schoolId": 0,
+          "studentUniqueId": "string"
+        }
+      }
+    ]
+  }
+  ```
+}

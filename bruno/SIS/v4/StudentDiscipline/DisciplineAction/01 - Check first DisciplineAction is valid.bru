@@ -1,0 +1,67 @@
+meta {
+  name: 01 - Check first DisciplineAction is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineActions?studentUniqueId=[ENTER FIRST STUDENT UNIQUE ID]&disciplineDate=[ENTER FIRST DISCIPLINE DATE YYYY-MM-DD]&disciplineActionIdentifier=[ENTER FIRST DISCIPLINE ACTION IDENTIFIER]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  studentUniqueId: [ENTER FIRST STUDENT UNIQUE ID]
+  disciplineDate: [ENTER FIRST DISCIPLINE DATE YYYY-MM-DD]
+  disciplineActionIdentifier: [ENTER FIRST DISCIPLINE ACTION IDENTIFIER]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].disciplineActionIdentifier: isString
+  res.body[0].disciplineActionIdentifier: isNotEmpty
+  res.body[0].disciplines: isArray
+  res.body[0].disciplines: isNotEmpty
+  res.body[0].disciplines[0].disciplineDescriptor: isString
+  res.body[0].disciplines[0].disciplineDescriptor: isNotEmpty
+  res.body[0].disciplineDate: isString
+  res.body[0].disciplineDate: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].actualDisciplineActionLength: isNumber
+  res.body[0].actualDisciplineActionLength: neq 0
+  res.body[0].responsibilitySchoolReference: isDefined
+  res.body[0].responsibilitySchoolReference.schoolId: isNumber
+  res.body[0].responsibilitySchoolReference.schoolId: neq 0
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor, mapDescriptors, joinDescriptors } = require('./utils');
+  const { logSpecDisciplineAction, logScenario } = require('./logging');
+  const entityName = 'DisciplineAction';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [ 'firstDisciplineActionUniqueId','firstDisciplineActionId','firstDisciplineActionDisciplineDescriptorList' ], entityName, true);
+  }
+  
+  const disciplineDescriptors = joinDescriptors(mapDescriptors(single.disciplines || [], d => d.disciplineDescriptor));
+  
+  setVars(bru, {
+    firstDisciplineActionUniqueId: single.id,
+    firstDisciplineActionId: single.disciplineActionIdentifier,
+    firstDisciplineActionDisciplineDescriptorList: disciplineDescriptors
+  }, entityName);
+  logScenario(entityName, scenarioName, single, logSpecDisciplineAction);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

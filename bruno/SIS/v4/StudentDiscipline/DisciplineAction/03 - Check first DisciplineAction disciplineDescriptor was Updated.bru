@@ -1,0 +1,51 @@
+meta {
+  name: 03 - Check first DisciplineAction disciplineDescriptor was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineActions/{{firstDisciplineActionUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.disciplines: isArray
+  res.body.disciplines: isNotEmpty
+  res.body.disciplines[0].disciplineDescriptor: isString
+  res.body.disciplines[0].disciplineDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstDisciplineActionUniqueId', '01 - Check first DisciplineAction is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstDisciplineActionDisciplineDescriptorList', '01 - Check first DisciplineAction is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, mapDescriptors, joinDescriptors, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecDisciplineAction, logScenario } = require('./logging');
+  const entityName = 'DisciplineAction';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousList = getVar(bru, 'firstDisciplineActionDisciplineDescriptorList');
+  const currentList = joinDescriptors(mapDescriptors(current.disciplines || [], d => d.disciplineDescriptor));
+  
+  expectChanged(previousList, currentList, 'disciplineDescriptor list');
+  logScenario(entityName, scenarioName, current, logSpecDisciplineAction, ['id','disciplineActionIdentifier','disciplines']);
+}
+
+settings {
+  encodeUrl: true
+}

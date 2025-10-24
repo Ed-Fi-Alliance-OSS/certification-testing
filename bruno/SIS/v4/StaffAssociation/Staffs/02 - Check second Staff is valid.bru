@@ -1,0 +1,74 @@
+meta {
+  name: 02 - Check second Staff is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffs?staffUniqueId=[ENTER SECOND STAFF UNIQUE ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  staffUniqueId: [ENTER SECOND STAFF UNIQUE ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].staffUniqueId: isString
+  res.body[0].staffUniqueId: isNotEmpty
+  res.body[0].firstName: isString
+  res.body[0].firstName: isNotEmpty
+  res.body[0].hispanicLatinoEthnicity: isBoolean
+  res.body[0].lastSurname: isString
+  res.body[0].lastSurname: isNotEmpty
+  res.body[0].generationCodeSuffix: isString
+  res.body[0].generationCodeSuffix: isNotEmpty
+  res.body[0].highestCompletedLevelOfEducationDescriptor: isString
+  res.body[0].highestCompletedLevelOfEducationDescriptor: isNotEmpty
+  res.body[0].highlyQualifiedTeacher: isBoolean
+  res.body[0].middleName: isString
+  res.body[0].middleName: isNotEmpty
+  res.body[0].sexDescriptor: isString
+  res.body[0].sexDescriptor: isNotEmpty
+  res.body[0].electronicMails: isArray
+  res.body[0].electronicMails: isNotEmpty
+  res.body[0].electronicMails[0].electronicMailAddress: isString
+  res.body[0].electronicMails[0].electronicMailAddress: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logScenario, logSpecStaff } = require('./logging');
+  const entityName = 'Staff';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'secondStaffUniqueId',
+      'secondStaffId',
+      'secondStaffHighlyQualifiedTeacher',
+      'secondStaffHispanicLatinoEthnicity'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    secondStaffUniqueId: single.id,
+    secondStaffId: single.staffUniqueId,
+    secondStaffHighlyQualifiedTeacher: single.highlyQualifiedTeacher,
+    secondStaffHispanicLatinoEthnicity: single.hispanicLatinoEthnicity
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStaff);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,54 @@
+meta {
+  name: 04 - Check second StaffEdOrgAssociation positionTitle was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffEducationOrganizationAssignmentAssociations/{{secondStaffEducationOrganizationAssignmentAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isJson
+  res.body.id: isString
+  res.body.id: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(
+    bru,
+    'secondStaffEducationOrganizationAssignmentAssociationUniqueId',
+    '02 - Check second StaffEdOrgAssociation is valid'
+  );
+}
+
+script:post-response {
+  const { expectChanged, getVar } = require('./utils');
+  const { logScenario, logSpecStaffEdOrgAssociation } = require('./logging');
+  
+  const entityName = 'StaffEducationOrganizationAssignmentAssociation';
+  const scenarioName = '04 - Check second StaffEdOrgAssociation positionTitle was Updated';
+  const current = res.body;
+  const previousPositionTitle = getVar(bru, 'secondStaffEducationOrganizationAssignmentAssociationPositionTitle');
+
+  expectChanged(
+    previousPositionTitle,
+    current?.positionTitle,
+    'positionTitle should have been updated',
+    true
+  );
+
+  logScenario(entityName, scenarioName, current, logSpecStaffEdOrgAssociation, [
+    'staffUniqueId',
+    'positionTitle',
+  ]);
+}
+
+settings {
+  encodeUrl: true
+}

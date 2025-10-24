@@ -1,0 +1,67 @@
+meta {
+  name: 01 - Check first DisciplineIncident is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineIncidents?schoolId=[ENTER FIRST SCHOOL ID]&incidentIdentifier=[ENTER FIRST INCIDENT IDENTIFIER]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER FIRST SCHOOL ID]
+  incidentIdentifier: [ENTER FIRST INCIDENT IDENTIFIER]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].incidentDate: isString
+  res.body[0].incidentDate: isNotEmpty
+  res.body[0].incidentIdentifier: isString
+  res.body[0].incidentIdentifier: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].behaviors: isArray
+  res.body[0].behaviors: isNotEmpty
+  res.body[0].behaviors[0].behaviorDescriptor: isString
+  res.body[0].behaviors[0].behaviorDescriptor: isNotEmpty
+  res.body[0].incidentLocationDescriptor: isString
+  res.body[0].incidentLocationDescriptor: isNotEmpty
+  res.body[0].reporterDescriptionDescriptor: isString
+  res.body[0].reporterDescriptionDescriptor: isNotEmpty
+  res.body[0].reporterName: isString
+  res.body[0].reporterName: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor, mapDescriptors, joinDescriptors } = require('./utils');
+  const { logSpecDisciplineIncident, logScenario } = require('./logging');
+  const entityName = 'DisciplineIncident';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [ 'firstDisciplineIncidentUniqueId','firstDisciplineIncidentId','firstDisciplineIncidentReporterName' ], entityName, true);
+  }
+  
+  const behaviorDescriptors = joinDescriptors(mapDescriptors(single.behaviors || [], b => b.behaviorDescriptor));
+  
+  setVars(bru, {
+    firstDisciplineIncidentUniqueId: single.id,
+    firstDisciplineIncidentId: single.incidentIdentifier,
+    firstDisciplineIncidentReporterName: single.reporterName
+  }, entityName);
+  logScenario(entityName, scenarioName, single, logSpecDisciplineIncident);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
