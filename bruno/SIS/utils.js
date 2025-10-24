@@ -159,15 +159,17 @@ function encodeDescriptorParameter(originalUrl, parameterName, defaultDescriptor
 }
 
 // Change expectation helper ------------------------------------------
-function expectChanged(previous, current, label) {
-  test(`${label} changed`, () => {
+function expectChanged(previous, current, label, isMessageOverrode = false) {
+  const message = isMessageOverrode ? label : `${label} changed`;
+  test(message, () => {
     expect(current).not.equals(previous);
   });
 }
 
 // Positive (equality) expectation helper --------------------------------
-function expectUnchanged(previous, current, label) {
-  test(`${label} unchanged`, () => {
+function expectUnchanged(previous, current, label, isMessageOverrode = false) {
+  const message = isMessageOverrode ? label : `${label} unchanged`;
+  test(message, () => {
     expect(current).equals(previous);
   });
 }

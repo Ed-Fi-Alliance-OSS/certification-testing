@@ -1,0 +1,37 @@
+meta {
+  name: 03 - Check first StaffSchoolAssociation was Deleted
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSchoolAssociations/{{firstStaffSchoolAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 404
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(
+    bru,
+    'firstStaffSchoolAssociationUniqueId',
+    '01 - Check first StaffSchoolAssociation is valid'
+  );
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  
+  wipeVars(bru, [
+    'firstStaffSchoolAssociationUniqueId',
+  ], 'StaffSchoolAssociation', false);
+}
+
+settings {
+  encodeUrl: true
+}

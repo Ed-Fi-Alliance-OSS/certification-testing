@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../../schemas/entity-config.schema.json",
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": [
+      "EducationOrganizationId",
+      "StaffClassificationDescriptorId",
+      "BeginDate",
+      "staffUniqueId"
+    ]
+  },
+  "overrides": {
+    "entityName": "StaffEducationOrganizationAssignmentAssociation",
+    "endpointSegment": "staffEducationOrganizationAssignmentAssociations",
+    "loggingSpecName": "StaffEdOrgAssociation",
+    "fileNameAlias": "StaffEdOrgAssociation"
+  }
+}

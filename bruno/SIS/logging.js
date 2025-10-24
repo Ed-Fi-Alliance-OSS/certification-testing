@@ -553,6 +553,48 @@ const logSpecCourseTranscript = {
   finalNumericGradeEarned: r => r?.finalNumericGradeEarned,
 };
 
+// Staff spec map (StaffAssociation > Staffs)
+// Include identifiers and mutated fields (highlyQualifiedTeacher, hispanicLatinoEthnicity) plus selected required personal info.
+const logSpecStaff = {
+  staffUniqueId: r => r?.staffUniqueId,
+  firstName: r => r?.firstName,
+  middleName: r => r?.middleName,
+  lastSurname: r => r?.lastSurname,
+  highlyQualifiedTeacher: r => r?.highlyQualifiedTeacher,
+  hispanicLatinoEthnicity: r => r?.hispanicLatinoEthnicity,
+  sexDescriptor: r => extractDescriptor(r?.sexDescriptor),
+  highestCompletedLevelOfEducationDescriptor: r => extractDescriptor(r?.highestCompletedLevelOfEducationDescriptor),
+  electronicMailAddress: r => r?.electronicMails?.[0]?.electronicMailAddress,
+};
+
+// StaffEducationOrganizationAssignmentAssociation spec map (StaffAssociation > StaffEdOrgAssociation)
+// Include identifiers and mutated fields (positionTitle, endDate) plus selected required info.
+const logSpecStaffEdOrgAssociation = {
+  staffUniqueId: r => r?.staffReference?.staffUniqueId,
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  beginDate: r => r?.beginDate,
+  endDate: r => r?.endDate,
+  staffClassificationDescriptor: r => extractDescriptor(r?.staffClassificationDescriptor),
+  positionTitle: r => r?.positionTitle,
+  orderOfAssignment: r => r?.orderOfAssignment,
+};
+
+// StaffSchoolAssociation spec map (StaffAssociation > StaffSchoolAssociations)
+// Include identifiers and programAssignmentDescriptor
+const logSpecStaffSchoolAssociation = {
+  staffUniqueId: r => r?.staffReference?.staffUniqueId,
+  schoolId: r => r?.schoolReference?.schoolId,
+  programAssignmentDescriptor: r => extractDescriptor(r?.programAssignmentDescriptor),
+  schoolYear: r => r?.schoolYearTypeReference?.schoolYear,
+  calendarCode: r => r?.calendarReference?.calendarCode,
+  academicSubjects: r => r?.academicSubjects && r.academicSubjects.length > 0
+    ? mapDescriptors(r.academicSubjects, s => s.academicSubjectDescriptor).join(', ')
+    : undefined,
+  gradeLevels: r => r?.gradeLevels && r.gradeLevels.length > 0
+    ? mapDescriptors(r.gradeLevels, g => g.gradeLevelDescriptor).join(', ')
+    : undefined,
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -578,4 +620,7 @@ module.exports = {
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
+  ,logSpecStaff
+  ,logSpecStaffEdOrgAssociation
+  ,logSpecStaffSchoolAssociation
 };

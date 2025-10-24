@@ -38,6 +38,22 @@
       "type": "object",
       "description": "Optional explicit overrides when inference from docs would be ambiguous.",
       "properties": {
+        "entityName": {
+          "type": "string",
+          "description": "Explicit singular entity name override. Use when folder name is an alias (e.g., 'StaffEdOrgAssociation' folder for 'StaffEducationOrganizationAssignmentAssociation' entity)."
+        },
+        "endpointSegment": {
+          "type": "string",
+          "description": "Explicit REST endpoint segment override. Use when endpoint differs from camelCase folder name (e.g., 'staffEducationOrganizationAssignmentAssociations')."
+        },
+        "loggingSpecName": {
+          "type": "string",
+          "description": "Explicit logging specification variable name override. Use when entityName is too long for practical logging variable names (e.g., 'StaffEdOrgAssociation' for logSpecStaffEdOrgAssociation)."
+        },
+        "fileNameAlias": {
+          "type": "string",
+          "description": "Explicit shorter name for scenario file names. Use when entityName is too long for practical file names (e.g., 'StaffEdOrgAssociation' for scenario files)."
+        },
         "baselineLabels": {
           "type": "array",
           "items": {"type": "string"},
