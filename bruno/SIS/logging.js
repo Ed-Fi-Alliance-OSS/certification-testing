@@ -595,6 +595,18 @@ const logSpecStaffSchoolAssociation = {
     : undefined,
 };
 
+// StaffSectionAssociation spec map (StaffAssociation > StaffSectionAssociations)
+// Include identifiers and mutated fields (classroomPositionDescriptor, beginDate) plus required info.
+const logSpecStaffSectionAssociation = {
+  staffUniqueId: r => r?.staffReference?.staffUniqueId,
+  schoolId: r => r?.sectionReference?.schoolId,
+  schoolYear: r => r?.sectionReference?.schoolYear,
+  localCourseCode: r => r?.sectionReference?.localCourseCode,
+  sectionIdentifier: r => r?.sectionReference?.sectionIdentifier,
+  sessionName: r => r?.sectionReference?.sessionName,
+  classroomPositionDescriptor: r => extractDescriptor(r?.classroomPositionDescriptor),
+  endDate: r => r?.endDate
+};
 // DisciplineIncident spec map (StudentDiscipline > DisciplineIncident)
 // Include identifiers and mutated fields (reporterName, incidentLocationDescriptor) plus required info.
 const logSpecDisciplineIncident = {
@@ -653,6 +665,7 @@ module.exports = {
   ,logSpecStaff
   ,logSpecStaffEdOrgAssociation
   ,logSpecStaffSchoolAssociation
+  ,logSpecStaffSectionAssociation
   ,logSpecDisciplineIncident
   ,logSpecDisciplineAction
 };
