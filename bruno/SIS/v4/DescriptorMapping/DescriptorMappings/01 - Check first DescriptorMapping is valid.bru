@@ -1,0 +1,59 @@
+meta {
+  name: 01 - Check first DescriptorMapping is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/descriptorMappings?mappedNamespace=[ENTER FIRST MAPPED NAMESPACE]&namespace=[ENTER FIRST NAMESPACE]&mappedValue=[ENTER FIRST MAPPED VALUE]&value=[ENTER FIRST VALUE]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  mappedNamespace: [ENTER FIRST MAPPED NAMESPACE]
+  namespace: [ENTER FIRST NAMESPACE]
+  mappedValue: [ENTER FIRST MAPPED VALUE]
+  value: [ENTER FIRST VALUE]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].value: isString
+  res.body[0].value: isNotEmpty
+  res.body[0].namespace: isString
+  res.body[0].namespace: isNotEmpty
+  res.body[0].mappedValue: isString
+  res.body[0].mappedValue: isNotEmpty
+  res.body[0].mappedNamespace: isString
+  res.body[0].mappedNamespace: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecDescriptorMapping } = require('./logging');
+  const entityName = 'DescriptorMapping';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'firstDescriptorMappingUniqueId'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstDescriptorMappingUniqueId: single.id
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecDescriptorMapping);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

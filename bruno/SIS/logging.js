@@ -648,6 +648,16 @@ const logSpecDisciplineAction = {
   iepPlacementMeetingIndicator: r => r?.iepPlacementMeetingIndicator, // optional
 };
 
+// DescriptorMapping spec map (DescriptorMapping > DescriptorMappings)
+// Include all identifying fields (namespace, value, mappedNamespace, mappedValue) plus optional modelEntity
+const logSpecDescriptorMapping = {
+  namespace: r => r?.namespace,
+  value: r => r?.value,
+  mappedNamespace: r => r?.mappedNamespace,
+  mappedValue: r => r?.mappedValue,
+  modelEntity: r => r?.modelEntity
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -680,4 +690,5 @@ module.exports = {
   ,logSpecStaffCohortAssociation
   ,logSpecDisciplineIncident
   ,logSpecDisciplineAction
+  ,logSpecDescriptorMapping
 };
