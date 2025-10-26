@@ -1,0 +1,40 @@
+meta {
+  name: 05 - Check first StaffCohortAssociation was Deleted
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{firstStaffCohortAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 404
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(bru, 'firstStaffCohortAssociationUniqueId', '01 - Check first StaffCohortAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'StaffCohortAssociation';
+  
+  if (res.status === 404) {
+    wipeVars(bru, [
+      'firstStaffCohortAssociationUniqueId',
+      'firstStaffCohortAssociationEndDate'
+    ], entityName, false);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

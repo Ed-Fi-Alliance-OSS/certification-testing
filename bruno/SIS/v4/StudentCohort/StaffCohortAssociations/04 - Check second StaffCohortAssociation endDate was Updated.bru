@@ -1,0 +1,66 @@
+meta {
+  name: 04 - Check second StaffCohortAssociation endDate was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{secondStaffCohortAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.cohortReference: isDefined
+  res.body.cohortReference.educationOrganizationId: isNumber
+  res.body.cohortReference.educationOrganizationId: neq 0
+  res.body.cohortReference.cohortIdentifier: isString
+  res.body.cohortReference.cohortIdentifier: isNotEmpty
+  res.body.beginDate: isString
+  res.body.beginDate: isNotEmpty
+  res.body.staffReference: isDefined
+  res.body.staffReference.staffUniqueId: isString
+  res.body.staffReference.staffUniqueId: isNotEmpty
+  res.body.endDate: isString
+  res.body.endDate: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondStaffCohortAssociationUniqueId', '02 - Check second StaffCohortAssociation is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStaffCohortAssociationEndDate', '02 - Check second StaffCohortAssociation is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logScenario, logSpecStaffCohortAssociation } = require('./logging');
+  const entityName = 'StaffCohortAssociation';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousEndDate = getVar(bru, 'secondStaffCohortAssociationEndDate');
+  
+  expectChanged(previousEndDate, current.endDate, 'endDate');
+  
+  logScenario(entityName, scenarioName, current, logSpecStaffCohortAssociation, [
+    'endDate'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

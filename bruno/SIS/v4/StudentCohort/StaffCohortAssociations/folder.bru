@@ -1,0 +1,68 @@
+meta {
+  name: StaffCohortAssociations
+  seq: 2
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 StudentCohort > StaffCohortAssociation Scenarios
+  
+  Cohorts are used to designate groups of students outside of class Student Information Systems, enrollment lists, or extra curricular participation. The Student Cohort Interchange describes student cohort information. It can be used to exchange information regarding any named group of students, or cohort, for tracking, analysis, or intervention.
+  StaffCohortAssociation: This association indicates the staff associated with a cohort of students.
+  
+  ## Prerequisites
+  
+  * Staff
+  * Cohort
+  
+  ## Scenarios example data
+
+  1. __CREATE__ a `first` new `StaffCohortAssociation` for an elementary school staff member.
+  2. __CREATE__ a `second` new `StaffCohortAssociation` for a high school staff member.
+  3. __UPDATE__ the _endDate_ for the `first` added `StaffCohortAssociation`.
+  4. __UPDATE__ the _endDate_ for the `second` added `StaffCohortAssociation`.
+  5. __DELETE__ the `first` added `StaffCohortAssociation` for the elementary school staff member.
+
+  | Resource                | Property Name           | Is Collection | Data Type       | Required | Scenario 1: POST                        | Scenario 2: POST                        | Scenario 3: PUT                         | Scenario 4: PUT                         |
+  | ----------------------- | ----------------------- | ------------- | --------------- | -------- | --------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- |
+  | StaffCohortAssociations | cohortReference         | FALSE         | cohortReference | REQUIRED |                                         |                                         |                                         |                                         |
+  | cohortReference         | educationOrganizationId | FALSE         | integer         | REQUIRED | 255901107                               | 255901001                               | 255901107                               | 255901001                               |
+  | cohortReference         | cohortIdentifier        | FALSE         | string          | REQUIRED | \["1" if possible \| system value\]     | \["2" if possible\| system value\]      | \["1" if possible\| system value\]      | \["2" if possible\| system value\]      |
+  | StaffCohortAssociations | beginDate               | FALSE         | date            | REQUIRED | 9/14/\[Current School Year\]            | 9/14/\[Current School Year\]            | 9/14/\[Current School Year\]            | 9/14//\[Current School Year\]           |
+  | StaffCohortAssociations | endDate                 | FALSE         | date            | REQUIRED |                                         |                                         | 12/20/\[Current School Year\]           | 12/20/\[Current School Year\]           |
+  | StaffCohortAssociations | staffReference          | FALSE         | integer         | REQUIRED |                                         |                                         |                                         |                                         |
+  | staffReference          | staffUniqueId           | FALSE         | string          | REQUIRED | \["207220" if possible\| system value\] | \["207269" if possible\| system value\] | \["207220" if possible\| system value\] | \["207269" if possible\| system value\] |
+
+  ## API response format
+  
+  ```json
+  {
+    "id": "string",
+    "beginDate": "2025-10-26",
+    "cohortReference": {
+      "cohortIdentifier": "string",
+      "educationOrganizationId": 0
+    },
+    "studentReference": {
+      "studentUniqueId": "string"
+    },
+    "endDate": "2025-10-26",
+    "sections": [
+      {
+        "sectionReference": {
+          "localCourseCode": "string",
+          "schoolId": 0,
+          "schoolYear": 0,
+          "sectionIdentifier": "string",
+          "sessionName": "string"
+        }
+      }
+    ]
+  }
+  ```
+
+
+}
