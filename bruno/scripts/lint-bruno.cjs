@@ -170,9 +170,11 @@ function lintFile(file) {
 }
 
 // Run
-const bruFiles = walk(ROOT).filter(f =>
-  /(^|\\)(SIS|Sample Data|Assessment)(\\|\/)/.test(f)
-);
+const bruFiles = walk(ROOT).filter(f => {
+  // Normalize path separators for cross-platform compatibility
+  const normalizedPath = f.replace(/\\/g, '/');
+  return /(^|\/)(SIS|Sample Data|Assessment)(\/|$)/.test(normalizedPath);
+});
 bruFiles.forEach(lintFile);
 
 SUMMARY.problems = problems.length;
