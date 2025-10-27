@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords?educationOrganizationId=255901001&schoolYear=2022&studentUniqueId=604822&termDescriptor={{termDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=[ENTER_TERM_DESCRIPTOR]
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords?educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]&schoolYear=[ENTER_SCHOOL_YEAR_FIVE_YEARS_AGO]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&termDescriptor={{termDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=[ENTER_TERM_DESCRIPTOR]
   body: none
   auth: inherit
 }
@@ -48,9 +48,9 @@ assert {
 }
 
 script:pre-request {
-	const { encodeDescriptorParameter, setVar } = require('./utils');
-	const termDescriptorEncoded = encodeDescriptorParameter(req.url, parameterName = 'termDescriptor_KEEP_IT_AT_THE_END');
-	setVar(bru, 'termDescriptorEncoded', termDescriptorEncoded);
+  	const { encodeDescriptorParameter, setVar } = require('./utils');
+  	const termDescriptorEncoded = encodeDescriptorParameter(req.url, parameterName = 'termDescriptor_KEEP_IT_AT_THE_END');
+  	setVar(bru, 'termDescriptorEncoded', termDescriptorEncoded);
 }
 
 script:post-response {

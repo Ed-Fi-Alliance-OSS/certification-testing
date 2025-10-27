@@ -110,7 +110,7 @@ function lintFile(file) {
   // 3 Hardcoded descriptor URIs
   if (isCheck) {
     if (/uri:\/\/ed-fi\.org\//.test(txt)) {
-      report(file, 'Hardcoded descriptor URI found in a validation file (should rely on dynamic values)', 'WARN');
+      report(file, 'Hardcoded descriptor URI found in a validation file (should rely on dynamic values)', 'ERROR');
     }
   }
 
@@ -145,14 +145,14 @@ function lintFile(file) {
     }
   }
 
-  // 8 settings encodeUrl
-  if (!/settings\s*{[\s\S]*?encodeUrl:\s*true/i.test(txt)) {
-    report(file, 'Missing settings encodeUrl: true', 'WARN');
+  // 8 settings encodeUrl (accept both true and false)
+  if (!/settings\s*{[\s\S]*?encodeUrl:\s*(true|false)/i.test(txt)) {
+    report(file, 'Missing settings encodeUrl (should be true or false)', 'WARN');
     if (FIX_MODE) {
       // If a settings block exists, patch it; else append new block
       if (/settings\s*{[\s\S]*?}/i.test(txt)) {
         txt = txt.replace(/settings\s*{([\s\S]*?)}(?![^{]*settings)/i, (m, inner) => {
-          if (/encodeUrl:\s*true/.test(inner)) return m; // race guard
+          if (/encodeUrl:\s*(true|false)/.test(inner)) return m; // race guard
           return m.replace(inner, `${inner.trim()}\n  encodeUrl: true\n`);
         });
       } else {
