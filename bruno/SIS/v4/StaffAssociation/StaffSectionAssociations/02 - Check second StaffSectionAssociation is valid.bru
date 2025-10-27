@@ -5,18 +5,18 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations?schoolId=255901001&schoolYear=2022&localCourseCode=ALG-1&sessionName=2021-2022 Fall Semester&staffUniqueId=207270&sectionIdentifier=25590100102Trad220ALG112011
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations?schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&sessionName=[ENTER_SESSION_NAME]&staffUniqueId=[ENTER_STAFF_UNIQUE_ID]&sectionIdentifier=[ENTER_SECTION_IDENTIFIER]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: 255901001
-  schoolYear: 2022
-  localCourseCode: ALG-1
-  sessionName: 2021-2022 Fall Semester
-  staffUniqueId: 207270
-  sectionIdentifier: 25590100102Trad220ALG112011
+  schoolId: [ENTER_SCHOOL_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  localCourseCode: [ENTER_LOCAL_COURSE_CODE]
+  sessionName: [ENTER_SESSION_NAME]
+  staffUniqueId: [ENTER_STAFF_UNIQUE_ID]
+  sectionIdentifier: [ENTER_SECTION_IDENTIFIER]
 }
 
 assert {
