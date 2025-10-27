@@ -3,14 +3,14 @@ name: Bruno Lint
 on:
   pull_request:
     paths:
-      - '**/*.bru'
-      - 'scripts/lint-bruno.cjs'
-      - 'package.json'
+      - 'bruno/**/*.bru'
+      - 'bruno/scripts/lint-bruno.cjs'
+      - 'bruno/package.json'
       - '.github/workflows/lint-bruno.yml'
   push:
     branches: [ main, master ]
     paths:
-      - 'scripts/lint-bruno.cjs'
+      - 'bruno/scripts/lint-bruno.cjs'
 
 permissions:
   contents: read
