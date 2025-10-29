@@ -1,2 +1,11 @@
 # Mac OS Files
 .DS_Store
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore automation testing generated copies
+automation-testing/
+
+# Ignore local artifacts
+local-artifacts
