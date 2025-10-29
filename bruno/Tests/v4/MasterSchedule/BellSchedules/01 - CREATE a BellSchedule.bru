@@ -1,0 +1,44 @@
+meta {
+  name: 01 - CREATE a BellSchedule
+  type: http
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/bellSchedules
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "bellScheduleName": "[ENTER_BELL_SCHEDULE_NAME]",
+    "startTime": "[ENTER_START_TIME]",
+    "endTime": "[ENTER_END_TIME]",
+    "totalInstructionalTime": "[ENTER_TOTAL_INSTRUCTIONAL_TIME]",
+    "alternateDayName": "[ENTER_ALTERNATE_DAY_NAME]",
+    "schoolReference": {
+      "schoolId": "[ENTER_SCHOOL_ID]"
+    }
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const bellScheduleId = locationHeader.split('/').pop();
+    bru.setEnvVar('tempBellScheduleUniqueId', bellScheduleId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

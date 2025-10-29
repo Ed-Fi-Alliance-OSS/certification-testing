@@ -1,0 +1,16 @@
+{
+    "name": "BellSchedules",
+    "data": {
+        "ENTER_SCHOOL_ID": 1549697793,
+        "ENTER_BELL_SCHEDULE_NAME": "Early Release A",
+        "ENTER_START_TIME": "13:00:00",
+        "ENTER_END_TIME": "15:00:00",
+        "ENTER_TOTAL_INSTRUCTIONAL_TIME": 120,
+        "ENTER_ALTERNATE_DAY_NAME": "C"
+    },
+    "order": [
+        "bruno/Tests/v4/MasterSchedule/BellSchedules/01 - CREATE a BellSchedule.bru",
+        "bruno/SIS/v4/MasterSchedule/BellSchedules/01 - Check BellSchedule is valid.bru",
+        "bruno/Tests/v4/MasterSchedule/BellSchedules/02 - DELETE a BellSchedule.bru"
+    ]
+}
