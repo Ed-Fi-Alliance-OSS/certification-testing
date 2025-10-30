@@ -356,8 +356,11 @@ function getMirroredPath(original) {
  */
 function parseRequests(output) {
   const lines = output.split(/\r?\n/);
-  const requestHeaderRegex = /^v4\\.*\\(.+?) \((\d{3}) [A-Za-z ]+\) - (\d+) ms$/;
-  const requestHeaderRegexAlt = /^v4\\.*\\(.+?) \((\d{3})\) - (\d+) ms$/; // fallback variant
+  // Match lines like:
+  // v4/MasterSchedule/BellSchedules/01 - CREATE a BellSchedule (201 Created) - 907 ms
+  // or with backslashes on some platforms. Capture groups: (1) filename, (2) statusCode, (3) timeMs
+  const requestHeaderRegex = /^v4[\/\\].*?\/([^\/]+) \((\d{3})(?: [^)]+)?\) - (\d+) ms$/;
+  const requestHeaderRegexAlt = /^v4[\/\\].*?\/([^\/]+) \((\d{3})\) - (\d+) ms$/; // fallback variant
   const requests = [];
   let current = null;
   let inAssertions = false;
