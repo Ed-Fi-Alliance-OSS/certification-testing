@@ -1,0 +1,54 @@
+meta {
+  name: 04 - Check second Staff hispanicLatinoEthnicity was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffs/{{secondStaffUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondStaffUniqueId', '02 - Check second Staff is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStaffHispanicLatinoEthnicity', '02 - Check second Staff is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logScenario, logSpecStaff } = require('./logging');
+  const entityName = 'Staff';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  
+  const previousHispanicLatinoEthnicity = getVar(bru, 'secondStaffHispanicLatinoEthnicity');
+  expectChanged(previousHispanicLatinoEthnicity, current.hispanicLatinoEthnicity, 'hispanicLatinoEthnicity');
+  
+  logScenario(entityName, scenarioName, current, logSpecStaff, [
+    'staffUniqueId',
+    'hispanicLatinoEthnicity'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+}

@@ -553,6 +553,20 @@ const logSpecCourseTranscript = {
   finalNumericGradeEarned: r => r?.finalNumericGradeEarned,
 };
 
+// Staff spec map (StaffAssociation > Staffs)
+// Include identifiers and mutated fields (highlyQualifiedTeacher, hispanicLatinoEthnicity) plus selected required personal info.
+const logSpecStaff = {
+  staffUniqueId: r => r?.staffUniqueId,
+  firstName: r => r?.firstName,
+  middleName: r => r?.middleName,
+  lastSurname: r => r?.lastSurname,
+  highlyQualifiedTeacher: r => r?.highlyQualifiedTeacher,
+  hispanicLatinoEthnicity: r => r?.hispanicLatinoEthnicity,
+  sexDescriptor: r => extractDescriptor(r?.sexDescriptor),
+  highestCompletedLevelOfEducationDescriptor: r => extractDescriptor(r?.highestCompletedLevelOfEducationDescriptor),
+  electronicMailAddress: r => r?.electronicMails?.[0]?.electronicMailAddress,
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -578,4 +592,5 @@ module.exports = {
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
+  ,logSpecStaff
 };

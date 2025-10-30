@@ -1,0 +1,54 @@
+meta {
+  name: 03 - Check first Staff highlyQualifiedTeacher was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffs/{{firstStaffUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStaffUniqueId', '01 - Check first Staff is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStaffHighlyQualifiedTeacher', '01 - Check first Staff is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logScenario, logSpecStaff } = require('./logging');
+  const entityName = 'Staff';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  
+  const previousHighlyQualifiedTeacher = getVar(bru, 'firstStaffHighlyQualifiedTeacher');
+  expectChanged(previousHighlyQualifiedTeacher, current.highlyQualifiedTeacher, 'highlyQualifiedTeacher');
+  
+  logScenario(entityName, scenarioName, current, logSpecStaff, [
+    'staffUniqueId',
+    'highlyQualifiedTeacher'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+}
