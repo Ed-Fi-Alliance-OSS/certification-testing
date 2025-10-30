@@ -1,0 +1,49 @@
+meta {
+  name: 03 - Check first DisciplineIncident reporterName was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineIncidents/{{firstDisciplineIncidentUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.reporterName: isString
+  res.body.reporterName: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstDisciplineIncidentUniqueId', '01 - Check first DisciplineIncident is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+  validateDependency(bru, 'firstDisciplineIncidentReporterName', '01 - Check first DisciplineIncident is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecDisciplineIncident, logScenario } = require('./logging');
+  const entityName = 'DisciplineIncident';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousReporterName = getVar(bru, 'firstDisciplineIncidentReporterName');
+  const currentReporterName = current.reporterName;
+  
+  expectChanged(previousReporterName, currentReporterName, 'reporterName should have been updated', true);
+  logScenario(entityName, scenarioName, current, logSpecDisciplineIncident, ['id','incidentIdentifier','reporterName']);
+}
+
+settings {
+  encodeUrl: true
+}
