@@ -3,6 +3,7 @@
     "dayjs": "^1.11.18"
   },
   "devDependencies": {
+    "@usebruno/cli": "^1.40.0",
     "simple-git-hooks": "^2.11.1"
   },
   "name": "sis",
@@ -11,7 +12,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint:bru": "node scripts/lint-bruno.cjs",
     "lint:bru:json": "node scripts/lint-bruno.cjs --json",
-    "prepare": "npx simple-git-hooks"
+    "prepare": "npx simple-git-hooks",
+    "scenarios:run": "node scripts/run-scenarios.cjs"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run lint:bru"

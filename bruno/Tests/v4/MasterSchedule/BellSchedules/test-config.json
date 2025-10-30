@@ -1,0 +1,18 @@
+{
+    "name": "BellSchedules",
+    "data": {
+        "ENTER_SCHOOL_ID": 1549697793,
+        "ENTER_BELL_SCHEDULE_NAME": "Normal Schedule A",
+        "START_TIME": "07:00:00",
+        "END_TIME": "10:00:00",
+        "ALTERNATE_DAY_NAME": "A",
+        "CLASS_PERIOD_NAME_1": "Class Period 1",
+        "CLASS_PERIOD_NAME_2": "Class Period 2",
+        "CLASS_PERIOD_NAME_3": "Class Period 3"
+    },
+    "order": [
+        "bruno/Tests/v4/MasterSchedule/BellSchedules/01 - CREATE a BellSchedule.bru",
+        "bruno/SIS/v4/MasterSchedule/BellSchedules/01 - Check BellSchedule is valid.bru",
+        "bruno/Tests/v4/MasterSchedule/BellSchedules/02 - DELETE a BellSchedule.bru"
+    ]
+}
