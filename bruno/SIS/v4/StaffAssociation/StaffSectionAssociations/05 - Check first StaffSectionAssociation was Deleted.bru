@@ -1,0 +1,40 @@
+meta {
+  name: 05 - Check first StaffSectionAssociation was Deleted
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations/{{firstStaffSectionAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 404
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(bru, 'firstStaffSectionAssociationUniqueId', '01 - Check first StaffSectionAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'StaffSectionAssociation';
+  
+  if (res.status === 404) {
+    wipeVars(bru, [
+      'firstStaffSectionAssociationUniqueId',
+      'firstStaffSectionAssociationClassroomPositionDescriptor'
+    ], entityName, false);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

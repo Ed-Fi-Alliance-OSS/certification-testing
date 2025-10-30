@@ -1,0 +1,73 @@
+meta {
+  name: 02 - Check second StaffSectionAssociation is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations?schoolId=255901001&schoolYear=2022&localCourseCode=ALG-1&sessionName=2021-2022 Fall Semester&staffUniqueId=207270&sectionIdentifier=25590100102Trad220ALG112011
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: 255901001
+  schoolYear: 2022
+  localCourseCode: ALG-1
+  sessionName: 2021-2022 Fall Semester
+  staffUniqueId: 207270
+  sectionIdentifier: 25590100102Trad220ALG112011
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].sectionReference: isDefined
+  res.body[0].sectionReference.localCourseCode: isString
+  res.body[0].sectionReference.localCourseCode: isNotEmpty
+  res.body[0].sectionReference.schoolId: isNumber
+  res.body[0].sectionReference.schoolId: neq 0
+  res.body[0].sectionReference.schoolYear: isNumber
+  res.body[0].sectionReference.schoolYear: neq 0
+  res.body[0].sectionReference.sessionName: isString
+  res.body[0].sectionReference.sessionName: isNotEmpty
+  res.body[0].sectionReference.sectionIdentifier: isString
+  res.body[0].sectionReference.sectionIdentifier: isNotEmpty
+  res.body[0].staffReference: isDefined
+  res.body[0].staffReference.staffUniqueId: isString
+  res.body[0].staffReference.staffUniqueId: isNotEmpty
+  res.body[0].classroomPositionDescriptor: isString
+  res.body[0].classroomPositionDescriptor: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { logScenario, logSpecStaffSectionAssociation } = require('./logging');
+  const entityName = 'StaffSectionAssociation';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'secondStaffSectionAssociationUniqueId',
+      'secondStaffSectionAssociationBeginDate'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    secondStaffSectionAssociationUniqueId: single.id,
+    secondStaffSectionAssociationBeginDate: single.beginDate
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStaffSectionAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

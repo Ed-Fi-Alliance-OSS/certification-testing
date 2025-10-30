@@ -1,0 +1,72 @@
+meta {
+  name: 04 - Check second StaffSectionAssociation beginDate was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations/{{secondStaffSectionAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.sectionReference: isDefined
+  res.body.sectionReference.localCourseCode: isString
+  res.body.sectionReference.localCourseCode: isNotEmpty
+  res.body.sectionReference.schoolId: isNumber
+  res.body.sectionReference.schoolId: neq 0
+  res.body.sectionReference.schoolYear: isNumber
+  res.body.sectionReference.schoolYear: neq 0
+  res.body.sectionReference.sessionName: isString
+  res.body.sectionReference.sessionName: isNotEmpty
+  res.body.sectionReference.sectionIdentifier: isString
+  res.body.sectionReference.sectionIdentifier: isNotEmpty
+  res.body.staffReference: isDefined
+  res.body.staffReference.staffUniqueId: isString
+  res.body.staffReference.staffUniqueId: isNotEmpty
+  res.body.classroomPositionDescriptor: isString
+  res.body.classroomPositionDescriptor: isNotEmpty
+  res.body.beginDate: isString
+  res.body.beginDate: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondStaffSectionAssociationUniqueId', '02 - Check second StaffSectionAssociation is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStaffSectionAssociationBeginDate', '02 - Check second StaffSectionAssociation is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logScenario, logSpecStaffSectionAssociation } = require('./logging');
+  const entityName = 'StaffSectionAssociation';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousBeginDate = getVar(bru, 'secondStaffSectionAssociationBeginDate');
+  
+  expectChanged(previousBeginDate, current.beginDate, 'beginDate');
+  
+  logScenario(entityName, scenarioName, current, logSpecStaffSectionAssociation, [
+    'beginDate'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
