@@ -1,6 +1,7 @@
 meta {
   name: 01 - CREATE a BellSchedule
   type: http
+  seq: 1
 }
 
 post {
@@ -16,18 +17,38 @@ auth:bearer {
 body:json {
   {
     "bellScheduleName": "[ENTER_BELL_SCHEDULE_NAME]",
-    "startTime": "[ENTER_START_TIME]",
-    "endTime": "[ENTER_END_TIME]",
-    "totalInstructionalTime": "[ENTER_TOTAL_INSTRUCTIONAL_TIME]",
-    "alternateDayName": "[ENTER_ALTERNATE_DAY_NAME]",
+    "startTime": "[START_TIME]",
+    "endTime": "[END_TIME]",
+    "alternateDayName": "[ALTERNATE_DAY_NAME]",
     "schoolReference": {
       "schoolId": "[ENTER_SCHOOL_ID]"
-    }
+    },
+    "classPeriods": [
+        {
+          "classPeriodReference": {
+            "schoolId": "[ENTER_SCHOOL_ID]",
+            "classPeriodName": "CLASS_PERIOD_NAME_1"
+          }
+        },
+        {
+          "classPeriodReference": {
+            "schoolId": "[ENTER_SCHOOL_ID]",
+            "classPeriodName": "CLASS_PERIOD_NAME_2"
+          }
+        },
+        {
+          "classPeriodReference": {
+            "schoolId": "[ENTER_SCHOOL_ID]",
+            "classPeriodName": "CLASS_PERIOD_NAME_3"
+          }
+        }
+      ]
   }
+  
 }
 
 assert {
-  res.status: eq 200
+  res.status: eq 201
 }
 
 script:post-response {
