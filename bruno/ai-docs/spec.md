@@ -89,8 +89,13 @@ Standard entity path structure:
 | **baseFolderPath** | Path up to version | `./SIS/v4` |
 | **entityGroup** | Parent folder of entity | `EducationOrganizationCalendar` |
 | **entityFolder** | Plural PascalCase folder name | `CalendarDates` |
-| **entityName** (singular) | Remove trailing 's' from entityFolder | `CalendarDate` |
-| **endpoint segment** | Lowercase first letter, keep rest intact | `calendarDates` |
+| **entityName** (singular) | 1. `overrides.entityName` if present<br/>2. `identity.irregularPlural.singular` if present<br/>3. Remove trailing 's' from entityFolder | `CalendarDate` |
+| **endpoint segment** | 1. `overrides.endpointSegment` if present<br/>2. `identity.irregularPlural.endpointSegment` if present<br/>3. Lowercase first letter of entityFolder | `calendarDates` |
+
+**Precedence Order:**
+1. **Explicit overrides** (`overrides.entityName`, `overrides.endpointSegment`) take highest precedence
+2. **Irregular plural config** (`identity.irregularPlural.*`) takes second precedence
+3. **Convention-based inference** from folder name is the fallback
 
 ### 2.3 Irregular Pluralization
 
@@ -128,7 +133,7 @@ For entities with non-standard plurals (Person → People, StaffLeave → StaffL
 
 ```json
 {
-  "$schema": "../../../schemas/entity-config.schema.json",
+  "$schema": "../../../../schemas/entity-config.schema.json",
   "version": 1,
   "identity": {
     "primaryKeyFields": ["schoolId", "schoolYear", "calendarCode", "date"],
@@ -145,9 +150,53 @@ For entities with non-standard plurals (Person → People, StaffLeave → StaffL
 | `identity.primaryKeyFields` | array[string] | ✅ | Ordered list of primary key fields for query construction |
 | `identity.naturalIdField` | string \| null | ⚪ | Single human-readable identifier field (optional) |
 | `identity.irregularPlural` | object | ⚪ | Override for non-standard singular/plural forms |
+| `overrides.entityName` | string | ⚪ | Explicit singular entity name when folder is an alias |
+| `overrides.endpointSegment` | string | ⚪ | Explicit REST endpoint segment when it differs from folder |
+| `overrides.loggingSpecName` | string | ⚪ | Explicit logging spec variable name for shorter names in logging.js |
+| `overrides.fileNameAlias` | string | ⚪ | Explicit shorter name for scenario file names when entityName is too long |
 | `overrides.baselineLabels` | array[string] | ⚪ | Custom ordinal labels (future extension) |
 | `overrides.suppressAssertions` | array[string] | ⚪ | Field paths to skip assertion even if required (future) |
 | `overrides.forceOptionalAsRequired` | array[string] | ⚪ | Optional fields to treat as required (future) |
+
+#### 3.3.1 When to Use Entity Name and Endpoint Overrides
+
+Use `overrides.entityName` and `overrides.endpointSegment` when the entity's official name doesn't fit folder name constraints:
+
+##### Use Case 1: Long Entity Names
+
+When the full entity name is too long for a practical folder name:
+
+```json
+{
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": ["educationOrganizationId", "staffClassificationDescriptorId", "beginDate", "staffUniqueId"]
+  },
+  "overrides": {
+    "entityName": "StaffEducationOrganizationAssignmentAssociation",
+    "endpointSegment": "staffEducationOrganizationAssignmentAssociations",
+    "loggingSpecName": "StaffEdOrgAssociation",
+    "fileNameAlias": "StaffEdOrgAssociation"
+  }
+}
+```
+
+- **Folder:** `./SIS/v4/StaffAssociation/StaffEdOrgAssociation/`
+- **Entity Name:** `StaffEducationOrganizationAssignmentAssociation` (used in variable names)
+- **Endpoint:** `/ed-fi/staffEducationOrganizationAssignmentAssociations`
+- **Logging Spec:** `logSpecStaffEdOrgAssociation` (shorter, manageable)
+- **File Names:** `01 - Check first StaffEdOrgAssociation is valid.bru` (shorter, readable)
+- **Variables:** `firstStaffEducationOrganizationAssignmentAssociationUniqueId` (descriptive)
+
+##### Use Case 2: Naming Conventions
+
+When folder naming follows project conventions that differ from API naming:
+
+- Folder might use abbreviations (e.g., `StaffEdOrgAssociation`)
+- Endpoint uses full name from API specification
+- Variables use full descriptive names for clarity
+
+**Note:** For irregular pluralization (Person → People), use `identity.irregularPlural` instead.
 
 ### 3.4 Primary Key Field Ordering
 
@@ -326,11 +375,18 @@ Files are numbered sequentially (`NN`):
 NN - Check <ordinal> <EntityName> is valid.bru
 ```
 
+**Entity Name in File Names:**
+
+Use `overrides.fileNameAlias` if present, otherwise use `entityName`:
+- Without override: `01 - Check first CalendarDate is valid.bru`
+- With override: `01 - Check first StaffEdOrgAssociation is valid.bru` (instead of StaffEducationOrganizationAssignmentAssociation)
+
 **Examples:**
 
 ```markdown
 01 - Check first CalendarDate is valid.bru
 02 - Check second CourseTranscript is valid.bru
+01 - Check first StaffEdOrgAssociation is valid.bru
 ```
 
 ### 5.3 Update File Name Pattern (Property-Aware)
@@ -338,6 +394,10 @@ NN - Check <ordinal> <EntityName> is valid.bru
 ```markdown
 NN - Check <ordinal> <EntityName> <PropertyList> was Updated.bru
 ```
+
+**Entity Name in File Names:**
+
+Use `overrides.fileNameAlias` if present, otherwise use `entityName`.
 
 **Property List Rules:**
 
@@ -357,6 +417,7 @@ NN - Check <ordinal> <EntityName> <PropertyList> was Updated.bru
 03 - Check first ClassPeriod classPeriodName was Updated.bru
 04 - Check second ClassPeriod startTime and endTime was Updated.bru
 05 - Check third CourseOffering localCourseTitle was Updated.bru
+03 - Check first StaffEdOrgAssociation positionTitle and endDate were Updated.bru
 ```
 
 ### 5.4 Delete File Name Pattern
@@ -365,10 +426,15 @@ NN - Check <ordinal> <EntityName> <PropertyList> was Updated.bru
 NN - Check <ordinal> <EntityName> was Deleted.bru
 ```
 
+**Entity Name in File Names:**
+
+Use `overrides.fileNameAlias` if present, otherwise use `entityName`.
+
 **Example:**
 
 ```markdown
 05 - Check first StudentSchoolAssociation was Deleted.bru
+06 - Check first StaffEdOrgAssociation was Deleted.bru
 ```
 
 ---
@@ -979,6 +1045,16 @@ logScenario(entityName, scenarioName, current, logSpecCalendar, [
 
 **CRITICAL:** Each entity MUST have a corresponding `logSpec<Entity>` object defined in the collection's `logging.js` file.
 
+**Naming Convention:**
+
+The logging spec variable name is derived from:
+1. `overrides.loggingSpecName` if present (for shorter names when entityName is long)
+2. `entityName` otherwise
+
+Examples:
+- Entity: `CalendarDate` → `logSpecCalendarDate`
+- Entity: `StaffEducationOrganizationAssignmentAssociation` with override `StaffEdOrgAssociation` → `logSpecStaffEdOrgAssociation`
+
 **Structure:**
 
 ```javascript
@@ -1330,7 +1406,7 @@ Use this checklist to verify generated scenarios meet all requirements:
 
 - [ ] `utils.js` contains all required helper functions
 - [ ] `logging.js` contains `logSpec<Entity>` definition for this entity
-- [ ] `entity.config.json` schema path is correct: `"../../../schemas/entity-config.schema.json"`
+- [ ] `entity.config.json` schema path is correct: `"../../../../schemas/entity-config.schema.json"`
 
 ---
 
@@ -1378,7 +1454,7 @@ All functions available in `utils.js`:
 
 ```json
 {
-  "$schema": "../../../schemas/entity-config.schema.json",
+  "$schema": "../../../../schemas/entity-config.schema.json",
   "version": 1,
   "identity": {
     "primaryKeyFields": ["schoolId", "schoolYear", "calendarCode", "date"],
