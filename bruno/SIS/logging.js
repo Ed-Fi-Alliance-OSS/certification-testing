@@ -607,6 +607,17 @@ const logSpecStaffSectionAssociation = {
   classroomPositionDescriptor: r => extractDescriptor(r?.classroomPositionDescriptor),
   endDate: r => r?.endDate
 };
+
+// StaffCohortAssociation spec map (StudentCohort > StaffCohortAssociations)
+// Include identifiers and mutated fields (endDate) plus required info.
+const logSpecStaffCohortAssociation = {
+  staffUniqueId: r => r?.staffReference?.staffUniqueId,
+  educationOrganizationId: r => r?.cohortReference?.educationOrganizationId,
+  cohortIdentifier: r => r?.cohortReference?.cohortIdentifier,
+  beginDate: r => r?.beginDate,
+  endDate: r => r?.endDate
+};
+
 // DisciplineIncident spec map (StudentDiscipline > DisciplineIncident)
 // Include identifiers and mutated fields (reporterName, incidentLocationDescriptor) plus required info.
 const logSpecDisciplineIncident = {
@@ -666,6 +677,7 @@ module.exports = {
   ,logSpecStaffEdOrgAssociation
   ,logSpecStaffSchoolAssociation
   ,logSpecStaffSectionAssociation
+  ,logSpecStaffCohortAssociation
   ,logSpecDisciplineIncident
   ,logSpecDisciplineAction
 };

@@ -1,0 +1,65 @@
+meta {
+  name: 01 - Check first StaffCohortAssociation is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations?educationOrganizationId=[ENTER FIRST EDUCATION ORGANIZATION ID]&beginDate=[ENTER FIRST BEGIN DATE YYYY-MM-DD]&cohortIdentifier=[ENTER FIRST COHORT IDENTIFIER]&staffUniqueId=[ENTER FIRST STAFF UNIQUE ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER FIRST EDUCATION ORGANIZATION ID]
+  beginDate: [ENTER FIRST BEGIN DATE YYYY-MM-DD]
+  cohortIdentifier: [ENTER FIRST COHORT IDENTIFIER]
+  staffUniqueId: [ENTER FIRST STAFF UNIQUE ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].cohortReference: isDefined
+  res.body[0].cohortReference.educationOrganizationId: isNumber
+  res.body[0].cohortReference.educationOrganizationId: neq 0
+  res.body[0].cohortReference.cohortIdentifier: isString
+  res.body[0].cohortReference.cohortIdentifier: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].staffReference: isDefined
+  res.body[0].staffReference.staffUniqueId: isString
+  res.body[0].staffReference.staffUniqueId: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStaffCohortAssociation } = require('./logging');
+  const entityName = 'StaffCohortAssociation';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'firstStaffCohortAssociationUniqueId',
+      'firstStaffCohortAssociationEndDate'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstStaffCohortAssociationUniqueId: single.id,
+    firstStaffCohortAssociationEndDate: single.endDate
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStaffCohortAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

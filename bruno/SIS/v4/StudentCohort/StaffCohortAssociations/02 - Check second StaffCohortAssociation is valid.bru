@@ -1,0 +1,65 @@
+meta {
+  name: 02 - Check second StaffCohortAssociation is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations?educationOrganizationId=[ENTER SECOND EDUCATION ORGANIZATION ID]&beginDate=[ENTER SECOND BEGIN DATE YYYY-MM-DD]&cohortIdentifier=[ENTER SECOND COHORT IDENTIFIER]&staffUniqueId=[ENTER SECOND STAFF UNIQUE ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER SECOND EDUCATION ORGANIZATION ID]
+  beginDate: [ENTER SECOND BEGIN DATE YYYY-MM-DD]
+  cohortIdentifier: [ENTER SECOND COHORT IDENTIFIER]
+  staffUniqueId: [ENTER SECOND STAFF UNIQUE ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].cohortReference: isDefined
+  res.body[0].cohortReference.educationOrganizationId: isNumber
+  res.body[0].cohortReference.educationOrganizationId: neq 0
+  res.body[0].cohortReference.cohortIdentifier: isString
+  res.body[0].cohortReference.cohortIdentifier: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].staffReference: isDefined
+  res.body[0].staffReference.staffUniqueId: isString
+  res.body[0].staffReference.staffUniqueId: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStaffCohortAssociation } = require('./logging');
+  const entityName = 'StaffCohortAssociation';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'secondStaffCohortAssociationUniqueId',
+      'secondStaffCohortAssociationEndDate'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    secondStaffCohortAssociationUniqueId: single.id,
+    secondStaffCohortAssociationEndDate: single.endDate
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStaffCohortAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
