@@ -1,6 +1,7 @@
 meta {
   name: 00 - DELETE a BellSchedule
   type: http
+  seq: 2
 }
 
 delete {
@@ -14,7 +15,7 @@ auth:bearer {
 }
 
 assert {
-  res.status: eq 200
+  res.status: eq 204
 }
 
 settings {
