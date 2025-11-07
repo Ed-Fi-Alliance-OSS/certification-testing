@@ -524,6 +524,24 @@ const logSpecStudentCTEProgramAssociation = {
   endDate: r => r?.endDate,
 };
 
+// StudentHomelessProgramAssociation spec map (StudentProgram > StudentHomelessProgramAssociations)
+// Primary keys per config: educationOrganizationId, programEducationOrganizationId, programTypeDescriptorId, programName, beginDate, studentUniqueId
+// Required fields include program reference constituents, beginDate, studentUniqueId, homeless-specific required fields.
+// Mutation target per scenarios: homelessPrimaryNighttimeResidenceDescriptor (REQUIRED descriptor field).
+const logSpecStudentHomelessProgramAssociation = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  programEducationOrganizationId: r => r?.programReference?.educationOrganizationId,
+  programName: r => r?.programReference?.programName,
+  programTypeDescriptor: r => extractDescriptor(r?.programReference?.programTypeDescriptor),
+  beginDate: r => r?.beginDate,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  homelessPrimaryNighttimeResidenceDescriptor: r => extractDescriptor(r?.homelessPrimaryNighttimeResidenceDescriptor),
+  homelessUnaccompaniedYouth: r => r?.homelessUnaccompaniedYouth,
+  endDate: r => r?.endDate,
+  awaitingFosterCare: r => r?.awaitingFosterCare,
+  homelessProgramServices: r => r?.homelessProgramServices,
+};
+
 // Grade spec map (StudentGrade > Grades)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
 // Mutations target: letterGradeEarned, numericGradeEarned.
@@ -706,6 +724,7 @@ module.exports = {
   ,logSpecStudentSchoolAssociation
   ,logSpecStudentSectionAssociation
   ,logSpecStudentCTEProgramAssociation
+  ,logSpecStudentHomelessProgramAssociation
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
