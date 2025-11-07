@@ -1,0 +1,122 @@
+meta {
+  name: StudentLangInstProgramAssociations
+  seq: 3
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 Student Program > StudentLanguageInstructionProgramAssociation Scenarios
+  
+  The Student Program interchange loads students' participation in programs.
+  The `StudentLanguageInstructionProgramAssociation` represents the _Title III_, language instruction program(s) that a student participates in or receives services from. The association is an extension of the `StudentProgramAssociation` particular for language instruction programs.
+  
+  ## Prerequisites
+  
+  * Ed-Org (pre-loaded)
+  * Program (pre-loaded)
+  * Student
+  * Student Enrollment
+  
+  ## Scenarios
+  
+  1. __CREATE__ a `first` new `StudentLanguageInstructionProgramAssociation` for a high school student.
+  2. __UPDATE__ the _englishLanguageProficiencyAssessments_._proficiencyDescriptor_ Participation on the `first` added `StudentLanguageInstructionProgramAssociation` from "Not Proficient" to "Proficient".
+  
+  > Note: the Program's educationOrganizationId is the Local Education Agency ID (LEA ID) that manages the Language Instruction program.
+  
+  ## Scenarios example data
+  
+  | Resource                                      | Property Name                               | Is Collection | Data Type                                   | Required / Optional | Scenario 1: POST                   | Scenario 2: PUT                    |
+  | --------------------------------------------- | ------------------------------------------- | ------------- | ------------------------------------------- | ------------------- | ---------------------------------- | ---------------------------------- |
+  | StudentLanguageInstructionProgramAssociations | beginDate                                   | FALSE         | date                                        | REQUIRED            | 8/23/[Current School Year]         | 8/23/[Current School Year]         |
+  | StudentLanguageInstructionProgramAssociations | educationOrganizationReference              | FALSE         | educationOrganizationReference              | REQUIRED            |                                    |                                    |
+  | StudentLanguageInstructionProgramAssociations | educationOrganizationId                     | FALSE         | integer                                     | REQUIRED            | 255901                             | 255901                             |
+  | StudentLanguageInstructionProgramAssociations | programReference                            | FALSE         | programReference                            | REQUIRED            |                                    |                                    |
+  | programReference                              | programName                                 | FALSE         | string                                      | REQUIRED            | English as a Second Language (ESL) | English as a Second Language (ESL) |
+  | programReference                              | programTypeDescriptor                       | FALSE         | programTypeDescriptor                       | REQUIRED            | English as a Second Language (ESL) | English as a Second Language (ESL) |
+  | programReference                              | educationOrganizationId                     | FALSE         | integer                                     | REQUIRED            | 255901                             | 255901                             |
+  | StudentLanguageInstructionProgramAssociations | studentReference                            | FALSE         | studentReference                            | REQUIRED            |                                    |                                    |
+  | studentReference                              | studentUniqueId                             | FALSE         | string                                      | REQUIRED            | 222222                             | 222222                             |
+  | StudentLanguageInstructionProgramAssociations | participationStatus                         | FALSE         | participationStatus[]                       | OPTIONAL            |                                    |                                    |
+  | participationStatus                           | participationStatusDescriptor               | FALSE         | participationStatus                         | OPTIONAL            |                                    |                                    |
+  | participationStatus                           | designatedBy                                | FALSE         | string                                      | OPTIONAL            |                                    |                                    |
+  | participationStatus                           | statusBeginDate                             | FALSE         | date                                        | OPTIONAL            |                                    |                                    |
+  | participationStatus                           | statusEndDate                               | FALSE         | date                                        | OPTIONAL            |                                    |                                    |
+  | StudentLanguageInstructionProgramAssociations | englishLanguageProficiencyAssessments       | TRUE          | englishLanguageProficiencyAssessment[]      | REQUIRED            |                                    |                                    |
+  | schoolYearTypeReference                       | schoolYear                                  | FALSE         | int                                         | REQUIRED            | [Current School Year]              | [Current School Year]              |
+  | englishLanguageProficiencyAssessments         | participationDescriptor                     | FALSE         | participationDescriptor                     | REQUIRED            | Completed                          | Completed                          |
+  | englishLanguageProficiencyAssessments         | proficiencyDescriptor                       | FALSE         | proficiencyDescriptor                       | REQUIRED            | __Not Proficient__                 | __Proficient__                     |
+  | englishLanguageProficiencyAssessments         | progressDescriptor                          | FALSE         | progressDescriptor                          | OPTIONAL            |                                    |                                    |
+  | englishLanguageProficiencyAssessments         | monitoredDescriptor                         | FALSE         | monitoredDescriptor                         | REQUIRED            | Year 1                             | Year 1                             |
+  | StudentLanguageInstructionProgramAssociations | endDate                                     | FALSE         | date                                        | OPTIONAL            |                                    |                                    |
+  | StudentLanguageInstructionProgramAssociations | reasonExitedDescriptor                      | FALSE         | reasonExitedDescriptor                      | OPTIONAL            |                                    |                                    |
+  | StudentLanguageInstructionProgramAssociations | servedOutsideOfRegularSession               | FALSE         | boolean                                     | OPTIONAL            |                                    |                                    |
+  | StudentLanguageInstructionProgramAssociations | languageInstructionProgramServices          | TRUE          | service[]                                   | REQUIRED            |                                    |                                    |
+  | languageInstructionProgramServices            | languageInstructionProgramServiceDescriptor | FALSE         | languageInstructionProgramServiceDescriptor | REQUIRED            | Structured English Immersion       | Structured English Immersion       |
+  | languageInstructionProgramServices            | serviceBeginDate                            | FALSE         | date                                        | OPTIONAL            |                                    |                                    |
+  | languageInstructionProgramServices            | serviceEndDate                              | FALSE         | date                                        | OPTIONAL            |                                    |                                    |
+  | languageInstructionProgramServices            | primaryIndicator                            | FALSE         | boolean                                     | OPTIONAL            |                                    |                                    |
+  | StudentLanguageInstructionProgramAssociations | englishLearnerParticipation                 | FALSE         | boolean                                     | REQUIRED            | TRUE                               | TRUE                               |
+  | StudentLanguageInstructionProgramAssociations | dosage                                      | FALSE         | number                                      | OPTIONAL            |                                    |                                    |
+  
+  ## API response format
+  
+  ```json
+  {
+    "id": "string",
+    "beginDate": "2025-11-04",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 0
+    },
+    "programReference": {
+      "educationOrganizationId": 0,
+      "programName": "string",
+      "programTypeDescriptor": "string"
+    },
+    "studentReference": {
+      "studentUniqueId": "string"
+    },
+    "dosage": 0,
+    "endDate": "2025-11-04",
+    "englishLanguageProficiencyAssessments": [
+      {
+        "monitoredDescriptor": "string",
+        "participationDescriptor": "string",
+        "proficiencyDescriptor": "string",
+        "progressDescriptor": "string",
+        "schoolYearTypeReference": {
+          "schoolYear": 0
+        }
+      }
+    ],
+    "englishLearnerParticipation": true,
+    "languageInstructionProgramServices": [
+      {
+        "languageInstructionProgramServiceDescriptor": "string",
+        "primaryIndicator": true,
+        "serviceBeginDate": "2025-11-04",
+        "serviceEndDate": "2025-11-04"
+      }
+    ],
+    "participationStatus": {
+      "participationStatusDescriptor": "string",
+      "designatedBy": "string",
+      "statusBeginDate": "2025-11-04",
+      "statusEndDate": "2025-11-04"
+    },
+    "programParticipationStatuses": [
+      {
+        "participationStatusDescriptor": "string",
+        "statusBeginDate": "2025-11-04",
+        "designatedBy": "string",
+        "statusEndDate": "2025-11-04"
+      }
+    ],
+    "reasonExitedDescriptor": "string",
+    "servedOutsideOfRegularSession": true
+  }
+  ```
+}

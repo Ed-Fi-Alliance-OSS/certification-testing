@@ -542,6 +542,30 @@ const logSpecStudentHomelessProgramAssociation = {
   homelessProgramServices: r => r?.homelessProgramServices,
 };
 
+// StudentLanguageInstructionProgramAssociation spec map (StudentProgram > StudentLangInstProgramAssociations)
+// Primary keys per config: educationOrganizationId, programEducationOrganizationId, programTypeDescriptorId, programName, beginDate, studentUniqueId
+// Required fields include program reference constituents, beginDate, studentUniqueId, language instruction-specific required fields.
+// Mutation target per scenarios: englishLanguageProficiencyAssessments[0].proficiencyDescriptor (nested in REQUIRED collection).
+const logSpecStudentLangInstProgramAssociation = {
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  programEducationOrganizationId: r => r?.programReference?.educationOrganizationId,
+  programName: r => r?.programReference?.programName,
+  programTypeDescriptor: r => extractDescriptor(r?.programReference?.programTypeDescriptor),
+  beginDate: r => r?.beginDate,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  englishLearnerParticipation: r => r?.englishLearnerParticipation,
+  englishLanguageProficiencyAssessments: r => r?.englishLanguageProficiencyAssessments?.map(a => ({
+    schoolYear: a?.schoolYearTypeReference?.schoolYear,
+    participationDescriptor: extractDescriptor(a?.participationDescriptor),
+    proficiencyDescriptor: extractDescriptor(a?.proficiencyDescriptor),
+    monitoredDescriptor: extractDescriptor(a?.monitoredDescriptor),
+    progressDescriptor: extractDescriptor(a?.progressDescriptor)
+  })),
+  languageInstructionProgramServices: r => r?.languageInstructionProgramServices?.map(s => extractDescriptor(s?.languageInstructionProgramServiceDescriptor)),
+  endDate: r => r?.endDate,
+  dosage: r => r?.dosage,
+};
+
 // Grade spec map (StudentGrade > Grades)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
 // Mutations target: letterGradeEarned, numericGradeEarned.
@@ -725,6 +749,7 @@ module.exports = {
   ,logSpecStudentSectionAssociation
   ,logSpecStudentCTEProgramAssociation
   ,logSpecStudentHomelessProgramAssociation
+  ,logSpecStudentLangInstProgramAssociation
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
