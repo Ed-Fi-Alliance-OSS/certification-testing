@@ -865,6 +865,24 @@ const logSpecStudentSectionAttendanceEvent = {
   departureTime: r => r?.departureTime
 };
 
+// StudentSchoolAttendanceEvent spec map (StudentAttendance > StudentSchoolAttendanceEvents)
+// Primary keys: schoolId, schoolYear, sessionName, studentUniqueId, eventDate, attendanceEventCategoryDescriptor
+// Mutable field: attendanceEventReason
+const logSpecStudentSchoolAttendanceEvent = {
+  schoolId: r => r?.schoolReference?.schoolId,
+  sessionSchoolId: r => r?.sessionReference?.schoolId,
+  schoolYear: r => r?.sessionReference?.schoolYear,
+  sessionName: r => r?.sessionReference?.sessionName,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  attendanceEventCategoryDescriptor: r => extractDescriptor(r?.attendanceEventCategoryDescriptor),
+  eventDate: r => r?.eventDate,
+  attendanceEventReason: r => r?.attendanceEventReason,
+  educationalEnvironmentDescriptor: r => r?.educationalEnvironmentDescriptor ? extractDescriptor(r.educationalEnvironmentDescriptor) : undefined,
+  eventDuration: r => r?.eventDuration,
+  arrivalTime: r => r?.arrivalTime,
+  departureTime: r => r?.departureTime
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -911,4 +929,5 @@ module.exports = {
   ,logSpecDescriptorMapping
   ,logSpecProgram
   ,logSpecStudentSectionAttendanceEvent
+  ,logSpecStudentSchoolAttendanceEvent
 };

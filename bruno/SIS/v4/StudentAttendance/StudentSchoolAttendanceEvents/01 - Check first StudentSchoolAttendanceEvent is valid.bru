@@ -1,0 +1,75 @@
+meta {
+  name: 01 - Check first StudentSchoolAttendanceEvent is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents?schoolId=255901107&schoolYear=[Current School Year]&sessionName=2016-2017 Fall Semester&studentUniqueId=111111&eventDate=9/16/[Current School Year]&attendanceEventCategoryDescriptor=uri://ed-fi.org/AttendanceEventCategoryDescriptor#Tardy
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: 255901107
+  schoolYear: [Current School Year]
+  sessionName: 2016-2017 Fall Semester
+  studentUniqueId: 111111
+  eventDate: 9/16/[Current School Year]
+  attendanceEventCategoryDescriptor: uri://ed-fi.org/AttendanceEventCategoryDescriptor#Tardy
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].attendanceEventCategoryDescriptor: isString
+  res.body[0].attendanceEventCategoryDescriptor: isNotEmpty
+  res.body[0].eventDate: isString
+  res.body[0].eventDate: isNotEmpty
+  res.body[0].schoolReference: isDefined
+  res.body[0].schoolReference.schoolId: isNumber
+  res.body[0].schoolReference.schoolId: neq 0
+  res.body[0].sessionReference: isDefined
+  res.body[0].sessionReference.schoolId: isNumber
+  res.body[0].sessionReference.schoolId: neq 0
+  res.body[0].sessionReference.schoolYear: isNumber
+  res.body[0].sessionReference.schoolYear: neq 0
+  res.body[0].sessionReference.sessionName: isString
+  res.body[0].sessionReference.sessionName: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].attendanceEventReason: isString
+  res.body[0].attendanceEventReason: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStudentSchoolAttendanceEvent } = require('./logging');
+  const entityName = 'StudentSchoolAttendanceEvent';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  
+  if (!entity) {
+    wipeVars(bru, [
+      'firstStudentSchoolAttendanceEventUniqueId',
+      'firstStudentSchoolAttendanceEventAttendanceEventReason'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstStudentSchoolAttendanceEventUniqueId: entity.id,
+    firstStudentSchoolAttendanceEventAttendanceEventReason: entity.attendanceEventReason
+  });
+  
+  // Baseline logs full spec projection
+  logScenario(entityName, scenarioName, entity, logSpecStudentSchoolAttendanceEvent);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
