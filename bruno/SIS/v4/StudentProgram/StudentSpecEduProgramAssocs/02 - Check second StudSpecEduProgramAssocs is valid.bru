@@ -1,0 +1,81 @@
+meta {
+  name: 02 - Check second StudSpecEduProgramAssocs is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSpecialEducationProgramAssociations?beginDate=[ENTER SECOND BEGIN DATE YYYY-MM-DD]&educationOrganizationId=[ENTER SECOND EDUCATION ORGANIZATION ID]&programEducationOrganizationId=[ENTER SECOND PROGRAM EDUCATION ORGANIZATION ID]&programName=[ENTER SECOND PROGRAM NAME]&programTypeDescriptor={{secondProgramTypeDescriptorEncoded}}&studentUniqueId=[ENTER SECOND STUDENT UNIQUE ID]&programTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER SECOND PROGRAM TYPE DESCRIPTOR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  beginDate: [ENTER SECOND BEGIN DATE YYYY-MM-DD]
+  educationOrganizationId: [ENTER SECOND EDUCATION ORGANIZATION ID]
+  programEducationOrganizationId: [ENTER SECOND PROGRAM EDUCATION ORGANIZATION ID]
+  programName: [ENTER SECOND PROGRAM NAME]
+  programTypeDescriptor: {{secondProgramTypeDescriptorEncoded}}
+  studentUniqueId: [ENTER SECOND STUDENT UNIQUE ID]
+  programTypeDescriptor_KEEP_IT_AT_THE_END: [ENTER SECOND PROGRAM TYPE DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].programReference: isDefined
+  res.body[0].programReference.educationOrganizationId: isNumber
+  res.body[0].programReference.educationOrganizationId: neq 0
+  res.body[0].programReference.programName: isString
+  res.body[0].programReference.programName: isNotEmpty
+  res.body[0].programReference.programTypeDescriptor: isString
+  res.body[0].programReference.programTypeDescriptor: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].specialEducationSettingDescriptor: isString
+  res.body[0].specialEducationSettingDescriptor: isNotEmpty
+  res.body[0].ideaEligibility: isDefined
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const programTypeDescriptorEncoded = encodeDescriptorParameter(req.url, 'programTypeDescriptor_KEEP_IT_AT_THE_END');
+  
+  setVar(bru, 'secondProgramTypeDescriptorEncoded', programTypeDescriptorEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecStudSpecEduProgramAssocs, logScenario } = require('./logging');
+  const entityName = 'StudSpecEduProgramAssocs';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'secondStudSpecEduProgramAssocsUniqueId',
+      'secondStudSpecEduProgramAssocsIdeaEligibility'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    secondStudSpecEduProgramAssocsUniqueId: single.id,
+    secondStudSpecEduProgramAssocsIdeaEligibility: single.ideaEligibility
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStudSpecEduProgramAssocs);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

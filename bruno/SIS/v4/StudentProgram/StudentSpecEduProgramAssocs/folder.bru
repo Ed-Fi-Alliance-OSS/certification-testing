@@ -1,0 +1,167 @@
+meta {
+  name: StudentSpecEduProgramAssocs
+  seq: 8
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 StudentProgram > StudentSpecialEducationProgramAssociation Scenarios
+  
+  The Student Program interchange loads students' participation in programs.
+
+  The `StudentSpecialEducationProgramAssociation` represents the special education program(s) that a student participates in or receives services from. The association is an extension of the `StudentProgramAssociation` particular for special education programs.
+  
+  ## Prerequisites
+  
+  * Ed-Org (pre-loaded)
+  * Program (pre-loaded)
+  * Student
+  * Student Enrollment
+  
+  ### Scenarios tasks
+
+  1. __CREATE__ a `first` new `StudentSpecialEducationProgramAssociation` for an elementary school student.
+  2. __CREATE__ a `second` new `StudentSpecialEducationProgramAssociation` for a high school student.
+  3. __UPDATE__ the _ideaEligibility_ on the `first` added `StudentSpecialEducationProgramAssociation` to FALSE.
+  4. __UPDATE__ the _ideaEligibility_ on the `second` added `StudentSpecialEducationProgramAssociation` to FALSE.
+
+  > Note: The Program's educationOrganizationId is the Local Education Agency ID.
+   
+   ## Scenarios example data  
+
+  | Resource                                   | Property Name                     | Is Collection | Data Type                         | Required / Optional | Scenario 1: POST                            | Scenario 2: POST                              | Scenario 3: PUT                             | Scenario 4: PUT                               |
+  | ------------------------------------------ | --------------------------------- | ------------- | --------------------------------- | ------------------- | ------------------------------------------- | --------------------------------------------- | ------------------------------------------- | --------------------------------------------- |
+  | StudentSpecialEducationProgramAssociations | beginDate                         | FALSE         | date                              | REQUIRED            | 8/23/[Current School Year]                 | 8/23/[Current School Year]                   | 8/23/[Current School Year]                 | 8/23/[Current School Year]                   |
+  | StudentSpecialEducationProgramAssociations | educationOrganizationReference    | FALSE         | educationOrganizationReference    | REQUIRED            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | educationOrganizationId           | FALSE         | integer                           | REQUIRED            | 255901                                      | 255901                                        | 255901                                      | 255901                                        |
+  | StudentSpecialEducationProgramAssociations | programReference                  | FALSE         | programReference                  | REQUIRED            |                                             |                                               |                                             |                                               |
+  | programReference                           | programName                       | FALSE         | string                            | REQUIRED            | Special Education                           | Special Education                             | Special Education                           | Special Education                             |
+  | programReference                           | programTypeDescriptor             | FALSE         | programTypeDescriptor             | REQUIRED            | Special Education                           | Special Education                             | Special Education                           | Special Education                             |
+  | programReference                           | educationOrganizationId           | FALSE         | integer                           | REQUIRED            | 255901                                      | 255901                                        | 255901                                      | 255901                                        |
+  | StudentSpecialEducationProgramAssociations | specialEducationSettingDescriptor | FALSE         | specialEducationSettingDescriptor | REQUIRED            | Inside regular class 80% or more of the day | Inside regular class less than 40% of the day | Inside regular class 80% or more of the day | Inside regular class less than 40% of the day |
+  | StudentSpecialEducationProgramAssociations | studentReference                  | FALSE         | studentReference                  | REQUIRED            |                                             |                                               |                                             |                                               |
+  | studentReference                           | studentUniqueId                   | FALSE         | string                            | REQUIRED            | 111111                                      | 222222                                        | 111111                                      | 222222                                        |
+  | StudentSpecialEducationProgramAssociations | participationStatus               | FALSE         | participationStatus[]             | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | participationStatus                       | participationStatusDescriptor      | FALSE         | participationStatus               | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | participationStatus                       | designatedBy                       | FALSE         | string                            | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | participationStatus                       | statusBeginDate                    | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | participationStatus                       | statusEndDate                      | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | disabilities                      | TRUE          | disability[]                      | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | studentSpecialEducationProgramAssociationDisabilities | disabilityDescriptor         | FALSE         | disabilityDescriptor              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | studentSpecialEducationProgramAssociationDisabilities | disabilityDeterminationSourceTypeDescriptor | FALSE | disabilityDeterminationSourceTypeDescriptor | OPTIONAL |                                             |                                               |                                             |                                               |
+  | studentSpecialEducationProgramAssociationDisabilities | disabilityDiagnosis          | FALSE         | string                            | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | studentSpecialEducationProgramAssociationDisabilities | orderOfDisability            | FALSE         | integer                           | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | studentSpecialEducationProgramAssociationDisabilities | designations                 | FALSE         | integer                           | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | endDate                          | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | ideaEligibility                  | FALSE         | boolean                           | REQUIRED            | TRUE                                        | TRUE                                          | FALSE                                       | FALSE                                         |
+  | StudentSpecialEducationProgramAssociations | iepBeginDate                     | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | iepEndDate                       | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | iepReviewDate                    | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | lastEvaluationDate               | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | medicallyFragile                 | FALSE         | boolean                           | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | multiplyDisabled                 | FALSE         | boolean                           | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | reasonExitedDescriptor           | FALSE         | reasonExitedDescriptor            | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | schoolHoursPerWeek               | FALSE         | number                            | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | servedOutsideOfRegularSession    | FALSE         | boolean                           | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | specialEducationProgramServices   | TRUE          | specialEducationProgramService[]  | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | specialEducationProgramServices            | specialEducationProgramServiceDescriptor | FALSE | specialEducationProgramServiceDescriptor | OPTIONAL |                                             |                                               |                                             |                                               |
+  | specialEducationProgramServices            | ServiceBeginDate                  | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | specialEducationProgramServices            | ServiceEndDate                    | FALSE         | date                              | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | specialEducationProgramServices            | primaryIndicator                  | FALSE         | boolean                           | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | specialEducationProgramServices            | serviceProviders                  | TRUE          | serviceProviders                  | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | serviceProviders                           | staffReference                    | FALSE         | staffReference                    | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | serviceProviders                           | staffUniqueId                     | FALSE         | string                            | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | staffReference                             | primaryProvider                   | FALSE         | boolean                           | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | serviceProviders                  | TRUE          | serviceProvider[]                 | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | serviceProviders                           | staffReference                    | FALSE         | staffReference                    | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | staffReference                             | staffUniqueId                     | FALSE         | string                            | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | studentSpecialEducationProgramAssociationServiceProviders | primaryProvider          | FALSE         | boolean                           | OPTIONAL            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | specialEducationHoursPerWeek      | FALSE         | number                            | OPTIONAL            |                                             |                                               |                                             |                                               |
+
+  ## API JSON response example
+
+  ```JSON
+   {
+   "id": "string",
+   "beginDate": "2025-11-06",
+   "educationOrganizationReference": {
+      "educationOrganizationId": 0
+   },
+   "programReference": {
+      "educationOrganizationId": 0,
+      "programName": "string",
+      "programTypeDescriptor": "string"
+   },
+   "studentReference": {
+      "studentUniqueId": "string"
+   },
+   "disabilities": [
+      {
+         "disabilityDescriptor": "string",
+         "disabilityDeterminationSourceTypeDescriptor": "string",
+         "disabilityDiagnosis": "string",
+         "orderOfDisability": 0,
+         "designations": [
+         {
+            "disabilityDesignationDescriptor": "string"
+         }
+         ]
+      }
+   ],
+   "endDate": "2025-11-06",
+   "ideaEligibility": true,
+   "iepBeginDate": "2025-11-06",
+   "iepEndDate": "2025-11-06",
+   "iepReviewDate": "2025-11-06",
+   "lastEvaluationDate": "2025-11-06",
+   "medicallyFragile": true,
+   "multiplyDisabled": true,
+   "participationStatus": {
+      "participationStatusDescriptor": "string",
+      "designatedBy": "string",
+      "statusBeginDate": "2025-11-06",
+      "statusEndDate": "2025-11-06"
+   },
+   "programParticipationStatuses": [
+      {
+         "participationStatusDescriptor": "string",
+         "statusBeginDate": "2025-11-06",
+         "designatedBy": "string",
+         "statusEndDate": "2025-11-06"
+      }
+   ],
+   "reasonExitedDescriptor": "string",
+   "schoolHoursPerWeek": 0,
+   "servedOutsideOfRegularSession": true,
+   "serviceProviders": [
+      {
+         "primaryProvider": true,
+         "staffReference": {
+         "staffUniqueId": "string"
+         }
+      }
+   ],
+   "specialEducationHoursPerWeek": 0,
+   "specialEducationProgramServices": [
+      {
+         "specialEducationProgramServiceDescriptor": "string",
+         "primaryIndicator": true,
+         "serviceBeginDate": "2025-11-06",
+         "serviceEndDate": "2025-11-06",
+         "providers": [
+         {
+            "primaryProvider": true,
+            "staffReference": {
+               "staffUniqueId": "string"
+            }
+         }
+         ]
+      }
+   ],
+   "specialEducationSettingDescriptor": "string"
+   }
+  ```
+}
