@@ -1,0 +1,64 @@
+meta {
+  name: 02 - Check first StudSchoolFoodServProgAssocs service was Updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolFoodServicesProgramAssociations/{{firstStudSchoolFoodServProgAssocsUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.schoolFoodServiceProgramServices: isArray
+  res.body.schoolFoodServiceProgramServices: isNotEmpty
+  res.body.schoolFoodServiceProgramServices[0].schoolFoodServiceProgramServiceDescriptor: isString
+  res.body.schoolFoodServiceProgramServices[0].schoolFoodServiceProgramServiceDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStudSchoolFoodServProgAssocsUniqueId', '01 - Check first StudSchoolFoodServProgAssocs is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStudSchoolFoodServProgAssocsServiceDescriptor', '01 - Check first StudSchoolFoodServProgAssocs is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError, extractDescriptor } = require('./utils');
+  const { logSpecStudSchoolFoodServProgAssocs, logScenario } = require('./logging');
+  const entityName = 'StudSchoolFoodServProgAssocs';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousServiceDescriptor = getVar(bru, 'firstStudSchoolFoodServProgAssocsServiceDescriptor');
+  const currentServiceDescriptor = extractDescriptor(current.schoolFoodServiceProgramServices?.[0]?.schoolFoodServiceProgramServiceDescriptor);
+  
+  expectChanged(previousServiceDescriptor, currentServiceDescriptor, 'schoolFoodServiceProgramServices[0].schoolFoodServiceProgramServiceDescriptor');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudSchoolFoodServProgAssocs, [
+    'beginDate',
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'studentUniqueId'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
