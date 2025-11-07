@@ -596,6 +596,24 @@ const logSpecStudentProgramAssociation = {
   endDate: r => r?.endDate,
   services: r => r?.services,
 };
+// StudentNeglectedOrDelinquentProgramAssociation spec map (StudentProgram > StudentNeglectedOrDelinquentProgramAssociations)
+// REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
+// Mutations target: neglectedOrDelinquentProgramServices[0].neglectedOrDelinquentProgramServiceDescriptor
+const logSpecStudNeglectedOrDelinquentProgAssocs = {
+  beginDate: r => r?.beginDate,
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  programEducationOrganizationId: r => r?.programReference?.educationOrganizationId,
+  programName: r => r?.programReference?.programName,
+  programTypeDescriptor: r => extractDescriptor(r?.programReference?.programTypeDescriptor),
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  neglectedOrDelinquentProgramDescriptor: r => extractDescriptor(r?.neglectedOrDelinquentProgramDescriptor),
+  endDate: r => r?.endDate,
+  neglectedOrDelinquentProgramServices: r => r?.neglectedOrDelinquentProgramServices?.map(s => ({
+    neglectedOrDelinquentProgramServiceDescriptor: extractDescriptor(s?.neglectedOrDelinquentProgramServiceDescriptor),
+    serviceBeginDate: s?.serviceBeginDate,
+    primaryIndicator: s?.primaryIndicator
+  }))
+};
 
 // Grade spec map (StudentGrade > Grades)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
@@ -783,6 +801,7 @@ module.exports = {
   ,logSpecStudentLangInstProgramAssociation
   ,logSpecStudentMigrantEducationProgramAssociation
   ,logSpecStudentProgramAssociation
+  ,logSpecStudNeglectedOrDelinquentProgAssocs
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
