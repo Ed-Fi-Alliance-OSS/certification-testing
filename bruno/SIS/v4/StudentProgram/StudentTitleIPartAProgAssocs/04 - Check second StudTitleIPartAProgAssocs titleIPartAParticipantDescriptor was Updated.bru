@@ -1,0 +1,63 @@
+meta {
+  name: 04 - Check second StudTitleIPartAProgAssocs titleIPartAParticipantDescriptor was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations/{{secondStudTitleIPartAProgAssocsUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.titleIPartAParticipantDescriptor: isString
+  res.body.titleIPartAParticipantDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondStudTitleIPartAProgAssocsUniqueId', '02 - Check second StudTitleIPartAProgAssocs is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStudTitleIPartAProgAssocsTitleIPartAParticipantDescriptor', '02 - Check second StudTitleIPartAProgAssocs is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudTitleIPartAProgAssocs, logScenario } = require('./logging');
+  const entityName = 'StudTitleIPartAProgAssocs';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousDescriptor = getVar(bru, 'secondStudTitleIPartAProgAssocsTitleIPartAParticipantDescriptor');
+  const currentDescriptor = extractDescriptor(current.titleIPartAParticipantDescriptor);
+  
+  expectChanged(previousDescriptor, currentDescriptor, 'titleIPartAParticipantDescriptor');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudTitleIPartAProgAssocs, [
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'beginDate',
+    'studentUniqueId',
+    'titleIPartAParticipantDescriptor'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

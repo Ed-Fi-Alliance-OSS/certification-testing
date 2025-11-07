@@ -627,6 +627,18 @@ const logSpecStudSpecEduProgramAssocs = {
   specialEducationSettingDescriptor: r => extractDescriptor(r?.specialEducationSettingDescriptor),
   ideaEligibility: r => r?.ideaEligibility
 };
+// StudentTitleIPartAProgramAssociation spec map (StudentProgram > StudentTitleIPartAProgramAssociations)
+// REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
+// Mutations target: titleIPartAParticipantDescriptor
+const logSpecStudTitleIPartAProgAssocs = {
+  beginDate: r => r?.beginDate,
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  programEducationOrganizationId: r => r?.programReference?.educationOrganizationId,
+  programName: r => r?.programReference?.programName,
+  programTypeDescriptor: r => extractDescriptor(r?.programReference?.programTypeDescriptor),
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  titleIPartAParticipantDescriptor: r => extractDescriptor(r?.titleIPartAParticipantDescriptor)
+};
 
 // Grade spec map (StudentGrade > Grades)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
@@ -816,6 +828,7 @@ module.exports = {
   ,logSpecStudentProgramAssociation
   ,logSpecStudNeglectedOrDelinquentProgAssocs
   ,logSpecStudSpecEduProgramAssocs
+  ,logSpecStudTitleIPartAProgAssocs
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
