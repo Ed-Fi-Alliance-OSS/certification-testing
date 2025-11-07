@@ -1,0 +1,56 @@
+meta {
+  name: 04 - Check second StudentSectionAttendanceEvent was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{secondStudentSectionAttendanceEventUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: isString
+  res.body.id: eq {{secondStudentSectionAttendanceEventUniqueId}}
+  res.body.attendanceEventCategoryDescriptor: isString
+  res.body.attendanceEventCategoryDescriptor: isNotEmpty
+  res.body.eventDate: isString
+  res.body.eventDate: isNotEmpty
+  res.body.sectionReference: isDefined
+  res.body.sectionReference.localCourseCode: isString
+  res.body.sectionReference.localCourseCode: isNotEmpty
+  res.body.sectionReference.schoolId: isNumber
+  res.body.sectionReference.schoolId: neq 0
+  res.body.sectionReference.schoolYear: isNumber
+  res.body.sectionReference.schoolYear: neq 0
+  res.body.sectionReference.sectionIdentifier: isString
+  res.body.sectionReference.sectionIdentifier: isNotEmpty
+  res.body.sectionReference.sessionName: isString
+  res.body.sectionReference.sessionName: isNotEmpty
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.attendanceEventReason: isString
+  res.body.attendanceEventReason: isNotEmpty
+}
+
+script:post-response {
+  const { expectChanged } = require('./utils');
+  const { logScenario, logSpecStudentSectionAttendanceEvent } = require('./logging');
+  const entityName = 'StudentSectionAttendanceEvent';
+  const scenarioName = this.req.name;
+  const entity = res.getBody();
+
+  // Mutation target: attendanceEventReason
+  expectChanged(entity.attendanceEventReason, bru.getVar('secondStudentSectionAttendanceEventAttendanceEventReason'), 'attendanceEventReason');
+
+  // Filtered logging only mutated fields (+ id automatically)
+  logScenario(entityName, scenarioName, entity, logSpecStudentSectionAttendanceEvent, ['attendanceEventReason']);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
