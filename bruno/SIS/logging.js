@@ -630,6 +630,7 @@ const logSpecStudSpecEduProgramAssocs = {
   specialEducationSettingDescriptor: r => extractDescriptor(r?.specialEducationSettingDescriptor),
   ideaEligibility: r => r?.ideaEligibility
 };
+
 // StudentTitleIPartAProgramAssociation spec map (StudentProgram > StudentTitleIPartAProgramAssociations)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
 // Mutations target: titleIPartAParticipantDescriptor
@@ -656,6 +657,20 @@ const logSpecStudSchoolFoodServProgAssocs = {
   schoolFoodServiceProgramServices: r => r?.schoolFoodServiceProgramServices?.map(s => ({
     schoolFoodServiceProgramServiceDescriptor: extractDescriptor(s?.schoolFoodServiceProgramServiceDescriptor)
   }))
+};
+
+// StudentCohortAssociation spec map (StudentCohort > StudentCohortAssociations)
+// Primary keys per config: educationOrganizationId, cohortIdentifier, studentUniqueId, beginDate
+// Required fields include cohortReference constituents, studentUniqueId, beginDate, endDate.
+// Mutation target per scenarios: endDate.
+// Optional fields (sections) omitted unless present.
+const logSpecStudentCohortAssociation = {
+  educationOrganizationId: r => r?.cohortReference?.educationOrganizationId,
+  cohortIdentifier: r => r?.cohortReference?.cohortIdentifier,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  beginDate: r => r?.beginDate,
+  endDate: r => r?.endDate,
+  sections: r => r?.sections,
 };
 
 // Grade spec map (StudentGrade > Grades)
@@ -848,6 +863,7 @@ module.exports = {
   ,logSpecStudSpecEduProgramAssocs
   ,logSpecStudTitleIPartAProgAssocs
   ,logSpecStudSchoolFoodServProgAssocs
+  ,logSpecStudentCohortAssociation
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
