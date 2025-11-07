@@ -1,0 +1,61 @@
+meta {
+  name: 02 - Check first StudentMigrantEducationProgramAssociation priorityForServices was Updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentMigrantEducationProgramAssociations/{{firstStudentMigrantEducationProgramAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.priorityForServices: isBoolean
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStudentMigrantEducationProgramAssociationUniqueId', '01 - Check first StudentMigrantEducationProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStudentMigrantEducationProgramAssociationPriorityForServices', '01 - Check first StudentMigrantEducationProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudentMigrantEducationProgramAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentMigrantEducationProgramAssociation';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousPriorityForServices = getVar(bru, 'firstStudentMigrantEducationProgramAssociationPriorityForServices');
+  
+  expectChanged(previousPriorityForServices, current.priorityForServices, 'priorityForServices');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudentMigrantEducationProgramAssociation, [
+    'beginDate',
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'studentUniqueId',
+    'priorityForServices'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
