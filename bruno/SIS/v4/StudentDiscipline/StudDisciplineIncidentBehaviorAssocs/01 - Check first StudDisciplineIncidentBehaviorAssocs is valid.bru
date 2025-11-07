@@ -1,0 +1,71 @@
+meta {
+  name: 01 - Check first StudDisciplineIncidentBehaviorAssocs is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentDisciplineIncidentBehaviorAssociations?schoolId=[ENTER FIRST SCHOOL ID]&studentUniqueId=[ENTER FIRST STUDENT UNIQUE ID]&behaviorDescriptor={{firstBehaviorDescriptorEncoded}}&incidentIdentifier=[ENTER FIRST INCIDENT IDENTIFIER]&behaviorDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST BEHAVIOR DESCRIPTOR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER FIRST SCHOOL ID]
+  studentUniqueId: [ENTER FIRST STUDENT UNIQUE ID]
+  behaviorDescriptor: {{firstBehaviorDescriptorEncoded}}
+  incidentIdentifier: [ENTER FIRST INCIDENT IDENTIFIER]
+  behaviorDescriptor_KEEP_IT_AT_THE_END: [ENTER FIRST BEHAVIOR DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].behaviorDescriptor: isString
+  res.body[0].behaviorDescriptor: isNotEmpty
+  res.body[0].disciplineIncidentReference: isDefined
+  res.body[0].disciplineIncidentReference.incidentIdentifier: isString
+  res.body[0].disciplineIncidentReference.incidentIdentifier: isNotEmpty
+  res.body[0].disciplineIncidentReference.schoolId: isNumber
+  res.body[0].disciplineIncidentReference.schoolId: neq 0
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].studentParticipationCodeDescriptor: isString
+  res.body[0].studentParticipationCodeDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const behaviorDescriptorEncoded = encodeDescriptorParameter(req.url, 'behaviorDescriptor_KEEP_IT_AT_THE_END');
+  
+  setVar(bru, 'firstBehaviorDescriptorEncoded', behaviorDescriptorEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecStudDisciplineIncidentBehaviorAssocs, logScenario } = require('./logging');
+  const entityName = 'StudDisciplineIncidentBehaviorAssocs';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'firstStudDisciplineIncidentBehaviorAssocsUniqueId'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstStudDisciplineIncidentBehaviorAssocsUniqueId: single.id
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStudDisciplineIncidentBehaviorAssocs);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
