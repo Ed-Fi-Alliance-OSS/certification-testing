@@ -1,0 +1,69 @@
+meta {
+  name: 01 - Check first Program is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/programs?educationOrganizationId=[ENTER FIRST EDUCATION ORGANIZATION ID]&programTypeDescriptor={{firstProgramTypeDescriptorEncoded}}&programName=[ENTER FIRST PROGRAM NAME]&programTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST PROGRAM TYPE DESCRIPTOR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER FIRST EDUCATION ORGANIZATION ID]
+  programTypeDescriptor: {{firstProgramTypeDescriptorEncoded}}
+  programName: [ENTER FIRST PROGRAM NAME]
+  programTypeDescriptor_KEEP_IT_AT_THE_END: [ENTER FIRST PROGRAM TYPE DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].programId: isString
+  res.body[0].programId: isNotEmpty
+  res.body[0].programName: isString
+  res.body[0].programName: isNotEmpty
+  res.body[0].programTypeDescriptor: isString
+  res.body[0].programTypeDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const programTypeDescriptorEncoded = encodeDescriptorParameter(req.url, 'programTypeDescriptor_KEEP_IT_AT_THE_END');
+  
+  setVar(bru, 'firstProgramTypeDescriptorEncoded', programTypeDescriptorEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecProgram, logScenario } = require('./logging');
+  const entityName = 'Program';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'firstProgramUniqueId',
+      'firstProgramId'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstProgramUniqueId: single.id,
+    firstProgramId: single.programName
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecProgram);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
