@@ -1,0 +1,61 @@
+meta {
+  name: 04 - Check second StudentProgramAssociation beginDate was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentProgramAssociations/{{secondStudentProgramAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.beginDate: isString
+  res.body.beginDate: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondStudentProgramAssociationUniqueId', '02 - Check second StudentProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStudentProgramAssociationBeginDate', '02 - Check second StudentProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudentProgramAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentProgramAssociation';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousBeginDate = getVar(bru, 'secondStudentProgramAssociationBeginDate');
+  
+  expectChanged(previousBeginDate, current.beginDate, 'beginDate');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudentProgramAssociation, [
+    'beginDate',
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'studentUniqueId'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
