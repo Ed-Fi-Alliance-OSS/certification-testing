@@ -566,7 +566,7 @@ For any descriptor parameter with `#` fragment:
 
 ```javascript
 get {
-  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts?educationOrganizationId=255901001&courseCode=ALG-01&termDescriptor={{firstTermDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/TermDescriptor#Fall Semester
+  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts?educationOrganizationId=255901001&courseCode=ALG-01&termDescriptor={{firstTermDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=[ENTER_TERM_DESCRIPTOR]
   body: none
   auth: inherit
 }
@@ -588,11 +588,8 @@ params:query {
 ```javascript
 script:pre-request {
   const { encodeDescriptorParameter, setVar } = require('./utils');
-  const encoded = encodeDescriptorParameter(
-    req.url,
-    'termDescriptor_KEEP_IT_AT_THE_END',
-    'uri://ed-fi.org/TermDescriptor#Fall Semester'
-  );
+  const encoded = encodeDescriptorParameter(req.url, 'termDescriptor_KEEP_IT_AT_THE_END');
+
   setVar(bru, 'firstTermDescriptorEncoded', encoded);
 }
 ```
@@ -622,7 +619,7 @@ If multiple distinct descriptor parameters in one scenario, append semantic suff
 Each descriptor gets its own sentinel pair:
 
 ```javascript
-...&termDescriptor={{firstTermDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/TermDescriptor#Fall Semester&sessionDescriptor={{firstSessionDescriptorEncoded}}&sessionDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/SessionDescriptor#2024-2025
+...&termDescriptor={{firstTermDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=[ENTER_TERM_DESCRIPTOR]&sessionDescriptor={{firstSessionDescriptorEncoded}}&sessionDescriptor_KEEP_IT_AT_THE_END=[ENTER_SESSION_DESCRIPTOR]
 ```
 
 Process sequentially in pre-request script.

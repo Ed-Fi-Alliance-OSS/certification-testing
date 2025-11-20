@@ -377,6 +377,18 @@ const logSpecGradingPeriod = {
   totalInstructionalDays: 'totalInstructionalDays',
 };
 
+// Program spec map (EducationOrganization > Programs)
+// Include identifiers and required fields plus selected optional info.
+const logSpecProgram = {
+  programName: 'programName',
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  programTypeDescriptor: r => extractDescriptor(r?.programTypeDescriptor),
+  programId: 'programId',
+  characteristics: r => mapDescriptors(r?.characteristics, c => c.programCharacteristicDescriptor),
+  services: r => mapDescriptors(r?.services, s => s.serviceDescriptor),
+  sponsors: r => mapDescriptors(r?.sponsors, s => s.programSponsorDescriptor),
+};
+
 const logSpecSession = {
   sessionName: 'sessionName',
   schoolId: r => r?.schoolReference?.schoolId,
@@ -691,4 +703,5 @@ module.exports = {
   ,logSpecDisciplineIncident
   ,logSpecDisciplineAction
   ,logSpecDescriptorMapping
+  ,logSpecProgram
 };
