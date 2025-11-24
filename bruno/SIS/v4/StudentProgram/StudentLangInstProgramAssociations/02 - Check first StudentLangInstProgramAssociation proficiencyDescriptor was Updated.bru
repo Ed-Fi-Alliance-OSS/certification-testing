@@ -1,0 +1,67 @@
+meta {
+  name: 02 - Check first StudentLangInstProgramAssociation proficiencyDescriptor was Updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentLanguageInstructionProgramAssociations/{{firstStudentLanguageInstructionProgramAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.englishLanguageProficiencyAssessments: isArray
+  res.body.englishLanguageProficiencyAssessments: isNotEmpty
+  res.body.englishLanguageProficiencyAssessments[0].proficiencyDescriptor: isString
+  res.body.englishLanguageProficiencyAssessments[0].proficiencyDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStudentLanguageInstructionProgramAssociationUniqueId', '01 - Check first StudentLangInstProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStudentLanguageInstructionProgramAssociationProficiencyDescriptor', '01 - Check first StudentLangInstProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudentLangInstProgramAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentLanguageInstructionProgramAssociation';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousDescriptor = getVar(bru, 'firstStudentLanguageInstructionProgramAssociationProficiencyDescriptor');
+  const currentDescriptor = extractDescriptor(
+    current.englishLanguageProficiencyAssessments?.[0]?.proficiencyDescriptor
+  );
+  
+  expectChanged(previousDescriptor, currentDescriptor, 'proficiencyDescriptor');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudentLangInstProgramAssociation, [
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'beginDate',
+    'studentUniqueId',
+    'englishLanguageProficiencyAssessments'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
