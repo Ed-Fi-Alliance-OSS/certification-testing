@@ -1,0 +1,63 @@
+meta {
+  name: 02 - Check first StudentHomelessProgramAssociation homelessPrimaryNighttimeResidenceDescriptor was Updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentHomelessProgramAssociations/{{firstStudentHomelessProgramAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.homelessPrimaryNighttimeResidenceDescriptor: isString
+  res.body.homelessPrimaryNighttimeResidenceDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStudentHomelessProgramAssociationUniqueId', '01 - Check first StudentHomelessProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStudentHomelessProgramAssociationHomelessPrimaryNighttimeResidenceDescriptor', '01 - Check first StudentHomelessProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudentHomelessProgramAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentHomelessProgramAssociation';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousDescriptor = getVar(bru, 'firstStudentHomelessProgramAssociationHomelessPrimaryNighttimeResidenceDescriptor');
+  const currentDescriptor = extractDescriptor(current.homelessPrimaryNighttimeResidenceDescriptor);
+  
+  expectChanged(previousDescriptor, currentDescriptor, 'homelessPrimaryNighttimeResidenceDescriptor');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudentHomelessProgramAssociation, [
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'beginDate',
+    'studentUniqueId',
+    'homelessPrimaryNighttimeResidenceDescriptor'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
