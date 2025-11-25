@@ -1,0 +1,81 @@
+meta {
+  name: 01 - Check first StudentMigrantEducationProgramAssociation is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentMigrantEducationProgramAssociations?beginDate=[ENTER FIRST BEGIN DATE YYYY-MM-DD]&educationOrganizationId=[ENTER FIRST EDUCATION ORGANIZATION ID]&programEducationOrganizationId=[ENTER FIRST PROGRAM EDUCATION ORGANIZATION ID]&programName=[ENTER FIRST PROGRAM NAME]&programTypeDescriptor={{firstProgramTypeDescriptorEncoded}}&studentUniqueId=[ENTER FIRST STUDENT UNIQUE ID]&programTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST PROGRAM TYPE DESCRIPTOR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  beginDate: [ENTER FIRST BEGIN DATE YYYY-MM-DD]
+  educationOrganizationId: [ENTER FIRST EDUCATION ORGANIZATION ID]
+  programEducationOrganizationId: [ENTER FIRST PROGRAM EDUCATION ORGANIZATION ID]
+  programName: [ENTER FIRST PROGRAM NAME]
+  programTypeDescriptor: {{firstProgramTypeDescriptorEncoded}}
+  studentUniqueId: [ENTER FIRST STUDENT UNIQUE ID]
+  programTypeDescriptor_KEEP_IT_AT_THE_END: [ENTER FIRST PROGRAM TYPE DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].programReference: isDefined
+  res.body[0].programReference.educationOrganizationId: isNumber
+  res.body[0].programReference.educationOrganizationId: neq 0
+  res.body[0].programReference.programName: isString
+  res.body[0].programReference.programName: isNotEmpty
+  res.body[0].programReference.programTypeDescriptor: isString
+  res.body[0].programReference.programTypeDescriptor: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].priorityForServices: isBoolean
+  res.body[0].lastQualifyingMove: isString
+  res.body[0].lastQualifyingMove: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const programTypeDescriptorEncoded = encodeDescriptorParameter(req.url, 'programTypeDescriptor_KEEP_IT_AT_THE_END');
+
+  setVar(bru, 'firstProgramTypeDescriptorEncoded', programTypeDescriptorEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecStudentMigrantEducationProgramAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentMigrantEducationProgramAssociation';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'firstStudentMigrantEducationProgramAssociationUniqueId',
+      'firstStudentMigrantEducationProgramAssociationPriorityForServices'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstStudentMigrantEducationProgramAssociationUniqueId: single.id,
+    firstStudentMigrantEducationProgramAssociationPriorityForServices: single.priorityForServices
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStudentMigrantEducationProgramAssociation);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

@@ -1,0 +1,119 @@
+meta {
+  name: StudentMigrantProgramAssociations
+  seq: 4
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v4 Student Program > StudentMigrantProgramAssociation Scenarios
+  
+  The Student Program interchange loads students' participation in programs.
+  The `StudentMigrantEducationProgramAssociation` represents the migrant educational program(s) that a student participates in or receives services from. The association is an extension of the `StudentProgramAssociation` particular for migrant programs.
+  
+  ## Prerequisites
+  
+  * Ed-Org (pre-loaded)
+  * Program (pre-loaded)
+  * Student
+  * Student Enrollment
+  
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` new `StudentMigrantEducationProgramAssociation` for an elementary school student.
+  2. __UPDATE__ the _priorityForServices_ on the `first` added `StudentMigrantEducationProgramAssociation` from FALSE to TRUE.
+
+  > Note: the Program's educationOrganizationId is the Local Education Agency ID
+  
+  ## Scenarios example data
+
+  | Resource                                    | Property Name                            | Is Collection | Data Type                                | Required / Optional | Scenario 1: POST              | Scenario 2: PUT               |
+  | ------------------------------------------- | ---------------------------------------- | ------------- | ---------------------------------------- | ------------------- | ----------------------------- | ----------------------------- |
+  | StudentMigrantEducationProgramAssociations  | beginDate                                | FALSE         | date                                     | REQUIRED            | 8/23/[Current School Year]    | 8/23/[Current School Year]    |
+  | StudentMigrantEducationProgramAssociations  | educationOrganizationReference           | FALSE         | educationOrganizationReference           | REQUIRED            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | educationOrganizationId                  | FALSE         | integer                                  | REQUIRED            | 255901                        | 255901                        |
+  | StudentMigrantEducationProgramAssociations  | programReference                         | FALSE         | programReference                         | REQUIRED            |                               |                               |
+  | programReference                            | programName                              | FALSE         | string                                   | REQUIRED            | Migrant Education             | Migrant Education             |
+  | programReference                            | programTypeDescriptor                    | FALSE         | programTypeDescriptor                    | REQUIRED            | Migrant Education             | Migrant Education             |
+  | programReference                            | educationOrganizationId                  | FALSE         | integer                                  | REQUIRED            | 255901                        | 255901                        |
+  | StudentMigrantEducationProgramAssociations  | studentReference                         | FALSE         | studentReference                         | REQUIRED            |                               |                               |
+  | studentReference                            | studentUniqueId                          | FALSE         | string                                   | REQUIRED            | 111111                        | 111111                        |
+  | StudentMigrantEducationProgramAssociations  | participationStatus                      | FALSE         | participationStatus[]                    | OPTIONAL            |                               |                               |
+  | participationStatus                         | participationStatusDescriptor            | FALSE         | participationStatus                      | OPTIONAL            |                               |                               |
+  | participationStatus                         | designatedBy                             | FALSE         | string                                   | OPTIONAL            |                               |                               |
+  | participationStatus                         | statusBeginDate                          | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | participationStatus                         | statusEndDate                            | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | endDate                                  | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | reasonExitedDescriptor                   | FALSE         | reasonExitedDescriptor                   | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | servedOutsideOfRegularSession            | FALSE         | boolean                                  | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | priorityForServices                      | FALSE         | boolean                                  | REQUIRED            | TRUE                          | FALSE                         |
+  | StudentMigrantEducationProgramAssociations  | lastQualifyingMove                       | FALSE         | date                                     | REQUIRED            | 07/16/[Current School Year]   | 07/16/[Current School Year]   |
+  | StudentMigrantEducationProgramAssociations  | continuationOfServicesReasonDescriptor   | FALSE         | continuationOfServicesReasonDescriptor   | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | usInitialEntry                           | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | usMostRecentEntry                        | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | usInitialSchoolEntry                     | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | qualifyingArrivalDate                    | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | stateResidencyDate                       | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | eligibilityExpirationDate                | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | StudentMigrantEducationProgramAssociations  | migrantEducationProgramServices          | TRUE          | migrantEducationProgramService[]         | CONDITIONAL         |                               |                               |
+  | migrantEducationProgramServices             | migrantEducationProgramServiceDescriptor | FALSE         | migrantEducationProgramServiceDescriptor | CONDITIONAL         | Instructional Services        | Instructional Services        |
+  | migrantEducationProgramServices             | serviceBeginDate                         | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | migrantEducationProgramServices             | serviceEndDate                           | FALSE         | date                                     | OPTIONAL            |                               |                               |
+  | migrantEducationProgramServices             | primaryIndicator                         | FALSE         | boolean                                  | OPTIONAL            |                               |                               |
+
+  ## API JSON response example
+
+```json
+  {
+    "id": "string",
+    "beginDate": "2025-11-06",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 0
+    },
+    "programReference": {
+      "educationOrganizationId": 0,
+      "programName": "string",
+      "programTypeDescriptor": "string"
+    },
+    "studentReference": {
+      "studentUniqueId": "string"
+    },
+    "continuationOfServicesReasonDescriptor": "string",
+    "eligibilityExpirationDate": "2025-11-06",
+    "endDate": "2025-11-06",
+    "lastQualifyingMove": "2025-11-06",
+    "migrantEducationProgramServices": [
+      {
+        "migrantEducationProgramServiceDescriptor": "string",
+        "primaryIndicator": true,
+        "serviceBeginDate": "2025-11-06",
+        "serviceEndDate": "2025-11-06"
+      }
+    ],
+    "participationStatus": {
+      "participationStatusDescriptor": "string",
+      "designatedBy": "string",
+      "statusBeginDate": "2025-11-06",
+      "statusEndDate": "2025-11-06"
+    },
+    "priorityForServices": true,
+    "programParticipationStatuses": [
+      {
+        "participationStatusDescriptor": "string",
+        "statusBeginDate": "2025-11-06",
+        "designatedBy": "string",
+        "statusEndDate": "2025-11-06"
+      }
+    ],
+    "qualifyingArrivalDate": "2025-11-06",
+    "reasonExitedDescriptor": "string",
+    "servedOutsideOfRegularSession": true,
+    "stateResidencyDate": "2025-11-06",
+    "usInitialEntry": "2025-11-06",
+    "usInitialSchoolEntry": "2025-11-06",
+    "usMostRecentEntry": "2025-11-06"
+  }
+```
+}
