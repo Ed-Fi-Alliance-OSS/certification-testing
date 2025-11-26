@@ -1,0 +1,63 @@
+meta {
+  name: 03 - Check first StudTitleIPartAProgAssocs titleIPartAParticipantDescriptor was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations/{{firstStudTitleIPartAProgAssocsUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.titleIPartAParticipantDescriptor: isString
+  res.body.titleIPartAParticipantDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStudTitleIPartAProgAssocsUniqueId', '01 - Check first StudTitleIPartAProgAssocs is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStudTitleIPartAProgAssocsTitleIPartAParticipantDescriptor', '01 - Check first StudTitleIPartAProgAssocs is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudTitleIPartAProgAssocs, logScenario } = require('./logging');
+  const entityName = 'StudTitleIPartAProgAssocs';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousDescriptor = getVar(bru, 'firstStudTitleIPartAProgAssocsTitleIPartAParticipantDescriptor');
+  const currentDescriptor = extractDescriptor(current.titleIPartAParticipantDescriptor);
+  
+  expectChanged(previousDescriptor, currentDescriptor, 'titleIPartAParticipantDescriptor');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudTitleIPartAProgAssocs, [
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'beginDate',
+    'studentUniqueId',
+    'titleIPartAParticipantDescriptor'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
