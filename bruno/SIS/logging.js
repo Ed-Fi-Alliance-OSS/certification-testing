@@ -582,6 +582,7 @@ const logSpecStudentMigrantEducationProgramAssociation = {
   migrantEducationProgramServices: r => r?.migrantEducationProgramServices?.map(s => extractDescriptor(s?.migrantEducationProgramServiceDescriptor)),
   endDate: r => r?.endDate,
 };
+
 // StudentProgramAssociation spec map (StudentProgram > StudentProgramAssociations)
 // Primary keys per config: beginDate, educationOrganizationId, programEducationOrganizationId, programName, programTypeDescriptorId, studentUniqueId
 // Required fields include program reference constituents, beginDate, studentUniqueId.
@@ -596,6 +597,7 @@ const logSpecStudentProgramAssociation = {
   endDate: r => r?.endDate,
   services: r => r?.services,
 };
+
 // StudentNeglectedOrDelinquentProgramAssociation spec map (StudentProgram > StudentNeglectedOrDelinquentProgramAssociations)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
 // Mutations target: neglectedOrDelinquentProgramServices[0].neglectedOrDelinquentProgramServiceDescriptor
@@ -614,6 +616,7 @@ const logSpecStudNeglectedOrDelinquentProgAssocs = {
     primaryIndicator: s?.primaryIndicator
   }))
 };
+
 // StudentSpecialEducationProgramAssociation spec map (StudentProgram > StudentSpecialEducationProgramAssociations)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
 // Mutations target: ideaEligibility
@@ -638,6 +641,21 @@ const logSpecStudTitleIPartAProgAssocs = {
   programTypeDescriptor: r => extractDescriptor(r?.programReference?.programTypeDescriptor),
   studentUniqueId: r => r?.studentReference?.studentUniqueId,
   titleIPartAParticipantDescriptor: r => extractDescriptor(r?.titleIPartAParticipantDescriptor)
+};
+
+// StudentSchoolFoodServicesProgramAssociation spec map (StudentProgram > StudentSchoolFoodServicesProgramAssociations)
+// REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
+// Mutations target: schoolFoodServiceProgramServices[0].schoolFoodServiceProgramServiceDescriptor
+const logSpecStudSchoolFoodServProgAssocs = {
+  beginDate: r => r?.beginDate,
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  programEducationOrganizationId: r => r?.programReference?.educationOrganizationId,
+  programName: r => r?.programReference?.programName,
+  programTypeDescriptor: r => extractDescriptor(r?.programReference?.programTypeDescriptor),
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  schoolFoodServiceProgramServices: r => r?.schoolFoodServiceProgramServices?.map(s => ({
+    schoolFoodServiceProgramServiceDescriptor: extractDescriptor(s?.schoolFoodServiceProgramServiceDescriptor)
+  }))
 };
 
 // Grade spec map (StudentGrade > Grades)
@@ -829,6 +847,7 @@ module.exports = {
   ,logSpecStudNeglectedOrDelinquentProgAssocs
   ,logSpecStudSpecEduProgramAssocs
   ,logSpecStudTitleIPartAProgAssocs
+  ,logSpecStudSchoolFoodServProgAssocs
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
