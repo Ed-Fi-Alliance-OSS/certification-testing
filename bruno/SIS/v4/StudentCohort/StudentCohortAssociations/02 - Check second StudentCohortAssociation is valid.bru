@@ -1,0 +1,63 @@
+meta {
+  name: 02 - Check second StudentCohortAssociation is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentCohortAssociations?educationOrganizationId=[ENTER SECOND EDUCATION ORGANIZATION ID]&cohortIdentifier=[ENTER SECOND COHORT IDENTIFIER]&studentUniqueId=[ENTER SECOND STUDENT UNIQUE ID]&beginDate=[ENTER SECOND BEGIN DATE YYYY-MM-DD]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER SECOND EDUCATION ORGANIZATION ID]
+  cohortIdentifier: [ENTER SECOND COHORT IDENTIFIER]
+  studentUniqueId: [ENTER SECOND STUDENT UNIQUE ID]
+  beginDate: [ENTER SECOND BEGIN DATE YYYY-MM-DD]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].cohortReference: isDefined
+  res.body[0].cohortReference.educationOrganizationId: isNumber
+  res.body[0].cohortReference.educationOrganizationId: neq 0
+  res.body[0].cohortReference.cohortIdentifier: isString
+  res.body[0].cohortReference.cohortIdentifier: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecStudentCohortAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentCohortAssociation';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'secondStudentCohortAssociationUniqueId'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    secondStudentCohortAssociationUniqueId: single.id
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStudentCohortAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,60 @@
+meta {
+  name: 03 - Check first StudentCohortAssociation endDate was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentCohortAssociations/{{firstStudentCohortAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.endDate: isString
+  res.body.endDate: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStudentCohortAssociationUniqueId', '01 - Check first StudentCohortAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStudentCohortAssociationEndDate', '01 - Check first StudentCohortAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudentCohortAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentCohortAssociation';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousEndDate = getVar(bru, 'firstStudentCohortAssociationEndDate');
+  
+  expectChanged(previousEndDate, current.endDate, 'endDate');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudentCohortAssociation, [
+    'educationOrganizationId',
+    'cohortIdentifier',
+    'studentUniqueId',
+    'beginDate',
+    'endDate'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
