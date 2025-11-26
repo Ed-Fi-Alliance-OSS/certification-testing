@@ -1,0 +1,65 @@
+meta {
+  name: 02 - Check first StudNeglectedOrDelinquentProgAssocs service was Updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentNeglectedOrDelinquentProgramAssociations/{{firstStudNeglectedOrDelinquentProgAssocsUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.neglectedOrDelinquentProgramServices: isArray
+  res.body.neglectedOrDelinquentProgramServices: isNotEmpty
+  res.body.neglectedOrDelinquentProgramServices[0].neglectedOrDelinquentProgramServiceDescriptor: isString
+  res.body.neglectedOrDelinquentProgramServices[0].neglectedOrDelinquentProgramServiceDescriptor: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStudNeglectedOrDelinquentProgAssocsUniqueId', '01 - Check first StudNeglectedOrDelinquentProgAssocs is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStudNeglectedOrDelinquentProgAssocsServiceDescriptor', '01 - Check first StudNeglectedOrDelinquentProgAssocs is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError, extractDescriptor } = require('./utils');
+  const { logSpecStudNeglectedOrDelinquentProgAssocs, logScenario } = require('./logging');
+  const entityName = 'StudNeglectedOrDelinquentProgAssocs';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousServiceDescriptor = getVar(bru, 'firstStudNeglectedOrDelinquentProgAssocsServiceDescriptor');
+  const currentServiceDescriptor = extractDescriptor(current.neglectedOrDelinquentProgramServices?.[0]?.neglectedOrDelinquentProgramServiceDescriptor);
+  
+  expectChanged(previousServiceDescriptor, currentServiceDescriptor, 'neglectedOrDelinquentProgramServices[0].neglectedOrDelinquentProgramServiceDescriptor');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudNeglectedOrDelinquentProgAssocs, [
+    'beginDate',
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'studentUniqueId',
+    'neglectedOrDelinquentProgramDescriptor'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
