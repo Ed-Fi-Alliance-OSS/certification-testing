@@ -1,0 +1,61 @@
+meta {
+  name: 04 - Check second StudSpecEduProgramAssocs ideaEligibility was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSpecialEducationProgramAssociations/{{secondStudSpecEduProgramAssocsUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.ideaEligibility: isDefined
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondStudSpecEduProgramAssocsUniqueId', '02 - Check second StudSpecEduProgramAssocs is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStudSpecEduProgramAssocsIdeaEligibility', '02 - Check second StudSpecEduProgramAssocs is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudSpecEduProgramAssocs, logScenario } = require('./logging');
+  const entityName = 'StudSpecEduProgramAssocs';
+  const scenarioName = this.req.name;
+  
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousIdeaEligibility = getVar(bru, 'secondStudSpecEduProgramAssocsIdeaEligibility');
+  
+  expectChanged(previousIdeaEligibility, current.ideaEligibility, 'ideaEligibility');
+  
+  logScenario(entityName, scenarioName, current, logSpecStudSpecEduProgramAssocs, [
+    'beginDate',
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'studentUniqueId',
+    'specialEducationSettingDescriptor'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

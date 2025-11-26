@@ -614,6 +614,19 @@ const logSpecStudNeglectedOrDelinquentProgAssocs = {
     primaryIndicator: s?.primaryIndicator
   }))
 };
+// StudentSpecialEducationProgramAssociation spec map (StudentProgram > StudentSpecialEducationProgramAssociations)
+// REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
+// Mutations target: ideaEligibility
+const logSpecStudSpecEduProgramAssocs = {
+  beginDate: r => r?.beginDate,
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  programEducationOrganizationId: r => r?.programReference?.educationOrganizationId,
+  programName: r => r?.programReference?.programName,
+  programTypeDescriptor: r => extractDescriptor(r?.programReference?.programTypeDescriptor),
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  specialEducationSettingDescriptor: r => extractDescriptor(r?.specialEducationSettingDescriptor),
+  ideaEligibility: r => r?.ideaEligibility
+};
 
 // Grade spec map (StudentGrade > Grades)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
@@ -802,6 +815,7 @@ module.exports = {
   ,logSpecStudentMigrantEducationProgramAssociation
   ,logSpecStudentProgramAssociation
   ,logSpecStudNeglectedOrDelinquentProgAssocs
+  ,logSpecStudSpecEduProgramAssocs
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript
