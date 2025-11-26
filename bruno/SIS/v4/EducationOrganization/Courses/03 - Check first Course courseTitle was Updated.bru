@@ -36,6 +36,9 @@ assert {
   res.body.educationOrganizationReference.educationOrganizationId: isNumber
   res.body.educationOrganizationReference.educationOrganizationId: neq 0
   res.body.numberOfParts: isNumber
+  res.body.numberOfParts: neq 0
+  res.body.maxCompletionsForCredit: isNumber
+  res.body.maxCompletionsForCredit: neq 0
 }
 
 script:pre-request {

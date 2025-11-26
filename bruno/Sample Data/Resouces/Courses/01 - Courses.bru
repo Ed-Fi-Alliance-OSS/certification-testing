@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/courses?educationOrganizationId={{myLEAId}}&courseCode=ART 01
+  url: {{resourceBaseUrl}}/ed-fi/courses?educationOrganizationId={{tempLEAId}}&courseCode=ART 01
   body: none
   auth: inherit
 }
 
 params:query {
-  educationOrganizationId: {{myLEAId}}
+  educationOrganizationId: {{tempLEAId}}
   courseCode: ART 01
   ~academicSubjectDescriptor: 
   ~careerPathwayDescriptor: 
@@ -27,6 +27,11 @@ params:query {
   ~offset: 0
   ~Snapshot-Identifier: 
   ~totalCount: false
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'tempLEAId', '(GET) 01 - LocalEducationAgencies', { actionHint: 'Ensure you preload your Local Education Agency id.' });
 }
 
 script:post-response {
@@ -66,4 +71,5 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

@@ -1,7 +1,7 @@
 meta {
-  name: 04 - Courses (Arts)
+  name: 04 - Courses
   type: http
-  seq: 6
+  seq: 5
 }
 
 put {
@@ -11,6 +11,8 @@ put {
 }
 
 body:json {
+  // TEMPorary variables were pre-loaded from the (GET) COURSES request.
+  // Replace ONLY the properties you want to update, KEEP THE OTHERS AS THEY ARE.
   {
     "id": "{{tempCourseUniqueId}}",
     "courseCode": "{{tempCourseCode}}",
@@ -23,12 +25,12 @@ body:json {
       }
     ],
     "educationOrganizationReference": {
-      "educationOrganizationId": "{{myLEAId}}"
+      "educationOrganizationId": "{{tempLEAId}}"
     },
     "academicSubjectDescriptor": "{{tempAcademicSubjectDescriptor}}",
     "levelCharacteristics": [
       {
-        "courseLevelCharacteristicDescriptor": "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Basic"
+        "courseLevelCharacteristicDescriptor": "{{tempCourseLevelCharacteristicDescriptor}}"
       }
     ],
     "numberOfParts": 1,
@@ -38,4 +40,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
