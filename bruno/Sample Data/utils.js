@@ -3,6 +3,7 @@
  * Duplicate of SIS/utils.js (see that file for notes). Keep in sync.
  */
 
+
 /**
  * validateDependency
  * Ensures a required environment variable is present before executing a request.
@@ -108,17 +109,65 @@ function generateId() {
   return (base + Math.floor(Math.random() * maxIncrement)).toString();
 }
 
+// Descriptor URI encoder -------------------------------------------------
+// Accepts either a full descriptor URI (uri://...#Code Value) or just the raw code value.
+// Returns a properly percent-encoded descriptor URI safe for inclusion as a query param.
+// Rules:
+//  - Preserve the prefix up to and excluding '#'
+//  - Encode '#', spaces and any other reserved characters after '#'
+//  - If no '#', treat input as a raw code value and require a prefix argument (optional later enhancement)
+function encodeDescriptorUri(rawDescriptor) {
+  if (typeof rawDescriptor !== 'string' || rawDescriptor.trim() === '') return rawDescriptor;
+  // If already encoded (%23 present), assume it's fine.
+  if (/%23/.test(rawDescriptor)) return rawDescriptor;
+  // Split into prefix + codeValue
+  const parts = rawDescriptor.split('#');
+  if (parts.length === 1) {
+    // No '#': raw might just be the code value; we can't safely build without knowing the namespace.
+    // Return unchanged; caller can decide.
+    return rawDescriptor;
+  }
+  const prefix = parts.slice(0, -1).join('#'); // In case multiple '#'
+  const codeValue = parts[parts.length - 1];
+  // Encode codeValue; also encode '#'
+  const encodedCode = encodeURIComponent(codeValue);
+  return `${prefix}%23${encodedCode}`;
+}
+
+// Extracts rawDescriptor from query string and encode it
+function encodeDescriptorParameter(originalUrl, parameterName, defaultDescriptorValue = '') {
+  let rawDescriptor = defaultDescriptorValue;
+  
+  if (originalUrl.includes('?')) {
+    const queryString = originalUrl.split('?')[1];
+    const parts = queryString.split('&');
+
+    for (const p of parts) {
+      const [key, value] = p.split('=');
+
+      if (key === parameterName && value) {
+        // To avoid double enconding
+        try { rawDescriptor = decodeURIComponent(value); } catch { rawDescriptor = value; }
+        break;
+      }
+    }
+  }
+  const encodedDescriptor = rawDescriptor.includes('#') && !/%23/.test(rawDescriptor) ? encodeDescriptorUri(rawDescriptor) : rawDescriptor;
+  return encodedDescriptor;
+}
 
 // Change expectation helper ------------------------------------------
-function expectChanged(previous, current, label) {
-  test(`${label} changed`, () => {
+function expectChanged(previous, current, label, isMessageOverrode = false) {
+  const message = isMessageOverrode ? label : `${label} changed`;
+  test(message, () => {
     expect(current).not.equals(previous);
   });
 }
 
 // Positive (equality) expectation helper --------------------------------
-function expectUnchanged(previous, current, label) {
-  test(`${label} unchanged`, () => {
+function expectUnchanged(previous, current, label, isMessageOverrode = false) {
+  const message = isMessageOverrode ? label : `${label} unchanged`;
+  test(message, () => {
     expect(current).equals(previous);
   });
 }
@@ -140,5 +189,7 @@ module.exports = {
   generateId,
   expectChanged,
   expectUnchanged,
-  throwNotFoundOrSpecificError
+  throwNotFoundOrSpecificError,
+  encodeDescriptorUri,
+  encodeDescriptorParameter
 };

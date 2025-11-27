@@ -41,6 +41,9 @@ assert {
   res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
   res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
   res.body[0].numberOfParts: isNumber
+  res.body[0].numberOfParts: neq 0
+  res.body[0].maxCompletionsForCredit: isNumber
+  res.body[0].maxCompletionsForCredit: neq 0
 }
 
 script:post-response {

@@ -19,7 +19,7 @@ body:json {
     "courseDefinedByDescriptor": "uri://ed-fi.org/CourseDefinedByDescriptor#SEA",
     "courseGPAApplicabilityDescriptor": "uri://ed-fi.org/CourseGPAApplicabilityDescriptor#Applicable",
     "educationOrganizationReference": {
-      "educationOrganizationId": "{{myLEAId}}"
+      "educationOrganizationId": "{{tempLEAId}}"
     },
     "identificationCodes": [
       {
@@ -59,4 +59,5 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

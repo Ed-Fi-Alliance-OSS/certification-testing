@@ -11,18 +11,12 @@ get {
 }
 
 params:query {
-  ~offset: 0
-  ~limit: 25
-  ~minChangeVersion: 
-  ~maxChangeVersion: 
-  ~totalCount: 
   ~localEducationAgencyId: 
   ~educationServiceCenterId: 
   ~parentLocalEducationAgencyId: 
   ~stateEducationAgencyId: 
   ~charterStatusDescriptor: 
   ~localEducationAgencyCategoryDescriptor: 
-  ~Snapshot-Identifier: 
 }
 
 auth:bearer {
@@ -32,7 +26,7 @@ auth:bearer {
 script:post-response {
   const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
   const item = pickSingle(res.getBody());
-
+  
   if (item) {
     setVars(bru, {
       tempLEAId: item.localEducationAgencyId,
@@ -47,6 +41,7 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
 
 docs {
