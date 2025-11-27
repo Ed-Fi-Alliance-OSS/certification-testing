@@ -1,0 +1,78 @@
+meta {
+  name: 01 - Check first StudentSectionAttendanceEvent is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents?schoolId=255901107&schoolYear=2017&sectionIdentifier=["ELA012017RM555" if possible | system value]&sessionName=2016-2017 Fall Semester&localCourseCode=["ELA-01" if possible | system value]&studentUniqueId=111111&eventDate=9/16/[Current School Year]&attendanceEventCategoryDescriptor=uri://ed-fi.org/AttendanceEventCategoryDescriptor#Tardy
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: 255901107
+  schoolYear: 2017
+  sectionIdentifier: ["ELA012017RM555" if possible | system value]
+  sessionName: 2016-2017 Fall Semester
+  localCourseCode: ["ELA-01" if possible | system value]
+  studentUniqueId: 111111
+  eventDate: 9/16/[Current School Year]
+  attendanceEventCategoryDescriptor: uri://ed-fi.org/AttendanceEventCategoryDescriptor#Tardy
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].attendanceEventCategoryDescriptor: isString
+  res.body[0].attendanceEventCategoryDescriptor: isNotEmpty
+  res.body[0].eventDate: isString
+  res.body[0].eventDate: isNotEmpty
+  res.body[0].sectionReference: isDefined
+  res.body[0].sectionReference.localCourseCode: isString
+  res.body[0].sectionReference.localCourseCode: isNotEmpty
+  res.body[0].sectionReference.schoolId: isNumber
+  res.body[0].sectionReference.schoolId: neq 0
+  res.body[0].sectionReference.schoolYear: isNumber
+  res.body[0].sectionReference.schoolYear: neq 0
+  res.body[0].sectionReference.sectionIdentifier: isString
+  res.body[0].sectionReference.sectionIdentifier: isNotEmpty
+  res.body[0].sectionReference.sessionName: isString
+  res.body[0].sectionReference.sessionName: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].attendanceEventReason: isString
+  res.body[0].attendanceEventReason: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStudentSectionAttendanceEvent } = require('./logging');
+  const entityName = 'StudentSectionAttendanceEvent';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+  
+  if (!entity) {
+    wipeVars(bru, [
+      'firstStudentSectionAttendanceEventUniqueId',
+      'firstStudentSectionAttendanceEventAttendanceEventReason'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    firstStudentSectionAttendanceEventUniqueId: entity.id,
+    firstStudentSectionAttendanceEventAttendanceEventReason: entity.attendanceEventReason
+  });
+  
+  // Baseline logs full spec projection
+  logScenario(entityName, scenarioName, entity, logSpecStudentSectionAttendanceEvent);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,33 @@
+meta {
+  name: 05 - Check first StudentSectionAttendanceEvent was Deleted
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents/{{firstStudentSectionAttendanceEventUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 404
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'StudentSectionAttendanceEvent';
+  
+  // Clean up cached variables for deleted entity
+  wipeVars(bru, [
+    'firstStudentSectionAttendanceEventUniqueId',
+    'firstStudentSectionAttendanceEventAttendanceEventReason'
+  ], entityName, false);
+  
+  console.log(`${entityName} was successfully deleted.`);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
