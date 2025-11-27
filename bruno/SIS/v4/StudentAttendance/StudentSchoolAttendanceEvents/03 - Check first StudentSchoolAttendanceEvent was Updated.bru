@@ -1,0 +1,55 @@
+meta {
+  name: 03 - Check first StudentSchoolAttendanceEvent was Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{firstStudentSchoolAttendanceEventUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: isString
+  res.body.id: eq {{firstStudentSchoolAttendanceEventUniqueId}}
+  res.body.attendanceEventCategoryDescriptor: isString
+  res.body.attendanceEventCategoryDescriptor: isNotEmpty
+  res.body.eventDate: isString
+  res.body.eventDate: isNotEmpty
+  res.body.schoolReference: isDefined
+  res.body.schoolReference.schoolId: isNumber
+  res.body.schoolReference.schoolId: neq 0
+  res.body.sessionReference: isDefined
+  res.body.sessionReference.schoolId: isNumber
+  res.body.sessionReference.schoolId: neq 0
+  res.body.sessionReference.schoolYear: isNumber
+  res.body.sessionReference.schoolYear: neq 0
+  res.body.sessionReference.sessionName: isString
+  res.body.sessionReference.sessionName: isNotEmpty
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.attendanceEventReason: isString
+  res.body.attendanceEventReason: isNotEmpty
+}
+
+script:post-response {
+  const { expectChanged } = require('./utils');
+  const { logScenario, logSpecStudentSchoolAttendanceEvent } = require('./logging');
+  const entityName = 'StudentSchoolAttendanceEvent';
+  const scenarioName = this.req.name;
+  const entity = res.getBody();
+
+  // Mutation target: attendanceEventReason
+  expectChanged(entity.attendanceEventReason, bru.getVar('firstStudentSchoolAttendanceEventAttendanceEventReason'), 'attendanceEventReason');
+
+  // Filtered logging only mutated fields (+ id automatically)
+  logScenario(entityName, scenarioName, entity, logSpecStudentSchoolAttendanceEvent, ['attendanceEventReason']);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
