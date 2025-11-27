@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../schemas/entity-config.schema.json",
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": [
+      "schoolId",
+      "studentUniqueId",
+      "behaviorDescriptorId",
+      "incidentIdentifier"
+    ],
+    "naturalIdField": null
+  },
+  "overrides": {
+    "entityName": "StudDisciplineIncidentBehaviorAssocs",
+    "endpointSegment": "studentDisciplineIncidentBehaviorAssociations",
+    "loggingSpecName": "StudDisciplineIncidentBehaviorAssocs",
+    "fileNameAlias": "StudDisciplineIncidentBehaviorAssocs"
+  }
+}

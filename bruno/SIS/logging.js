@@ -673,6 +673,20 @@ const logSpecStudentCohortAssociation = {
   sections: r => r?.sections,
 };
 
+// StudentDisciplineIncidentBehaviorAssociation spec map (StudentDiscipline > StudentDisciplineIncidentBehaviorAssociations)
+// REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
+// No mutations - baseline and delete only.
+const logSpecStudDisciplineIncidentBehaviorAssocs = {
+  schoolId: r => r?.disciplineIncidentReference?.schoolId,
+  incidentIdentifier: r => r?.disciplineIncidentReference?.incidentIdentifier,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  behaviorDescriptor: r => extractDescriptor(r?.behaviorDescriptor),
+  studentParticipationCodeDescriptor: r => extractDescriptor(r?.studentParticipationCodeDescriptor),
+  behaviors: r => r?.behaviors?.map(b => ({
+    behaviorDescriptor: extractDescriptor(b?.behaviorDescriptor)
+  }))
+};
+
 // Grade spec map (StudentGrade > Grades)
 // REQUIRED identifying/minimum fields only; excludes OPTIONAL/CONDITIONAL fields unless mutated.
 // Mutations target: letterGradeEarned, numericGradeEarned.
@@ -864,6 +878,7 @@ module.exports = {
   ,logSpecStudTitleIPartAProgAssocs
   ,logSpecStudSchoolFoodServProgAssocs
   ,logSpecStudentCohortAssociation
+  ,logSpecStudDisciplineIncidentBehaviorAssocs
   ,logSpecGrade
   ,logSpecStudentAcademicRecord
   ,logSpecCourseTranscript

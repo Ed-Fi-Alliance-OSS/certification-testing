@@ -1,0 +1,33 @@
+meta {
+  name: 03 - Check first StudDisciplineIncidentBehaviorAssocs was Deleted
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentDisciplineIncidentBehaviorAssociations/{{firstStudDisciplineIncidentBehaviorAssocsUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 404
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'StudDisciplineIncidentBehaviorAssocs';
+
+  // On delete confirmation, clear cached variables for the first StudDisciplineIncidentBehaviorAssocs
+  if (res.status === 404) {
+    wipeVars(bru, [
+      'firstStudDisciplineIncidentBehaviorAssocsUniqueId'
+    ], entityName, true);
+  }
+  // No logging for delete scenarios per global standard
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
