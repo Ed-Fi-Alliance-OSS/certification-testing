@@ -70,7 +70,7 @@ act push          # Simulate push events
 ### Test Specific Workflows
 
 ```powershell
-act pull_request -W .github/workflows/lint-bruno.yml
+act pull_request -W .github/workflows/on-pullrequest-lint-bruno.yml
 ```
 
 ## Testing Our Bruno Lint Workflow
@@ -261,4 +261,4 @@ If `act` fails, recreate workflow steps manually:
 
 ---
 **Last Updated:** October 27, 2025  
-**Applies to:** Bruno Lint Workflow (`lint-bruno.yml`)
+**Applies to:** Bruno Lint Workflow (`on-pullrequest-lint-bruno.yml`)
