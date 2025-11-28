@@ -1,0 +1,29 @@
+name: CodeQL Analysis on Pull Request
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'bruno/**'
+      - '.github/workflows/on-pullrequest-codeql-analysis.yml'
+  push:
+    branches: [ main ]
+
+jobs:
+  analyze:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@fdbfb4d2750291e159f0156def62b853c2798ca2 # V4.31.5
+        with:
+          languages: javascript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@fdbfb4d2750291e159f0156def62b853c2798ca2 # V4.31.5
+
+      - name: Run CodeQL
+        uses: github/codeql-action/analyze@fdbfb4d2750291e159f0156def62b853c2798ca2 # V4.31.5

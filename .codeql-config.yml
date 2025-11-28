@@ -1,0 +1,5 @@
+excludes:
+  - automation-testing/**
+  - node_modules/**
+  - **/dist/**
+  - **/build/**
