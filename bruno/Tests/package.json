@@ -1,0 +1,14 @@
+{
+  "name": "tests-collection",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local dependencies for Tests Bruno collection (sandbox-safe).",
+  "license": "UNLICENSED",
+  "main": "utils.js",
+  "dependencies": {
+    "dayjs": "^1.11.18"
+  },
+  "scripts": {
+    "lint:bru": "node ../scripts/lint-bruno.cjs"
+  }
+}

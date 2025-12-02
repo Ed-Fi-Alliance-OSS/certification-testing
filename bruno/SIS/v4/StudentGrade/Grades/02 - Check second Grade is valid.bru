@@ -5,24 +5,24 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/grades?schoolId=255901001&schoolYear=2022&localCourseCode=ALG-1&sessionName=2021-2022 Fall Semester&sectionIdentifier=25590100102Trad220ALG112011&studentUniqueId=604822&beginDate=2021-08-23&gradingPeriodSchoolYear=2022&gradingPeriodSchoolId=255901001&gradingPeriodSequence=1
+  url: {{resourceBaseUrl}}/ed-fi/grades?schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&sessionName=[ENTER_SESSION_NAME]&sectionIdentifier=[ENTER_SECTION_IDENTIFIER]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&beginDate=[ENTER_BEGIN_DATE]&gradingPeriodSchoolYear=[ENTER_GRADING_PERIOD_SCHOOL_YEAR]&gradingPeriodSchoolId=[ENTER_GRADING_PERIOD_SCHOOL_ID]&gradingPeriodSequence=[ENTER_GRADING_PERIOD_SEQUENCE]&gradingPeriodDescriptor=[ENTER_GRADING_PERIOD_DESCRIPTOR]&gradeTypeDescriptor=[ENTER_GRADING_PERIOD_TYPE_DESCRIPTOR]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: 255901001
-  schoolYear: 2022
-  localCourseCode: ALG-1
-  sessionName: 2021-2022 Fall Semester
-  sectionIdentifier: 25590100102Trad220ALG112011
-  studentUniqueId: 604822
-  beginDate: 2021-08-23
-  gradingPeriodSchoolYear: 2022
-  gradingPeriodSchoolId: 255901001
-  gradingPeriodSequence: 1
-  ~gradingPeriodDescriptor: uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks
-  ~gradeTypeDescriptor: uri://ed-fi.org/GradeTypeDescriptor#Grading Period
+  schoolId: [ENTER_SCHOOL_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  localCourseCode: [ENTER_LOCAL_COURSE_CODE]
+  sessionName: [ENTER_SESSION_NAME]
+  sectionIdentifier: [ENTER_SECTION_IDENTIFIER]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  beginDate: [ENTER_BEGIN_DATE]
+  gradingPeriodSchoolYear: [ENTER_GRADING_PERIOD_SCHOOL_YEAR]
+  gradingPeriodSchoolId: [ENTER_GRADING_PERIOD_SCHOOL_ID]
+  gradingPeriodSequence: [ENTER_GRADING_PERIOD_SEQUENCE]
+  gradingPeriodDescriptor: [ENTER_GRADING_PERIOD_DESCRIPTOR]
+  gradeTypeDescriptor: [ENTER_GRADING_PERIOD_TYPE_DESCRIPTOR]
 }
 
 assert {
@@ -66,7 +66,7 @@ script:post-response {
   const entityName = 'Grade';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-
+  
   if (!entity) {
     wipeVars(bru, [
       'secondGradeUniqueId',
@@ -74,13 +74,13 @@ script:post-response {
       'secondGradeNumericGradeEarned'
     ], entityName, true);
   }
-
+  
   setVars(bru, {
     secondGradeUniqueId: entity.id,
     secondGradeLetterGradeEarned: entity.letterGradeEarned,
     secondGradeNumericGradeEarned: entity.numericGradeEarned
   });
-
+  
   // Baseline logs full spec projection
   logScenario(entityName, scenarioName, entity, logSpecGrade);
 }

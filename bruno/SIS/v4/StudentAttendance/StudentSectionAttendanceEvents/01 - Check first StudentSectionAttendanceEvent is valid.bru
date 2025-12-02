@@ -5,20 +5,21 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents?schoolId=255901107&schoolYear=2017&sectionIdentifier=["ELA012017RM555" if possible | system value]&sessionName=2016-2017 Fall Semester&localCourseCode=["ELA-01" if possible | system value]&studentUniqueId=111111&eventDate=9/16/[Current School Year]&attendanceEventCategoryDescriptor=uri://ed-fi.org/AttendanceEventCategoryDescriptor#Tardy
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents?schoolId=[ENTER SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&sectionIdentifier=[ENTER SECTION IDENTIFIER]&sessionName=[ENTER SESSION NAME]&localCourseCode=[ENTER LOCAL COURSE CODE]&studentUniqueId=[ENTER STUDENT ID]&eventDate=[ENTER EVENT DATE]&attendanceEventCategoryDescriptor={{firstAttendanceEventCategoryDescriptorEncoded}}&&attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST ATTENDANCE EVENT CATEGORY DESCRIPTOR]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: 255901107
-  schoolYear: 2017
-  sectionIdentifier: ["ELA012017RM555" if possible | system value]
-  sessionName: 2016-2017 Fall Semester
-  localCourseCode: ["ELA-01" if possible | system value]
-  studentUniqueId: 111111
-  eventDate: 9/16/[Current School Year]
-  attendanceEventCategoryDescriptor: uri://ed-fi.org/AttendanceEventCategoryDescriptor#Tardy
+  schoolId: [ENTER SCHOOL ID]
+  schoolYear: [ENTER CURRENT SCHOOL YEAR]
+  sectionIdentifier: [ENTER SECTION IDENTIFIER]
+  sessionName: [ENTER SESSION NAME]
+  localCourseCode: [ENTER LOCAL COURSE CODE]
+  studentUniqueId: [ENTER STUDENT ID]
+  eventDate: [ENTER EVENT DATE]
+  attendanceEventCategoryDescriptor: {{firstAttendanceEventCategoryDescriptorEncoded}}
+  attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END: [ENTER FIRST ATTENDANCE EVENT CATEGORY DESCRIPTOR]
 }
 
 assert {
@@ -47,6 +48,13 @@ assert {
   res.body[0].studentReference.studentUniqueId: isNotEmpty
   res.body[0].attendanceEventReason: isString
   res.body[0].attendanceEventReason: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const attendanceEventCategoryDescriptorEncoded = encodeDescriptorParameter(req.url, 'attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END');
+
+  setVar(bru, 'firstAttendanceEventCategoryDescriptorEncoded', attendanceEventCategoryDescriptorEncoded);
 }
 
 script:post-response {
