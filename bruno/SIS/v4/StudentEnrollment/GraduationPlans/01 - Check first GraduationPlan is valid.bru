@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/graduationPlans?educationOrganizationId=255901001&schoolYear=2022
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlans?educationOrganizationId=[ENTER EDUCATION ORGANIZATION ID]&schoolYear=[ENTER SCHOOL YEAR]&graduationPlanTypeDescriptor={{firstGraduationPlanTypeDescriptorEncoded}}&graduationPlanTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST GRADUATION PLAN TYPE DESCRIPTOR]
   body: none
   auth: inherit
 }
@@ -13,7 +13,8 @@ get {
 params:query {
   educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
   schoolYear: [ENTER SCHOOL YEAR]
-  graduationPlanTypeDescriptor: [ENTER FIRST GRADUATION PLAN TYPE DESCRIPTOR]
+  graduationPlanTypeDescriptor: {{firstGraduationPlanTypeDescriptorEncoded}}
+  graduationPlanTypeDescriptor_KEEP_IT_AT_THE_END: [ENTER FIRST GRADUATION PLAN TYPE DESCRIPTOR]
 }
 
 assert {
@@ -32,6 +33,13 @@ assert {
   res.body[0].graduationPlanTypeDescriptor: isNotEmpty
   res.body[0].totalRequiredCredits: isNumber
   res.body[0].totalRequiredCredits: neq 0
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter } = require('./utils');
+  const encoded = encodeDescriptorParameter(req.url, 'graduationPlanTypeDescriptor_KEEP_IT_AT_THE_END');
+  
+  bru.setVar('firstGraduationPlanTypeDescriptorEncoded', encoded);
 }
 
 script:post-response {
@@ -58,6 +66,6 @@ script:post-response {
 }
 
 settings {
-  encodeUrl: true
+  encodeUrl: false
   timeout: 0
 }
