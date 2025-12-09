@@ -1,0 +1,53 @@
+name: On Pull Request
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'bruno/**'
+      - '.github/workflows/on-pullrequest-codeql-analysis.yml'
+      - '.github/workflows/on-pullrequest-bidi-scan.yml'
+  
+  push:
+    branches: [ main ]
+  
+permissions: read-all
+
+
+jobs:
+
+  scan-actions-bidi:
+    name: Scan Actions, scan all files for BIDI Trojan Attacks
+    uses: ed-fi-alliance-oss/ed-fi-actions/.github/workflows/repository-scanner.yml@main
+    with:
+      config-file-path: ./.github/workflows/bidi-config.json
+
+  dependency-review:
+    name: Dependency Review ("Dependabot on PR")
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        
+      - name: Dependencies Review
+        uses: actions/dependency-review-action@9129d7d40b8c12c1ed0f60400d00c92d437adcce # v4.1.3
+
+  analyze:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@fdbfb4d2750291e159f0156def62b853c2798ca2 # V4.31.5
+        with:
+          languages: javascript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@fdbfb4d2750291e159f0156def62b853c2798ca2 # V4.31.5
+
+      - name: Run CodeQL
+        uses: github/codeql-action/analyze@fdbfb4d2750291e159f0156def62b853c2798ca2 # V4.31.5

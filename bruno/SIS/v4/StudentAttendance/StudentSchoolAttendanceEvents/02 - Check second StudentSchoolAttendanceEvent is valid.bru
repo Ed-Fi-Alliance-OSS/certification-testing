@@ -5,18 +5,19 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents?schoolId=255901001&schoolYear=[Current School Year]&sessionName=2016-2017 Fall Semester&studentUniqueId=222222&eventDate=10/5/[Current School Year]&attendanceEventCategoryDescriptor=uri://ed-fi.org/AttendanceEventCategoryDescriptor#Unexcused Absence
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents?schoolId=[ENTER SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&sessionName=[ENTER SESSION NAME]&studentUniqueId=[ENTER STUDENT ID]&eventDate=[ENTER EVENT DATE]&attendanceEventCategoryDescriptor={{secondAttendanceEventCategoryDescriptorEncoded}}&&attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END=[ENTER SECOND ATTENDANCE EVENT CATEGORY DESCRIPTOR]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: 255901001
-  schoolYear: [Current School Year]
-  sessionName: 2016-2017 Fall Semester
-  studentUniqueId: 222222
-  eventDate: 10/5/[Current School Year]
-  attendanceEventCategoryDescriptor: uri://ed-fi.org/AttendanceEventCategoryDescriptor#Unexcused Absence
+  schoolId: [ENTER SCHOOL ID]
+  schoolYear: [ENTER CURRENT SCHOOL YEAR]
+  sessionName: [ENTER SESSION NAME]
+  studentUniqueId: [ENTER STUDENT ID]
+  eventDate: [ENTER EVENT DATE]
+  attendanceEventCategoryDescriptor: {{secondAttendanceEventCategoryDescriptorEncoded}}
+  attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END: [ENTER SECOND ATTENDANCE EVENT CATEGORY DESCRIPTOR]
 }
 
 assert {
@@ -44,6 +45,13 @@ assert {
   res.body[0].studentReference.studentUniqueId: isNotEmpty
   res.body[0].attendanceEventReason: isString
   res.body[0].attendanceEventReason: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const attendanceEventCategoryDescriptorEncoded = encodeDescriptorParameter(req.url, 'attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END');
+
+  setVar(bru, 'secondAttendanceEventCategoryDescriptorEncoded', attendanceEventCategoryDescriptorEncoded);
 }
 
 script:post-response {
