@@ -55,11 +55,7 @@ assert {
 script:pre-request {
   const { encodeDescriptorParameter, setVar } = require('./utils');
   
-  const programTypeDescriptorEncoded = encodeDescriptorParameter(
-    req.url,
-    'programTypeDescriptor_KEEP_IT_AT_THE_END',
-    'uri://ed-fi.org/ProgramTypeDescriptor#Neglected and Delinquent Program'
-  );
+  const programTypeDescriptorEncoded = encodeDescriptorParameter(req.url, 'programTypeDescriptor_KEEP_IT_AT_THE_END');
   setVar(bru, 'firstProgramTypeDescriptorEncoded', programTypeDescriptorEncoded);
 }
 

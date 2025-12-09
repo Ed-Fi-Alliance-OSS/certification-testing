@@ -1,0 +1,18 @@
+{
+  "default": true,
+  "line-length": false,
+  "no-inline-html": {
+    "allowed_elements": [
+      "kbd",
+      "details",
+      "summary",
+      "br"
+    ]
+  },
+  "emphasis-style": {
+    "style": "underscore"
+  },
+  "ul-style": {
+    "style": "consistent"
+  }
+}
