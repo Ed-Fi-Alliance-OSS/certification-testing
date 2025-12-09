@@ -5,22 +5,22 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/grades?schoolId=255901001&schoolYear=2022&localCourseCode=ALG-1&sessionName=2021-2022 Fall Semester&sectionIdentifier=25590100102Trad220ALG112011&studentUniqueId=604822&beginDate=2021-08-23&gradingPeriodSchoolYear=2022&gradingPeriodSchoolId=255901001&gradingPeriodSequence=1&gradingPeriodDescriptor={{firstGradingPeriodDescriptorEncoded}}&gradeTypeDescriptor={{firstGradeTypeDescriptorEncoded}}&gradingPeriodDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST GRADING PERIOD DESCRIPTOR]&gradeTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST GRADE TYPE DESCRIPTOR]
+  url: {{resourceBaseUrl}}/ed-fi/grades?schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&sessionName=[ENTER_SESSION_NAME]&sectionIdentifier=[ENTER_SECTION_IDENTIFIER]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&beginDate=[ENTER_BEGIN_DATE]&gradingPeriodSchoolYear=[ENTER_GRADING_PERIOD_SCHOOL_YEAR]&gradingPeriodSchoolId=[ENTER_GRADING_PERIOD_SCHOOL_ID]&gradingPeriodSequence=[ENTER_GRADING_PERIOD_SEQUENCE]&gradingPeriodDescriptor={{firstGradingPeriodDescriptorEncoded}}&gradeTypeDescriptor={{firstGradeTypeDescriptorEncoded}}&gradingPeriodDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST GRADING PERIOD DESCRIPTOR]&gradeTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER FIRST GRADE TYPE DESCRIPTOR]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: 255901001
-  schoolYear: 2022
-  localCourseCode: ALG-1
-  sessionName: 2021-2022 Fall Semester
-  sectionIdentifier: 25590100102Trad220ALG112011
-  studentUniqueId: 604822
-  beginDate: 2021-08-23
-  gradingPeriodSchoolYear: 2022
-  gradingPeriodSchoolId: 255901001
-  gradingPeriodSequence: 1
+  schoolId: [ENTER_SCHOOL_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  localCourseCode: [ENTER_LOCAL_COURSE_CODE]
+  sessionName: [ENTER_SESSION_NAME]
+  sectionIdentifier: [ENTER_SECTION_IDENTIFIER]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  beginDate: [ENTER_BEGIN_DATE]
+  gradingPeriodSchoolYear: [ENTER_GRADING_PERIOD_SCHOOL_YEAR]
+  gradingPeriodSchoolId: [ENTER_GRADING_PERIOD_SCHOOL_ID]
+  gradingPeriodSequence: [ENTER_GRADING_PERIOD_SEQUENCE]
   gradingPeriodDescriptor: {{firstGradingPeriodDescriptorEncoded}}
   gradeTypeDescriptor: {{firstGradeTypeDescriptorEncoded}}
   gradingPeriodDescriptor_KEEP_IT_AT_THE_END: [ENTER FIRST GRADING PERIOD DESCRIPTOR]
@@ -64,10 +64,10 @@ assert {
 
 script:pre-request {
   const { encodeDescriptorParameter } = require('./utils');
-  
+
   const gradingPeriodEncoded = encodeDescriptorParameter(req.url, 'gradingPeriodDescriptor_KEEP_IT_AT_THE_END');
   const gradeTypeEncoded = encodeDescriptorParameter(req.url, 'gradeTypeDescriptor_KEEP_IT_AT_THE_END');
-  
+
   bru.setVar('firstGradingPeriodDescriptorEncoded', gradingPeriodEncoded);
   bru.setVar('firstGradeTypeDescriptorEncoded', gradeTypeEncoded);
 }
@@ -78,7 +78,7 @@ script:post-response {
   const entityName = 'Grade';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-  
+
   if (!entity) {
     wipeVars(bru, [
       'firstGradeUniqueId',
@@ -86,13 +86,13 @@ script:post-response {
       'firstGradeNumericGradeEarned'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     firstGradeUniqueId: entity.id,
     firstGradeLetterGradeEarned: entity.letterGradeEarned,
     firstGradeNumericGradeEarned: entity.numericGradeEarned
   });
-  
+
   // Baseline logs full spec projection
   logScenario(entityName, scenarioName, entity, logSpecGrade);
 }
