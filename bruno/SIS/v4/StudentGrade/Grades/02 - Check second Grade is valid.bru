@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/grades?schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&sessionName=[ENTER_SESSION_NAME]&sectionIdentifier=[ENTER_SECTION_IDENTIFIER]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&beginDate=[ENTER_BEGIN_DATE]&gradingPeriodSchoolYear=[ENTER_GRADING_PERIOD_SCHOOL_YEAR]&gradingPeriodSchoolId=[ENTER_GRADING_PERIOD_SCHOOL_ID]&gradingPeriodSequence=[ENTER_GRADING_PERIOD_SEQUENCE]&gradingPeriodDescriptor=[ENTER_GRADING_PERIOD_DESCRIPTOR]&gradeTypeDescriptor=[ENTER_GRADING_PERIOD_TYPE_DESCRIPTOR]
+  url: {{resourceBaseUrl}}/ed-fi/grades?schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&sessionName=[ENTER_SESSION_NAME]&sectionIdentifier=[ENTER_SECTION_IDENTIFIER]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&beginDate=[ENTER_BEGIN_DATE]&gradingPeriodSchoolYear=[ENTER_GRADING_PERIOD_SCHOOL_YEAR]&gradingPeriodSchoolId=[ENTER_GRADING_PERIOD_SCHOOL_ID]&gradingPeriodSequence=[ENTER_GRADING_PERIOD_SEQUENCE]&gradingPeriodDescriptor={{secondGradingPeriodDescriptorEncoded}}&gradeTypeDescriptor={{secondGradeTypeDescriptorEncoded}}&gradingPeriodDescriptor_KEEP_IT_AT_THE_END=[ENTER SECOND GRADING PERIOD DESCRIPTOR]&gradeTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER SECOND GRADE TYPE DESCRIPTOR]
   body: none
   auth: inherit
 }
@@ -21,8 +21,10 @@ params:query {
   gradingPeriodSchoolYear: [ENTER_GRADING_PERIOD_SCHOOL_YEAR]
   gradingPeriodSchoolId: [ENTER_GRADING_PERIOD_SCHOOL_ID]
   gradingPeriodSequence: [ENTER_GRADING_PERIOD_SEQUENCE]
-  gradingPeriodDescriptor: [ENTER_GRADING_PERIOD_DESCRIPTOR]
-  gradeTypeDescriptor: [ENTER_GRADING_PERIOD_TYPE_DESCRIPTOR]
+  gradingPeriodDescriptor: {{secondGradingPeriodDescriptorEncoded}}
+  gradeTypeDescriptor: {{secondGradeTypeDescriptorEncoded}}
+  gradingPeriodDescriptor_KEEP_IT_AT_THE_END: [ENTER SECOND GRADING PERIOD DESCRIPTOR]
+  gradeTypeDescriptor_KEEP_IT_AT_THE_END: [ENTER SECOND GRADE TYPE DESCRIPTOR]
 }
 
 assert {
@@ -56,8 +58,18 @@ assert {
   res.body[0].studentSectionAssociationReference.sessionName: isString
   res.body[0].studentSectionAssociationReference.sessionName: isNotEmpty
   res.body[0].studentSectionAssociationReference.beginDate: isString
-  res.body[0].letterGradeEarned: isNumber
+  res.body[0].letterGradeEarned: isString
   res.body[0].numericGradeEarned: isNumber
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter } = require('./utils');
+
+  const gradingPeriodEncoded = encodeDescriptorParameter(req.url, 'gradingPeriodDescriptor_KEEP_IT_AT_THE_END');
+  const gradeTypeEncoded = encodeDescriptorParameter(req.url, 'gradeTypeDescriptor_KEEP_IT_AT_THE_END');
+
+  bru.setVar('secondGradingPeriodDescriptorEncoded', gradingPeriodEncoded);
+  bru.setVar('secondGradeTypeDescriptorEncoded', gradeTypeEncoded);
 }
 
 script:post-response {
@@ -66,7 +78,7 @@ script:post-response {
   const entityName = 'Grade';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-  
+
   if (!entity) {
     wipeVars(bru, [
       'secondGradeUniqueId',
@@ -74,18 +86,18 @@ script:post-response {
       'secondGradeNumericGradeEarned'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     secondGradeUniqueId: entity.id,
     secondGradeLetterGradeEarned: entity.letterGradeEarned,
     secondGradeNumericGradeEarned: entity.numericGradeEarned
   });
-  
+
   // Baseline logs full spec projection
   logScenario(entityName, scenarioName, entity, logSpecGrade);
 }
 
 settings {
-  encodeUrl: true
+  encodeUrl: false
   timeout: 0
 }
