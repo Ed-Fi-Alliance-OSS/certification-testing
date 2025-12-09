@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "dayjs": "^1.11.18"
+    "dayjs": "^1.11.19"
   },
   "devDependencies": {
     "@usebruno/cli": "^1.40.0",
