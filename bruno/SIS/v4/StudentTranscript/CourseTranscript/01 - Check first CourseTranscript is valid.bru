@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts?educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&courseCode=[ENTER_COURSE_CODE]&termDescriptor={{secondTermDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=[ENTER_TERM_DESCRIPTOR]&educationOrganizationId=12312
+  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts?educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&courseCode=[ENTER_COURSE_CODE]&termDescriptor={{firstTermDescriptorEncoded}}&termDescriptor_KEEP_IT_AT_THE_END=[ENTER_TERM_DESCRIPTOR]
   body: none
   auth: inherit
 }
@@ -15,9 +15,8 @@ params:query {
   schoolYear: [ENTER_SCHOOL_YEAR]
   studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
   courseCode: [ENTER_COURSE_CODE]
-  termDescriptor: {{secondTermDescriptorEncoded}}
+  termDescriptor: {{firstTermDescriptorEncoded}}
   termDescriptor_KEEP_IT_AT_THE_END: [ENTER_TERM_DESCRIPTOR]
-  educationOrganizationId: 12312
 }
 
 assert {
@@ -46,8 +45,15 @@ assert {
 
 script:pre-request {
   const { encodeDescriptorParameter, setVar } = require('./utils');
-  const termDescriptorEncoded = encodeDescriptorParameter(req.url, parameterName = 'termDescriptor_KEEP_IT_AT_THE_END');
+  const termDescriptorEncoded = encodeDescriptorParameter(req.url, 'termDescriptor_KEEP_IT_AT_THE_END');
   setVar(bru, 'firstTermDescriptorEncoded', termDescriptorEncoded);
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter } = require('./utils');
+  const termDescriptorEncoded = encodeDescriptorParameter(req.url, 'termDescriptor_KEEP_IT_AT_THE_END');
+
+  bru.setVar('firstTermDescriptorEncoded', termDescriptorEncoded);
 }
 
 script:post-response {
