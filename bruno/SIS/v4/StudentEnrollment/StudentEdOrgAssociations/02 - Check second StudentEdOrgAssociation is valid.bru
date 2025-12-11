@@ -35,6 +35,12 @@ assert {
   res.body[0].studentCharacteristics[0].studentCharacteristicDescriptor: isNotEmpty
   res.body[0].studentIdentificationCodes: isArray
   res.body[0].studentIdentificationCodes: isNotEmpty
+  res.body[0].studentIdentificationCodes[0].identificationCode: isString
+  res.body[0].studentIdentificationCodes[0].identificationCode: isNotEmpty
+  res.body[0].studentIdentificationCodes[0].assigningOrganizationIdentificationCode: isString
+  res.body[0].studentIdentificationCodes[0].assigningOrganizationIdentificationCode: isNotEmpty
+  res.body[0].studentIdentificationCodes[0].studentIdentificationSystemDescriptor: isDefined
+  res.body[0].studentIdentificationCodes[0].studentIdentificationSystemDescriptor: isNotEmpty
   res.body[0].sexDescriptor: isString
   res.body[0].sexDescriptor: isNotEmpty
   res.body[0].addresses: isArray
@@ -64,6 +70,10 @@ assert {
   res.body[0].races: isNotEmpty
   res.body[0].races[0].raceDescriptor: isString
   res.body[0].races[0].raceDescriptor: isNotEmpty
+  res.body[0].languages[0].languageDescriptor: isString
+  res.body[0].languages[0].languageDescriptor: isNotEmpty
+  res.body[0].languages[0].uses[0].languageUseDescriptor: isString
+  res.body[0].languages[0].uses[0].languageUseDescriptor: isNotEmpty
 }
 
 script:post-response {

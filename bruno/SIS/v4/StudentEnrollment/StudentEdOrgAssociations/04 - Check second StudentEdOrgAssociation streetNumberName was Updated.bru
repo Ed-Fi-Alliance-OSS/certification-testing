@@ -26,10 +26,16 @@ assert {
   res.body.limitedEnglishProficiencyDescriptor: isNotEmpty
   res.body.studentCharacteristics: isArray
   res.body.studentCharacteristics: isNotEmpty
-  res.body[0].studentCharacteristics[0].studentCharacteristicDescriptor: isString
-  res.body[0].studentCharacteristics[0].studentCharacteristicDescriptor: isNotEmpty
+  res.body.studentCharacteristics[0].studentCharacteristicDescriptor: isString
+  res.body.studentCharacteristics[0].studentCharacteristicDescriptor: isNotEmpty
   res.body.studentIdentificationCodes: isArray
   res.body.studentIdentificationCodes: isNotEmpty
+  res.body.studentIdentificationCodes[0].identificationCode: isString
+  res.body.studentIdentificationCodes[0].identificationCode: isNotEmpty
+  res.body.studentIdentificationCodes[0].assigningOrganizationIdentificationCode: isString
+  res.body.studentIdentificationCodes[0].assigningOrganizationIdentificationCode: isNotEmpty
+  res.body.studentIdentificationCodes[0].studentIdentificationSystemDescriptor: isDefined
+  res.body.studentIdentificationCodes[0].studentIdentificationSystemDescriptor: isNotEmpty
   res.body.sexDescriptor: isString
   res.body.sexDescriptor: isNotEmpty
   res.body.addresses: isArray
