@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentSchoolFoodServicesProgramAssociations/{{firstStudSchoolFoodServProgAssocsUniqueId}}
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolFoodServiceProgramAssociations/{{firstStudSchoolFoodServProgAssocsUniqueId}}
   body: none
   auth: inherit
 }
@@ -23,7 +23,7 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-
+  
   validateDependency(bru, 'firstStudSchoolFoodServProgAssocsUniqueId', '01 - Check first StudSchoolFoodServProgAssocs is valid', {
     actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
   });
@@ -41,7 +41,7 @@ script:post-response {
   if (res.status !== 200 || !res.body) {
     throwNotFoundOrSpecificError(entityName);
   }
-
+  
   const current = res.getBody();
   const previousServiceDescriptor = getVar(bru, 'firstStudSchoolFoodServProgAssocsServiceDescriptor');
   const currentServiceDescriptor = extractDescriptor(current.schoolFoodServiceProgramServices?.[0]?.schoolFoodServiceProgramServiceDescriptor);
