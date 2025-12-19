@@ -1,5 +1,5 @@
 meta {
-  name: 02 - Check first StudentCTEProgramAssociation endDate was Updated
+  name: 02 - Check first StudentCTEProgramAssociation primaryIndicator was Updated
   type: http
   seq: 2
 }
@@ -23,7 +23,7 @@ script:pre-request {
   validateDependency(bru, 'firstStudentCTEProgramAssociationUniqueId', '01 - Check first StudentCTEProgramAssociation is valid', {
     actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
   });
-  validateDependency(bru, 'firstStudentCTEProgramAssociationEndDate', '01 - Check first StudentCTEProgramAssociation is valid', {
+  validateDependency(bru, 'firstStudentCTEProgramAssociationPrimaryIndicator', '01 - Check first StudentCTEProgramAssociation is valid', {
     actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
   });
 }
@@ -33,16 +33,21 @@ script:post-response {
   const { logSpecStudentCTEProgramAssociation, logScenario } = require('./logging');
   const entityName = 'StudentCTEProgramAssociation';
   const scenarioName = this.req.name;
-  
+
   if (res.status !== 200 || !res.body) {
     throwNotFoundOrSpecificError(entityName);
   }
 
   const current = res.getBody();
-  const previousEndDate = getVar(bru, 'firstStudentCTEProgramAssociationEndDate');
-  
-  expectChanged(previousEndDate, current.endDate, 'endDate');
-  
+  const previousPrimaryIndicator = getVar(bru, 'firstStudentCTEProgramAssociationPrimaryIndicator');
+
+  // Validate that the primary indicator in the first cteProgramService was changed
+  if (current.cteProgramServices && current.cteProgramServices.length > 0) {
+    expectChanged(previousPrimaryIndicator, current.cteProgramServices[0].primaryIndicator, 'primaryIndicator');
+  } else {
+    throw new Error('No cteProgramServices found in response');
+  }
+
   logScenario(entityName, scenarioName, current, logSpecStudentCTEProgramAssociation, [
     'educationOrganizationId',
     'programEducationOrganizationId',
@@ -50,7 +55,7 @@ script:post-response {
     'programTypeDescriptor',
     'beginDate',
     'studentUniqueId',
-    'endDate'
+    'primaryIndicator'
   ]);
 }
 
