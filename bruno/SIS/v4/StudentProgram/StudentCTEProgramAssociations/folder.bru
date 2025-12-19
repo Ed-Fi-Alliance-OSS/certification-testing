@@ -9,28 +9,28 @@ auth {
 
 docs {
   # v4 Student Program > StudentCTEProgramAssociation Scenarios
-  
+
   The Student Program interchange loads students' participation in programs.
   The `StudentCTEProgramAssociation` represents the career and technical education program(s) that a student participates in or receives services from. The association is an extension of the StudentProgramAssociation particular for CTE programs.
 
   ## Prerequisites
-  
+
   * Ed-Org (pre-loaded)
   * Program (pre-loaded)
   * Student
   * Student Enrollment
-  
+
   ## Scenarios tasks
 
-  1. __CREATE__ a Student CTE Program Association for a high school student.
-  2. __MODIFY__ the Program's Primary Indicator
- 
+  1. __CREATE__ a `first` new `StudentCTEProgramAssociation` for a high school student.
+  2. __UPDATE__ the _primaryIndicator_ on the `first` added `StudentCTEProgramAssociation`
+
   ### Notes
 
   > The Program's educationOrganizationId is the Local Education Agency ID
-  
+
   ## Scenarios example data
-  
+
   | Resource                      | Property Name                       | Is Collection | Data Type                           | Required / Optional | Scenario 1: POST               | Scenario 2: PUT                 |
   | ----------------------------- | ----------------------------------- | ------------- | ----------------------------------- | ------------------- | ------------------------------ | ------------------------------ |
   | StudentCTEProgramAssociations | beginDate                           | FALSE         | date                                | REQUIRED            | 8/23/[Current School Year]     | 8/23/[Current School Year]     |
@@ -71,7 +71,7 @@ docs {
   | cteProgramServices            | primaryIndicator                    | FALSE         | boolean                             | REQUIRED            | TRUE                           | TRUE                           |
 
   ## API response format
-  
+
   ```json
   {
     "id": "string",
