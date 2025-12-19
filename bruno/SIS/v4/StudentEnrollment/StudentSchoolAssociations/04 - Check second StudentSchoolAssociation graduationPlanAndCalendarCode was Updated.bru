@@ -39,8 +39,7 @@ assert {
   res.body.residencyStatusDescriptor: isString
   res.body.residencyStatusDescriptor: isNotEmpty
   res.body.schoolChoiceTransfer: isBoolean
-  res.body[0].calendarReference: isDefined
-  res.body[0].calendarReference.calendarCode: isString
+  res.body[0].calendarCode: isString
 }
 
 script:pre-request {
@@ -63,7 +62,7 @@ script:post-response {
   expectChanged(getVar(bru, 'secondStudentSchoolAssociationGraduationPlanEducationOrganizationId'), current.graduationPlanReference?.educationOrganizationId, 'graduationPlanEducationOrganizationId');
   expectChanged(getVar(bru, 'secondStudentSchoolAssociationGraduationPlanSchoolYear'), current.graduationPlanReference?.graduationSchoolYear, 'graduationPlanSchoolYear');
   expectChanged(getVar(bru, 'secondStudentSchoolAssociationGraduationPlanTypeDescriptor'), extractDescriptor(current.graduationPlanReference?.graduationPlanTypeDescriptor), 'graduationPlanTypeDescriptor');
-  expectChanged(getVar(bru, 'secondStudentSchoolAssociationCalendarCode'), current.calendarReference?.calendarCode, 'calendarCode');
+  expectChanged(getVar(bru, 'secondStudentSchoolAssociationCalendarCode'), current.calendarCode, 'calendarCode');
   logScenario(entityName, scenarioName, current, logSpecStudentSchoolAssociation, [
     'graduationPlanEducationOrganizationId',
     'graduationPlanSchoolYear',

@@ -70,9 +70,9 @@ docs {
   | alternativeGraduationPlanReference      | graduationPlanTypeDescriptor    | FALSE         | graduationPlanTypeDescriptor            | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
   | StudentSchoolAssociations               | fullTimeEquivalency             | FALSE         | decimal                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
   | StudentSchoolAssociations               | termCompletionIndicator         | FALSE         | boolean                                 | OPTIONAL            |                                 |                                 |                                 |                                   |                                 |
-
+  | Calendars                               | calendarCode                    | FALSE.        | string                                  | REQUIRED            | 107SS111111                     | [High School calendarCode]      | 107SS111111                     | [New High School calendarCode]    | 107SS111111                     |
   ## API response format
-  
+
   ```json
   {
     "id": "string",
@@ -126,5 +126,5 @@ docs {
     "schoolChoiceTransfer": true,
     "termCompletionIndicator": true
   }
-  ``` 
+  ```
 }
