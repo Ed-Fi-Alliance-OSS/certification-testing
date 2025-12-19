@@ -67,19 +67,25 @@ script:post-response {
   const entityName = 'StudentCTEProgramAssociation';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'firstStudentCTEProgramAssociationUniqueId',
-      'firstStudentCTEProgramAssociationEndDate'
+      'firstStudentCTEProgramAssociationPrimaryIndicator'
     ], entityName, true);
   }
-  
-  setVars(bru, {
-    firstStudentCTEProgramAssociationUniqueId: single.id,
-    firstStudentCTEProgramAssociationEndDate: single.endDate
-  }, entityName);
-  
+
+  const vars = {
+    firstStudentCTEProgramAssociationUniqueId: single.id
+  };
+
+  // primaryIndicator is required, capture from first cteProgramService
+  if (single.cteProgramServices && single.cteProgramServices.length > 0) {
+    vars.firstStudentCTEProgramAssociationPrimaryIndicator = single.cteProgramServices[0].primaryIndicator;
+  }
+
+  setVars(bru, vars, entityName);
+
   logScenario(entityName, scenarioName, single, logSpecStudentCTEProgramAssociation);
 }
 
