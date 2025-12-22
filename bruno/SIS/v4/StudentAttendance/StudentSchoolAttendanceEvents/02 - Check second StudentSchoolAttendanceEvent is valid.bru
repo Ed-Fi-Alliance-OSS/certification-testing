@@ -60,24 +60,24 @@ script:post-response {
   const entityName = 'StudentSchoolAttendanceEvent';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-  
+
   if (!entity) {
     wipeVars(bru, [
       'secondStudentSchoolAttendanceEventUniqueId',
       'secondStudentSchoolAttendanceEventAttendanceEventReason'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     secondStudentSchoolAttendanceEventUniqueId: entity.id,
     secondStudentSchoolAttendanceEventAttendanceEventReason: entity.attendanceEventReason
   });
-  
+
   // Baseline logs full spec projection
   logScenario(entityName, scenarioName, entity, logSpecStudentSchoolAttendanceEvent);
 }
 
 settings {
-  encodeUrl: true
+  encodeUrl: false
   timeout: 0
 }
