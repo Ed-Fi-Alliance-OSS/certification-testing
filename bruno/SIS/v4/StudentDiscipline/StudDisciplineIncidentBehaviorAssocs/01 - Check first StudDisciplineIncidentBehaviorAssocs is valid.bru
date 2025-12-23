@@ -34,8 +34,10 @@ assert {
   res.body[0].studentReference: isDefined
   res.body[0].studentReference.studentUniqueId: isString
   res.body[0].studentReference.studentUniqueId: isNotEmpty
-  res.body[0].studentParticipationCodeDescriptor: isString
-  res.body[0].studentParticipationCodeDescriptor: isNotEmpty
+  res.body[0].disciplineIncidentParticipationCodes: isArray
+  res.body[0].disciplineIncidentParticipationCodes: isNotEmpty
+  res.body[0].disciplineIncidentParticipationCodes[0].disciplineIncidentParticipationCodeDescriptor: isString
+  res.body[0].disciplineIncidentParticipationCodes[0].disciplineIncidentParticipationCodeDescriptor: isNotEmpty
 }
 
 script:pre-request {
