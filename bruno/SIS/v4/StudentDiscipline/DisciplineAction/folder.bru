@@ -1,6 +1,5 @@
 meta {
   name: DisciplineAction
-  seq: 2
 }
 
 auth {
@@ -12,7 +11,7 @@ docs {
   
   This interchange defines discipline incidents and discipline actions.
   `DisciplineAction`: This event entity represents actions taken by an education organization after a disruptive event that is recorded as a discipline incident.
-
+  
   ## Prerequisites
   
   * Student
@@ -21,15 +20,15 @@ docs {
   * Discipline Incident
   
   ## Scenarios tasks
-
+  
   1. __CREATE__ a `first` new `Discipline Action` for an elementary school student's `Discipline Incident`.
   2. __CREATE__ a `second` new `Discipline Action` for a high school student's `Discipline Incident`.
-  3. __UPDATE__ the `first` added elementary student's `Discipline Action` the _disciplineDescriptor_ from "Out of School Suspension" to "In School Suspension".
-  4. __UPDATE__ the `second` added high school student's `Discipline Action` the _disciplineDescriptor_ from "In School Suspension" to "Community Service".
+  3. __UPDATE__ for the `first` added elementary student's `Discipline Action` the _disciplineDescriptor_ from "Out of School Suspension" to "In School Suspension".
+  4. __UPDATE__ for the `second` added high school student's `Discipline Action` the _disciplineDescriptor_ from "In School Suspension" to "Community Service".
   5. __DELETE__ the `first` added `Discipline Action` for the elementary school student.
-
+  
   ## Scenarios example data
-
+  
   | Resource                                              | Property Name                                     | Is Collection | Data Type                                       | Required | Scenario 1: POST                  | Scenario 2: POST                  | Scenario 3: PUT                   | Scenario 4: PUT                   |
   | ----------------------------------------------------- | ------------------------------------------------- | ------------- | ----------------------------------------------- | -------- | --------------------------------- | --------------------------------- | --------------------------------- | --------------------------------- |
   | DisciplineActions                                     | disciplineActionIdentifier                        | FALSE         | nvarchar                                        | REQUIRED | 11                                | 22                                | 11                                | 22                                |
@@ -52,7 +51,7 @@ docs {
   | disciplineActionStaffs                                | staffReference                                    | FALSE         | integer                                         | OPTIONAL |                                   |                                   |                                   |                                   |
   | staffReference                                        | staffUniqueId                                     | FALSE         | string                                          | OPTIONAL |                                   |                                   |                                   |                                   |
   | DisciplineActions                                     | iepPlacementMeetingIndicator                      | TRUE          | boolean                                         | REQUIRED | TRUE                              |                                   | TRUE                              |                                   |
-
+  
   ## API response format
   ```json
   {
