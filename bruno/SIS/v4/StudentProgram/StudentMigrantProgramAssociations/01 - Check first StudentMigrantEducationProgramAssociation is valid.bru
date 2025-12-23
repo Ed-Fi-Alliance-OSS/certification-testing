@@ -44,6 +44,10 @@ assert {
   res.body[0].priorityForServices: isBoolean
   res.body[0].lastQualifyingMove: isString
   res.body[0].lastQualifyingMove: isNotEmpty
+  res.body[0].migrantEducationProgramServices: isArray
+  res.body[0].migrantEducationProgramServices: isNotEmpty
+  res.body[0].migrantEducationProgramServices[0].migrantEducationProgramServiceDescriptor: isString
+  res.body[0].migrantEducationProgramServices[0].migrantEducationProgramServiceDescriptor: isNotEmpty
 }
 
 script:pre-request {

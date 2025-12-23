@@ -40,6 +40,10 @@ assert {
   res.body[0].electronicMails: isNotEmpty
   res.body[0].electronicMails[0].electronicMailAddress: isString
   res.body[0].electronicMails[0].electronicMailAddress: isNotEmpty
+  res.body[0].electronicMails[0].electronicMailTypeDescriptor: isString
+  res.body[0].electronicMails[0].electronicMailTypeDescriptor: isNotEmpty
+  res.body[0].birthDate: isString
+  res.body[0].birthDate: isNotEmpty
 }
 
 script:post-response {
