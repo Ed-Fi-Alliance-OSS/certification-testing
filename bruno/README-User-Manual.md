@@ -124,8 +124,10 @@ Example: `/SIS/v4/MasterSchedule/BellSchedules/01 - Check BellSchedule is valid.
 - In Bruno, select the desired \<Entity> and run the numbered `Check...` requests.
 - Run in order: files start with `NN - Check <ordinal> <Entity> ...`.
 - Edit the scenario `Params` to ensure you are evaluating the right record.
+- Send the request to evaluate the response
+![image info](./assets/user-manual-images/bruno-send-request.png)
 - Each request shows assertions in the `Tests` tab; confirm they all pass visually (green color).
-
+![image info](/bruno/assets/user-manual-images/bruno-scenarios-assertions.png)
 4) Update/Delete Data in Your SIS
 
 - Apply the updates or deletions required for the scenarios (e.g., change a descriptor, add a grade level, remove a record).
@@ -135,8 +137,6 @@ Example: `/SIS/v4/MasterSchedule/BellSchedules/01 - Check BellSchedule is valid.
 - You won't be asked for the input `Params` again, those were added in the previous steps.
 - Re‑run the associated `Check ... was Updated` or `... was Deleted` requests.
 - Confirm all assertions pass.
-
-![image info](/bruno/assets/user-manual-images/bruno-scenarios-assertions.png)
 
 When all scenarios across the target entities pass, Phase 1 is complete and you’re ready for a formal certification session.
 
@@ -178,7 +178,7 @@ Some requests include input parameters (e.g., school ID, year, calendar code). I
 
 - Open the request and locate the Params section.
 - Enter the values that match your SIS data.
-- Ensure the parameters are enable ✅
+- Ensure the parameters are enabled ✅
 - Re‑run the request to fetch the specific record.
 
 

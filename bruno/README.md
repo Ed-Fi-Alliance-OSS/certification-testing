@@ -113,7 +113,7 @@ await bru.sendRequest({
 });
 ```
 
-- Validate data requerements:
+- Validate data requirements:
 
 ``` javascript
 if (!getVar('tempSchoolUniqueId')) {
