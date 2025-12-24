@@ -45,6 +45,8 @@ assert {
   res.body[0].sexDescriptor: isNotEmpty
   res.body[0].addresses: isArray
   res.body[0].addresses: isNotEmpty
+  res.body[0].addresses[0].addressTypeDescriptor: isString
+  res.body[0].addresses[0].addressTypeDescriptor: isNotEmpty
   res.body[0].addresses[0].city: isString
   res.body[0].addresses[0].city: isNotEmpty
   res.body[0].addresses[0].postalCode: isString

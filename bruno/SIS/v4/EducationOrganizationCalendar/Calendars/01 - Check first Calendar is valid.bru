@@ -32,7 +32,6 @@ assert {
   res.body[0].schoolYearTypeReference.schoolYear: neq 0
   res.body[0].calendarTypeDescriptor: isString
   res.body[0].calendarTypeDescriptor: isNotEmpty
-  res.body[0].gradeLevels: isArray
 }
 
 script:post-response {

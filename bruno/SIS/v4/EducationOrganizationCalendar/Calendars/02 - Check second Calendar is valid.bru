@@ -33,6 +33,9 @@ assert {
   res.body[0].calendarTypeDescriptor: isString
   res.body[0].calendarTypeDescriptor: isNotEmpty
   res.body[0].gradeLevels: isArray
+  res.body[0].gradeLevels: isNotEmpty
+  res.body[0].gradeLevels[0].gradeLevelDescriptor: isString
+  res.body[0].gradeLevels[0].gradeLevelDescriptor: isNotEmpty
 }
 
 script:post-response {

@@ -310,20 +310,21 @@ From `## Scenarios example data` table, interpret `Required` column values:
 | Value | Assertion Behavior | Mutation Behavior | Logging Behavior |
 |-------|-------------------|-------------------|------------------|
 | `REQUIRED` | ✅ Always assert presence & type | Cache + compare if mutated | Always log |
+| `CONDITIONAL` | ✅ Always assert presence & type | Cache + compare if mutated | Always log |
 | `OPTIONAL` | ❌ **Never assert** | Cache + compare if mutated | Log if present |
-| `CONDITIONAL` | ❌ **Never assert** | Cache + compare if mutated | Log if present |
 
 **CRITICAL RULES:**
 
-1. **Assertions:** OPTIONAL and CONDITIONAL fields are **NEVER asserted** (no presence, type, or value checks in `assert {}` blocks)
-2. **Mutations:** If an OPTIONAL or CONDITIONAL field changes between scenarios for the same ordinal entity, cache the baseline value and use `expectChanged()` in update scripts
-3. **Logging:** Log OPTIONAL/CONDITIONAL fields when they are present in the response to provide visibility, especially when mutated
+1. **Assertions:** REQUIRED and CONDITIONAL fields are **always asserted** for presence and type. OPTIONAL fields are **NEVER asserted**.
+2. **Mutations:** If any field changes between scenarios for the same ordinal entity, cache the baseline value and use `expectChanged()` in update scripts
+3. **Logging:** Log REQUIRED and CONDITIONAL fields always. Log OPTIONAL fields when they are present in the response to provide visibility, especially when mutated
 4. **Detection:** A field is considered mutated if values differ across scenario columns for the same ordinal in the example data table (e.g., Scenario 2 POST vs Scenario 4 PUT both reference the `second` entity)
 
 #### 4.4.1 Collection Handling
 
 - **REQUIRED collections:** Assert `isArray` + `isNotEmpty`
-- **OPTIONAL/CONDITIONAL collections:** Never assert, even if element mutated
+- **CONDITIONAL collections:** Assert `isArray` + `isNotEmpty` (same as REQUIRED)
+- **OPTIONAL collections:** Never assert, even if element mutated
   - If collection or element field mutated → cache baseline value and compare in update script
   - For descriptor collections: use helper functions (`mapDescriptors()`, `joinDescriptors()`)
   - For non-descriptor collections: cache appropriate representation (e.g., JSON.stringify, length, specific field values)
@@ -333,14 +334,14 @@ From `## Scenarios example data` table, interpret `Required` column values:
 
 - Baseline (Scenario 2): Cache `secondCalendarGradeLevelDescriptorList` = "Ninth grade"
 - Update (Scenario 4): Compare cached value vs current = "Ninth grade, Tenth grade"
-- No assertions for `gradeLevels` in either scenario
-- Log `gradeLevels` in both scenarios since it's present
+- Assert `gradeLevels` in both scenarios (CONDITIONAL is asserted like REQUIRED)
+- Log `gradeLevels` in both scenarios
 
 **Example:** `cumulativeEarnedCredits` (OPTIONAL numeric field)
 
 - Baseline: Cache `firstStudentAcademicRecordCumulativeEarnedCredits` = 24
 - Update: Compare cached value vs current = 28
-- No assertions for field in either scenario
+- No assertions for field in either scenario (OPTIONAL is never asserted)
 - Log in update scenario since it was mutated
 
 #### 4.4.2 Primary Key Fields
@@ -672,7 +673,7 @@ function encodeDescriptorParameter(originalUrl, parameterName, defaultDescriptor
 
 ### 9.1 Core Principles
 
-Baseline assertions validate **structural presence only** for REQUIRED fields. Never assert OPTIONAL or CONDITIONAL fields.
+Baseline assertions validate **structural presence only** for REQUIRED and CONDITIONAL fields. Never assert OPTIONAL fields.
 
 ### 9.2 Baseline Assertions (Collection Response)
 
@@ -691,13 +692,13 @@ assert {
 
 | Field Type | Assertion Pattern |
 |-----------|------------------|
-| **Required scalar (string)** | `isString` + `isNotEmpty` |
-| **Required scalar (number)** | `isNumber` + `neq 0` |
-| **Required scalar (boolean)** | `isBoolean` |
-| **Required collection** | `isArray` + `isNotEmpty` |
-| **Required nested object** | `isDefined` (parent) + leaf checks |
-| **Required descriptor** | `isString` + `isNotEmpty` (on leaf) |
-| **Optional/Conditional (ANY)** | ❌ **No assertion** |
+| **Required/Conditional scalar (string)** | `isString` + `isNotEmpty` |
+| **Required/Conditional scalar (number)** | `isNumber` + `neq 0` |
+| **Required/Conditional scalar (boolean)** | `isBoolean` |
+| **Required/Conditional collection** | `isArray` + `isNotEmpty` |
+| **Required/Conditional nested object** | `isDefined` (parent) + leaf checks |
+| **Required/Conditional descriptor** | `isString` + `isNotEmpty` (on leaf) |
+| **Optional (ANY)** | ❌ **No assertion** |
 
 ### 9.4 Nested Object Assertions
 
@@ -773,7 +774,7 @@ assert {
 
 ### 10.1 Baseline: `script:post-response`
 
-**Purpose:** Cache entity ID, natural ID (if present), and all mutable field baseline values (including OPTIONAL/CONDITIONAL fields if present and will be mutated in subsequent scenarios).
+**Purpose:** Cache entity ID, natural ID (if present), and all mutable field baseline values (including OPTIONAL fields if present and will be mutated in subsequent scenarios).
 
 **Standard Pattern:**
 
@@ -818,9 +819,9 @@ script:post-response {
 - Always cache `id` (mandatory)
 - Cache `naturalIdField` only if present in config
 - Use `extractDescriptor()` for descriptor fields (strips URI prefix)
-- Use `mapDescriptors()` + `joinDescriptors()` for descriptor collections (REQUIRED, OPTIONAL, or CONDITIONAL)
-- **Cache OPTIONAL/CONDITIONAL fields of ANY type if they will be mutated in a later update scenario for this ordinal**
-- For non-descriptor OPTIONAL/CONDITIONAL fields: cache the raw value (numbers, booleans, strings, dates, etc.)
+- Use `mapDescriptors()` + `joinDescriptors()` for descriptor collections
+- **Cache OPTIONAL fields of ANY type if they will be mutated in a later update scenario for this ordinal**
+- For non-descriptor OPTIONAL fields: cache the raw value (numbers, booleans, strings, dates, etc.)
 - Baseline logging MUST omit filtered field list (logs full spec)
 
 ### 10.2 Update: `script:pre-request`
@@ -896,16 +897,16 @@ script:post-response {
 
 - Use `expectChanged()` for mutation verification (works with any type: string, number, boolean, object, array, etc.)
 - For descriptor mutations: wrap both sides with `extractDescriptor()`
-- For descriptor collections (any requirement level): use `mapDescriptors()` + `joinDescriptors()` helpers
+- For descriptor collections: use `mapDescriptors()` + `joinDescriptors()` helpers
 - Update logging MUST use filtered field list (Section 11.2)
-- **Include OPTIONAL/CONDITIONAL fields in filtered log list if they were mutated (regardless of field type)**
+- **Include OPTIONAL fields in filtered log list if they were mutated (regardless of field type)**
 
 **Examples:**
 
-**Descriptor Collection (CONDITIONAL):**
+**Descriptor Collection:**
 
 ```javascript
-// Example: gradeLevels is CONDITIONAL descriptor collection
+// Example: gradeLevels descriptor collection
 const previousList = getVar(bru, 'secondCalendarGradeLevelDescriptorList');
 const currentList = joinDescriptors(
   mapDescriptors(current.gradeLevels || [], item => item.gradeLevelDescriptor)
@@ -921,10 +922,10 @@ const previousCredits = getVar(bru, 'firstStudentAcademicRecordCumulativeEarnedC
 expectChanged(previousCredits, current.cumulativeEarnedCredits, 'cumulativeEarnedCredits');
 ```
 
-**Boolean Field (CONDITIONAL):**
+**Boolean Field:**
 
 ```javascript
-// Example: cteCompleter is CONDITIONAL boolean
+// Example: cteCompleter boolean field
 const previousCteCompleter = getVar(bru, 'firstDiplomaCteCompleter');
 expectChanged(previousCteCompleter, current.diplomas[0].cteCompleter, 'cteCompleter');
 ```
@@ -935,7 +936,7 @@ expectChanged(previousCteCompleter, current.diplomas[0].cteCompleter, 'cteComple
 logScenario(entityName, scenarioName, current, logSpecCalendar, [
   'calendarCode',           // natural ID (string)
   'calendarTypeDescriptor', // REQUIRED descriptor (mutated)
-  'gradeLevels'             // CONDITIONAL descriptor collection (mutated)
+  'gradeLevels'             // descriptor collection (mutated)
 ]);
 ```
 
@@ -1013,26 +1014,26 @@ logScenario(entityName, scenarioName, current, logSpecCourseOffering, [
 ]);
 ```
 
-### 11.4 Log Coverage Verification (REQUIRED & Mutated Fields)
+### 11.4 Log Coverage Verification (REQUIRED/CONDITIONAL & Mutated Fields)
 
 **Mandatory Coverage Rules:**
 
-1. All REQUIRED identifying fields (primary keys, natural ID) appear in at least one scenario log (prefer baseline)
-2. **OPTIONAL/CONDITIONAL fields that are mutated** (values differ across scenario columns for the same ordinal) MUST be logged in that update scenario to provide evidence of change
-3. REQUIRED collection fields logged via descriptor-level projection (not raw arrays)
-4. **OPTIONAL/CONDITIONAL collection fields that are mutated** should be logged the same way (via descriptor projection) in the update scenario
+1. All REQUIRED and CONDITIONAL identifying fields (primary keys, natural ID) appear in at least one scenario log (prefer baseline)
+2. **OPTIONAL fields that are mutated** (values differ across scenario columns for the same ordinal) MUST be logged in that update scenario to provide evidence of change
+3. REQUIRED and CONDITIONAL collection fields logged via descriptor-level projection (not raw arrays)
+4. **OPTIONAL collection fields that are mutated** should be logged the same way (via descriptor projection) in the update scenario
 5. Large collections omitted unless mutated or central to comprehension
 6. Primary key constituents inside reference objects covered by natural ID surrogate
 
-**Example (CONDITIONAL gradeLevels mutated):**
+**Example (gradeLevels mutated):**
 
 ```javascript
 // Scenario 2 baseline: Cache gradeLevels = ["Ninth grade"]
 // Scenario 4 update: Verify gradeLevels changed to ["Ninth grade", "Tenth grade"]
 logScenario(entityName, scenarioName, current, logSpecCalendar, [
   'calendarCode',           // natural ID
-  'calendarTypeDescriptor', // mutated REQUIRED field
-  'gradeLevels'             // mutated CONDITIONAL field - included for visibility
+  'calendarTypeDescriptor', // mutated descriptor field
+  'gradeLevels'             // mutated descriptor collection
 ]);
 ```
 
@@ -1317,11 +1318,11 @@ Use this checklist to verify generated scenarios meet all requirements:
 
 ### 15.4 Assertions
 
-- [ ] All REQUIRED fields have presence + type assertions
-- [ ] **No assertions for OPTIONAL or CONDITIONAL fields** (even if present or mutated)
-- [ ] Nested required objects have `isDefined` parent + leaf checks
-- [ ] Required collections have `isArray` + `isNotEmpty`
-- [ ] **OPTIONAL/CONDITIONAL collections never asserted** (even if mutated)
+- [ ] All REQUIRED and CONDITIONAL fields have presence + type assertions
+- [ ] **No assertions for OPTIONAL fields** (even if present or mutated)
+- [ ] Nested REQUIRED/CONDITIONAL objects have `isDefined` parent + leaf checks
+- [ ] REQUIRED/CONDITIONAL collections have `isArray` + `isNotEmpty`
+- [ ] **OPTIONAL collections never asserted** (even if mutated)
 - [ ] All assertions use colon syntax (no space-separated)
 - [ ] No inline comments inside `assert {}` blocks
 
@@ -1340,21 +1341,21 @@ Use this checklist to verify generated scenarios meet all requirements:
   - [ ] Uses `pickSingle()` to validate single record
   - [ ] Calls `wipeVars()` if no record found (with `true` to throw)
   - [ ] Caches all required variables: `id`, natural ID (if any), all mutable fields
-  - [ ] **Caches OPTIONAL/CONDITIONAL fields if they will be mutated in later update**
+  - [ ] **Caches OPTIONAL fields if they will be mutated in later update**
   - [ ] Uses `extractDescriptor()` for descriptor fields
-  - [ ] Uses `mapDescriptors()` + `joinDescriptors()` for OPTIONAL/CONDITIONAL descriptor collections that will be mutated
+  - [ ] Uses `mapDescriptors()` + `joinDescriptors()` for descriptor collections that will be mutated
   - [ ] Calls `logScenario()` without filtered field list (full spec)
 - [ ] Update `script:pre-request`:
   - [ ] Validates all prerequisite variables with `validateDependency()`
-  - [ ] **Validates OPTIONAL/CONDITIONAL cached variables if they're being compared**
+  - [ ] **Validates OPTIONAL cached variables if they're being compared**
   - [ ] Uses standard actionHint: `"Ensure you ran the <ordinal> certification scenario successfully before continuing."`
 - [ ] Update `script:post-response`:
   - [ ] Checks `res.status` and `res.body` existence
   - [ ] Calls `throwNotFoundOrSpecificError()` on failure
-  - [ ] Uses `expectChanged()` for each mutated field comparison (including OPTIONAL/CONDITIONAL)
+  - [ ] Uses `expectChanged()` for each mutated field comparison (including OPTIONAL)
   - [ ] Wraps descriptor comparisons with `extractDescriptor()`
   - [ ] Uses `mapDescriptors()` + `joinDescriptors()` for descriptor collection comparisons
-  - [ ] Calls `logScenario()` with filtered field list (natural ID + mutated fields including OPTIONAL/CONDITIONAL)
+  - [ ] Calls `logScenario()` with filtered field list (natural ID + mutated fields including OPTIONAL)
 - [ ] Delete `script:post-response`:
   - [ ] Wipes all cached variables with `wipeVars()` (false = don't throw)
   - [ ] No logging invocation
@@ -1362,7 +1363,7 @@ Use this checklist to verify generated scenarios meet all requirements:
 ### 15.7 Logging
 
 - [ ] Baseline scenarios log full spec (no field list parameter)
-- [ ] Update scenarios log filtered fields: natural ID + mutated fields (including OPTIONAL/CONDITIONAL if mutated)
+- [ ] Update scenarios log filtered fields: natural ID + mutated fields (including OPTIONAL if mutated)
 - [ ] Delete scenarios have no logging
 - [ ] Log field lists follow ordering: id → natural ID → mutated → descriptor lists
 - [ ] Imports from `logging.js`: `const { logScenario, logSpec<Entity> } = require('./logging');`
@@ -1637,11 +1638,12 @@ script:post-response {
 
 ---
 
-## Appendix D: CONDITIONAL/OPTIONAL Field Handling Examples
+## Appendix D: OPTIONAL Field Handling Examples
 
-**Important Note:** OPTIONAL and CONDITIONAL fields can be of **any data type**: strings, numbers, booleans, dates, objects, arrays, or descriptor collections. The examples below demonstrate handling different field types. The same principles apply regardless of type:
+**Important Note:** OPTIONAL fields can be of **any data type**: strings, numbers, booleans, dates, objects, arrays, or descriptor collections. The examples below demonstrate handling different field types for OPTIONAL fields. REQUIRED and CONDITIONAL fields are always asserted and logged.
 
-- Never assert OPTIONAL/CONDITIONAL fields
+- Always assert REQUIRED and CONDITIONAL fields
+- Never assert OPTIONAL fields
 - Cache baseline value if field will be mutated
 - Compare using `expectChanged()` in update scenarios
 - Log in update scenarios when mutated
@@ -1668,7 +1670,7 @@ script:post-response {
 | `gradeLevels` | CONDITIONAL | (collection) | (collection) | Yes (Scenario 2 & 4 both reference "second" Calendar) |
 | `gradeLevelDescriptor` | CONDITIONAL | Ninth grade | Ninth grade, Tenth grade | **Mutated** (list grew) |
 
-**Key Insight:** Even though `gradeLevels` is CONDITIONAL, it mutates between Scenario 2 (baseline for second Calendar) and Scenario 4 (update for second Calendar).
+**Key Insight:** The `gradeLevels` CONDITIONAL field mutates between Scenario 2 (baseline for second Calendar) and Scenario 4 (update for second Calendar). Since CONDITIONAL is treated like REQUIRED, it gets assertions.
 
 ### Baseline 2 Script (Scenario 2)
 
@@ -1685,7 +1687,7 @@ script:post-response {
       'secondCalendarUniqueId',
       'secondCalendarId',
       'secondCalendarCalendarTypeDescriptor',
-      'secondCalendarGradeLevelDescriptorList'  // Cache CONDITIONAL field (will be mutated)
+      'secondCalendarGradeLevelDescriptorList'
     ], entityName, true);
   }
   
@@ -1708,7 +1710,7 @@ script:post-response {
 
 ### Baseline 2 Assertions
 
-**CRITICAL:** No assertions for `gradeLevels` even though it's present and will be mutated:
+**CONDITIONAL fields are asserted like REQUIRED:**
 
 ```javascript
 assert {
@@ -1727,7 +1729,10 @@ assert {
   res.body[0].schoolYearTypeReference.schoolYear: neq 0
   res.body[0].calendarTypeDescriptor: isString
   res.body[0].calendarTypeDescriptor: isNotEmpty
-  // ❌ NO assertion for gradeLevels (CONDITIONAL)
+  res.body[0].gradeLevels: isArray
+  res.body[0].gradeLevels: isNotEmpty
+  res.body[0].gradeLevels[0].gradeLevelDescriptor: isString
+  res.body[0].gradeLevels[0].gradeLevelDescriptor: isNotEmpty
 }
 ```
 
@@ -1765,10 +1770,10 @@ script:post-response {
   
   expectChanged(previousList, currentList, 'gradeLevelDescriptor list');
   
-  // Log filtered list including the CONDITIONAL field that mutated
+  // Log filtered list including the mutated field
   logScenario(entityName, scenarioName, current, logSpecCalendar, [
     'calendarCode',        // natural ID
-    'gradeLevels'          // CONDITIONAL but mutated - include for visibility
+    'gradeLevels'          // mutated descriptor collection
   ]);
 }
 ```
@@ -1781,16 +1786,17 @@ assert {
   res.body: isDefined
   res.body.id: isString
   res.body.id: isNotEmpty
-  // ❌ Still NO assertion for gradeLevels (remains CONDITIONAL)
+  res.body.gradeLevels: isArray
+  res.body.gradeLevels: isNotEmpty
 }
 ```
 
 ### Key Takeaways (Example 1)
 
-1. **Assertions:** Never assert CONDITIONAL descriptor collections, even when present and mutated
+1. **Assertions:** CONDITIONAL descriptor collections are asserted like REQUIRED
 2. **Caching:** Use `mapDescriptors()` + `joinDescriptors()` for descriptor collections
 3. **Comparison:** Use `expectChanged()` to prove list mutation
-4. **Logging:** Include mutated CONDITIONAL field in update scenario filtered log
+4. **Logging:** Include mutated fields in update scenario filtered log
 
 ---
 
@@ -1867,6 +1873,21 @@ script:post-response {
 }
 ```
 
+**Baseline Assertions:**
+
+```javascript
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].diplomas: isArray
+  res.body[0].diplomas: isNotEmpty
+  res.body[0].diplomas[0].cteCompleter: isBoolean
+}
+```
+
 **Update Script:**
 
 ```javascript
@@ -1882,8 +1903,9 @@ script:post-response {
 ### Key Takeaways (Example 3)
 
 1. **Boolean fields:** Cache and compare raw boolean values
-2. **Nested paths:** Use optional chaining (`?.`) for safety when caching nested CONDITIONAL fields
-3. **Array access:** If field is inside collection, use consistent index (typically `[0]`)
+2. **CONDITIONAL assertion:** Assert with `isBoolean` since CONDITIONAL is treated like REQUIRED
+3. **Nested paths:** Use optional chaining (`?.`) for safety when caching nested fields
+4. **Array access:** If field is inside collection, use consistent index (typically `[0]`)
 
 ---
 
@@ -1918,9 +1940,9 @@ script:post-response {
 
 ---
 
-### Universal Key Takeaways (All OPTIONAL/CONDITIONAL Fields)
+### Universal Key Takeaways (OPTIONAL Fields)
 
-1. **Assertions:** Never assert CONDITIONAL/OPTIONAL fields, regardless of type (descriptor, number, boolean, string, date, object, array)
+1. **Assertions:** Always assert REQUIRED and CONDITIONAL fields. Never assert OPTIONAL fields.
 2. **Caching:** Cache baseline value if field will be mutated in a later update for the same ordinal
 
    - Descriptors: Use `extractDescriptor()` for single descriptors
@@ -1930,8 +1952,8 @@ script:post-response {
 3. **Comparison:** Use `expectChanged()` in update script to prove mutation (works with any type)
 4. **Logging:**
 
-   - Baseline logs full spec (includes OPTIONAL/CONDITIONAL fields if present via logSpec projection)
-   - Update logs filtered list that MUST include any mutated OPTIONAL/CONDITIONAL fields
+   - Baseline logs full spec (includes all fields via logSpec projection)
+   - Update logs filtered list that MUST include any mutated OPTIONAL fields
 
 5. **Detection:** Mutation is detected by comparing scenario columns for the same ordinal entity in example data table
 
@@ -1941,7 +1963,8 @@ script:post-response {
 
 | Pitfall | Problem | Solution |
 |---------|---------|----------|
-| **Asserting optional fields** | Generate assertions for OPTIONAL/CONDITIONAL fields | Never assert optional fields; cache and compare in script if mutated, log if present |
+| **Asserting optional fields** | Generate assertions for OPTIONAL fields | Never assert OPTIONAL fields; cache and compare in script if mutated, log if present |
+| **Not asserting conditional fields** | Skip assertions for CONDITIONAL fields | Always assert CONDITIONAL fields like REQUIRED |
 | **Inline assert comments** | Comments inside `assert {}` break machine parsing | Remove all inline comments from assert blocks |
 | **Wrong assertion syntax** | Using space-separated syntax: `res.status eq 200` | Always use colon syntax: `res.status: eq 200` |
 | **Missing `type: http`** | Meta block lacks `type` field | Every scenario must have `type: http` in meta |
@@ -1959,6 +1982,7 @@ script:post-response {
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | 2025-12-23 | CONDITIONAL fields now treated as REQUIRED (assertions, logging) |
 | 1.0 | 2025-10-24 | Initial comprehensive specification |
 
 ---

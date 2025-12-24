@@ -42,6 +42,7 @@ assert {
   res.body[0].studentReference.studentUniqueId: isNotEmpty
   res.body[0].beginDate: isString
   res.body[0].endDate: isString
+  res.body[0].homeroomIndicator: isBoolean
 }
 
 script:post-response {

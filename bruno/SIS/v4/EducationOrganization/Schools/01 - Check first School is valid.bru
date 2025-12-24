@@ -47,6 +47,8 @@ assert {
   res.body[0].addresses[0].stateAbbreviationDescriptor: isNotEmpty
   res.body[0].addresses[0].streetNumberName: isString
   res.body[0].addresses[0].streetNumberName: isNotEmpty
+  res.body[0].shortNameOfInstitution: isString
+  res.body[0].shortNameOfInstitution: isNotEmpty
 }
 
 script:post-response {

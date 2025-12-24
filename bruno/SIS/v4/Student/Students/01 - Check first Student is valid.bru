@@ -34,6 +34,10 @@ assert {
   res.body[0].middleName: isNotEmpty
   res.body[0].lastSurname: isString
   res.body[0].lastSurname: isNotEmpty
+  res.body[0].generationCodeSuffix: isString
+  res.body[0].generationCodeSuffix: isNotEmpty
+  res.body[0].personalTitlePrefix: isString
+  res.body[0].personalTitlePrefix: isNotEmpty
 }
 
 script:post-response {
