@@ -61,7 +61,7 @@ script:post-response {
   const { logSpecSection, logScenario } = require('./logging');
   const entityName = 'Section';
   const scenarioName = this.req.name;
-
+  
   if (res.status === 200 && res.body) {
     const current = res.getBody();
     expectChanged(getVar(bru, 'secondSectionAvailableCredits'), current.availableCredits, 'availableCredits');
@@ -73,4 +73,5 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
