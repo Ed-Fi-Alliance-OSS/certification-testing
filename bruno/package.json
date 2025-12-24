@@ -3,7 +3,7 @@
     "dayjs": "^1.11.19"
   },
   "devDependencies": {
-    "@usebruno/cli": "^1.40.0",
+    "@usebruno/cli": "^2.15.1",
     "simple-git-hooks": "^2.11.1"
   },
   "name": "sis",
