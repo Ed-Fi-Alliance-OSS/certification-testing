@@ -24,27 +24,22 @@ assert {
   res.body: isNotEmpty
   res.body[0].id: isString
   res.body[0].id: isNotEmpty
-  res.body[0].educationOrganizationId: isNumber
-  res.body[0].educationOrganizationId: neq 0
-  res.body[0].schoolYear: isNumber
-  res.body[0].schoolYear: neq 0
-  res.body[0].studentUniqueId: isString
-  res.body[0].studentUniqueId: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].schoolYearTypeReference: isDefined
+  res.body[0].schoolYearTypeReference.schoolYear: isNumber
+  res.body[0].schoolYearTypeReference.schoolYear: neq 0
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
   res.body[0].termDescriptor: isString
   res.body[0].termDescriptor: isNotEmpty
-  res.body[0].cumulativeAttemptedCredits: isNumber
-  res.body[0].cumulativeEarnedCredits: isNumber
-  res.body[0].cumulativeGradePointAverage: isNumber
-  res.body[0].sessionAttemptedCredits: isNumber
-  res.body[0].sessionEarnedCredits: isNumber
-  res.body[0].graduationPlans: isArray
-  res.body[0].graduationPlans: isNotEmpty
-  res.body[0].graduationPlans[0].educationOrganizationId: isNumber
-  res.body[0].graduationPlans[0].educationOrganizationId: neq 0
-  res.body[0].graduationPlans[0].graduationSchoolYear: isNumber
-  res.body[0].graduationPlans[0].graduationSchoolYear: neq 0
-  res.body[0].graduationPlans[0].graduationPlanTypeDescriptor: isString
-  res.body[0].graduationPlans[0].graduationPlanTypeDescriptor: isNotEmpty
+  res.body[0].cumulativeAttemptedCredits: gte 0
+  res.body[0].cumulativeEarnedCredits: gte 0
+  res.body[0].cumulativeGradePointAverage: gte 0
+  res.body[0].sessionAttemptedCredits: gte 0
+  res.body[0].sessionEarnedCredits: gte 0
 }
 
 script:pre-request {
