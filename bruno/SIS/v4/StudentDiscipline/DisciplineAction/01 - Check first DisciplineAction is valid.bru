@@ -35,9 +35,13 @@ assert {
   res.body[0].studentReference.studentUniqueId: isNotEmpty
   res.body[0].actualDisciplineActionLength: isNumber
   res.body[0].actualDisciplineActionLength: neq 0
+  res.body[0].studentDisciplineIncidentAssociations: isArray
+  res.body[0].studentDisciplineIncidentAssociations: isNotEmpty
+  res.body[0].studentDisciplineIncidentAssociations[0].studentDisciplineIncidentAssociationReference: isDefined
   res.body[0].responsibilitySchoolReference: isDefined
   res.body[0].responsibilitySchoolReference.schoolId: isNumber
   res.body[0].responsibilitySchoolReference.schoolId: neq 0
+  res.body[0].iepPlacementMeetingIndicator: isBoolean
 }
 
 script:post-response {
