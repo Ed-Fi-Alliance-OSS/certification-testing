@@ -32,6 +32,9 @@ assert {
   res.body.locationReference.classroomIdentificationCode: isNotEmpty
   res.body.locationReference.schoolId: isNumber
   res.body.locationReference.schoolId: neq 0
+  res.body.locationSchoolReference: isDefined
+  res.body.locationSchoolReference.schoolId: isNumber
+  res.body.locationSchoolReference.schoolId: neq 0
   res.body.classPeriods: isArray
   res.body.classPeriods: isNotEmpty
   res.body.classPeriods[0].classPeriodReference: isDefined
