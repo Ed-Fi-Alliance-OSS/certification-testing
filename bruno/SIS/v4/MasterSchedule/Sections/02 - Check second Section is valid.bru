@@ -5,17 +5,17 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/sections?schoolId=[ENTER SECOND SCHOOL ID]&schoolYear=[ENTER SCHOOL YEAR]&localCourseCode=[ENTER SECOND LOCAL COURSE CODE]&sessionName=[ENTER SESSION NAME]&sectionIdentifier=[ENTER SECOND SECTION IDENTIFIER]
+  url: {{resourceBaseUrl}}/ed-fi/sections?schoolId=[ENTER SCHOOL ID]&schoolYear=[ENTER SCHOOL YEAR]&localCourseCode=[ENTER LOCAL COURSE CODE]&sessionName=[ENTER SESSION NAME]&sectionIdentifier=[ENTER SECTION IDENTIFIER]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: [ENTER SECOND SCHOOL ID]
+  schoolId: [ENTER SCHOOL ID]
   schoolYear: [ENTER SCHOOL YEAR]
-  localCourseCode: [ENTER SECOND LOCAL COURSE CODE]
+  localCourseCode: [ENTER LOCAL COURSE CODE]
   sessionName: [ENTER SESSION NAME]
-  sectionIdentifier: [ENTER SECOND SECTION IDENTIFIER]
+  sectionIdentifier: [ENTER SECTION IDENTIFIER]
 }
 
 assert {
@@ -64,13 +64,13 @@ script:post-response {
   const entityName = 'Section';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-
+  
   if (!entity) {
     wipeVars(bru, [
       'secondSectionUniqueId','secondSectionId','secondSectionAvailableCredits'
     ], entityName, true);
   }
-
+  
   setVars(bru, {
     secondSectionUniqueId: entity.id,
     secondSectionId: entity.sectionIdentifier,
@@ -81,4 +81,5 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
