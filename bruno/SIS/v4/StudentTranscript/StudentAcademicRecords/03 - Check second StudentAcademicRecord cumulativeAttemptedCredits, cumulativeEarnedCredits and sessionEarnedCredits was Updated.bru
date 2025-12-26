@@ -25,11 +25,11 @@ assert {
   res.body.studentReference.studentUniqueId: isNotEmpty
   res.body.termDescriptor: isString
   res.body.termDescriptor: isNotEmpty
-  res.body[0].cumulativeAttemptedCredits: gte 0
-  res.body[0].cumulativeEarnedCredits: gte 0
-  res.body[0].cumulativeGradePointAverage: gte 0
-  res.body[0].sessionAttemptedCredits: gte 0
-  res.body[0].sessionEarnedCredits: gte 0
+  res.body.cumulativeAttemptedCredits: gte 0
+  res.body.cumulativeEarnedCredits: gte 0
+  res.body.cumulativeGradePointAverage: gte 0
+  res.body.sessionAttemptedCredits: gte 0
+  res.body.sessionEarnedCredits: gte 0
 }
 
 script:pre-request {
@@ -60,13 +60,13 @@ script:post-response {
   const entityName = 'StudentAcademicRecord';
   const scenarioName = this.req.name;
   const entity = res.getBody();
-  expectChanged(entityName, 'schoolYear', entity.schoolYear, bru.getVar('secondStudentAcademicRecordSchoolYear'));
+  expectChanged(entityName, 'schoolYear', entity.schoolYearTypeReference.schoolYear, bru.getVar('secondStudentAcademicRecordSchoolYear'));
   expectChanged(entityName, 'cumulativeAttemptedCredits', entity.cumulativeAttemptedCredits, bru.getVar('secondStudentAcademicRecordCumulativeAttemptedCredits'));
   expectChanged(entityName, 'cumulativeEarnedCredits', entity.cumulativeEarnedCredits, bru.getVar('secondStudentAcademicRecordCumulativeEarnedCredits'));
   expectChanged(entityName, 'sessionEarnedCredits', entity.sessionEarnedCredits, bru.getVar('secondStudentAcademicRecordSessionEarnedCredits'));
   expectChanged(entityName, 'sessionAttemptedCredits', entity.sessionAttemptedCredits, bru.getVar('secondStudentAcademicRecordSessionAttemptedCredits'));
   setVars(bru, {
-    secondStudentAcademicRecordSchoolYear: entity.schoolYear,
+    secondStudentAcademicRecordSchoolYear: entity.schoolYearTypeReference.schoolYear,
     secondStudentAcademicRecordCumulativeAttemptedCredits: entity.cumulativeAttemptedCredits,
     secondStudentAcademicRecordCumulativeEarnedCredits: entity.cumulativeEarnedCredits,
     secondStudentAcademicRecordSessionAttemptedCredits: entity.sessionAttemptedCredits,
