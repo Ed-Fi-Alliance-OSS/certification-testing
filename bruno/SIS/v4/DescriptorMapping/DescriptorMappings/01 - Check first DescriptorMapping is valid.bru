@@ -5,16 +5,18 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/descriptorMappings?mappedNamespace=[ENTER FIRST MAPPED NAMESPACE]&namespace=[ENTER FIRST NAMESPACE]&mappedValue=[ENTER FIRST MAPPED VALUE]&value=[ENTER FIRST VALUE]
+  url: {{resourceBaseUrl}}/ed-fi/descriptorMappings?mappedNamespace={{firstMappedNamespaceEncoded}}&namespace={{firstNamespaceEncoded}}&mappedValue=[ENTER FIRST MAPPED VALUE]&value=[ENTER FIRST VALUE]&mappedNamespace_KEEP_IT_AT_THE_END=[ENTER FIRST MAPPED NAMESPACE]&namespace_KEEP_IT_AT_THE_END=[ENTER FIRST NAMESPACE]
   body: none
   auth: inherit
 }
 
 params:query {
-  mappedNamespace: [ENTER FIRST MAPPED NAMESPACE]
-  namespace: [ENTER FIRST NAMESPACE]
+  mappedNamespace: {{firstMappedNamespaceEncoded}}
+  namespace: {{firstNamespaceEncoded}}
   mappedValue: [ENTER FIRST MAPPED VALUE]
   value: [ENTER FIRST VALUE]
+  mappedNamespace_KEEP_IT_AT_THE_END: [ENTER FIRST MAPPED NAMESPACE]
+  namespace_KEEP_IT_AT_THE_END: [ENTER FIRST NAMESPACE]
 }
 
 assert {
@@ -33,27 +35,37 @@ assert {
   res.body[0].mappedNamespace: isNotEmpty
 }
 
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+
+  const mappedNamespaceEncoded = encodeDescriptorParameter(req.url, 'mappedNamespace_KEEP_IT_AT_THE_END');
+  const namespaceEncoded = encodeDescriptorParameter(req.url, 'namespace_KEEP_IT_AT_THE_END');
+
+  setVar(bru, 'firstMappedNamespaceEncoded', mappedNamespaceEncoded);
+  setVar(bru, 'firstNamespaceEncoded', namespaceEncoded);
+}
+
 script:post-response {
   const { pickSingle, setVars, wipeVars } = require('./utils');
   const { logScenario, logSpecDescriptorMapping } = require('./logging');
   const entityName = 'DescriptorMapping';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'firstDescriptorMappingUniqueId'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     firstDescriptorMappingUniqueId: single.id
   }, entityName);
-  
+
   logScenario(entityName, scenarioName, single, logSpecDescriptorMapping);
 }
 
 settings {
-  encodeUrl: true
+  encodeUrl: false
   timeout: 0
 }
