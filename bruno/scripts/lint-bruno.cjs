@@ -175,6 +175,7 @@ const bruFiles = walk(ROOT).filter(f => {
   const normalizedPath = f.replace(/\\/g, '/');
   return /(^|\/)(SIS|Sample Data|Assessment)(\/|$)/.test(normalizedPath);
 });
+
 bruFiles.forEach(lintFile);
 
 SUMMARY.problems = problems.length;
