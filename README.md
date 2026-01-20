@@ -1,20 +1,23 @@
 # Ed-Fi Certification Testing
 
-Test scripts for the Ed-Fi Certification process.
+Bruno Test scripts for the Ed-Fi Certification process.
 
-In 2024-2025, the Alliance is testing an approach to move from manual validation
-with SQL scripts to using the API itself for validation. This approach seeks to
-bring in as much automation as possible, using
-[Postman](https://www.postman.com/) as the platform of choice. The goal of this
-is to streamline operations for the Ed-Fi Alliance, speed up development and
-certification times for our partners by allowing our partners to perform more of
-their own testing.
+The goal of this Certification Automation suite is to streamline operations for the Ed-Fi Alliance, speed up development and
+certification times for our partners, and allowing our partners to perform more self-servicing of their own testing needs.
+
+## Background
+
+In 2024-2025, the Alliance tested an approach to move from manual validation with SQL scripts to using the API itself for validation. This approach sought to bring in as much automation as possible, leveraging API testing platforms to heavy lifting.
+
+Version 1 of the release used [Postman](https://www.postman.com/) as the platform of choice, which is available as a legacy release option.
+
+Our latest Version 2 release utilizes [Bruno](https://www.usebruno.com/), which brings additional features including Git friendly code structure, API client (not platform) focus, and a CLI runnner to execute tests in a headless fashion.
 
 ## SIS Certification User Manual
 
 If you are a SIS vendor tester using the Bruno app (GUI), please refer to the end-user manual:
 
-- [Ed‑Fi SIS Certification — How to Use (Bruno GUI)](bruno/SIS/README-User-Manual.md)
+- [Ed‑Fi SIS Certification — How to Use (Bruno GUI)](bruno/README-User-Manual.md)
 
 This manual provides version-agnostic setup, `.env` credentials, environment selection, and step-by-step scenario execution guidance.
 
