@@ -14,7 +14,7 @@ their own testing.
 
 If you are a SIS vendor tester using the Bruno app (GUI), please refer to the end-user manual:
 
-- [Ed‑Fi SIS Certification — How to Use (Bruno GUI)](bruno/SIS/README-User-Manual.md)
+- [Ed‑Fi SIS Certification — How to Use (Bruno GUI)](bruno/README-User-Manual.md)
 
 This manual provides version-agnostic setup, `.env` credentials, environment selection, and step-by-step scenario execution guidance.
 
