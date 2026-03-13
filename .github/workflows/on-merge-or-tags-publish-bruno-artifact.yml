@@ -1,4 +1,4 @@
-name: Publish Bruno Runtime Artifact
+name: Publish SIS Artifact
 
 on:
   push:
@@ -11,12 +11,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: bruno-artifact-${{ github.ref }}
+  group: sis-artifact-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  publish-bruno-runtime-artifact:
-    name: Build, Validate, and Publish Bruno Runtime Artifact
+  publish-sis-artifact:
+    name: Build, Validate, and Publish SIS Artifact
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,7 +29,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: bruno/package-lock.json
 
-      - name: Derive artifact metadata
+      - name: Derive SIS metadata
         id: meta
         shell: bash
         run: |
@@ -46,7 +46,7 @@ jobs:
             SOURCE_REF="${GITHUB_REF_NAME}"
           fi
 
-          BASE_NAME="bruno-sis-runtime-${ARTIFACT_VERSION}"
+          BASE_NAME="sis-${ARTIFACT_VERSION}"
           ZIP_NAME="${BASE_NAME}.zip"
           SHA_NAME="${BASE_NAME}.zip.sha256"
           META_NAME="${BASE_NAME}.metadata.json"
@@ -58,7 +58,7 @@ jobs:
           echo "shaName=${SHA_NAME}" >> "$GITHUB_OUTPUT"
           echo "metaName=${META_NAME}" >> "$GITHUB_OUTPUT"
 
-      - name: Stage minimal runtime content
+      - name: Stage minimal content
         shell: bash
         run: |
           set -euo pipefail
@@ -72,6 +72,10 @@ jobs:
           cp -R bruno/scripts stage/bruno/
           cp -R bruno/schemas stage/bruno/
           cp -R bruno/templates stage/bruno/
+          cp bruno/README-User-Manual.md stage/bruno/
+          cp bruno/README-SIS-Artifact.md stage/bruno/
+          cp bruno/README-SIS-Artifact-How-to-use-in-AdminApp.md stage/bruno/
+          cp bruno/README-SIS-Artifact-How-to-use-in-Bruno-CLI.md stage/bruno/
 
           # Defensive exclusions in case local cache artifacts are present.
           find stage -type d -name node_modules -prune -exec rm -rf {} +
@@ -137,6 +141,10 @@ jobs:
           test -d validation/extracted/bruno/scripts
           test -d validation/extracted/bruno/schemas
           test -d validation/extracted/bruno/templates
+          test -f validation/extracted/bruno/README-User-Manual.md
+          test -f validation/extracted/bruno/README-SIS-Artifact.md
+          test -f validation/extracted/bruno/README-SIS-Artifact-How-to-use-in-AdminApp.md
+          test -f validation/extracted/bruno/README-SIS-Artifact-How-to-use-in-Bruno-CLI.md
 
       - name: Consumer validation smoke test (npm ci)
         shell: bash
@@ -148,7 +156,7 @@ jobs:
       - name: Upload workflow artifact (main and tags)
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 #v5.0.0
         with:
-          name: bruno-sis-runtime-${{ steps.meta.outputs.artifactVersion }}
+          name: sis-${{ steps.meta.outputs.artifactVersion }}
           path: |
             dist/${{ steps.meta.outputs.zipName }}
             dist/${{ steps.meta.outputs.shaName }}
@@ -173,5 +181,5 @@ jobs:
           else
             gh release create "${TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
               --title "${TAG}" \
-              --notes "Automated Bruno runtime artifact release for ${TAG}."
+              --notes "Automated SIS artifact release for ${TAG}."
           fi
