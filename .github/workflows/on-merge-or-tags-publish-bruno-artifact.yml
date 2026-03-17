@@ -208,11 +208,11 @@ jobs:
             if [[ "${IS_TAG}" == "true" ]]; then
               gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
                 --title "${RELEASE_TAG}" \
-                --notes "Automated SIS artifact release for ${RELEASE_TAG}."
+                --notes "SIS artifact release for ${RELEASE_TAG}."
             else
               gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
-                --title "Commit ${RELEASE_TAG}" \
-                --notes "Automated SIS artifact release for commit ${RELEASE_TAG}." \
+                --title "${RELEASE_TAG:0:20}" \
+                --notes "Automated SIS artifact for ${RELEASE_TAG}." \
                 --prerelease
             fi
           fi
