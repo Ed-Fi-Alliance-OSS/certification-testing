@@ -47,7 +47,9 @@ jobs:
             IS_TAG="false"
             ARTIFACT_VERSION="0.0.0-main.${GITHUB_RUN_NUMBER}+${SHORT_SHA}"
             SOURCE_REF="${GITHUB_REF_NAME}"
-            TARGET_DOWNLOAD_REF="${GITHUB_SHA}"
+            # GitHub prohibits release tags that are bare 40-hex-char strings,
+            # so prefix with "commit-" to produce a valid tag name.
+            TARGET_DOWNLOAD_REF="commit-${GITHUB_SHA}"
           fi
 
           BASE_NAME="sis-${ARTIFACT_VERSION}"
