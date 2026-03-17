@@ -1,0 +1,44 @@
+name: Cleanup Old Commit Prereleases
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # every Monday at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      keep_count:
+        description: 'Number of newest prereleases to keep'
+        default: '5'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old commit prereleases (keep last 5, preserve tagged releases)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP: ${{ inputs.keep_count || '5' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName,isPrerelease,createdAt \
+            | jq -r --argjson keep "$KEEP" '
+                [.[]
+                  | select(.isPrerelease == true)
+                  | select(.tagName | test("^[0-9a-f]{40}$"))   # only full commit SHAs
+                ]
+                | sort_by(.createdAt)
+                | .[:-$keep]
+                | .[].tagName
+              ' \
+            | while IFS= read -r tag; do
+                echo "Deleting commit prerelease: $tag"
+                gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes
+                git push origin --delete "refs/tags/$tag" || true
+              done
+
+
+              
