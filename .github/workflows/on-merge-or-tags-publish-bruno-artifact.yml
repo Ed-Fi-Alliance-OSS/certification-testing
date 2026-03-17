@@ -39,24 +39,39 @@ jobs:
           BUILD_TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            IS_TAG="true"
             ARTIFACT_VERSION="${GITHUB_REF#refs/tags/}"
             SOURCE_REF="${GITHUB_REF#refs/tags/}"
+            TARGET_DOWNLOAD_REF="${ARTIFACT_VERSION}"
           else
+            IS_TAG="false"
             ARTIFACT_VERSION="0.0.0-main.${GITHUB_RUN_NUMBER}+${SHORT_SHA}"
             SOURCE_REF="${GITHUB_REF_NAME}"
+            TARGET_DOWNLOAD_REF="${GITHUB_SHA}"
           fi
 
           BASE_NAME="sis-${ARTIFACT_VERSION}"
           ZIP_NAME="${BASE_NAME}.zip"
           SHA_NAME="${BASE_NAME}.zip.sha256"
-          META_NAME="${BASE_NAME}.metadata.json"
+          META_NAME="sis-${TARGET_DOWNLOAD_REF}.metadata.json"
 
           echo "artifactVersion=${ARTIFACT_VERSION}" >> "$GITHUB_OUTPUT"
           echo "buildTimestamp=${BUILD_TIMESTAMP}" >> "$GITHUB_OUTPUT"
           echo "sourceRef=${SOURCE_REF}" >> "$GITHUB_OUTPUT"
+          echo "isTag=${IS_TAG}" >> "$GITHUB_OUTPUT"
+          echo "targetDownloadRef=${TARGET_DOWNLOAD_REF}" >> "$GITHUB_OUTPUT"
           echo "zipName=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
           echo "shaName=${SHA_NAME}" >> "$GITHUB_OUTPUT"
           echo "metaName=${META_NAME}" >> "$GITHUB_OUTPUT"
+
+          echo "--- SIS Artifact Metadata ---"
+          echo "artifactVersion   : ${ARTIFACT_VERSION}"
+          echo "targetDownloadRef : ${TARGET_DOWNLOAD_REF}"
+          echo "zipName           : ${ZIP_NAME}"
+          echo "metaName          : ${META_NAME}"
+          echo "buildTimestamp    : ${BUILD_TIMESTAMP}"
+          echo "sourceRef         : ${SOURCE_REF}"
+          echo "isTag             : ${IS_TAG}"
 
       - name: Stage minimal content
         shell: bash
@@ -163,23 +178,39 @@ jobs:
             dist/${{ steps.meta.outputs.metaName }}
           if-no-files-found: error
 
-      - name: Publish GitHub Release assets (tags only)
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Publish GitHub Release assets (tags and main)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
 
-          TAG="${GITHUB_REF#refs/tags/}"
+          IS_TAG='${{ steps.meta.outputs.isTag }}'
+          RELEASE_TAG='${{ steps.meta.outputs.targetDownloadRef }}'
           ZIP_PATH="dist/${{ steps.meta.outputs.zipName }}"
           SHA_PATH="dist/${{ steps.meta.outputs.shaName }}"
           META_PATH="dist/${{ steps.meta.outputs.metaName }}"
 
-          if gh release view "${TAG}" >/dev/null 2>&1; then
-            gh release upload "${TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" --clobber
+          echo "--- Publishing GitHub Release Assets ---"
+          echo "releaseTag        : ${RELEASE_TAG}"
+          echo "isTag             : ${IS_TAG}"
+          echo "zipAsset          : ${{ steps.meta.outputs.zipName }}"
+          echo "shaAsset          : ${{ steps.meta.outputs.shaName }}"
+          echo "metaAsset         : ${{ steps.meta.outputs.metaName }}"
+
+          if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            echo "Release '${RELEASE_TAG}' already exists — uploading assets (clobber)."
+            gh release upload "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" --clobber
           else
-            gh release create "${TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
-              --title "${TAG}" \
-              --notes "Automated SIS artifact release for ${TAG}."
+            echo "Release '${RELEASE_TAG}' does not exist — creating and uploading assets."
+            if [[ "${IS_TAG}" == "true" ]]; then
+              gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
+                --title "${RELEASE_TAG}" \
+                --notes "Automated SIS artifact release for ${RELEASE_TAG}."
+            else
+              gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
+                --title "Commit ${RELEASE_TAG}" \
+                --notes "Automated SIS artifact release for commit ${RELEASE_TAG}." \
+                --prerelease
+            fi
           fi
