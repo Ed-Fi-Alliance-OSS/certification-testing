@@ -24,21 +24,63 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName,isPrerelease,createdAt \
-            | jq -r --argjson keep "$KEEP" '
-                [.[]
-                  | select(.isPrerelease == true)
-                  | select(.tagName | test("^[0-9a-f]{40}$"))   # only full commit SHAs
-                ]
-                | sort_by(.createdAt)
-                | .[:-$keep]
-                | .[].tagName
-              ' \
-            | while IFS= read -r tag; do
-                echo "Deleting commit prerelease: $tag"
-                gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes
-                git push origin --delete "refs/tags/$tag" || true
-              done
+
+          echo "--- Cleanup Configuration ---"
+          echo "repository  : ${GITHUB_REPOSITORY}"
+          echo "keep_count  : ${KEEP}"
+          echo "trigger     : ${GITHUB_EVENT_NAME}"
+
+          echo "--- Fetching release list ---"
+          ALL_RELEASES="$(gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName,isPrerelease,createdAt)"
+          TOTAL="$(echo "${ALL_RELEASES}" | jq 'length')"
+          echo "Total releases found : ${TOTAL}"
+
+          CANDIDATES="$(echo "${ALL_RELEASES}" | jq -r --argjson keep "$KEEP" '
+            [.[]
+              | select(.isPrerelease == true)
+              | select(.tagName | test("^commit-[0-9a-f]{40}$"))   # commit-<sha> tags only
+            ]
+            | sort_by(.createdAt)')"
+
+          CANDIDATE_COUNT="$(echo "${CANDIDATES}" | jq 'length')"
+          echo "Commit prereleases found : ${CANDIDATE_COUNT}"
+          echo "Will keep newest         : ${KEEP}"
+
+          TO_DELETE="$(echo "${CANDIDATES}" | jq -r --argjson keep "$KEEP" '.[:-$keep] | .[].tagName')"
+          DELETE_COUNT="$(echo "${TO_DELETE}" | grep -c . || true)"
+
+          if [[ -z "${TO_DELETE}" ]]; then
+            echo "--- Nothing to delete (${CANDIDATE_COUNT} prerelease(s) found, keep=${KEEP}) ---"
+            exit 0
+          fi
+
+          echo "--- Prereleases to delete: ${DELETE_COUNT} ---"
+          echo "${TO_DELETE}"
+
+          echo "--- Deleting ---"
+          DELETED=0
+          FAILED=0
+          while IFS= read -r tag; do
+            echo "[${DELETED}/${DELETE_COUNT}] Deleting release and tag: ${tag}"
+            if gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes; then
+              git push origin --delete "refs/tags/$tag" 2>/dev/null \
+                && echo "  Tag ref deleted from remote." \
+                || echo "  Tag ref not on remote or already gone — skipping."
+              DELETED=$((DELETED + 1))
+            else
+              echo "  WARNING: Failed to delete release '${tag}' — skipping."
+              FAILED=$((FAILED + 1))
+            fi
+          done <<< "${TO_DELETE}"
+
+          echo "--- Cleanup Summary ---"
+          echo "Deleted : ${DELETED}"
+          echo "Failed  : ${FAILED}"
+          echo "Kept    : $((CANDIDATE_COUNT - DELETED))"
+          if [[ "${FAILED}" -gt 0 ]]; then
+            echo "ERROR: ${FAILED} deletion(s) failed."
+            exit 1
+          fi
 
 
               
