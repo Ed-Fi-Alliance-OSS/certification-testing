@@ -1,4 +1,4 @@
-name: On Pull Request
+name: DataStandard V4
 
 on:
   pull_request:
@@ -27,15 +27,14 @@ on:
 permissions:
   contents: read
   pull-requests: write
-  actions: read
 
 concurrency:
-  group: qa-scenarios-${{ github.ref }}
+  group: qa-scenarios-v4-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   qa:
-    name: Run Tests (DataStandard V4)
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,9 +48,12 @@ jobs:
           cache-dependency-path: bruno/package-lock.json
 
       - name: Mask client secret (if present)
+        env:
+          BRUNO_ENV: ${{ github.event.inputs.env || 'ci.ed-fi.org' }}
         run: |
-          if [ -f bruno/Tests/environments/ci.ed-fi.org.bru ]; then
-            SECRET_LINE=$(grep -E 'edFiClientSecret:' bruno/Tests/environments/ci.ed-fi.org.bru || true)
+          ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
+          if [ -f "$ENV_FILE" ]; then
+            SECRET_LINE=$(grep -E 'edFiClientSecret:' "$ENV_FILE" || true)
             if [ -n "$SECRET_LINE" ]; then
               SECRET_VAL=$(echo "$SECRET_LINE" | sed -E 's/.*edFiClientSecret:\s*([^ ]+)/\1/')
               echo "::add-mask::$SECRET_VAL"
@@ -84,7 +86,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: qa-scenarios-results
+          name: qa-scenarios-results-v4
           path: |
             automation-testing/results/summary.json
             automation-testing/results/*.json
@@ -109,7 +111,7 @@ jobs:
             } else {
               const data = JSON.parse(fs.readFileSync(summaryPath,'utf8'));
               const lines = [];
-              lines.push('### QA Scenarios Summary');
+              lines.push('### QA Scenarios Summary (DataStandard V4)');
               lines.push(`Status: **${data.exitStatus}**`);
               lines.push(`Entities Processed: **${data.totals.entitiesProcessed}**`);
               lines.push(`Assertions: Passed **${data.totals.assertionsPassed}**, Failed **${data.totals.assertionsFailed}**, Total **${data.totals.assertionsTotal}**`);
@@ -132,4 +134,4 @@ jobs:
       - name: Fail if scenarios failed
         if: steps.runqa.outputs.exit_code != '0'
         run: |
-          echo "Scenario script exited with code ${EXIT_CODE}"; exit 1
+          echo "Scenario script exited with code ${{ steps.runqa.outputs.exit_code }}"; exit 1
