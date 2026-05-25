@@ -1,4 +1,4 @@
-name: Run Tests on Pull Request (DataStandard V4)
+name: On Pull Request
 
 on:
   pull_request:
@@ -35,6 +35,7 @@ concurrency:
 
 jobs:
   qa:
+    name: Run Tests (DataStandard V4)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
