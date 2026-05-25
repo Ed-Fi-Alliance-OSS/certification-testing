@@ -1,6 +1,6 @@
 meta {
-  name: StudentHomelessProgramAssociations
-  seq: 2
+  name: Student Homeless Program Associations
+  seq: 30
 }
 
 auth {
@@ -9,24 +9,24 @@ auth {
 
 docs {
   # v4 Student Program > StudentHomelessProgramAssociation Scenarios
-  
+
   The Student Program interchange loads students' participation in programs.
   The `StudentHomelessProgramAssociation` represents the homeless program(s) that a student participates in or receives services from. The association is an extension of the `StudentProgramAssociation` particular for Homeless programs.
 
   ## Prerequisites
-  
+
   * Ed-Org (pre-loaded)
   * Program (pre-loaded)
   * Student
   * Student Enrollment
-  
+
   ## Scenarios tasks
 
   1. __CREATE__ a `first` new `StudentHomelessProgramAssociation` for an elementary school student.
   2. __UPDATE__ the _homelessPrimaryNighttimeResidenceDescriptor_ on the `first` added `StudentHomelessProgramAssociation` from "Shelters" to "Doubled-up".
-  
+
   > Note: the Program's educationOrganizationId is the Local Education Agency ID (LEA ID) that manages the Homeless program.
-  
+
   ## Scenarios example data
 
   | Resource                           | Property Name                               | Is Collection | Data Type                                   | Required / Optional | Scenario 1: POST           | Scenario 2: PUT            |

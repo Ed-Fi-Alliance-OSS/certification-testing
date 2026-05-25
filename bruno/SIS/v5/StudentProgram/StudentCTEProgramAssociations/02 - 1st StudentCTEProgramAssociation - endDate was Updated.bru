@@ -1,0 +1,65 @@
+meta {
+  name: 02 - 1st StudentCTEProgramAssociation - endDate was Updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentCTEProgramAssociations/{{firstStudentCTEProgramAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'firstStudentCTEProgramAssociationUniqueId', '01 - 1st StudentCTEProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'firstStudentCTEProgramAssociationPrimaryIndicator', '01 - 1st StudentCTEProgramAssociation is valid', {
+    actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudentCTEProgramAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentCTEProgramAssociation';
+  const scenarioName = this.req.name;
+
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousPrimaryIndicator = getVar(bru, 'firstStudentCTEProgramAssociationPrimaryIndicator');
+
+  // Validate that the primary indicator in the first cteProgramService was changed
+  if (current.cteProgramServices && current.cteProgramServices.length > 0) {
+    expectChanged(previousPrimaryIndicator, current.cteProgramServices[0].primaryIndicator, 'primaryIndicator');
+  } else {
+    throw new Error('No cteProgramServices found in response');
+  }
+
+  logScenario(entityName, scenarioName, current, logSpecStudentCTEProgramAssociation, [
+    'educationOrganizationId',
+    'programEducationOrganizationId',
+    'programName',
+    'programTypeDescriptor',
+    'beginDate',
+    'studentUniqueId',
+    'primaryIndicator'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,117 @@
+meta {
+  name: Student CTE Program Associations
+  seq: 29
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v5 Student Program > StudentCTEProgramAssociation Scenarios
+
+  The Student Program interchange loads students' participation in programs.
+  The `StudentCTEProgramAssociation` represents the career and technical education program(s) that a student participates in or receives services from. The association is an extension of the StudentProgramAssociation particular for CTE programs.
+
+  ## Prerequisites
+
+  * Ed-Org (pre-loaded)
+  * Program (pre-loaded)
+  * Student
+  * Student Enrollment
+
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` new `StudentCTEProgramAssociation` for a high school student.
+  2. __UPDATE__ the _primaryIndicator_ on the `first` added `StudentCTEProgramAssociation`
+
+  ### Notes
+
+  > The Program's educationOrganizationId is the Local Education Agency ID
+
+  ## Scenarios example data
+
+  | Resource                      | Property Name                       | Is Collection | Data Type                           | Required / Optional | Scenario 1: POST               | Scenario 2: PUT                 |
+  | ----------------------------- | ----------------------------------- | ------------- | ----------------------------------- | ------------------- | ------------------------------ | ------------------------------ |
+  | StudentCTEProgramAssociations | beginDate                           | FALSE         | date                                | REQUIRED            | 8/23/[Current School Year]     | 8/23/[Current School Year]     |
+  | StudentCTEProgramAssociations | educationOrganizationReference      | FALSE         | educationOrganizationReference      | REQUIRED            |                                |                                |
+  | StudentCTEProgramAssociations | educationOrganizationId             | FALSE         | integer                             | REQUIRED            | 255901                         | 255901                         |
+  | StudentCTEProgramAssociations | programReference                    | FALSE         | programReference                    | REQUIRED            |                                |                                |
+  | programReference              | programName                         | FALSE         | string                              | REQUIRED            | Career and Technical Education | Career and Technical Education |
+  | programReference              | programTypeDescriptor               | FALSE         | programTypeDescriptor               | REQUIRED            | Career and Technical Education | Career and Technical Education |
+  | programReference              | educationOrganizationId             | FALSE         | integer                             | REQUIRED            | 255901                         | 255901                         |
+  | StudentCTEProgramAssociations | studentReference                    | FALSE         | studentReference                    | REQUIRED            |                                |                                |
+  | studentReference              | studentUniqueId                     | FALSE         | string                              | REQUIRED            | 222222                         | 222222                         |
+  | StudentCTEProgramAssociations | nonTraditionalGenderStatus          | FALSE         | boolean                             | REQUIRED            | TRUE                           | TRUE                           |
+  | StudentCTEProgramAssociations | privateCTEProgram                   | FALSE         | boolean                             | REQUIRED            | FALSE                          | FALSE                          |
+  | StudentCTEProgramAssociations | technicalSkillsAssessmentDescriptor | FALSE         | technicalSkillsAssessmentDescriptor | REQUIRED            | Passed                         | Passed                         |
+  | StudentCTEProgramAssociations | cteProgramServices                  | TRUE          | cteProgramService[]                 | REQUIRED            |                                |                                |
+  | cteProgramServices            | cteProgramServiceDescriptor         | FALSE         | cteProgramServiceDescriptor         | REQUIRED            | Information Technology         | Information Technology         |
+  | cteProgramServices            | cipCode                             | FALSE         | string                              | REQUIRED            | 11.0103                        | 11.0103                        |
+  | cteProgramServices            | primaryIndicator                    | FALSE         | boolean                             | REQUIRED            | TRUE                           | TRUE                           |
+
+  ## API response format
+
+  ```json
+  {
+    "id": "string",
+    "beginDate": "2025-10-31",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 0
+    },
+    "programReference": {
+      "educationOrganizationId": 0,
+      "programName": "string",
+      "programTypeDescriptor": "string"
+    },
+    "studentReference": {
+      "studentUniqueId": "string"
+    },
+    "ctePrograms": [
+      {
+        "careerPathwayDescriptor": "string",
+        "cipCode": "string",
+        "cteProgramCompletionIndicator": true,
+        "primaryCTEProgramIndicator": true
+      }
+    ],
+    "cteProgramServices": [
+      {
+        "cteProgramServiceDescriptor": "string",
+        "cipCode": "string",
+        "primaryIndicator": true,
+        "serviceBeginDate": "2025-10-31",
+        "serviceEndDate": "2025-10-31"
+      }
+    ],
+    "endDate": "2025-10-31",
+    "nonTraditionalGenderStatus": true,
+    "participationStatus": {
+      "participationStatusDescriptor": "string",
+      "designatedBy": "string",
+      "statusBeginDate": "2025-10-31",
+      "statusEndDate": "2025-10-31"
+    },
+    "privateCTEProgram": true,
+    "programParticipationStatuses": [
+      {
+        "participationStatusDescriptor": "string",
+        "statusBeginDate": "2025-10-31",
+        "designatedBy": "string",
+        "statusEndDate": "2025-10-31"
+      }
+    ],
+    "reasonExitedDescriptor": "string",
+    "servedOutsideOfRegularSession": true,
+    "services": [
+      {
+        "serviceDescriptor": "string",
+        "primaryIndicator": true,
+        "serviceBeginDate": "2025-10-31",
+        "serviceEndDate": "2025-10-31"
+      }
+    ],
+    "technicalSkillsAssessmentDescriptor": "string"
+  }
+  ```
+}

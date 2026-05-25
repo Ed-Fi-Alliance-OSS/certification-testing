@@ -1,6 +1,6 @@
 meta {
   name: Students
-  seq: 1
+  seq: 17
 }
 
 auth {
@@ -9,22 +9,22 @@ auth {
 
 docs {
   # v4 Student > Student Scenarios
-  
+
   This interchange defines students and contains all their identifying information.
-  
+
   This entity represents an individual for whom instruction, services, and/or care are provided in an early childhood, elementary, or secondary educational program under the jurisdiction of a school, education agency or other institution or program. A student is a person who has been enrolled in a school or other educational institution.
-  
+
   ## Prerequisites
-  
+
   * None
-  
+
   ## Scenarios tasks
-  
+
   1. __CREATE__ a `first` 7-year-old `Student`, which will be later enrolled at Grand Bend Elementary School.
   2. __CREATE__ a `second` 15-year-old `Student`, which will be later enrolled at Grand Bend High School.
   3. __UPDATE__ the _birthDate_ on the `first` Student.
   4. __UPDATE__ the _birthCity_ on the `second` Student.
-  
+
   ## Scenarios example data:
 
   | Resource                               | Property Name                             | Is Collection | Data Type                                   | Required / Optional | Scenario 1: POST | Scenario 2: POST | Scenario 3: PUT | Scenario 4: PUT |
@@ -72,7 +72,7 @@ docs {
   | studentVisas                           | visaDescriptor                            | FALSE         | visaDescriptor                              | OPTIONAL            |                  |                  |                  |                  |
 
     ## API response format
-  
+
   ```json
   {
     "id": "string",

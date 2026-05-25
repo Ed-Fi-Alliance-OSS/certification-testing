@@ -1,6 +1,6 @@
 meta {
-  name: StudentSpecEduProgramAssocs
-  seq: 8
+  name: Student Special Education Program Associations
+  seq: 35
 }
 
 auth {
@@ -9,18 +9,18 @@ auth {
 
 docs {
   # v4 StudentProgram > StudentSpecialEducationProgramAssociation Scenarios
-  
+
   The Student Program interchange loads students' participation in programs.
 
   The `StudentSpecialEducationProgramAssociation` represents the special education program(s) that a student participates in or receives services from. The association is an extension of the `StudentProgramAssociation` particular for special education programs.
-  
+
   ## Prerequisites
-  
+
   * Ed-Org (pre-loaded)
   * Program (pre-loaded)
   * Student
   * Student Enrollment
-  
+
   ### Scenarios tasks
 
   1. __CREATE__ a `first` new `StudentSpecialEducationProgramAssociation` for an elementary school student.
@@ -29,8 +29,8 @@ docs {
   4. __UPDATE__ the _ideaEligibility_ on the `second` added `StudentSpecialEducationProgramAssociation` to FALSE.
 
   > Note: The Program's educationOrganizationId is the Local Education Agency ID.
-   
-   ## Scenarios example data  
+
+   ## Scenarios example data
 
   | Resource                                   | Property Name                     | Is Collection | Data Type                         | Required / Optional | Scenario 1: POST                            | Scenario 2: POST                              | Scenario 3: PUT                             | Scenario 4: PUT                               |
   | ------------------------------------------ | --------------------------------- | ------------- | --------------------------------- | ------------------- | ------------------------------------------- | --------------------------------------------- | ------------------------------------------- | --------------------------------------------- |

@@ -1,0 +1,71 @@
+meta {
+  name: 02 - 2nd DescriptorMapping is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/descriptorMappings?mappedNamespace={{secondMappedNamespaceEncoded}}&namespace={{secondNamespaceEncoded}}&mappedValue=[ENTER SECOND MAPPED VALUE]&value=[ENTER SECOND VALUE]&mappedNamespace_KEEP_IT_AT_THE_END=[ENTER SECOND MAPPED NAMESPACE]&namespace_KEEP_IT_AT_THE_END=[ENTER SECOND NAMESPACE]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  mappedNamespace: {{secondMappedNamespaceEncoded}}
+  namespace: {{secondNamespaceEncoded}}
+  mappedValue: [ENTER SECOND MAPPED VALUE]
+  value: [ENTER SECOND VALUE]
+  mappedNamespace_KEEP_IT_AT_THE_END: [ENTER SECOND MAPPED NAMESPACE]
+  namespace_KEEP_IT_AT_THE_END: [ENTER SECOND NAMESPACE]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].value: isString
+  res.body[0].value: isNotEmpty
+  res.body[0].namespace: isString
+  res.body[0].namespace: isNotEmpty
+  res.body[0].mappedValue: isString
+  res.body[0].mappedValue: isNotEmpty
+  res.body[0].mappedNamespace: isString
+  res.body[0].mappedNamespace: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+
+  const mappedNamespaceEncoded = encodeDescriptorParameter(req.url, 'mappedNamespace_KEEP_IT_AT_THE_END');
+  const namespaceEncoded = encodeDescriptorParameter(req.url, 'namespace_KEEP_IT_AT_THE_END');
+
+  setVar(bru, 'secondMappedNamespaceEncoded', mappedNamespaceEncoded);
+  setVar(bru, 'secondNamespaceEncoded', namespaceEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecDescriptorMapping } = require('./logging');
+  const entityName = 'DescriptorMapping';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+
+  if (!single) {
+    wipeVars(bru, [
+      'secondDescriptorMappingUniqueId'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    secondDescriptorMappingUniqueId: single.id
+  }, entityName);
+
+  logScenario(entityName, scenarioName, single, logSpecDescriptorMapping);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

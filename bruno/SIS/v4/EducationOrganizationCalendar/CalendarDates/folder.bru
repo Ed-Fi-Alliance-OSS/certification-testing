@@ -1,6 +1,6 @@
 meta {
-  name: CalendarDates
-  seq: 2
+  name: Calendar Dates
+  seq: 7
 }
 
 auth {
@@ -9,13 +9,13 @@ auth {
 
 docs {
   # v4 Education Organization Calendar > CalendarDate Scenarios
-  
+
   This entity represents the type of scheduled or unscheduled event for the day.
-  
+
   ## Prerequisites
-  
+
   * Calendar
-  
+
   ## Scenarios tasks
 
   1. __CREATE__ the `first` Holiday `Calendar date` for the calendar at Grand Bend Elementary
@@ -39,7 +39,7 @@ docs {
   | calendarReference          | schoolYear              | FALSE         | int                     | REQUIRED | \[Current School Year\]      | \[Current School Year\]      | \[Current School Year\]                                           | \[Current School Year\]      |
   | CalendarDates              | calendarEvents          | TRUE          | CalendarEvent\[\]       | REQUIRED |                              |                              |                                                                   |                              |
   | calendarDateCalendarEvents | calendarEventDescriptor | FALSE         | calendarEventDescriptor | REQUIRED | Holiday                      | Instructional Day            | Instructional day &<br/>Student late arrival<br/>/early dismissal | Holiday                      |
-  
+
   ## API response format
   ```json
    {

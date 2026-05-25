@@ -1,6 +1,6 @@
 meta {
-  name: StudentCohortAssociations
-  seq: 3
+  name: Student Cohort Associations
+  seq: 24
 }
 
 auth {
@@ -9,15 +9,15 @@ auth {
 
 docs {
   # v4 StudentCohort > StudentCohortAssociation Scenarios
-  
+
   Cohorts are used to designate groups of students outside of class Student Information Systems, enrollment lists, or extra curricular participation. The Student Cohort Interchange describes student cohort information. It can be used to exchange information regarding any named group of students, or cohort, for tracking, analysis, or intervention.
   `StudentCohortAssociation`: This association represents the cohort(s) for which a student is designated.
 
   ## Prerequisites
-  
+
   * Cohort
   * Student
-  
+
   ## Scenarios example data
 
   1. __CREATE__ a `first` new `StudentCohortAssociation` for an elementary school student.
@@ -44,7 +44,7 @@ docs {
   | sectionReference                 | sessionName             | FALSE         | string                 | OPTIONAL            |                                     |                                     |                                     |
 
   ## API response format
-  
+
   ```json
   {
     "id": "string",
@@ -69,5 +69,5 @@ docs {
       }
     ]
   }
-  ``` 
+  ```
 }

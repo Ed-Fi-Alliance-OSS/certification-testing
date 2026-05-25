@@ -1,6 +1,6 @@
 meta {
   name: Sessions
-  seq: 2
+  seq: 10
 }
 
 auth {
@@ -9,21 +9,21 @@ auth {
 
 docs {
   # v4 Education Organization Calendar > Sessions Scenarios
-  
+
   The Education Organization Calendar interchange carries school calendar
   information. It can be used to exchange school calendar data, including
   instructional days, sessions, and grading periods.
-  
+
   The Session entity represents the prescribed span of time when an education
   institution is open, instruction is provided and students are under the
   direction and guidance of teachers and/or education institution administration.
   A session may be interrupted by one or more vacations.
-  
+
   ## Prerequisites
-  
+
   * School
   * GradingPeriod
-  
+
   ## Scenarios tasks:
 
   1. __CREATE__ a `first` new `Session` with _termDescriptor_ as "Fall Semester" which references the first and second six
@@ -39,7 +39,7 @@ docs {
       for Grand Bend High School
 
   ## Scenarios example data:
-  
+
   | Resource                | Property Name           | Is Collection | Data Type                | Required / Optional | Scenario 1 POST                                                                                                        | Scenario 2 POST                   | Scenario 3 PUT                                  | Scenario 4 PUT                                  |
   | ----------------------- | ----------------------- | ------------- | ------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------  | --------------------------------- | ----------------------------------------------  | ----------------------------------------------  |
   | Sessions                | schoolReference         | FA:SE         | schoolReference          | REQUIRED            |                                                                                                                        |                                   |                                                 |                                                 |

@@ -1,6 +1,6 @@
 meta {
   name: Grades
-  seq: 1
+  seq: 39
 }
 
 auth {
@@ -9,18 +9,18 @@ auth {
 
 docs {
   # v4 StudentGrade > Grade Scenarios
-  
+
   The Student Grade interchange defines grades for a grading period or group of grading periods. Grades are defined for groups of grading periods in the case where the grade is cumulative over a semester or academic year (also referred to as "final grades").
   Grade: This educational entity represents an overall score or assessment tied to a course over a period of time (i.e., the grading period).  Student grades are usually a compilation of marks and other scores.
-  
+
   ## Prerequisites
-  
+
   * Student
   * Student Enrollment
   * Section
   * StudentSectionAssociation
   * GradingPeriod
-  
+
   ## Scenarios
 
   1. __CREATE__ a `first` `Grade` for the "First Six Weeks" `Grading Period` for an elementary school `Student`.
@@ -30,10 +30,10 @@ docs {
   5. __DELETE__ the `first` added `Grade` for the elementary school `Student`.
 
   ### Additional Requirements for Grades Earned
-  
+
   * If both numeric and letter grades are recorded by the SIS, both are `REQUIRED` for certification.
   * If only the numeric grade or letter grade is recorded by the SIS, then `only one SHALL` be provided for certification.
-  
+
   ## Scenarios example data:
 
   | Resource                           | Property Name                        | Is Collection | Data Type                            | Required | Scenario 1 POST                               | Scenario 2 POST                      | Scenario 3 PUT                                | Scenario 4 PUT                       |

@@ -1,6 +1,6 @@
 meta {
-  name: StudSchoolFoodServProgAssocs
-  seq: 7
+  name: Student School Food Service Program Assocs
+  seq: 34
 }
 
 auth {
@@ -9,23 +9,23 @@ auth {
 
 docs {
   # v4 Student Program > StudentSchoolFoodServicesProgramAssociation Scenarios
-  
-  This entity represents an individual for whom instruction, services, and/or care are provided in an early childhood, elementary, or secondary educational program under the jurisdiction of a school, education agency or other institution or program. 
+
+  This entity represents an individual for whom instruction, services, and/or care are provided in an early childhood, elementary, or secondary educational program under the jurisdiction of a school, education agency or other institution or program.
   A student is a person who has been enrolled in a school or other educational institution.
-  
+
   ## Prerequisites
-  
+
   * Student
   * EdOrg
   * Program
-  
+
   ## Scenarios tasks
-  
+
   1. __CREATE__ a `first` new `StudentSchoolFoodServicesProgramAssociation` with _schoolFoodServiceProgramServiceDescriptor_ as "Reduced Price Lunch" for an Elementary School Student.
   2. __UPDATE__ the _schoolFoodServiceProgramServiceDescriptor_ on the `first` added `StudentSchoolFoodServicesProgramAssociation` to "Free Lunch".
-  
+
   ## Scenarios example data
-  
+
   | Resource                                                                  | Property Name                             | Is Collection | Data Type                                 | Required | Scenario 1: POST    | Scenario 2: PUT      |
   | ------------------------------------------------------------------------- | ----------------------------------------- | ------------- | ----------------------------------------- | -------- | ------------------- | ------------------- |
   | studentSchoolFoodServiceProgramAssociations                               | beginDate                                 | FALSE         | date                                      | REQUIRED | Current Date        | Current Date        |
@@ -46,9 +46,9 @@ docs {
   | schoolFoodServiceProgramServices                                          | serviceEndDate                            | FALSE         | date                                      | OPTIONAL |                     |                     |
   | studentSchoolFoodServiceProgramAssociations                               | StudentReference                          | FALSE         | StudentReference                          |          |                     |                     |
   | StudentReference                                                          | studentUniqueId                           | FALSE         | integer                                   | REQUIRED | 111111              | 111111              |
-  
+
   ## API JSON response example
-  
+
   ```JSON
   {
     "id": "string",

@@ -1,0 +1,241 @@
+meta {
+  name: Student Education Organization Associations
+  seq: 20
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v5 Student Enrollment > StudentEdOrgAssociation Scenarios
+
+  The Student Enrollment interchange describes student enrollments in schools and in sections.
+
+  This association represents student information that is specific to a student's relationship with an EducationOrganization. Enrollment relationship semantics are covered by [https://edfi.atlassian.net/wiki/spaces/EDFI/pages/22450000](https://edfi.atlassian.net/wiki/spaces/EDFI/pages/22450000).
+
+  ## Prerequisites
+
+  * Student
+
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` `Student EdOrg Association` for an elementary `Student` at Grand Bend School District.
+  2. __CREATE__ a `second` `Student EdOrg Association` for a high school `Student` at Grand Bend School District.
+  3. __UPDATE__ the _telephoneNumber_ on the `first` `Student EdOrg Association`.
+  4. __UPDATE__ the _streetNumberName_ on the `second` `Student EdOrg Association`.
+
+  ### Additional Requirements
+
+  * For these scenarios SIS system MUST demonstrate that it can provide 3 student identifiers: a SIS/district ID, a state ID, and a local ID (also known as a "student number", which students typically memorize and use for local operations). In terms of studentIdentificationSystemDescriptors, these are the "District", "State" and "Local" values in the default Ed-Fi descriptor values, respectively.
+  * The SIS MUST include at least these three values in the StudentIdentificationCodes array and the studentIdentificationSystemDescriptors MUST be labeled as "District", "State" and "Local" per the definitions above.
+  * If the SIS only has a subset of these values, values can be repeated as needed. For example, the SIS might use the SIS/district ID as the local ID (student number); in this case, that ID would be repeated in the array as both the "District" and "Local" values.
+
+  ## Scenarios example data:
+
+  | Resource                                                            | Property Name                           | Is Collection  | Data Type                             | Required    | Scenario 1: POST                         | Scenario 2: POST                         | Scenario 3: POST/PUT                     | Scenario 4: POST/PUT                     |
+  |---------------------------------------------------------------------|-----------------------------------------|----------------|---------------------------------------|-------------|------------------------------------------|------------------------------------------|------------------------------------------|------------------------------------------|
+  | studentEducationOrganizationAssociations                            | educationOrganizationReference          | FALSE          | educationOrganizationReference        | REQUIRED    |                                          |                                          |                                          |                                          |
+  | educationOrganizationReference                                      | educationOrganizationId                 | FALSE          | integer                               | REQUIRED    | 255901                                   | 255901                                   | 255901                                   | 255901                                   |
+  | studentEducationOrganizationAssociations                            | studentReference                        | FALSE          | studentReference                      | REQUIRED    |                                          |                                          |                                          |                                          |
+  | studentReference                                                    | studentUniqueId                         | FALSE          | string                                | REQUIRED    | 111111                                   | 222222                                   | 111111                                   | 222222                                   |
+  | studentEducationOrganizationAssociations                            | limitedEnglishProficiencyDescriptor     | FALSE          | limitedEnglishProficiencyDescriptor   | REQUIRED    | NotLimited                               | NotLimited                               | NotLimited                               | NotLimited                               |
+  | StudentEducationOrganizationAssociations                            | studentCharacteristics                  | TRUE           | studentCharacteristics[]              | REQUIRED    |                                          |                                          |                                          |                                          |
+  | studentEducationOrganizationAssociationStudentCharacteristics       | studentCharacteristicDescriptor         | FALSE          | studentCharacteristicDescriptor       | REQUIRED    | Immigrant                                | Economic Disadvantaged                   | Immigrant                                | Economic Disadvantaged                   |
+  | StudentEducationOrganizationAssociations                            | StudentIdentificationCodes              | TRUE           | studentIdentificationCodes[]          | REQUIRED    |                                          |                                          |                                          |                                          |
+  | studentEducationOrganizationAssociationsStudentIdentificationCodes  | assigningOrganizationIdentificationCode | FALSE          | string                                | REQUIRED    | State, District, and Local (CONDITIONAL) | State, District, and Local (CONDITIONAL) | State, District, and Local (CONDITIONAL) | State, District, and Local (CONDITIONAL) |
+  | studentEducationOrganizationAssociationsStudentIdentificationCodes  | identificationCode                      | FALSE          | string                                | REQUIRED    | [system values]                          | [system values]                          | [system values]                          | [system values]                          |
+  | studentEducationOrganizationAssociationsStudentIdentificationCodes  | studentIdentificationSystemDescriptor   | FALSE          | studentIdentificationSystemDescriptor | REQUIRED    | State, District, and Local (CONDITIONAL) | State, District, and Local (CONDITIONAL) | State, District, and Local (CONDITIONAL) | State, District, and Local (CONDITIONAL) |
+  | StudentEducationOrganizationAssociations                            | sexDescriptor                           | FALSE          | sexDescriptor                         | REQUIRED    | Male                                     | Female                                   | Male                                     | Female                                   |
+  | StudentEducationOrganizationAssociationsAddresses                   | addresses                               | TRUE           | addresses[]                           | REQUIRED    |                                          |                                          |                                          |                                          |
+  | studentEducationOrganizationAssociationsAddresses                   | addressTypeDescriptor                   | FALSE          | addressTypeDescriptor                 | CONDITIONAL | Home                                     | Home                                     | Home                                     | Home                                     |
+  | studentEducationOrganizationAssociationsAddresses                   | city                                    | FALSE          | string                                | REQUIRED    | Grand Bend                               | Grand Bend                               | Grand Bend                               | Grand Bend                               |
+  | studentEducationOrganizationAssociationsAddresses                   | postalCode                              | FALSE          | string                                | REQUIRED    | 78834                                    | 78834                                    | 78834                                    | 78834                                    |
+  | studentEducationOrganizationAssociationsAddresses                   | stateAbbreviationDescriptor             | FALSE          | stateAbbreviationDescriptor           | REQUIRED    | TX                                       | TX                                       | TX                                       | TX                                       |
+  | studentEducationOrganizationAssociationsAddresses                   | streetNumberName                        | FALSE          | string                                | REQUIRED    | 654 Mission Hills                        | 123 Cedar Street                         | 654 Mission Hills                        | 123 Cedar Circle                         |
+  | StudentEducationOrganizationAssociations                            | telephones                              | TRUE           | studentTelephone[]                    | REQUIRED    |                                          |                                          |                                          |                                          |
+  | studentEducationOrganizationAssociationsTelephones                  | telephoneNumber                         | FALSE          | string                                | REQUIRED    | 111-222-3333                             | 111-222-4444                             |                                          |                                          |
+  | studentEducationOrganizationAssociationsTelephones                  | telephoneNumberTypeDescriptor           | FALSE          | telephoneNumberTypeDescriptor         | REQUIRED    | Home                                     | Home                                     |                                          |                                          |
+  | StudentEducationOrganizationAssociations                            | electronicMails                         | TRUE           | ElectronicMail[]                      | REQUIRED    |                                          |                                          |                                          |                                          |
+  | studentEducationOrganizationAssociationsElectronicMails             | electronicMailAddress                   | FALSE          | string                                | REQUIRED    | [Austin](mailto:Austin@edficert.org)     | [Madison](mailto:Madison@edficert.org)   | [Austin](mailto:Austin@edficert.org)     | [Madison](mailto:Madison@edficert.org)   |
+  | studentEducationOrganizationAssociationsElectronicMails             | electronicMailTypeDescriptor            | FALSE          | electronicMailTypeDescriptor          | REQUIRED    | Other                                    | Other                                    | Other                                    | Other                                    |
+  | StudentEducationOrganizationAssociations                            | hispanicLatinoEthnicity                 | FALSE          | boolean                               | REQUIRED    | FALSE                                    | FALSE                                    | FALSE                                    | FALSE                                    |
+  | studentEducationOrganizationAssociationsRaces                       | raceDescriptor                          | FALSE          | raceDescriptor                        | REQUIRED    | Black - African American                 | White                                    | Black - African American                 | White                                    |
+  | studentEducationOrganizationAssociationsStudentLanguages            | languageDescriptor                      | FALSE          | languageDescriptor                    | REQUIRED    | spa                                      | spa                                      |                                          |                                          |
+  | studentEducationOrganizationAssociationsLanguageUses                | languageUseDescriptor                   | FALSE          | languageUseDescriptor                 | REQUIRED    | Home language                            | Home language                            |                                          |                                          |
+
+  ## API response format
+
+  ```json
+  {
+    "id": "string",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 0
+    },
+    "studentReference": {
+      "studentUniqueId": "string"
+    },
+    "addresses": [
+      {
+        "addressTypeDescriptor": "string",
+        "stateAbbreviationDescriptor": "string",
+        "city": "string",
+        "postalCode": "string",
+        "streetNumberName": "string",
+        "localeDescriptor": "string",
+        "apartmentRoomSuiteNumber": "string",
+        "buildingSiteNumber": "string",
+        "congressionalDistrict": "string",
+        "countyFIPSCode": "strin",
+        "doNotPublishIndicator": true,
+        "latitude": "string",
+        "longitude": "string",
+        "nameOfCounty": "string",
+        "periods": [
+          {
+            "beginDate": "2025-10-17",
+            "endDate": "2025-10-17"
+          }
+        ]
+      }
+    ],
+    "ancestryEthnicOrigins": [
+      {
+        "ancestryEthnicOriginDescriptor": "string"
+      }
+    ],
+    "barrierToInternetAccessInResidenceDescriptor": "string",
+    "cohortYears": [
+      {
+        "cohortYearTypeDescriptor": "string",
+        "termDescriptor": "string",
+        "schoolYearTypeReference": {
+          "schoolYear": 0
+        }
+      }
+    ],
+    "disabilities": [
+      {
+        "disabilityDescriptor": "string",
+        "disabilityDeterminationSourceTypeDescriptor": "string",
+        "disabilityDiagnosis": "string",
+        "orderOfDisability": 0,
+        "designations": [
+          {
+            "disabilityDesignationDescriptor": "string"
+          }
+        ]
+      }
+    ],
+    "electronicMails": [
+      {
+        "electronicMailTypeDescriptor": "string",
+        "electronicMailAddress": "string",
+        "doNotPublishIndicator": true,
+        "primaryEmailAddressIndicator": true
+      }
+    ],
+    "hispanicLatinoEthnicity": true,
+    "internationalAddresses": [
+      {
+        "addressTypeDescriptor": "string",
+        "countryDescriptor": "string",
+        "addressLine1": "string",
+        "addressLine2": "string",
+        "addressLine3": "string",
+        "addressLine4": "string",
+        "beginDate": "2025-10-17",
+        "endDate": "2025-10-17",
+        "latitude": "string",
+        "longitude": "string"
+      }
+    ],
+    "internetAccessInResidence": true,
+    "internetAccessTypeInResidenceDescriptor": "string",
+    "internetPerformanceInResidenceDescriptor": "string",
+    "languages": [
+      {
+        "languageDescriptor": "string",
+        "uses": [
+          {
+            "languageUseDescriptor": "string"
+          }
+        ]
+      }
+    ],
+    "limitedEnglishProficiencyDescriptor": "string",
+    "loginId": "string",
+    "oldEthnicityDescriptor": "string",
+    "primaryLearningDeviceAccessDescriptor": "string",
+    "primaryLearningDeviceAwayFromSchoolDescriptor": "string",
+    "primaryLearningDeviceProviderDescriptor": "string",
+    "profileThumbnail": "string",
+    "programParticipations": [
+      {
+        "programTypeDescriptor": "string",
+        "beginDate": "2025-10-17",
+        "designatedBy": "string",
+        "endDate": "2025-10-17",
+        "programCharacteristics": [
+          {
+            "programCharacteristicDescriptor": "string"
+          }
+        ]
+      }
+    ],
+    "races": [
+      {
+        "raceDescriptor": "string"
+      }
+    ],
+    "sexDescriptor": "string",
+    "studentCharacteristics": [
+      {
+        "studentCharacteristicDescriptor": "string",
+        "designatedBy": "string",
+        "periods": [
+          {
+            "beginDate": "2025-10-17",
+            "endDate": "2025-10-17"
+          }
+        ]
+      }
+    ],
+    "studentIdentificationCodes": [
+      {
+        "studentIdentificationSystemDescriptor": "string",
+        "assigningOrganizationIdentificationCode": "string",
+        "identificationCode": "string"
+      }
+    ],
+    "studentIndicators": [
+      {
+        "indicatorName": "string",
+        "designatedBy": "string",
+        "indicator": "string",
+        "indicatorGroup": "string",
+        "periods": [
+          {
+            "beginDate": "2025-10-17",
+            "endDate": "2025-10-17"
+          }
+        ]
+      }
+    ],
+    "telephones": [
+      {
+        "telephoneNumberTypeDescriptor": "string",
+        "telephoneNumber": "string",
+        "doNotPublishIndicator": true,
+        "orderOfPriority": 0,
+        "textMessageCapabilityIndicator": true
+      }
+    ],
+    "tribalAffiliations": [
+      {
+        "tribalAffiliationDescriptor": "string"
+      }
+    ]
+  }
+  ```
+}

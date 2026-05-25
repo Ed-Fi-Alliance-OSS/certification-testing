@@ -50,7 +50,7 @@ Each entity folder must contain:
 <EntityFolder>/
 ├── folder.bru              # Entity docs + scenario tasks
 ├── entity.config.json      # Primary keys + optional overrides
-├── NN - Check ....bru      # Generated scenario files (baseline & updates)
+├── NN - <ordinal> <EntityName> ....bru  # Generated scenario files (baseline & updates)
 ```
 
 Shared collection-level utilities:
@@ -185,7 +185,7 @@ When the full entity name is too long for a practical folder name:
 - **Entity Name:** `StaffEducationOrganizationAssignmentAssociation` (used in variable names)
 - **Endpoint:** `/ed-fi/staffEducationOrganizationAssignmentAssociations`
 - **Logging Spec:** `logSpecStaffEdOrgAssociation` (shorter, manageable)
-- **File Names:** `01 - Check first StaffEdOrgAssociation is valid.bru` (shorter, readable)
+- **File Names:** `01 - 1st StaffEdOrgAssociation is valid.bru` (shorter, readable)
 - **Variables:** `firstStaffEducationOrganizationAssignmentAssociationUniqueId` (descriptive)
 
 ##### Use Case 2: Naming Conventions
@@ -363,37 +363,45 @@ Files are numbered sequentially (`NN`):
 **Example sequence:**
 
 ```markdown
-01 - Check first CalendarDate is valid.bru
-02 - Check second CalendarDate is valid.bru
-03 - Check first CalendarDate calendarEventDescriptor was Updated.bru
-04 - Check second CalendarDate calendarEventDescriptor was Updated.bru
-05 - Check first CalendarDate was Deleted.bru
+01 - 1st CalendarDate is valid.bru
+02 - 2nd CalendarDate is valid.bru
+03 - 1st CalendarDate - calendarEventDescriptor was Updated.bru
+04 - 2nd CalendarDate - calendarEventDescriptor was Updated.bru
+05 - 1st CalendarDate was Deleted.bru
 ```
 
 ### 5.2 Baseline File Name Pattern
 
 ```markdown
-NN - Check <ordinal> <EntityName> is valid.bru
+NN - <ordinal> <EntityName> is valid.bru
 ```
 
 **Entity Name in File Names:**
 
 Use `overrides.fileNameAlias` if present, otherwise use `entityName`:
-- Without override: `01 - Check first CalendarDate is valid.bru`
-- With override: `01 - Check first StaffEdOrgAssociation is valid.bru` (instead of StaffEducationOrganizationAssignmentAssociation)
+- Without override: `01 - 1st CalendarDate is valid.bru`
+- With override: `01 - 1st StaffEdOrgAssociation is valid.bru` (instead of StaffEducationOrganizationAssignmentAssociation)
 
 **Examples:**
 
 ```markdown
-01 - Check first CalendarDate is valid.bru
-02 - Check second CourseTranscript is valid.bru
-01 - Check first StaffEdOrgAssociation is valid.bru
+01 - 1st CalendarDate is valid.bru
+02 - 2nd CourseTranscript is valid.bru
+01 - 1st StaffEdOrgAssociation is valid.bru
 ```
 
 ### 5.3 Update File Name Pattern (Property-Aware)
 
+**File name:**
+
 ```markdown
-NN - Check <ordinal> <EntityName> <PropertyList> was Updated.bru
+NN - <ordinal> <EntityName> - <PropertyList> was/were Updated.bru
+```
+
+**Meta name** (inside `meta {}` block):
+
+```markdown
+NN - <ordinal> <EntityName> - <FullPropertyList> was/were Updated
 ```
 
 **Entity Name in File Names:**
@@ -406,25 +414,46 @@ Use `overrides.fileNameAlias` if present, otherwise use `entityName`.
 - Preserve exact casing from docs (camelCase assumed)
 - No humanization (no spaces inserted inside tokens)
 
-**Multiple properties:**
+**Verb Agreement:**
 
-- **2 properties:** `<PropA> and <PropB>`
-- **3+ properties:** `<PropA>, <PropB>, <PropC>` (Oxford comma optional)
-- Always use singular verb: `was Updated` (uniform pattern)
+- **1 property:** `was Updated`
+- **2+ properties:** `were Updated`
+
+**File Name vs Meta Name:**
+
+| Count | File Name Property List | Meta Name Property List |
+|-------|------------------------|------------------------|
+| 1 property | `<PropA>` | `<PropA>` |
+| 2 properties | `<PropA>&<PropB>` | `<PropA> & <PropB>` |
+| 3+ properties | `<FirstProp>&others` | `<PropA> & <PropB> & <PropC>` |
+
+- **File name**: Use `&` without surrounding spaces; abbreviate to `<FirstProp>&others` for 3+ properties to keep file names manageable
+- **Meta name**: Use ` & ` (with surrounding spaces) between all properties; always list **all** properties in full — no abbreviation
 
 **Examples:**
 
 ```markdown
-03 - Check first ClassPeriod classPeriodName was Updated.bru
-04 - Check second ClassPeriod startTime and endTime was Updated.bru
-05 - Check third CourseOffering localCourseTitle was Updated.bru
-03 - Check first StaffEdOrgAssociation positionTitle and endDate were Updated.bru
+03 - 1st ClassPeriod - classPeriodName was Updated.bru
+04 - 2nd ClassPeriod - startTime&endTime were Updated.bru
+05 - 3rd CourseOffering - localCourseTitle was Updated.bru
+03 - 1st StaffEdOrgAssociation - positionTitle&endDate were Updated.bru
+03 - 1st StudentSchoolAssociation - entryDate&others were Updated.bru
+```
+
+Corresponding meta names:
+
+```markdown
+03 - 1st ClassPeriod - classPeriodName was Updated
+04 - 2nd ClassPeriod - startTime & endTime were Updated
+05 - 3rd CourseOffering - localCourseTitle was Updated
+03 - 1st StaffEdOrgAssociation - positionTitle & endDate were Updated
+03 - 1st StudentSchoolAssociation - entryDate & exitWithdrawDate & exitWithdrawTypeDescriptor were Updated
 ```
 
 ### 5.4 Delete File Name Pattern
 
 ```markdown
-NN - Check <ordinal> <EntityName> was Deleted.bru
+NN - <ordinal> <EntityName> was Deleted.bru
 ```
 
 **Entity Name in File Names:**
@@ -434,8 +463,8 @@ Use `overrides.fileNameAlias` if present, otherwise use `entityName`.
 **Example:**
 
 ```markdown
-05 - Check first StudentSchoolAssociation was Deleted.bru
-06 - Check first StaffEdOrgAssociation was Deleted.bru
+05 - 1st StudentSchoolAssociation was Deleted.bru
+06 - 1st StaffEdOrgAssociation was Deleted.bru
 ```
 
 ---
@@ -834,10 +863,10 @@ script:post-response {
 script:pre-request {
   const { validateDependency } = require('./utils');
 
-  validateDependency(bru, '<ordinal><EntityName>UniqueId', 'NN - Check <ordinal> <EntityName> is valid', {
+  validateDependency(bru, '<ordinal><EntityName>UniqueId', 'NN - <ordinal> <EntityName> is valid', {
     actionHint: 'Ensure you ran the <ordinal> certification scenario successfully before continuing.'
   });
-  validateDependency(bru, '<ordinal><EntityName><MutableField>', 'NN - Check <ordinal> <EntityName> is valid', {
+  validateDependency(bru, '<ordinal><EntityName><MutableField>', 'NN - <ordinal> <EntityName> is valid', {
     actionHint: 'Ensure you ran the <ordinal> certification scenario successfully before continuing.'
   });
 }
@@ -1304,9 +1333,9 @@ Use this checklist to verify generated scenarios meet all requirements:
 - [ ] All baselines numbered sequentially before updates
 - [ ] All updates numbered sequentially before deletes
 - [ ] File names match patterns exactly:
-  - [ ] Baselines: `NN - Check <ordinal> <EntityName> is valid.bru`
-  - [ ] Updates: `NN - Check <ordinal> <EntityName> <PropertyList> was Updated.bru`
-  - [ ] Deletes: `NN - Check <ordinal> <EntityName> was Deleted.bru`
+  - [ ] Baselines: `NN - <ordinal> <EntityName> is valid.bru`
+  - [ ] Updates — file name: `NN - <ordinal> <EntityName> - <PropertyList> was/were Updated.bru`; meta name uses full property list with ` & ` separator and correct verb agreement (`was` for 1 property, `were` for 2+)
+  - [ ] Deletes: `NN - <ordinal> <EntityName> was Deleted.bru`
 - [ ] Each scenario has `meta` block with `name`, `type: http`, and `seq`
 
 ### 15.3 Query Construction
@@ -1414,7 +1443,7 @@ Use this checklist to verify generated scenarios meet all requirements:
 |-----------|--------------|-------------|
 | **Entity Config** | `./<Collection>/v4/<EntityGroup>/<EntityFolder>/entity.config.json` | Primary keys, natural ID, overrides |
 | **Entity Docs** | `./<Collection>/v4/<EntityGroup>/<EntityFolder>/folder.bru` | Scenario tasks, example data, API response |
-| **Scenario Files** | `./<Collection>/v4/<EntityGroup>/<EntityFolder>/NN - Check ....bru` | Generated test scenarios |
+| **Scenario Files** | `./<Collection>/v4/<EntityGroup>/<EntityFolder>/NN - ....bru` | Generated test scenarios |
 | **Config Schema** | `./schemas/entity-config.schema.json` | JSON schema for entity.config.json validation |
 | **Utilities** | `./<Collection>/utils.js` | Shared helper functions (validation, caching, encoding) |
 | **Logging** | `./<Collection>/logging.js` | Entity-specific log specifications |
@@ -1494,10 +1523,10 @@ All functions available in `utils.js`:
 ### Step 4: Generate Files
 
 ```text
-01 - Check first CalendarDate is valid.bru
-02 - Check second CalendarDate is valid.bru
-03 - Check first CalendarDate calendarEventDescriptor was Updated.bru
-04 - Check second CalendarDate calendarEventDescriptor was Updated.bru
+01 - 1st CalendarDate is valid.bru
+02 - 2nd CalendarDate is valid.bru
+03 - 1st CalendarDate - calendarEventDescriptor was Updated.bru
+04 - 2nd CalendarDate - calendarEventDescriptor was Updated.bru
 ```
 
 ### Step 5: Baseline 1 Structure
@@ -1506,7 +1535,7 @@ All functions available in `utils.js`:
 
 ```javascript
 meta {
-  name: 01 - Check first CalendarDate is valid
+  name: 01 - 1st CalendarDate is valid
   type: http
   seq: 1
 }
@@ -1581,7 +1610,7 @@ script:post-response {
 
 ### Step 6: Update 1 Structure
 
-**File:** `03 - Check first CalendarDate calendarEventDescriptor was Updated.bru`
+**File:** `03 - 1st CalendarDate - calendarEventDescriptor was Updated.bru`
 
 **GET (single resource):**
 
@@ -1599,10 +1628,10 @@ get {
 script:pre-request {
   const { validateDependency } = require('./utils');
 
-  validateDependency(bru, 'firstCalendarDateUniqueId', '01 - Check first CalendarDate is valid', {
+  validateDependency(bru, 'firstCalendarDateUniqueId', '01 - 1st CalendarDate is valid', {
     actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
   });
-  validateDependency(bru, 'firstCalendarDateCalendarEventDescriptorList', '01 - Check first CalendarDate is valid', {
+  validateDependency(bru, 'firstCalendarDateCalendarEventDescriptorList', '01 - 1st CalendarDate is valid', {
     actionHint: 'Ensure you ran the first certification scenario successfully before continuing.'
   });
 }
