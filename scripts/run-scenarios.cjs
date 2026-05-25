@@ -46,14 +46,16 @@ function error(msg) { console.error(msg); }
  * Supported options:
  *  --entities <csv>     Filter by entity folder names (matches directory name, not cfg.name)
  *  --include-steps      Include per-step details inside aggregate summary.json
- *  --version <v4|v5>    Filter to a specific data standard version folder
+ *  --version <v4|v5>    Filter to a specific data standard version folder (default: v5)
+ *  --env <envName>      Override environment used for Bruno runs (default: api-v5.ed-fi.org)
+ *                       Convention: env suffix must match --version (e.g. api-v4 with --version v4)
  */
 function parseArgs() {
   const args = process.argv.slice(2);
   const entities = [];
   let includeSteps = false;
-  let envName = 'ci.ed-fi.org';
-  let versionFilter = null;
+  let envName = 'api-v5.ed-fi.org';
+  let versionFilter = 'v5';
   for (let i=0; i<args.length; i++) {
     if (args[i] === '--entities') {
       const list = args[i+1];

@@ -16,9 +16,9 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'Bruno environment name (default ci.ed-fi.org)'
+        description: 'Bruno environment name (default ci-v5.ed-fi.org)'
         required: false
-        default: 'ci.ed-fi.org'
+        default: 'ci-v5.ed-fi.org'
       includeSteps:
         description: 'Include detailed steps in aggregate summary'
         required: false
@@ -34,8 +34,9 @@ concurrency:
 
 jobs:
   qa:
-    name: Run Tests (DataStandard V5)
+    name: Run Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -47,9 +48,31 @@ jobs:
           cache: 'npm'
           cache-dependency-path: bruno/package-lock.json
 
+      - name: Install dependencies
+        run: |
+          npm ci --prefix bruno
+          echo "$GITHUB_WORKSPACE/bruno/node_modules/.bin" >> $GITHUB_PATH
+
+      - name: Inject credentials into Bruno environment file
+        env:
+          CLIENT_ID: ${{ secrets.EDFI_CLIENT_ID_V5 }}
+          CLIENT_SECRET: ${{ secrets.EDFI_CLIENT_SECRET_V5 }}
+          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
+        run: |
+          ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
+          if [ ! -f "$ENV_FILE" ]; then echo "ERROR: env file not found: $ENV_FILE"; exit 1; fi
+          ENV_FILE="$ENV_FILE" node -e "
+            const fs = require('fs');
+            const f = process.env.ENV_FILE;
+            let c = fs.readFileSync(f, 'utf8');
+            c = c.replace(/edFiClientId:.*/, 'edFiClientId: ' + process.env.CLIENT_ID);
+            c = c.replace(/edFiClientSecret:.*/, 'edFiClientSecret: ' + process.env.CLIENT_SECRET);
+            fs.writeFileSync(f, c);
+          "
+
       - name: Mask client secret (if present)
         env:
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci.ed-fi.org' }}
+          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
         run: |
           ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
           if [ -f "$ENV_FILE" ]; then
@@ -63,7 +86,7 @@ jobs:
       - name: Run QA Scenarios
         id: runqa
         env:
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci.ed-fi.org' }}
+          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
           INCLUDE_STEPS: ${{ github.event.inputs.includeSteps || 'false' }}
         run: |
           set -e

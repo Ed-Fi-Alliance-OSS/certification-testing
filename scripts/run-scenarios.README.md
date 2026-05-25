@@ -10,7 +10,7 @@ Use this to validate incremental entities as you add properly structured `test-c
 
 - Node.js 16+ (LTS recommended)
 - Bruno CLI available via PATH (optional). If not present, script falls back to `npx -p @usebruno/cli bru`.
-- A working Ed-Fi API environment defined in Bruno environment files. Default env name is `ci.ed-fi.org` (single env file stored under `bruno/Tests/environments/`). Override with `--env <name>`.
+- A working Ed-Fi API environment defined in Bruno environment files. The env name suffix must match the data standard version being tested — e.g. `api-v5.ed-fi.org` with `--version v5`, `api-v4.ed-fi.org` with `--version v4`. Default is `api-v5.ed-fi.org`. Override with `--env <name>`.
 
 ## File Locations
 
@@ -71,9 +71,9 @@ All occurrences of each `data` key or bracketed form `[KEY]` inside entity-level
 ## CLI Flags
 
 - `--entities BellSchedules,StudentSchoolAttendanceEvents` Filter execution to listed folder entity names (directory names under `<version>/<Group>`). Matches folder name only, not the `name` property.
-- `--version v4|v5` Limit execution to a single data standard version. Without this flag, all discovered configs across all versions are processed.
+- `--version v4|v5` Limit execution to a specific data standard version (defaults to `v5`). Pass `--version v4` explicitly to run Data Standard 4 entities.
 - `--include-steps` Include per-step detail for each entity in aggregate `summary.json`. Without this flag, aggregate only contains per-entity totals.
-- `--env <envName>` Override environment used for Bruno runs (defaults to `ci.ed-fi.org`). Warns if no matching `.bru` file is found in `bruno/Tests/environments`.
+- `--env <envName>` Override environment used for Bruno runs (defaults to `api-v5.ed-fi.org`). The env name suffix should match `--version` — use `api-v5.ed-fi.org` with `--version v5` and `api-v4.ed-fi.org` with `--version v4`. Warns if no matching `.bru` file is found in `bruno/Tests/environments`.
 
 ## Exit Codes
 
@@ -130,40 +130,34 @@ Adds a `steps` array per entity mirroring a subset of per-entity JSON.
 
 ## Usage Examples
 
-Run all configured entities across all versions:
+Run v5 entities with the default environment (no flags needed for local development):
 
 ```powershell
 node scripts/run-scenarios.cjs
 ```
 
-Run only v4 entities (Data Standard 4):
+Run only v4 entities (Data Standard 4) — must pass `--version v4` explicitly since the default env targets v5:
 
 ```powershell
-node scripts/run-scenarios.cjs --version v4
-```
-
-Run only v5 entities (Data Standard 5):
-
-```powershell
-node scripts/run-scenarios.cjs --version v5
+node scripts/run-scenarios.cjs --version v4 --env api-v4.ed-fi.org
 ```
 
 Just BellSchedules for v5 (slim aggregate):
 
 ```powershell
-node scripts/run-scenarios.cjs --version v5 --entities BellSchedules
+node scripts/run-scenarios.cjs --entities BellSchedules
 ```
 
 Run specific entities including step details in the aggregate:
 
 ```powershell
-node scripts/run-scenarios.cjs --version v4 --entities BellSchedules,StudentAssessments --include-steps
+node scripts/run-scenarios.cjs --entities BellSchedules,StudentAssessments --include-steps
 ```
 
 Custom environment and include steps:
 
 ```powershell
-node scripts/run-scenarios.cjs --version v4 --env staging.ed-fi.org --include-steps
+node scripts/run-scenarios.cjs --env staging.ed-fi.org --include-steps
 ```
 
 ### Local Developer Quickstart
@@ -175,11 +169,24 @@ node scripts/run-scenarios.cjs --version v4 --env staging.ed-fi.org --include-st
    npm install -g @usebruno/cli
    ```
 
-3. Copy a Bruno environment file to `bruno/Tests/environments/` and name it to match the `--env` value you intend to use (e.g. `local.bru`). Update the host, client ID, and secret values inside the file.
-4. Run the script for the version you are working on:
+3. Set the required environment variables for the `api-v5.ed-fi.org` environment (used by default):
 
    ```powershell
-   node scripts/run-scenarios.cjs --version v5 --env local --include-steps
+   $env:EDFI_CLIENT_ID     = "<your-client-id>"
+   $env:EDFI_CLIENT_SECRET = "<your-client-secret>"
+   $env:EDFI_CLIENT_NAME   = "<your-client-name>"
+   ```
+
+4. Run the script — defaults to v5 against `api-v5.ed-fi.org`:
+
+   ```powershell
+   node scripts/run-scenarios.cjs --include-steps
+   ```
+
+   To run v4 locally, pass both flags to keep `--env` and `--version` in sync:
+
+   ```powershell
+   node scripts/run-scenarios.cjs --version v4 --env api-v4.ed-fi.org --include-steps
    ```
 
 5. Inspect results:
