@@ -1,18 +1,18 @@
-name: QA Tests on Pull Request
+name: Run Tests on Pull Request (DataStandard V4)
 
 on:
   pull_request:
     paths:
       - 'scripts/run-scenarios.cjs'
-      - 'bruno/Tests/**'
-      - 'bruno/SIS/**'
-      - '.github/workflows/on-pullrequest-run-tests.yml'
+      - 'bruno/Tests/v4/**'
+      - 'bruno/SIS/v4/**'
+      - '.github/workflows/on-pullrequest-run-tests-v4.yml'
   push:
     branches: [ main ]
     paths:
       - 'scripts/run-scenarios.cjs'
-      - 'bruno/Tests/**'
-      - 'bruno/SIS/**'
+      - 'bruno/Tests/v4/**'
+      - 'bruno/SIS/v4/**'
   workflow_dispatch:
     inputs:
       env:
@@ -66,7 +66,7 @@ jobs:
           set -e
           INCLUDE_FLAG=""
           if [ "$INCLUDE_STEPS" = "true" ]; then INCLUDE_FLAG="--include-steps"; fi
-          node scripts/run-scenarios.cjs --env "$BRUNO_ENV" $INCLUDE_FLAG || EXIT=$?
+          node scripts/run-scenarios.cjs --env "$BRUNO_ENV" --version v4 $INCLUDE_FLAG || EXIT=$?
           # Preserve non-zero exit for later; script already writes summary.json
           if [ -n "$EXIT" ]; then echo "exit_code=$EXIT" >> $GITHUB_OUTPUT; else echo "exit_code=0" >> $GITHUB_OUTPUT; fi
 
