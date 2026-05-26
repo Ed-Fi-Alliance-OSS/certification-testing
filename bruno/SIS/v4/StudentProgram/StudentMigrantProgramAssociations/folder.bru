@@ -1,6 +1,6 @@
 meta {
-  name: StudentMigrantProgramAssociations
-  seq: 4
+  name: Student Migrant Program Associations
+  seq: 32
 }
 
 auth {
@@ -9,24 +9,24 @@ auth {
 
 docs {
   # v4 Student Program > StudentMigrantProgramAssociation Scenarios
-  
+
   The Student Program interchange loads students' participation in programs.
   The `StudentMigrantEducationProgramAssociation` represents the migrant educational program(s) that a student participates in or receives services from. The association is an extension of the `StudentProgramAssociation` particular for migrant programs.
-  
+
   ## Prerequisites
-  
+
   * Ed-Org (pre-loaded)
   * Program (pre-loaded)
   * Student
   * Student Enrollment
-  
+
   ## Scenarios tasks
 
   1. __CREATE__ a `first` new `StudentMigrantEducationProgramAssociation` for an elementary school student.
   2. __UPDATE__ the _priorityForServices_ on the `first` added `StudentMigrantEducationProgramAssociation` from FALSE to TRUE.
 
   > Note: the Program's educationOrganizationId is the Local Education Agency ID
-  
+
   ## Scenarios example data
 
   | Resource                                    | Property Name                            | Is Collection | Data Type                                | Required / Optional | Scenario 1: POST              | Scenario 2: PUT               |

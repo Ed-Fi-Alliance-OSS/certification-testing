@@ -1,6 +1,6 @@
 meta {
-  name: GradingPeriods
-  seq: 6
+  name: Grading Periods
+  seq: 9
 }
 
 auth {
@@ -9,19 +9,19 @@ auth {
 
 docs {
   # v4 Education Organization Calendar > Grading Periods Scenarios
-  
+
   The Education Organization Calendar interchange carries school calendar
   information. It can be used to exchange school calendar data,
   including instructional days, sessions, and grading periods.
-  
+
   This entity represents the time span for which grades are reported.
-  
+
   ## Prerequisites
-  
+
   * None
-  
+
   ## Scenarios tasks:
-  
+
   1. __CREATE__ a `first` new `Grading Period` for Grand Bend Elementary School with _gradingPeriodDescriptor_ as "First Six Weeks"
   2. __CREATE__ a `second` new `Grading Period` for Grand Bend Elementary School with _gradingPeriodDescriptor_ as "Second Six Weeks"
   4. __CREATE__ a `third` new `Grading Period` for Grand Bend High School with _gradingPeriodDescriptor_ as "First Six Weeks"
@@ -42,7 +42,7 @@ docs {
   | GradingPeriods          | endDate                 | FALSE         | date                    | REQUIRED | 10/04/[Current School Year]     | 12/15/[Current School Year]     | 10/04/[Current School Year]     | 12/15/[Current School Year]     | 10/05/[Current School Year]                 | 10/05/[Current School Year]                 |
   | GradingPeriods          | totalInstructionalDays  | FALSE         | Integer                 | REQUIRED | [System calculated value \| 29] | [System calculated value \| 30] | [System calculated value \| 29] | [System calculated value \| 30] | [Previous systemcalculated value + 1 \| 30] | [Previous systemcalculated value + 1 \| 30] |
   | GradingPeriods          | periodSequence          | FALSE         | Integer                 | REQUIRED | 1                               | 2                               | 1                               | 2                               | 1                                           | 1                                           |
-  
+
   ## API response format
   ```json
   {

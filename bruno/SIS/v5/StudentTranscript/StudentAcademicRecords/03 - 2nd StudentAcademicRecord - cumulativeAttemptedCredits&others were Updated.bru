@@ -1,0 +1,87 @@
+meta {
+  name: 03 - 2nd StudentAcademicRecord - cumulativeAttemptedCredits & cumulativeEarnedCredits & sessionEarnedCredits were Updated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{secondStudentAcademicRecordUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: isString
+  res.body.id: eq {{secondStudentAcademicRecordUniqueId}}
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.schoolYearTypeReference: isDefined
+  res.body.schoolYearTypeReference.schoolYear: isNumber
+  res.body.schoolYearTypeReference.schoolYear: neq 0
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.termDescriptor: isString
+  res.body.termDescriptor: isNotEmpty
+  res.body.cumulativeAttemptedCredits: gte 0
+  res.body.cumulativeEarnedCredits: gte 0
+  res.body.cumulativeGradePointAverage: gte 0
+  res.body.sessionAttemptedCredits: gte 0
+  res.body.sessionEarnedCredits: gte 0
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  validateDependency(bru, 'secondStudentAcademicRecordUniqueId', '02 - 2nd StudentAcademicRecord is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStudentAcademicRecordSchoolYear', '02 - 2nd StudentAcademicRecord is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStudentAcademicRecordCumulativeAttemptedCredits', '02 - 2nd StudentAcademicRecord is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStudentAcademicRecordCumulativeEarnedCredits', '02 - 2nd StudentAcademicRecord is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStudentAcademicRecordSessionAttemptedCredits', '02 - 2nd StudentAcademicRecord is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondStudentAcademicRecordSessionEarnedCredits', '02 - 2nd StudentAcademicRecord is valid', {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { expectChanged, setVars } = require('./utils');
+  const { logScenario, logSpecStudentAcademicRecord } = require('./logging');
+  const entityName = 'StudentAcademicRecord';
+  const scenarioName = this.req.name;
+  const entity = res.getBody();
+  expectChanged(entityName, 'schoolYear', entity.schoolYearTypeReference.schoolYear, bru.getVar('secondStudentAcademicRecordSchoolYear'));
+  expectChanged(entityName, 'cumulativeAttemptedCredits', entity.cumulativeAttemptedCredits, bru.getVar('secondStudentAcademicRecordCumulativeAttemptedCredits'));
+  expectChanged(entityName, 'cumulativeEarnedCredits', entity.cumulativeEarnedCredits, bru.getVar('secondStudentAcademicRecordCumulativeEarnedCredits'));
+  expectChanged(entityName, 'sessionEarnedCredits', entity.sessionEarnedCredits, bru.getVar('secondStudentAcademicRecordSessionEarnedCredits'));
+  expectChanged(entityName, 'sessionAttemptedCredits', entity.sessionAttemptedCredits, bru.getVar('secondStudentAcademicRecordSessionAttemptedCredits'));
+  setVars(bru, {
+    secondStudentAcademicRecordSchoolYear: entity.schoolYearTypeReference.schoolYear,
+    secondStudentAcademicRecordCumulativeAttemptedCredits: entity.cumulativeAttemptedCredits,
+    secondStudentAcademicRecordCumulativeEarnedCredits: entity.cumulativeEarnedCredits,
+    secondStudentAcademicRecordSessionAttemptedCredits: entity.sessionAttemptedCredits,
+    secondStudentAcademicRecordSessionEarnedCredits: entity.sessionEarnedCredits
+  });
+  logScenario(entityName, scenarioName, entity, logSpecStudentAcademicRecord, [
+    'schoolYear',
+    'cumulativeAttemptedCredits',
+    'cumulativeEarnedCredits',
+    'sessionAttemptedCredits',
+    'sessionEarnedCredits'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,86 @@
+meta {
+  name: 02 - 2nd StudentSectionAttendanceEvent is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents?schoolId=[ENTER SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&sectionIdentifier=[ENTER SECTION IDENTIFIER]&sessionName=[ENTER SESSION NAME]&localCourseCode=[ENTER LOCAL COURSE CODE]&studentUniqueId=[ENTER STUDENT ID]&eventDate=[ENTER EVENT DATE]&attendanceEventCategoryDescriptor={{secondAttendanceEventCategoryDescriptorEncoded}}&attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END=[ENTER SECOND ATTENDANCE EVENT CATEGORY DESCRIPTOR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL ID]
+  schoolYear: [ENTER CURRENT SCHOOL YEAR]
+  sectionIdentifier: [ENTER SECTION IDENTIFIER]
+  sessionName: [ENTER SESSION NAME]
+  localCourseCode: [ENTER LOCAL COURSE CODE]
+  studentUniqueId: [ENTER STUDENT ID]
+  eventDate: [ENTER EVENT DATE]
+  attendanceEventCategoryDescriptor: {{secondAttendanceEventCategoryDescriptorEncoded}}
+  attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END: [ENTER SECOND ATTENDANCE EVENT CATEGORY DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].attendanceEventCategoryDescriptor: isString
+  res.body[0].attendanceEventCategoryDescriptor: isNotEmpty
+  res.body[0].eventDate: isString
+  res.body[0].eventDate: isNotEmpty
+  res.body[0].sectionReference: isDefined
+  res.body[0].sectionReference.localCourseCode: isString
+  res.body[0].sectionReference.localCourseCode: isNotEmpty
+  res.body[0].sectionReference.schoolId: isNumber
+  res.body[0].sectionReference.schoolId: neq 0
+  res.body[0].sectionReference.schoolYear: isNumber
+  res.body[0].sectionReference.schoolYear: neq 0
+  res.body[0].sectionReference.sectionIdentifier: isString
+  res.body[0].sectionReference.sectionIdentifier: isNotEmpty
+  res.body[0].sectionReference.sessionName: isString
+  res.body[0].sectionReference.sessionName: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].attendanceEventReason: isString
+  res.body[0].attendanceEventReason: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const attendanceEventCategoryDescriptorEncoded = encodeDescriptorParameter(req.url, 'attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END');
+
+  setVar(bru, 'secondAttendanceEventCategoryDescriptorEncoded', attendanceEventCategoryDescriptorEncoded);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStudentSectionAttendanceEvent } = require('./logging');
+  const entityName = 'StudentSectionAttendanceEvent';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+
+  if (!entity) {
+    wipeVars(bru, [
+      'secondStudentSectionAttendanceEventUniqueId',
+      'secondStudentSectionAttendanceEventAttendanceEventReason'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    secondStudentSectionAttendanceEventUniqueId: entity.id,
+    secondStudentSectionAttendanceEventAttendanceEventReason: entity.attendanceEventReason
+  });
+
+  // Baseline logs full spec projection
+  logScenario(entityName, scenarioName, entity, logSpecStudentSectionAttendanceEvent);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

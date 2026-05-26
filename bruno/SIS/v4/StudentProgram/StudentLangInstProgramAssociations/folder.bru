@@ -1,6 +1,6 @@
 meta {
-  name: StudentLangInstProgramAssociations
-  seq: 3
+  name: Student Language Instruction Program Associations
+  seq: 31
 }
 
 auth {
@@ -9,26 +9,26 @@ auth {
 
 docs {
   # v4 Student Program > StudentLanguageInstructionProgramAssociation Scenarios
-  
+
   The Student Program interchange loads students' participation in programs.
   The `StudentLanguageInstructionProgramAssociation` represents the _Title III_, language instruction program(s) that a student participates in or receives services from. The association is an extension of the `StudentProgramAssociation` particular for language instruction programs.
-  
+
   ## Prerequisites
-  
+
   * Ed-Org (pre-loaded)
   * Program (pre-loaded)
   * Student
   * Student Enrollment
-  
+
   ## Scenarios
-  
+
   1. __CREATE__ a `first` new `StudentLanguageInstructionProgramAssociation` for a high school student.
   2. __UPDATE__ the _englishLanguageProficiencyAssessments_._proficiencyDescriptor_ Participation on the `first` added `StudentLanguageInstructionProgramAssociation` from "Not Proficient" to "Proficient".
-  
+
   > Note: the Program's educationOrganizationId is the Local Education Agency ID (LEA ID) that manages the Language Instruction program.
-  
+
   ## Scenarios example data
-  
+
   | Resource                                      | Property Name                               | Is Collection | Data Type                                   | Required / Optional | Scenario 1: POST                   | Scenario 2: PUT                    |
   | --------------------------------------------- | ------------------------------------------- | ------------- | ------------------------------------------- | ------------------- | ---------------------------------- | ---------------------------------- |
   | StudentLanguageInstructionProgramAssociations | beginDate                                   | FALSE         | date                                        | REQUIRED            | 8/23/[Current School Year]         | 8/23/[Current School Year]         |
@@ -61,9 +61,9 @@ docs {
   | languageInstructionProgramServices            | primaryIndicator                            | FALSE         | boolean                                     | OPTIONAL            |                                    |                                    |
   | StudentLanguageInstructionProgramAssociations | englishLearnerParticipation                 | FALSE         | boolean                                     | REQUIRED            | TRUE                               | TRUE                               |
   | StudentLanguageInstructionProgramAssociations | dosage                                      | FALSE         | number                                      | OPTIONAL            |                                    |                                    |
-  
+
   ## API response format
-  
+
   ```json
   {
     "id": "string",

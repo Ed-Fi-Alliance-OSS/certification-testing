@@ -1,6 +1,6 @@
 meta {
-  name: StudentProgramAssociations
-  seq: 6
+  name: Student Program Associations
+  seq: 28
 }
 
 auth {
@@ -9,29 +9,29 @@ auth {
 
 docs {
   # v4 StudentProgram > StudentProgramAssociation Scenarios
-  
+
   This interchange loads students' participation in programs.
   The `StudentProgramAssociation` represents the Program(s) that a student participates in or is served by.
-  
+
   ## Prerequisites
-  
+
   * Ed-Org (pre-loaded)
   * Program (pre-loaded)
   * Student
   * Student Enrollment
-  
+
   ## Scenarios tasks
-  
+
   1. __CREATE__ a `first` new "Gifted and Talented" `StudentProgramAssociation` for an elementary school student.
   2. __CREATE__ a `second` new "Bilingual" `StudentProgramAssociation` for a high school student.
   3. __UPDATE__ the _beginDate_ on the `first` added `StudentProgramAssociation` for the elementary student.
   4. __UPDATE__ the _beginDate_ on the `second` added `StudentProgramAssociation` for the high school student.
   5. __DELETE__ the `first` added `StudentProgramAssociation` for the elementary school student.
-  
+
   > Note: The Program's educationOrganizationId is the Local Education Agency ID
-  
+
   ## Scenarios example data
-  
+
   | Resource                          | Property Name                  | Is Collection | Data Type                      | Required / Optional | Scenario 1: POST             | Scenario 2: POST             | Scenario 3: PUT                   | Scenario 4: PUT                   |
   | --------------------------------- | ------------------------------ | ------------- | ------------------------------ | ------------------- | ---------------------------- | ---------------------------- | --------------------------------- | --------------------------------- |
   | StudentProgramAssociations        | beginDate                      | FALSE         | date                           | REQUIRED            | 8/23/[Current School Year]   | 8/23/[Current School Year]   | 09/30/[Current School Year]       | 10/20/[Current School Year]       |
@@ -56,9 +56,9 @@ docs {
   | studentProgramAssociationServices | primaryIndicator               | FALSE         | boolean                        | OPTIONAL            |                              |                              |                                   |                                   |
   | studentProgramAssociationServices | serviceBeginDate               | FALSE         | date                           | OPTIONAL            |                              |                              |                                   |                                   |
   | studentProgramAssociationServices | serviceEndDate                 | FALSE         | date                           | OPTIONAL            |                              |                              |                                   |                                   |
-  
+
   ## API JSON response example
-  
+
   ```json
   {
     "id": "string",

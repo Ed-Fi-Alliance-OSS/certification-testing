@@ -22,6 +22,7 @@
  * Flags:
  *  --entities A,B,C    Limit processing to specified folder entity names.
  *  --include-steps     Include detailed per-step data in aggregate summary.json.
+ *  --version v4|v5     Limit processing to a specific data standard version.
  *
  * Exit code:
  *  0 if all processed entities have zero failed assertions and no config errors.
@@ -45,12 +46,16 @@ function error(msg) { console.error(msg); }
  * Supported options:
  *  --entities <csv>     Filter by entity folder names (matches directory name, not cfg.name)
  *  --include-steps      Include per-step details inside aggregate summary.json
+ *  --version <v4|v5>    Filter to a specific data standard version folder (default: v5)
+ *  --env <envName>      Override environment used for Bruno runs (default: api-v5.ed-fi.org)
+ *                       Convention: env suffix must match --version (e.g. api-v4 with --version v4)
  */
 function parseArgs() {
   const args = process.argv.slice(2);
   const entities = [];
   let includeSteps = false;
-  let envName = 'ci.ed-fi.org';
+  let envName = 'api-v5.ed-fi.org';
+  let versionFilter = 'v5';
   for (let i=0; i<args.length; i++) {
     if (args[i] === '--entities') {
       const list = args[i+1];
@@ -62,9 +67,13 @@ function parseArgs() {
       const val = args[i+1];
       i++;
       if (val) envName = val.trim();
+    } else if (args[i] === '--version') {
+      const val = args[i+1];
+      i++;
+      if (val) versionFilter = val.trim();
     }
   }
-  return { entitiesFilter: entities, includeSteps, envName };
+  return { entitiesFilter: entities, includeSteps, envName, versionFilter };
 }
 
 /**
@@ -99,16 +108,17 @@ function loadTestConfig(configPath) {
 
 /**
  * Derive group and entity folder names from a test-config path.
- * Expected structure: .../Tests/v4/<group>/<entity>/test-config.json
+ * Expected structure: .../Tests/<version>/<group>/<entity>/test-config.json
  */
 function deriveEntityInfo(configPath) {
-  // Expect pattern .../Tests/v4/<group>/<entity>/test-config.json
+  // Expect pattern .../Tests/<version>/<group>/<entity>/test-config.json
   const parts = configPath.split(path.sep);
-  const idx = parts.lastIndexOf('v4');
-  if (idx === -1) throw new Error(`Cannot derive v4 segment from ${configPath}`);
+  const idx = parts.findIndex(p => /^v\d+$/.test(p));
+  if (idx === -1) throw new Error(`Cannot derive version segment from ${configPath}`);
+  const version = parts[idx];
   const group = parts[idx+1];
   const entity = parts[idx+2];
-  return { group, entity };
+  return { version, group, entity };
 }
 
 /**
@@ -162,9 +172,9 @@ function copyDirRecursive(src, dest) {
  * Apply placeholder replacements for a single entity's mirrored folder.
  * Only processes .bru and .json files at the entity root level.
  */
-function mirrorEntity(group, entity, dataMap) {
+function mirrorEntity(version, group, entity, dataMap) {
   // After full copy, just apply replacements in the mirrored entity folders
-  const mirrorSISDir = path.join(AUTOMATION_ROOT, 'v4', group, entity);
+  const mirrorSISDir = path.join(AUTOMATION_ROOT, version, group, entity);
   [mirrorSISDir].forEach(dir => {
     if (!fs.existsSync(dir)) return;
     const files = fs.readdirSync(dir);
@@ -254,13 +264,13 @@ function replacePlaceholders(content, dataMap) {
  */
  function deriveMergedFolderRelative(originalPath) {
   // Original examples: bruno/Tests/v4/MasterSchedule/BellSchedules/01 - CREATE a BellSchedule.bru
-  // We need: v4/MasterSchedule/BellSchedules
+  // We need: v4/MasterSchedule/BellSchedules (works for any vN version)
   const norm = originalPath.replace(/\\/g,'/');
   const parts = norm.split('/');
-  const v4Index = parts.indexOf('v4');
-  if (v4Index === -1) return norm; // fallback
+  const vIndex = parts.findIndex(p => /^v\d+$/.test(p));
+  if (vIndex === -1) return norm; // fallback
   // folder path components up to entity (exclude file name)
-  const relParts = parts.slice(v4Index, parts.length - 1);
+  const relParts = parts.slice(vIndex, parts.length - 1);
   return relParts.join('/');
  }
 
@@ -359,8 +369,8 @@ function parseRequests(output) {
   // Match lines like:
   // v4/MasterSchedule/BellSchedules/01 - CREATE a BellSchedule (201 Created) - 907 ms
   // or with backslashes on some platforms. Capture groups: (1) filename, (2) statusCode, (3) timeMs
-  const requestHeaderRegex = /^v4[\/\\].*?\/([^\/]+) \((\d{3})(?: [^)]+)?\) - (\d+) ms$/;
-  const requestHeaderRegexAlt = /^v4[\/\\].*?\/([^\/]+) \((\d{3})\) - (\d+) ms$/; // fallback variant
+  const requestHeaderRegex = /^v\d+[\/\\].*?\/([^\/]+) \((\d{3})(?: [^)]+)?\) - (\d+) ms$/;
+  const requestHeaderRegexAlt = /^v\d+[\/\\].*?\/([^\/]+) \((\d{3})\) - (\d+) ms$/; // fallback variant
   const requests = [];
   let current = null;
   let inAssertions = false;
@@ -430,9 +440,9 @@ function summarizeEntity(entity, results) {
 /**
  * Rewrite meta.seq inside each ordered .bru file to reflect declared order.
  */
-function rewriteMetaSeq(group, entity, orderedPaths) {
+function rewriteMetaSeq(version, group, entity, orderedPaths) {
   // After placeholders: update meta seq values inside mirrored automation directory
-  const targetDir = path.join(AUTOMATION_ROOT, 'v4', group, entity);
+  const targetDir = path.join(AUTOMATION_ROOT, version, group, entity);
   if (!fs.existsSync(targetDir)) return;
   let seq = 1;
   for (const originalPath of orderedPaths) {
@@ -457,7 +467,7 @@ function rewriteMetaSeq(group, entity, orderedPaths) {
  * execute ordered tests, write aggregate summary, set exit code.
  */
 function main() {
-  const { entitiesFilter, includeSteps, envName } = parseArgs();
+  const { entitiesFilter, includeSteps, envName, versionFilter } = parseArgs();
   // Ensure results directory exists early so last-output.txt can be written by first folder execution
   try { fs.mkdirSync(path.join(AUTOMATION_ROOT, 'results'), { recursive: true }); } catch {}
   verifyEnvironmentExists(envName);
@@ -475,11 +485,13 @@ function main() {
   // No master entity list; process all found configs unless --entities filters provided.
 
   for (const cfgPath of configs) {
-    const { group, entity } = deriveEntityInfo(cfgPath);
+    const { version, group, entity } = deriveEntityInfo(cfgPath);
     // Load config early to check optional name override
     const cfg = loadTestConfig(cfgPath);
     const cfgName = typeof cfg.name === 'string' && cfg.name.trim().length ? cfg.name.trim() : entity;
-    // Filter precedence: if entitiesFilter provided, match against folder entity identifier only
+    // Filter by version (--version v4 or --version v5)
+    if (versionFilter && version !== versionFilter) continue;
+    // Filter by entity folder name (--entities A,B,C)
     if (entitiesFilter.length && !entitiesFilter.includes(entity)) {
       continue;
     }
@@ -513,8 +525,8 @@ function main() {
 
     log(`Processing entity ${entitiesFilter.length ? entity : cfgName} (${group}) with ${order.length} steps.`);
     // Use folder entity name for directory operations; cfgName only for reporting label
-    mirrorEntity(group, entity, dataMap);
-    try { rewriteMetaSeq(group, entity, order); } catch (e) { error(`Failed to rewrite meta.seq for ${cfgName}: ${e.message}`); }
+    mirrorEntity(version, group, entity, dataMap);
+    try { rewriteMetaSeq(version, group, entity, order); } catch (e) { error(`Failed to rewrite meta.seq for ${cfgName}: ${e.message}`); }
   const resultSteps = executeOrder(order, envName);
     const summary = summarizeEntity(cfgName, resultSteps);
     summaries.push(summary);

@@ -1,6 +1,6 @@
 meta {
-  name: StudentTitleIPartAProgAssocs
-  seq: 9
+  name: Student Title I Part A Program Associations
+  seq: 36
 }
 
 auth {
@@ -9,18 +9,18 @@ auth {
 
 docs {
   # v4 Student Program > StudentTitleIPartAProgramAssociation Scenarios
-  
+
   The Student Program interchange loads students' participation in programs.
 
   This association represents the Title I Part A program(s) that a student participates in or from which the Student receives services. The association is an extension of the `StudentProgramAssociation` specific to Title I Part A programs.
 
   ## Prerequisites
-  
+
   * Ed-Org (pre-loaded)
   * Program (pre-loaded)
   * Student
   * Student Enrollment
-  
+
   ## Scenarios tasks
 
   1. __CREATE__ a `first` new `StudentTitleIPartAProgramAssociation` for an elementary school student.
@@ -29,7 +29,7 @@ docs {
   4. __UPDATE__ the _titleIPartAParticipantType_ on the `second` added `StudentTitleIPartAProgramAssociation`.
 
   > Note: The Program's educationOrganizationId is the Local Education Agency ID.
-  
+
   ## Scenarios example data
 
   | Resource                              | Property Name                    | Is Collection    | Data Type                        | Required / Optional | Scenario 1: POST                   | Scenario 2: POST             | Scenario 3: PUT               | Scenario 4: PUT              |

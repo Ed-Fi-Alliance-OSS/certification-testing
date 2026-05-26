@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../../schemas/entity-config.schema.json",
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": [
+      "beginDate",
+      "educationOrganizationId",
+      "programEducationOrganizationId",
+      "programName",
+      "programTypeDescriptorId",
+      "studentUniqueId"
+    ],
+    "naturalIdField": null
+  },
+  "overrides": {
+    "entityName": "StudSchoolFoodServProgAssocs",
+    "endpointSegment": "studentSchoolFoodServicesProgramAssociations",
+    "loggingSpecName": "StudSchoolFoodServProgAssocs",
+    "fileNameAlias": "StudSchoolFoodServProgAssocs"
+  }
+}

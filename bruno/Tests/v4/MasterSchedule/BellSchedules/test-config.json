@@ -11,8 +11,8 @@
         "CLASS_PERIOD_NAME_3": "Class Period 3"
     },
     "order": [
-        "bruno/Tests/v4/MasterSchedule/BellSchedules/01 - CREATE a BellSchedule.bru",
-        "bruno/SIS/v4/MasterSchedule/BellSchedules/01 - Check BellSchedule is valid.bru",
-        "bruno/Tests/v4/MasterSchedule/BellSchedules/02 - DELETE a BellSchedule.bru"
+        "bruno/Tests/v4/MasterSchedule/BellSchedules/CREATE a BellSchedule.bru",
+        "bruno/SIS/v4/MasterSchedule/BellSchedules/01 - BellSchedule is valid.bru",
+        "bruno/Tests/v4/MasterSchedule/BellSchedules/DELETE a BellSchedule.bru"
     ]
 }

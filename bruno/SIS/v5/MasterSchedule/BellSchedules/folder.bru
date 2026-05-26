@@ -1,0 +1,76 @@
+meta {
+  name: Bell Schedules
+  seq: 8
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v5 MasterSchedule > BellSchedule Scenarios
+
+  This entity represents the schedule of class period meeting times.
+
+  ## Prerequisites
+
+  * ClassPeriods
+  * Prior to completing this scenario please ensure you have set up at  least 6
+    class periods previously.
+  * Schools
+
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` new Normal Schedule A Day `Bell Schedule`
+  2. ~~__CREATE__ a `second` Normal Schedule B Day `Bell Schedule`~~
+  3. ~~__CREATE__ a `third` Early Release  A Day `Bell Schedule`~~
+  4. ~~__CREATE__ a `fourth` Early Release B Day `Bell Schedule`~~
+
+  > ### Depricated scenarios
+  > Scenarios 2, 3, and 4 are deprecated and will be removed in a future release. They are included here for traceability. Except for the expected values, these scenarios have the exact same functionality and are no longer needed.
+
+  ## Scenarios example data:
+  | Resource             | Property Name          | Is Collection | Data Type            | Required / Optional | Scenario 1: POST | Scenario 2: POST | Scenario 3: POST | Scenario 4: POST |
+  | -------------------- | ---------------------- | ------------- | -------------------- | ------------------- | ------------------ | ------------------ | ------------------ | ------------------ |
+  | BellSchedule         | bellScheduleName       | FALSE         | string               | REQUIRED            | Normal Schedule A  | Normal Schedule B  | Early Release A    | Early Release B    |
+  | BellSchedule         | schoolReference        | FALSE         | schoolReference      | REQUIRED            |                    |                    |                    |                    |
+  | schoolReference      | schoolId               | FALSE         | integer              | REQUIRED            | 255901107          | 255901107          | 255901107          | 255901107          |
+  | BellSchedule         | classPeriodReference   | TRUE          | classPeriodReference | REQUIRED            |                    |                    |                    |                    |
+  | classPeriodReference | classPeriodName        | FALSE         | string               | REQUIRED            | Class Period 1     | Class Period 4     | Class Period 1     | Class Period 4     |
+  | classPeriodReference | classPeriodName        | FALSE         | string               | REQUIRED            | Class Period 2     | Class Period 5     | Class Period 2     | Class Period 5     |
+  | classPeriodReference | classPeriodName        | FALSE         | string               | REQUIRED            | Class Period 3     | Class Period 6     |                    |                    |
+  | BellSchedule         | alternateDayName       | FALSE         | boolean              | REQUIRED            | A                  | B                  | A                  | B                  |
+
+  ## API response format
+  ```json
+  {
+    "id": "string",
+    "bellScheduleName": "string",
+    "classPeriods": [
+      {
+        "classPeriodReference": {
+          "classPeriodName": "string",
+          "schoolId": 0
+        }
+      }
+    ],
+    "schoolReference": {
+      "schoolId": 0
+    },
+    "alternateDayName": "string",
+    "dates": [
+      {
+        "date": "2025-10-09"
+      }
+    ],
+    "endTime": "string",
+    "gradeLevels": [
+      {
+        "gradeLevelDescriptor": "string"
+      }
+    ],
+    "startTime": "string",
+    "totalInstructionalTime": 0
+  }
+  ```
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../../schemas/entity-config.schema.json",
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": [
+      "mappedNamespace",
+      "namespace",
+      "mappedValue",
+      "value"
+    ],
+    "naturalIdField": null
+  }
+}
+

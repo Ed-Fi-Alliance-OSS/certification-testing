@@ -1,6 +1,6 @@
 meta {
-  name: StudentEdOrgAssociations
-  seq: 2
+  name: Student Education Organization Associations
+  seq: 20
 }
 
 auth {
@@ -9,30 +9,30 @@ auth {
 
 docs {
   # v4 Student Enrollment > StudentEdOrgAssociation Scenarios
-  
+
   The Student Enrollment interchange describes student enrollments in schools and in sections.
-  
+
   This association represents student information that is specific to a student's relationship with an EducationOrganization. Enrollment relationship semantics are covered by [https://edfi.atlassian.net/wiki/spaces/EDFI/pages/22450000](https://edfi.atlassian.net/wiki/spaces/EDFI/pages/22450000).
-  
+
   ## Prerequisites
-  
+
   * Student
-  
+
   ## Scenarios tasks
-  
+
   1. __CREATE__ a `first` `Student EdOrg Association` for an elementary `Student` at Grand Bend School District.
   2. __CREATE__ a `second` `Student EdOrg Association` for a high school `Student` at Grand Bend School District.
   3. __UPDATE__ the _telephoneNumber_ on the `first` `Student EdOrg Association`.
   4. __UPDATE__ the _streetNumberName_ on the `second` `Student EdOrg Association`.
-  
+
   ### Additional Requirements
-  
+
   * For these scenarios SIS system MUST demonstrate that it can provide 3 student identifiers: a SIS/district ID, a state ID, and a local ID (also known as a "student number", which students typically memorize and use for local operations). In terms of studentIdentificationSystemDescriptors, these are the "District", "State" and "Local" values in the default Ed-Fi descriptor values, respectively.
   * The SIS MUST include at least these three values in the StudentIdentificationCodes array and the studentIdentificationSystemDescriptors MUST be labeled as "District", "State" and "Local" per the definitions above.
   * If the SIS only has a subset of these values, values can be repeated as needed. For example, the SIS might use the SIS/district ID as the local ID (student number); in this case, that ID would be repeated in the array as both the "District" and "Local" values.
-  
+
   ## Scenarios example data:
-  
+
   | Resource                                                            | Property Name                           | Is Collection  | Data Type                             | Required    | Scenario 1: POST                         | Scenario 2: POST                         | Scenario 3: POST/PUT                     | Scenario 4: POST/PUT                     |
   |---------------------------------------------------------------------|-----------------------------------------|----------------|---------------------------------------|-------------|------------------------------------------|------------------------------------------|------------------------------------------|------------------------------------------|
   | studentEducationOrganizationAssociations                            | educationOrganizationReference          | FALSE          | educationOrganizationReference        | REQUIRED    |                                          |                                          |                                          |                                          |
@@ -125,9 +125,9 @@ docs {
   | StudentEducationOrganizationAssociations                            | cohortYears                             | TRUE           | studentCohortYear[]                   | OPTIONAL    |                                          |                                          |                                          |                                          |
   | studentEducationOrganizationAssociationsCohortYears                 | cohortYearTypeDescriptor                | FALSE          | cohortYearTypeDescriptor              | OPTIONAL    |                                          |                                          |                                          |                                          |
   | studentEducationOrganizationAssociationsCohortYears                 | schoolYearTypeReference                 | FALSE          | schoolYearTypeReference               | OPTIONAL    |                                          |                                          |                                          |                                          |
-  
+
   ## API response format
-  
+
   ```json
   {
     "id": "string",

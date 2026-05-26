@@ -1,6 +1,6 @@
 meta {
   name: Staffs
-  seq: 1
+  seq: 13
 }
 
 auth {
@@ -9,33 +9,33 @@ auth {
 
 docs {
   # v4 StaffAssociation > Staff Scenarios
-  
+
   StaffAssociation defines staff information. It can be used to define employment, assignment, and teaching associations, as well as staff positions and staff leave events.
   The Staff represents an individual who performs specified activities for any public or private education institution or agency that provides instructional and/or support services to students or staff at the early childhood level through high school completion. For example, this includes:
-  
+
   * An "employee" who performs services under the direction of the employing institution or agency is compensated for such services by the employer and is eligible for employee benefits and wage or salary tax withholdings.
   * A "contractor" or "consultant" who performs services for an agreed upon fee or an employee of a management service contracted to work on site.
   * A "volunteer" who performs services on a voluntary and uncompensated basis.
   * An in-kind service provider.
   * An independent contractor or businessperson working at a school site.
-  
+
   ## Prerequisites
-  
+
   * Before executing the PUT Statements, you must create [StaffEducationOrganizationAssignmentAssociation](https://docs.ed-fi.org/partners/certification/available-certifications/sis-v4/test-scenarios/staff-education-organization-assignment-association-scenarios) records to establish ownership of this staff record by the district.
-  
+
   ## Scenarios tasks
-  
+
   1. __CREATE__ a `first` new `Staff` Record
   2. __CREATE__ a `second` new `Staff` Record
   3. __UPDATE__ the _highlyQualifiedTeacher_ for the `first` added `Staff` record
   4. __UPDATE__ the _hispanicLatinoEthnicity_ for the `second` added `Staff` record
-  
+
   ### Additional Requirements for highly qualified teacher requirements:
-  
+
   * A teacher's highly qualified status may be recorded either at the Staff level or at the Staff Section Association level.
-  
+
   ## Scenarios example data
-  
+
   | Resource                              | Property Name                             | Is Collection | Data Type                     | Required / Optional   | Scenario 1: POST                        | Scenario 2: POST                        | Scenario 3: PUT                         | Scenario 4: PUT                         |
   | ------------------------------------- | ----------------------------------------- | ------------- | ----------------------------- | --------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- |
   | Staffs                                | staffUniqueId                             | FALSE         | string                        | REQUIRED              | ["207220" if possible \| system value]  | ["207269" if possible \| system value]  | ["207220" if possible \| system value]  | ["207269" if possible \| system value]  |
@@ -147,10 +147,10 @@ docs {
   | staffRecognitions                     | recognitionDescription                    | FALSE         | string                        | OPTIONAL              |                                         |                                         |                                         |                                         |
   | staffRecognitions                     | recognitionAwardDate                      | FALSE         | date                          | OPTIONAL              |                                         |                                         |                                         |                                         |
   | staffRecognitions                     | recognitionAwardExpiresDate               | FALSE         | date                          | OPTIONAL              |                                         |                                         |                                         |                                         |
-  
-  
+
+
   ## API response format
-  
+
   ```json
   {
     "id": "string",

@@ -1,6 +1,6 @@
 meta {
-  name: StaffEdOrgAssociations
-  seq: 2
+  name: Staff Education Organization Associations
+  seq: 14
 }
 
 auth {
@@ -9,32 +9,32 @@ auth {
 
 docs {
   # v4 StaffAssociation > StaffEducationOrganizationAssignmentAssociation Scenarios
-  
+
   StaffAssociation defines staff information. It can be used to define employment,
   assignment, and teaching associations, as well as staff positions and staff
   leave events.
-  
+
   The StaffEducationOrganizationAssignmentAssociation indicates the education
   organization to which a staff member provides services; also known as school of
   service.
-  
+
   ## Prerequisites
-  
+
   * Staff
-  
+
   ## Scenarios tasks
-  
+
   1. __CREATE__ a `first` new `StaffEducationOrganizationAssignmentAssociation` for a `Staff` record at Grand Bend Elementary School
   2. __CREATE__ a `second` new `StaffEducationOrganizationAssignmentAssociation` for a `Staff` record at Grand Bend High School
   3. __UPDATE__ the _positionTitle_ and remove the _endDate_ on the `first` association record,.
   4. __UPDATE__ the _positionTitle_ on the `second` association record.
-  
+
   :::note
   **positionTitle** can duplicate the value in **staffClassification**  if not tracked in your SIS.
   :::
-  
+
   ## Scenarios example data
-  
+
   | Resource                                         | Property Name                                | Is Collection | Data Type                               | Required / Optional | Scenario 1: POST                        | Scenario 2: POST                       | Scenario 3: PUT                        | Scenario 4: PUT                        |
   | ------------------------------------------------ | -------------------------------------------- | --------------| --------------------------------------- | ------------------- | --------------------------------------- | -------------------------------------- | -------------------------------------- | -------------------------------------- |
   | StaffEducationOrganizationAssignmentAssociations | staffReference                               | FALSE         | staffReference                          | REQUIRED            |                                         |                                        |                                        |                                        |
@@ -53,7 +53,7 @@ docs {
   | StaffEducationOrganizationAssignmentAssociations | credentialReference                          | FALSE         | credentialReference                     | OPTIONAL            |                                         |                                        |                                        |                                        |
   | credentialReference                              | identifier                                   | FALSE         | string                                  | OPTIONAL            |                                         |                                        |                                        |                                        |
   | credentialReference                              | stateOfIssueStateAbbreviationDescriptor      | FALSE         | stateOfIssueStateAbbreviationDescriptor | OPTIONAL            |                                         |                                        |                                        |                                        |
-  
+
   ## API response format
   ```json
   {
