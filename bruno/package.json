@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@usebruno/cli": "^3.2.0",
-    "dayjs": "^1.11.19"
+    "dayjs": "^1.11.20"
   },
   "devDependencies": {
     "simple-git-hooks": "^2.11.1"
