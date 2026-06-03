@@ -1,0 +1,49 @@
+meta {
+  name: 01 - StudentAcademicRecords
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~schoolYear: 2026
+  ~educationOrganizationId: 255901001
+  ~studentUniqueId: 604822
+  ~termDescriptor: {{termDescriptorEncoded}}
+  ~termDescriptor_KEEP_IT_AT_THE_END: uri://ed-fi.org/TermDescriptor#Fall Semester
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  	const { encodeDescriptorParameter, setVar } = require('./utils');
+  	const termDescriptorEncoded = encodeDescriptorParameter(req.url, parameterName = 'termDescriptor_KEEP_IT_AT_THE_END');
+  	setVar(bru, 'termDescriptorEncoded', termDescriptorEncoded);
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempStudentAcademicRecordUniqueId', item.id);
+    setVarsMessage('StudentAcademicRecord');
+  } else {
+    wipeVar(bru, 'tempStudentAcademicRecordUniqueId');
+    wipeVarsWarning('StudentAcademicRecord');
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}

@@ -17,18 +17,13 @@ auth:bearer {
 body:json {
   {
     "id": "{{tempSchoolYearTypeUniqueId}}",
-    "schoolYear": 2040,
-    "currentSchoolYear": false,
-    "schoolYearDescription": "2039-2040"
+    "schoolYear": 2026,
+    "currentSchoolYear": true,
+    "schoolYearDescription": "2026-2027"
   }
-}
-
-script:pre-request {
-  const { validateDependency } = require('./utils');
-
-  validateDependency(bru, 'tempSchoolId', 'GET Schools');
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

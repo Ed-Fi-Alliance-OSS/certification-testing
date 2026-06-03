@@ -1,19 +1,19 @@
 meta {
-  name: CharterApprovalAgencyTypeDescriptors
+  name: TermDescriptors
   type: http
-  seq: 7
+  seq: 23
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/charterApprovalAgencyTypeDescriptors
+  url: {{resourceBaseUrl}}/ed-fi/termDescriptors
   body: none
   auth: bearer
 }
 
 params:query {
-  ~charterApprovalAgencyTypeDescriptorId: 
-  ~limit: 5
+  ~limit: 25
   ~offset: 0
+  ~titleIPartASchoolDesignationDescriptorId: 
   ~totalCount: 
 }
 

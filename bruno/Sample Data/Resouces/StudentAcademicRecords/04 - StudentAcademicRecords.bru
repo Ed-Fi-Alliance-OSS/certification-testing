@@ -1,0 +1,61 @@
+meta {
+  name: 04 - StudentAcademicRecords
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{tempStudentAcademicRecordUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentAcademicRecordUniqueId}}",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 255901001,
+      "link": {
+        "rel": "School",
+        "href": "/ed-fi/schools/20ec19e5070245128a30fdcc6925bb09"
+      }
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": 2026,
+      "link": {
+        "rel": "SchoolYearType",
+        "href": "/ed-fi/schoolYearTypes/337ea29f861b4ee88fa9714863cc0b98"
+      }
+    },
+    "studentReference": {
+      "studentUniqueId": "604822",
+      "link": {
+        "rel": "Student",
+        "href": "/ed-fi/students/7f427af23ed84961907dccd3d76b58d5"
+      }
+    },
+    "termDescriptor": "uri://ed-fi.org/TermDescriptor#Fall Semester",
+    "cumulativeAttemptedCredits": 43,
+    "cumulativeEarnedCredits": 41,
+    "sessionAttemptedCredits": 6,
+    "sessionEarnedCredits": 6,
+    "gradePointAverages": [
+      {
+        "gradePointAverageTypeDescriptor": "uri://ed-fi.org/GradePointAverageTypeDescriptor#Unweighted",
+        "gradePointAverageValue": 0,
+        "isCumulative": true,
+        "maxGradePointAverageValue": 100
+      }
+    ]
+  }
+
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

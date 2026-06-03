@@ -1,19 +1,19 @@
 meta {
-  name: CharterApprovalAgencyTypeDescriptors
+  name: GradePointAverageTypeDescriptors
   type: http
-  seq: 7
+  seq: 25
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/charterApprovalAgencyTypeDescriptors
+  url: {{resourceBaseUrl}}/ed-fi/gradePointAverageTypeDescriptors
   body: none
   auth: bearer
 }
 
 params:query {
-  ~charterApprovalAgencyTypeDescriptorId: 
-  ~limit: 5
+  ~limit: 25
   ~offset: 0
+  ~gradePointAverageTypeDescriptorId: 
   ~totalCount: 
 }
 
