@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/SchoolYearTypes?schoolYear=2025
+  url: {{resourceBaseUrl}}/ed-fi/SchoolYearTypes?schoolYear=2026
   body: none
   auth: bearer
 }
 
 params:query {
-  schoolYear: 2025
+  schoolYear: 2026
   ~schoolYearDescription: 
   ~currentSchoolYear: 
   ~id: {{tempSchoolYearTypeId}}
@@ -29,7 +29,7 @@ auth:bearer {
 script:post-response {
   const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
   const item = pickSingle(res.getBody());
-
+  
   if (item) {
     setVars(bru, {
       tempSchoolYearTypeUniqueId: item.id,
@@ -44,4 +44,5 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
