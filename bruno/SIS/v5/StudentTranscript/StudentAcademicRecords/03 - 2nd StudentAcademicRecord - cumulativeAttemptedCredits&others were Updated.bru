@@ -58,7 +58,7 @@ script:pre-request {
 }
 
 script:post-response {
-  const { expectChanged, setVars } = require('./utils');
+  const { expectChanged } = require('./utils');
   const { logScenario, logSpecStudentAcademicRecord } = require('./logging');
   const entityName = 'StudentAcademicRecord';
   const scenarioName = this.req.name;

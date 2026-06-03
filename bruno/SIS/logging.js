@@ -712,7 +712,7 @@ const logSpecGrade = {
 // Mutation scenario targets cumulativeAttemptedCredits, cumulativeEarnedCredits, sessionEarnedCredits (+ sessionAttemptedCredits implicitly)
 const logSpecStudentAcademicRecord = {
   educationOrganizationId: r => r?.educationOrganizationId || r?.educationOrganizationReference?.educationOrganizationId,
-  schoolYear: r => r?.schoolYear,
+  schoolYear: r => r?.schoolYearTypeReference?.studentUniqueId,
   studentUniqueId: r => r?.studentUniqueId || r?.studentReference?.studentUniqueId,
   termDescriptor: r => extractDescriptor(r?.termDescriptor),
   cumulativeAttemptedCredits: r => r?.cumulativeAttemptedCredits,
@@ -723,9 +723,6 @@ const logSpecStudentAcademicRecord = {
   maxGradePointAverageValue: r => r?.gradePointAverages?.[0]?.maxGradePointAverageValue,
   sessionAttemptedCredits: r => r?.sessionAttemptedCredits,
   sessionEarnedCredits: r => r?.sessionEarnedCredits,
-  graduationPlanEducationOrganizationId: r => r?.graduationPlans?.[0]?.educationOrganizationId,
-  graduationPlanSchoolYear: r => r?.graduationPlans?.[0]?.graduationSchoolYear,
-  graduationPlanTypeDescriptor: r => extractDescriptor(r?.graduationPlans?.[0]?.graduationPlanTypeDescriptor),
 };
 
 // CourseTranscript spec map (StudentTranscript > CourseTranscript)

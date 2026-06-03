@@ -20,12 +20,9 @@ docs {
 
   ## Scenarios tasks
 
-  1. __CREATE__ a `first` Fall Semester `StudentAcademicRecord` of a [School Year from five years ago]
-    for a student at Grand Bend Elementary School.
-  2. __CREATE__ a `second` Fall Semester `StudentAcademicRecord` of a [School Year from five years ago]
-    for a student at Grand Bend High School. This should be a course that appears on the student's graduation transcript. Add a graduation plan reference to the High School student's StudentSchoolAssociation.
-  3. __UPDATE__ the _schoolYear_, _cumulativeAttemptedCredits_ (+3), _cumulativeEarnedCredits_ (+3), _sessionEarnedCredits_ (+3),
-    and _sessionAttemptedCredits_ (+3) for the `second` added `StudentAcademicRecord` for the high school Student's record.
+  1. __CREATE__ a `first` Fall Semester `StudentAcademicRecord` for a student at Grand Bend Elementary School.
+  2. __CREATE__ a `second` Fall Semester `StudentAcademicRecord` for a student at Grand Bend High School. This should be a course that appears on the student's graduation transcript. Add a graduation plan reference to the High School student's StudentSchoolAssociation.
+  3. __UPDATE__ the _schoolYear_, _cumulativeAttemptedCredits_ (+3), _cumulativeEarnedCredits_ (+3), _sessionEarnedCredits_ (+3), and _sessionAttemptedCredits_ (+3) for the `second` added `StudentAcademicRecord` for the high school Student's record.
 
   ## Scenarios example data:
 
@@ -43,10 +40,10 @@ docs {
   | StudentAcademicRecords              | sessionAttemptedCredits           | FALSE         | decimal                               | REQUIRED |                                | [System calculated value or 3]  | [Previous system calculated value + 3 or 6] |
   | StudentAcademicRecords              | sessionEarnedCredits              | FALSE         | decimal                               | REQUIRED |                                | [System calculated value or 3]  | [Previous system calculated value + 3 or 6] |
   | StudentAcademicRecords              | gradePointAverages                | TRUE          | gradePointAverages[]                  | REQUIRED |                                |                                 |                                             |
-  | gradePointAverages                  | gradePointAverageTypeDescriptor   | FALSE         | gradePointAverageTypeDescriptor       | REQUIRED | TBD                            | TBD                             | TBD                                         |
-  | gradePointAverages                  | gradePointAverageValue            | FALSE         | decimal                               | REQUIRED | TBD                            | TBD                             | TBD                                         |
-  | gradePointAverages                  | isCumulative                      | FALSE         | boolean                               | REQUIRED | TBD                            | TBD                             | TBD                                         |
-  | gradePointAverages                  | maxGradePointAverageValue         | FALSE         | decimal                               | REQUIRED | TBD                            | TBD                             | TBD                                         |
+  | gradePointAverages                  | gradePointAverageTypeDescriptor   | FALSE         | gradePointAverageTypeDescriptor       | REQUIRED |                                |                                 |                                             |
+  | gradePointAverages                  | gradePointAverageValue            | FALSE         | decimal                               | REQUIRED |                                |                                 |                                             |
+  | gradePointAverages                  | isCumulative                      | FALSE         | boolean                               | REQUIRED |                                |                                 |                                             |
+  | gradePointAverages                  | maxGradePointAverageValue         | FALSE         | decimal                               | REQUIRED |                                |                                 |                                             |
 
   ## API response format
 
