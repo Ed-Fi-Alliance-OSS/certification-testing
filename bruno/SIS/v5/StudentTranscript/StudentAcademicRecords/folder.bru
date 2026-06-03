@@ -29,24 +29,24 @@ docs {
 
   ## Scenarios example data:
 
-  | Resource                            | Property Name                     | Is Collection | Data Type                             | Required | Scenario 1: POST              | Scenario 2: POST                 | Scenario 3: PUT                             |
-  | ----------------------------------- | --------------------------------- | ------------- | ------------------------------------- | -------- | ----------------------------- | -------------------------------- | ------------------------------------------- |
-  | StudentAcademicRecords              | educationOrganizationReference    | FALSE         | educationOrganizationReference        | REQUIRED |                               |                                  |                                             |
-  | StudentAcademicRecords              | educationOrganizationId           | FALSE         | integer                               | REQUIRED | 255901107                     | 255901001                        | 255901001                                   |
-  | StudentAcademicRecords              | schoolYearTypeReference           | FALSE         | schoolYearTypeReference               | REQUIRED |                               |                                  |                                             |
-  | StudentAcademicRecords              | schoolYear                        | FALSE         | integer                               | REQUIRED | [School year five years ago]  | [School year five years ago]     | [Current School Year]                       |
-  | StudentAcademicRecords              | studentReference                  | FALSE         | studentReference                      | REQUIRED |                               |                                  |                                             |
-  | StudentAcademicRecords              | studentUniqueId                   | FALSE         | string                                | REQUIRED | 111111                        | 222222                           | 222222                                      |
-  | StudentAcademicRecords              | termDescriptor                    | FALSE         | string                                | REQUIRED | Fall Semester                 | Fall Semester                    | Fall Semester                               |
-  | StudentAcademicRecords              | cumulativeAttemptedCredits        | FALSE         | decimal                               | REQUIRED | [System calculated value | 0] | [System calculated value | 40]   | [Previous system calculated value + 3 | 43] |
-  | StudentAcademicRecords              | cumulativeEarnedCredits           | FALSE         | decimal                               | REQUIRED | [System calculated value | 0] | [System calculated value | 38]   | [Previous system calculated value + 3 | 41] |
-  | StudentAcademicRecords              | sessionAttemptedCredits           | FALSE         | decimal                               | REQUIRED |                               | [System calculated value | 3]    | [Previous system calculated value + 3 | 6]  |
-  | StudentAcademicRecords              | sessionEarnedCredits              | FALSE         | decimal                               | REQUIRED |                               | [System calculated value | 3]    | [Previous system calculated value + 3 | 6]  |
-  | StudentAcademicRecords              | gradePointAverages                | TRUE          | gradePointAverages[]                  | REQUIRED |                               |                                  |                                             |
-  | gradePointAverages                  | gradePointAverageTypeDescriptor   | FALSE         | gradePointAverageTypeDescriptor       | REQUIRED |                               |                                  |                                             |
-  | gradePointAverages                  | gradePointAverageValue            | FALSE         | decimal                               | REQUIRED |                               |                                  |                                             |
-  | gradePointAverages                  | isCumulative                      | FALSE         | boolean                               | REQUIRED |                               |                                  |                                             |
-  | gradePointAverages                  | maxGradePointAverageValue         | FALSE         | decimal                               | REQUIRED |                               |                                  |                                             |
+  | Resource                            | Property Name                     | Is Collection | Data Type                             | Required | Scenario 1: POST               | Scenario 2: POST                | Scenario 3: PUT                             |
+  | ----------------------------------- | --------------------------------- | ------------- | ------------------------------------- | -------- | ------------------------------ | ------------------------------- | ------------------------------------------- |
+  | StudentAcademicRecords              | educationOrganizationReference    | FALSE         | educationOrganizationReference        | REQUIRED |                                |                                 |                                             |
+  | StudentAcademicRecords              | educationOrganizationId           | FALSE         | integer                               | REQUIRED | 255901107                      | 255901001                       | 255901001                                   |
+  | StudentAcademicRecords              | schoolYearTypeReference           | FALSE         | schoolYearTypeReference               | REQUIRED |                                |                                 |                                             |
+  | StudentAcademicRecords              | schoolYear                        | FALSE         | integer                               | REQUIRED | [Current School Year]          | [Current School Year]           | [Current School Year]                       |
+  | StudentAcademicRecords              | studentReference                  | FALSE         | studentReference                      | REQUIRED |                                |                                 |                                             |
+  | StudentAcademicRecords              | studentUniqueId                   | FALSE         | string                                | REQUIRED | 111111                         | 222222                          | 222222                                      |
+  | StudentAcademicRecords              | termDescriptor                    | FALSE         | string                                | REQUIRED | Fall Semester                  | Fall Semester                   | Fall Semester                               |
+  | StudentAcademicRecords              | cumulativeAttemptedCredits        | FALSE         | decimal                               | REQUIRED | [System calculated value or 0] | [System calculated value or 40] | [Previous system calculated value + 3 or 43]|
+  | StudentAcademicRecords              | cumulativeEarnedCredits           | FALSE         | decimal                               | REQUIRED | [System calculated value or 0] | [System calculated value or 38] | [Previous system calculated value + 3 or 41]|
+  | StudentAcademicRecords              | sessionAttemptedCredits           | FALSE         | decimal                               | REQUIRED |                                | [System calculated value or 3]  | [Previous system calculated value + 3 or 6] |
+  | StudentAcademicRecords              | sessionEarnedCredits              | FALSE         | decimal                               | REQUIRED |                                | [System calculated value or 3]  | [Previous system calculated value + 3 or 6] |
+  | StudentAcademicRecords              | gradePointAverages                | TRUE          | gradePointAverages[]                  | REQUIRED |                                |                                 |                                             |
+  | gradePointAverages                  | gradePointAverageTypeDescriptor   | FALSE         | gradePointAverageTypeDescriptor       | REQUIRED | TBD                            | TBD                             | TBD                                         |
+  | gradePointAverages                  | gradePointAverageValue            | FALSE         | decimal                               | REQUIRED | TBD                            | TBD                             | TBD                                         |
+  | gradePointAverages                  | isCumulative                      | FALSE         | boolean                               | REQUIRED | TBD                            | TBD                             | TBD                                         |
+  | gradePointAverages                  | maxGradePointAverageValue         | FALSE         | decimal                               | REQUIRED | TBD                            | TBD                             | TBD                                         |
 
   ## API response format
 
@@ -92,7 +92,6 @@ docs {
     "cumulativeEarnedCreditConversion": 0,
     "cumulativeEarnedCredits": 0,
     "cumulativeEarnedCreditTypeDescriptor": "string",
-    "cumulativeGradePointAverage": 0,
     "cumulativeGradePointsEarned": 0,
     "diplomas": [
       {

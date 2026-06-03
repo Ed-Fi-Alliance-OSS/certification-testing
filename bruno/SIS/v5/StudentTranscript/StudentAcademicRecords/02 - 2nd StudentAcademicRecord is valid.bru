@@ -37,7 +37,13 @@ assert {
   res.body[0].termDescriptor: isNotEmpty
   res.body[0].cumulativeAttemptedCredits: gte 0
   res.body[0].cumulativeEarnedCredits: gte 0
-  res.body[0].cumulativeGradePointAverage: gte 0
+  res.body[0].gradePointAverages: isArray
+  res.body[0].gradePointAverages: isNotEmpty
+  res.body[0].gradePointAverages[0].gradePointAverageTypeDescriptor: isString
+  res.body[0].gradePointAverages[0].gradePointAverageTypeDescriptor: isNotEmpty
+  res.body[0].gradePointAverages[0].gradePointAverageValue: gte 0
+  res.body[0].gradePointAverages[0].isCumulative: isBoolean
+  res.body[0].gradePointAverages[0].maxGradePointAverageValue: gte 0
   res.body[0].sessionAttemptedCredits: gte 0
   res.body[0].sessionEarnedCredits: gte 0
 }
@@ -57,7 +63,6 @@ script:post-response {
   if (!entity) {
     wipeVars(bru, [
       'secondStudentAcademicRecordUniqueId',
-      'secondStudentAcademicRecordSchoolYear',
       'secondStudentAcademicRecordCumulativeAttemptedCredits',
       'secondStudentAcademicRecordCumulativeEarnedCredits',
       'secondStudentAcademicRecordSessionAttemptedCredits',
@@ -66,7 +71,6 @@ script:post-response {
   }
   setVars(bru, {
     secondStudentAcademicRecordUniqueId: entity.id,
-    secondStudentAcademicRecordSchoolYear: entity.schoolYearTypeReference.schoolYear,
     secondStudentAcademicRecordCumulativeAttemptedCredits: entity.cumulativeAttemptedCredits,
     secondStudentAcademicRecordCumulativeEarnedCredits: entity.cumulativeEarnedCredits,
     secondStudentAcademicRecordSessionAttemptedCredits: entity.sessionAttemptedCredits,
