@@ -1,0 +1,68 @@
+meta {
+  name: 02 - StudentAcademicRecords
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "educationOrganizationReference": {
+      "educationOrganizationId": 255901001,
+      "link": {
+        "rel": "School",
+        "href": "/ed-fi/schools/20ec19e5070245128a30fdcc6925bb09"
+      }
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": 2024,
+      "link": {
+        "rel": "SchoolYearType",
+        "href": "/ed-fi/schoolYearTypes/337ea29f861b4ee88fa9714863cc0b98"
+      }
+    },
+    "studentReference": {
+      "studentUniqueId": "604822",
+      "link": {
+        "rel": "Student",
+        "href": "/ed-fi/students/7f427af23ed84961907dccd3d76b58d5"
+      }
+    },
+    "termDescriptor": "uri://ed-fi.org/TermDescriptor#Fall Semester",
+    "cumulativeAttemptedCredits": 40,
+    "cumulativeEarnedCredits": 38,
+    "sessionAttemptedCredits": null,
+    "sessionEarnedCredits": null,
+    "gradePointAverages": [
+      {
+        "gradePointAverageTypeDescriptor": "uri://ed-fi.org/GradePointAverageTypeDescriptor#Unweighted",
+        "gradePointAverageValue": 0,
+        "isCumulative": true,
+        "maxGradePointAverageValue": 100
+      }
+    ]
+  }
+
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const newRecordId = locationHeader.split('/').pop();
+    bru.setEnvVar('tempStudentAcademicRecordUniqueId', newRecordId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

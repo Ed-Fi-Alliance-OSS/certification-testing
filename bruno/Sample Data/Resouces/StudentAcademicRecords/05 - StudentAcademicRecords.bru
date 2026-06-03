@@ -1,0 +1,20 @@
+meta {
+  name: 05 - StudentAcademicRecords
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/studentAcademicRecords/{{tempStudentAcademicRecordUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
