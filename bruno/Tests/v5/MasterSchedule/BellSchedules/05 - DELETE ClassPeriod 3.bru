@@ -1,21 +1,17 @@
 meta {
-  name: DELETE a BellSchedule
+  name: 05 - DELETE ClassPeriod 3
   type: http
-  seq: 2
+  seq: 9
 }
 
 delete {
-  url: {{resourceBaseUrl}}/ed-fi/BellSchedules/{{tempBellScheduleUniqueId}}
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{tempClassPeriodId_3}}
   body: json
   auth: bearer
 }
 
 auth:bearer {
   token: {{edFiCertToken}}
-}
-
-assert {
-  res.status: eq 204
 }
 
 settings {

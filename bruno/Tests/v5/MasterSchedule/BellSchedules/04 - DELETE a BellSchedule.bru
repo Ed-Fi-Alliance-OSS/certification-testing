@@ -1,0 +1,24 @@
+meta {
+  name: 04 - DELETE a BellSchedule
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/BellSchedules/{{tempBellScheduleUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: eq 204
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

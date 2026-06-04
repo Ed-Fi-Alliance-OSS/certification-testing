@@ -1,0 +1,50 @@
+meta {
+  name: 02 - CREATE ClassPeriod 2
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "classPeriodName": "[CLASS_PERIOD_NAME_2]",
+    "schoolReference": {
+      "schoolId": "{{tempSchoolId}}"
+    },
+    "meetingTimes": [{
+      "startTime": "15:00:00",
+      "endTime": "16:00:00"
+    }],
+    "officialAttendancePeriod": true
+  }
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempSchoolId', 'GET Schools');
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+
+  if (locationHeader) {
+    const tempClassPeriodId = locationHeader.split('/').pop();
+
+    bru.setEnvVar('tempClassPeriodId_2', tempClassPeriodId);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,20 @@
+meta {
+  name: 05 - DELETE ClassPeriod 1
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{tempClassPeriodId_1}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
