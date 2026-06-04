@@ -105,9 +105,11 @@ script:post-response {
   if (locationHeader) {
     const schoolUniqueId = locationHeader.split('/').pop();
     bru.setEnvVar('tempSchoolUniqueId', schoolUniqueId);
-    console.log('School data was fetched correctly.');
+    console.log('School "[SCHOOL_NAME]" was created correctly.');
+  } else {
+    console.log('There was an error creating ClassPeriod "[SCHOOL_NAME]" response:');
+    console.log(res);
   }
-
 }
 
 settings {

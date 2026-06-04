@@ -18,7 +18,7 @@ body:json {
   {
     "classPeriodName": "[CLASS_PERIOD_NAME_2]",
     "schoolReference": {
-      "schoolId": "{{tempSchoolId}}"
+      "schoolId": "[ENTER_SCHOOL_ID]"
     },
     "meetingTimes": [{
       "startTime": "15:00:00",
@@ -28,19 +28,16 @@ body:json {
   }
 }
 
-script:pre-request {
-  const { validateDependency } = require('./utils');
-
-  validateDependency(bru, 'tempSchoolId', 'GET Schools');
-}
-
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
 
   if (locationHeader) {
     const tempClassPeriodId = locationHeader.split('/').pop();
-
     bru.setEnvVar('tempClassPeriodId_2', tempClassPeriodId);
+    console.log('ClassPeriod [CLASS_PERIOD_NAME_2] was created correctly.');
+  } else {
+    console.log('There was an error creating ClassPeriod "[CLASS_PERIOD_NAME_2]" response:');
+    console.log(res);
   }
 }
 

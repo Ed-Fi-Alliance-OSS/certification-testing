@@ -56,6 +56,10 @@ script:post-response {
   if (locationHeader) {
     const bellScheduleId = locationHeader.split('/').pop();
     bru.setEnvVar('tempBellScheduleUniqueId', bellScheduleId);
+    console.log('BellSchedule [ENTER_BELL_SCHEDULE_NAME] was created correctly.');
+  } else {
+    console.log('There was an error creating BellSchedule "[ENTER_BELL_SCHEDULE_NAME]" response:');
+    console.log(res);
   }
 }
 
