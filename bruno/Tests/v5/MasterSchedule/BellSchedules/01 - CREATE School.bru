@@ -96,6 +96,10 @@ body:json {
   }
 }
 
+assert {
+  res.status: eq 201
+}
+
 script:pre-request {
   bru.setEnvVar('tempSchoolId', [ENTER_SCHOOL_ID]);
 }
