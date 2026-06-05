@@ -298,14 +298,8 @@ function replacePlaceholders(content, dataMap) {
     combined = proc.stdout || '';
     exitCode = proc.status;
   }
-  if (!runBrunoFolder._printedSample) {
-    const head = combined.split(/\r?\n/).slice(0,40).join('\n');
-    const tail = combined.split(/\r?\n/).slice(-15).join('\n');
-    log('[DEBUG] Bruno output (head):\n' + head);
-    log('[DEBUG] Bruno output (tail):\n' + tail);
-    log('[DEBUG] Exit code: ' + exitCode);
-    runBrunoFolder._printedSample = true;
-  }
+  log('[DEBUG] Bruno output:\n' + combined);
+  log('[DEBUG] Exit code: ' + exitCode);
   const summary = parseBrunoSummary(combined);
   // Always write last-output.txt for debugging (overwrites each folder execution)
   try {

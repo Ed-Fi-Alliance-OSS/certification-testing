@@ -20,10 +20,10 @@ assert {
 
 script:post-response {
   if (res.status === 204) {
-    console.log('BellSchedule "{{tempBellScheduleUniqueId}}" was deleted correctly.');
+    console.log('BellSchedule "' + bru.getEnvVar('tempBellScheduleUniqueId') + '" was deleted correctly.');
   } else {
-    console.log('There was an error deleting BellSchedule "{{tempBellScheduleUniqueId}}" response:');
-    console.log(res);
+    console.log('There was an error deleting BellSchedule "' + bru.getEnvVar('tempBellScheduleUniqueId') + '" response:');
+    console.log(JSON.stringify(res));
   }
 }
 

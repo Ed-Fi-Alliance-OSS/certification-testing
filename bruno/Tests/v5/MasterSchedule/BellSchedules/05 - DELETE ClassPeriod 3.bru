@@ -20,10 +20,10 @@ assert {
 
 script:post-response {
   if (res.status === 204) {
-    console.log('ClassPeriod 3 "{{tempClassPeriodId_3}}" was deleted correctly.');
+    console.log('ClassPeriod 3 "' + bru.getEnvVar('tempClassPeriodId_3') + '" was deleted correctly.');
   } else {
-    console.log('There was an error deleting ClassPeriod 3 "{{tempClassPeriodId_3}}" response:');
-    console.log(res);
+    console.log('There was an error deleting ClassPeriod 3 "' + bru.getEnvVar('tempClassPeriodId_3') + '" response:');
+    console.log(JSON.stringify(res));
   }
 }
 

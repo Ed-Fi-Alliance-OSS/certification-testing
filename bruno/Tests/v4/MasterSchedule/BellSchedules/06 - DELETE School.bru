@@ -20,10 +20,10 @@ assert {
 
 script:post-response {
   if (res.status === 204) {
-    console.log('School "{{tempSchoolUniqueId}}" was deleted correctly.');
+    console.log('School "' + bru.getEnvVar('tempSchoolUniqueId') + '" was deleted correctly.');
   } else {
-    console.log('There was an error deleting School "{{tempSchoolUniqueId}}" response:');
-    console.log(res);
+    console.log('There was an error deleting School "' + bru.getEnvVar('tempSchoolUniqueId') + '" response:');
+    console.log(JSON.stringify(res));
   }
 }
 
