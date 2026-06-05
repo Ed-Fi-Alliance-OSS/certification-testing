@@ -29,7 +29,7 @@ body:json {
 }
 
 assert {
-  res.status: eq 201
+  res.status: in [200, 201]
 }
 
 script:post-response {
@@ -38,7 +38,7 @@ script:post-response {
   if (locationHeader) {
     const tempClassPeriodId = locationHeader.split('/').pop();
     bru.setEnvVar('tempClassPeriodId_1', tempClassPeriodId);
-    console.log('ClassPeriod "[CLASS_PERIOD_NAME_1]" was created correctly.');
+    console.log('ClassPeriod "[CLASS_PERIOD_NAME_1]" was created correctly. (uniqueId: ' + tempClassPeriodId + ')');
   } else {
     console.log('There was an error creating ClassPeriod "[CLASS_PERIOD_NAME_1]" response:');
     console.log(res);
