@@ -1,7 +1,9 @@
 {
     "name": "BellSchedules",
     "data": {
-        "ENTER_SCHOOL_ID": 1549697793,
+        "ENTER_SCHOOL_ID": 1122334455,
+        "LEA_ID": 255901,
+        "SCHOOL_NAME": "CI School",
         "ENTER_BELL_SCHEDULE_NAME": "Normal Schedule A",
         "START_TIME": "07:00:00",
         "END_TIME": "10:00:00",
@@ -11,8 +13,16 @@
         "CLASS_PERIOD_NAME_3": "Class Period 3"
     },
     "order": [
-        "bruno/Tests/v5/MasterSchedule/BellSchedules/CREATE a BellSchedule.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/01 - CREATE School.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/02 - CREATE ClassPeriod 1.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/02 - CREATE ClassPeriod 2.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/02 - CREATE ClassPeriod 3.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/03 - CREATE a BellSchedule.bru",
         "bruno/SIS/v5/MasterSchedule/BellSchedules/01 - BellSchedule is valid.bru",
-        "bruno/Tests/v5/MasterSchedule/BellSchedules/DELETE a BellSchedule.bru"
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/04 - DELETE a BellSchedule.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/05 - DELETE ClassPeriod 1.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/05 - DELETE ClassPeriod 2.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/05 - DELETE ClassPeriod 3.bru",
+        "bruno/Tests/v5/MasterSchedule/BellSchedules/06 - DELETE School.bru"
     ]
 }

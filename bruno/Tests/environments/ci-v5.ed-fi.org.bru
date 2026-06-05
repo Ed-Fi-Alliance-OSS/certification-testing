@@ -4,6 +4,6 @@ vars {
   resourceBaseUrl: {{baseUrl}}/{{apiVersion}}/api/data/v3
   oauthUrl: {{baseUrl}}/{{apiVersion}}/api/oauth/token
   edFiClientName: CI Client Credentials
-  edFiClientId:
-  edFiClientSecret:
+  edFiClientId: {{process.env.EDFI_CLIENT_ID}}
+  edFiClientSecret: {{process.env.EDFI_CLIENT_SECRET}}
 }

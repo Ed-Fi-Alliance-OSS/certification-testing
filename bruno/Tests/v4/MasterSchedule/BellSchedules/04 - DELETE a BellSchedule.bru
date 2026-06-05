@@ -1,0 +1,33 @@
+meta {
+  name: 04 - DELETE a BellSchedule
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/BellSchedules/{{tempBellScheduleUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: eq 204
+}
+
+script:post-response {
+  if (res.status === 204) {
+    console.log('BellSchedule "' + bru.getEnvVar('tempBellScheduleUniqueId') + '" was deleted correctly.');
+  } else {
+    console.log('There was an error deleting BellSchedule "' + bru.getEnvVar('tempBellScheduleUniqueId') + '" response:');
+    console.log(JSON.stringify(res));
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
