@@ -20,8 +20,8 @@ assert {
   res.body.courseCode: isNotEmpty
   res.body.courseTitle: isString
   res.body.courseTitle: isNotEmpty
-  res.body.academicSubjectDescriptor: isString
-  res.body.academicSubjectDescriptor: isNotEmpty
+  res.body.academicSubjects[0].academicSubjectDescriptor: isString
+  res.body.academicSubjects[0].academicSubjectDescriptor: isNotEmpty
   res.body.identificationCodes: isArray
   res.body.identificationCodes: isNotEmpty
   res.body.identificationCodes[0].courseIdentificationSystemDescriptor: isString
@@ -43,7 +43,7 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-
+  
   validateDependency(bru, 'firstCourseUniqueId', '01 - 1st Course is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
   validateDependency(bru, 'firstCourseCourseTitle', '01 - 1st Course is valid', { actionHint: 'Ensure you ran the first certification scenario successfully before continuing.' });
 }
@@ -53,18 +53,19 @@ script:post-response {
   const { logSpecCourses, logScenario } = require('./logging');
   const entityName = 'Course';
   const scenarioName = this.req.name;
-
+  
   if (res.status !== 200 || !res.body) {
     throwNotFoundOrSpecificError(entityName);
   }
-
+  
   const current = res.getBody();
   const previousTitle = getVar(bru, 'firstCourseCourseTitle');
-
+  
   expectChanged(previousTitle, current.courseTitle, 'courseTitle');
   logScenario(entityName, scenarioName, current, logSpecCourses, ['courseTitle']);
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

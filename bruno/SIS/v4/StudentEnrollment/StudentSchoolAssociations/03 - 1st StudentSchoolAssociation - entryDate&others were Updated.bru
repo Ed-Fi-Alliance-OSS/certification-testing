@@ -32,8 +32,8 @@ assert {
   res.body.entryGradeLevelDescriptor: isNotEmpty
   res.body.entryTypeDescriptor: isString
   res.body.entryTypeDescriptor: isNotEmpty
-  res.body.exitWithdrawDate: isUndefined
-  res.body.exitWithdrawTypeDescriptor: isUndefined
+  res.body.exitWithdrawDate: isDefined
+  res.body.exitWithdrawTypeDescriptor: isString
   res.body.repeatGradeIndicator: isBoolean
   res.body.residencyStatusDescriptor: isString
   res.body.residencyStatusDescriptor: isNotEmpty

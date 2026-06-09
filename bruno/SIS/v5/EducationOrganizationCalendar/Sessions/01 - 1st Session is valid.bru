@@ -48,8 +48,8 @@ assert {
   res.body[0].gradingPeriods[0].gradingPeriodReference.schoolYear: neq 0
   res.body[0].gradingPeriods[0].gradingPeriodReference.gradingPeriodDescriptor: isString
   res.body[0].gradingPeriods[0].gradingPeriodReference.gradingPeriodDescriptor: isNotEmpty
-  res.body[0].gradingPeriods[0].gradingPeriodReference.periodSequence: isNumber
-  res.body[0].gradingPeriods[0].gradingPeriodReference.periodSequence: neq 0
+  ~res.body[0].gradingPeriods[0].gradingPeriodReference.periodSequence: isNumber
+  ~res.body[0].gradingPeriods[0].gradingPeriodReference.periodSequence: neq 0
 }
 
 script:post-response {

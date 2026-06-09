@@ -40,7 +40,7 @@ assert {
   res.body.studentSectionAssociationReference.sessionName: isNotEmpty
   res.body.studentSectionAssociationReference.beginDate: isString
   res.body.letterGradeEarned: isString
-  res.body.numericGradeEarned: isString
+  res.body.numericGradeEarned: isNumber
 }
 
 script:post-response {
