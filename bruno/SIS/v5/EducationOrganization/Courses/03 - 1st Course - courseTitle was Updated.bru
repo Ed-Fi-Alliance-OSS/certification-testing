@@ -20,8 +20,8 @@ assert {
   res.body.courseCode: isNotEmpty
   res.body.courseTitle: isString
   res.body.courseTitle: isNotEmpty
-  res.body.academicSubjectDescriptor: isString
-  res.body.academicSubjectDescriptor: isNotEmpty
+  res.body.academicSubjects[0].academicSubjectDescriptor: isString
+  res.body.academicSubjects[0].academicSubjectDescriptor: isNotEmpty
   res.body.identificationCodes: isArray
   res.body.identificationCodes: isNotEmpty
   res.body.identificationCodes[0].courseIdentificationSystemDescriptor: isString

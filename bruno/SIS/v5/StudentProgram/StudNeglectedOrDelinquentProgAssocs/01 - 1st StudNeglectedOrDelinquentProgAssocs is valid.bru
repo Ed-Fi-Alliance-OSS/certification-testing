@@ -28,6 +28,8 @@ assert {
   res.body[0].id: isNotEmpty
   res.body[0].beginDate: isString
   res.body[0].beginDate: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
   res.body[0].educationOrganizationReference: isDefined
   res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
   res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
@@ -54,7 +56,7 @@ assert {
 
 script:pre-request {
   const { encodeDescriptorParameter, setVar } = require('./utils');
-  
+
   const programTypeDescriptorEncoded = encodeDescriptorParameter(req.url, 'programTypeDescriptor_KEEP_IT_AT_THE_END');
   setVar(bru, 'firstProgramTypeDescriptorEncoded', programTypeDescriptorEncoded);
 }
@@ -65,21 +67,21 @@ script:post-response {
   const entityName = 'StudNeglectedOrDelinquentProgAssocs';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'firstStudNeglectedOrDelinquentProgAssocsUniqueId',
       'firstStudNeglectedOrDelinquentProgAssocsServiceDescriptor'
     ], entityName, true);
   }
-  
+
   const serviceDescriptor = single?.neglectedOrDelinquentProgramServices?.[0]?.neglectedOrDelinquentProgramServiceDescriptor;
-  
+
   setVars(bru, {
     firstStudNeglectedOrDelinquentProgAssocsUniqueId: single.id,
     firstStudNeglectedOrDelinquentProgAssocsServiceDescriptor: extractDescriptor(serviceDescriptor)
   }, entityName);
-  
+
   logScenario(entityName, scenarioName, single, logSpecStudNeglectedOrDelinquentProgAssocs);
 }
 

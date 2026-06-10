@@ -25,8 +25,8 @@ assert {
   res.body[0].courseCode: isNotEmpty
   res.body[0].courseTitle: isString
   res.body[0].courseTitle: isNotEmpty
-  res.body[0].academicSubjectDescriptor: isString
-  res.body[0].academicSubjectDescriptor: isNotEmpty
+  res.body[0].academicSubjects[0].academicSubjectDescriptor: isString
+  res.body[0].academicSubjects[0].academicSubjectDescriptor: isNotEmpty
   res.body[0].identificationCodes: isArray
   res.body[0].identificationCodes: isNotEmpty
   res.body[0].identificationCodes[0].courseIdentificationSystemDescriptor: isString
@@ -52,7 +52,7 @@ script:post-response {
   const entityName = 'Course';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'firstCourseUniqueId',
@@ -60,7 +60,7 @@ script:post-response {
       'firstCourseCourseLevelCharacteristicDescriptor'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     firstCourseUniqueId: single.id,
     firstCourseCourseTitle: single.courseTitle,
