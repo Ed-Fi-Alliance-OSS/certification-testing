@@ -38,6 +38,15 @@ assert {
   res.body[0].studentDisciplineIncidentBehaviorAssociations: isArray
   res.body[0].studentDisciplineIncidentBehaviorAssociations: isNotEmpty
   res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference: isDefined
+  res.body[0].studentDisciplineIncidentBehaviorAssociations: isArray
+  res.body[0].studentDisciplineIncidentBehaviorAssociations: isNotEmpty
+  res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference: isDefined
+  res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference.incidentIdentifier: isString
+  res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference.incidentIdentifier: isNotEmpty
+  res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference.schoolId: isNumber
+  res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference.schoolId: neq 0
+  res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference.studentUniqueId: isString
+  res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference.studentUniqueId: isNotEmpty
   res.body[0].responsibilitySchoolReference: isDefined
   res.body[0].responsibilitySchoolReference.schoolId: isNumber
   res.body[0].responsibilitySchoolReference.schoolId: neq 0
