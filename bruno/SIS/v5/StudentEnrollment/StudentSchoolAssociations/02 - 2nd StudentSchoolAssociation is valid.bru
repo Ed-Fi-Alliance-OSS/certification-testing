@@ -46,7 +46,8 @@ assert {
   res.body[0].repeatGradeIndicator: isBoolean
   res.body[0].residencyStatusDescriptor: isString
   res.body[0].residencyStatusDescriptor: isNotEmpty
-  res.body[0].schoolChoiceTransfer: isBoolean
+  res.body[0].primarySchool: isBoolean
+  res.body[0].fullTimeEquivalency: isNumber
   res.body[0].calendarReference.calendarCode: isString
 }
 

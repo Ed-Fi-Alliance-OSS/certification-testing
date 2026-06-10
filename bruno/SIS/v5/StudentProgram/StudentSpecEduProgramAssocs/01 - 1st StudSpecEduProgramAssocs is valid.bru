@@ -28,6 +28,10 @@ assert {
   res.body[0].id: isNotEmpty
   res.body[0].beginDate: isString
   res.body[0].beginDate: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
+  res.body[0].reasonExitedDescriptor: isString
+  res.body[0].reasonExitedDescriptor: isNotEmpty
   res.body[0].educationOrganizationReference: isDefined
   res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
   res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
@@ -44,12 +48,13 @@ assert {
   res.body[0].specialEducationSettingDescriptor: isString
   res.body[0].specialEducationSettingDescriptor: isNotEmpty
   res.body[0].ideaEligibility: isDefined
+  res.body[0].specialEducationExitDate: isString
 }
 
 script:pre-request {
   const { encodeDescriptorParameter, setVar } = require('./utils');
   const programTypeDescriptorEncoded = encodeDescriptorParameter(req.url, 'programTypeDescriptor_KEEP_IT_AT_THE_END');
-  
+
   setVar(bru, 'firstProgramTypeDescriptorEncoded', programTypeDescriptorEncoded);
 }
 
@@ -59,19 +64,19 @@ script:post-response {
   const entityName = 'StudSpecEduProgramAssocs';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'firstStudSpecEduProgramAssocsUniqueId',
       'firstStudSpecEduProgramAssocsIdeaEligibility'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     firstStudSpecEduProgramAssocsUniqueId: single.id,
     firstStudSpecEduProgramAssocsIdeaEligibility: single.ideaEligibility
   }, entityName);
-  
+
   logScenario(entityName, scenarioName, single, logSpecStudSpecEduProgramAssocs);
 }
 
