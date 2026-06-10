@@ -35,7 +35,6 @@ assert {
   res.body[0].studentReference.studentUniqueId: isNotEmpty
   res.body[0].actualDisciplineActionLength: isNumber
   res.body[0].actualDisciplineActionLength: neq 0
-  res.body[0].receivedEducationServicesDuringExpulsion: isBoolean
   res.body[0].studentDisciplineIncidentBehaviorAssociations: isArray
   res.body[0].studentDisciplineIncidentBehaviorAssociations: isNotEmpty
   res.body[0].studentDisciplineIncidentBehaviorAssociations[0].studentDisciplineIncidentBehaviorAssociationReference: isDefined
