@@ -43,6 +43,8 @@ assert {
   res.body[0].classroomPositionDescriptor: isNotEmpty
   res.body[0].beginDate: isString
   res.body[0].beginDate: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
 }
 
 script:post-response {
@@ -51,19 +53,19 @@ script:post-response {
   const entityName = 'StaffSectionAssociation';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'secondStaffSectionAssociationUniqueId',
       'secondStaffSectionAssociationBeginDate'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     secondStaffSectionAssociationUniqueId: single.id,
     secondStaffSectionAssociationBeginDate: single.beginDate
   }, entityName);
-  
+
   logScenario(entityName, scenarioName, single, logSpecStaffSectionAssociation);
 }
 

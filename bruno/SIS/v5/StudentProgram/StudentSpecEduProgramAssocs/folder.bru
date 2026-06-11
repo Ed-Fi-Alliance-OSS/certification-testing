@@ -35,6 +35,8 @@ docs {
   | Resource                                   | Property Name                     | Is Collection | Data Type                         | Required / Optional | Scenario 1: POST                            | Scenario 2: POST                              | Scenario 3: PUT                             | Scenario 4: PUT                               |
   | ------------------------------------------ | --------------------------------- | ------------- | --------------------------------- | ------------------- | ------------------------------------------- | --------------------------------------------- | ------------------------------------------- | --------------------------------------------- |
   | StudentSpecialEducationProgramAssociations | beginDate                         | FALSE         | date                              | REQUIRED            | 8/23/[Current School Year]                  | 8/23/[Current School Year]                    | 8/23/[Current School Year]                  | 8/23/[Current School Year]                    |
+  | StudentSpecialEducationProgramAssociations | endDate                           | FALSE         | date                              | REQUIRED            |                                             |                                               |                                             |                                               |
+  | StudentSpecialEducationProgramAssociations | reasonExitedDescriptor            | FALSE         | educationOrganizationReference    | REQUIRED            |                                             |                                               |                                             |                                               |
   | StudentSpecialEducationProgramAssociations | educationOrganizationReference    | FALSE         | educationOrganizationReference    | REQUIRED            |                                             |                                               |                                             |                                               |
   | StudentSpecialEducationProgramAssociations | educationOrganizationId           | FALSE         | integer                           | REQUIRED            | 255901                                      | 255901                                        | 255901                                      | 255901                                        |
   | StudentSpecialEducationProgramAssociations | programReference                  | FALSE         | programReference                  | REQUIRED            |                                             |                                               |                                             |                                               |
@@ -45,6 +47,7 @@ docs {
   | StudentSpecialEducationProgramAssociations | studentReference                  | FALSE         | studentReference                  | REQUIRED            |                                             |                                               |                                             |                                               |
   | studentReference                           | studentUniqueId                   | FALSE         | string                            | REQUIRED            | 111111                                      | 222222                                        | 111111                                      | 222222                                        |
   | StudentSpecialEducationProgramAssociations | ideaEligibility                   | FALSE         | boolean                           | REQUIRED            | TRUE                                        | TRUE                                          | FALSE                                       | FALSE                                         |
+  | StudentSpecialEducationProgramAssociations | specialEducationExitDate          | FALSE         | date                              | REQUIRED            |                                             |                                               |                                             |                                               |
 
   ## API JSON response example
 
@@ -126,7 +129,8 @@ docs {
          ]
       }
    ],
-   "specialEducationSettingDescriptor": "string"
+   "specialEducationSettingDescriptor": "string",
+   "specialEducationExitDate": "2026-06-10",
    }
   ```
 }

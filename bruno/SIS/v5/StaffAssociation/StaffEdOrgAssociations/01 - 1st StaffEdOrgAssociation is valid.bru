@@ -35,6 +35,8 @@ assert {
   res.body[0].staffClassificationDescriptor: isNotEmpty
   res.body[0].positionTitle: isString
   res.body[0].positionTitle: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
 }
 
 script:pre-request {
@@ -46,11 +48,11 @@ script:pre-request {
 script:post-response {
   const { pickSingle, setVars, wipeVars } = require('./utils');
   const { logScenario, logSpecStaffEdOrgAssociation } = require('./logging');
-  
+
   const entityName = 'StaffEducationOrganizationAssignmentAssociation';
   const scenarioName = '01 - 1st StaffEdOrgAssociation is valid';
   const entity = pickSingle(res.getBody());
-  
+
   if (!entity) {
     wipeVars(bru, [
       'firstStaffEducationOrganizationAssignmentAssociationUniqueId',
@@ -58,13 +60,13 @@ script:post-response {
       'firstStaffEducationOrganizationAssignmentAssociationEndDate',
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     firstStaffEducationOrganizationAssignmentAssociationUniqueId: entity.id,
     firstStaffEducationOrganizationAssignmentAssociationPositionTitle: entity.positionTitle,
     firstStaffEducationOrganizationAssignmentAssociationEndDate: entity.endDate,
   });
-  
+
   logScenario(entityName, scenarioName, entity, logSpecStaffEdOrgAssociation);
 }
 
