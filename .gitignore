@@ -9,3 +9,10 @@ automation-testing/
 
 # Ignore local artifacts
 local-artifacts
+
+# specification helper files
+docs/atlassian-jira-issues/
+docs/superpowers/plans/
+docs/superpowers/specs/
+docs/copilot/plans/
+docs/copilot/specs/

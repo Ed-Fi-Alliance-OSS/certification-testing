@@ -1,0 +1,37 @@
+meta {
+  name: 01 - Contacts
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/contacts?contactUniqueId=[ENTER_CONTACT_UNIQUE_ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  contactUniqueId: [ENTER_CONTACT_UNIQUE_ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempContactUUID', item.id);
+    setVarsMessage('Contact');
+  } else {
+    wipeVar(bru, 'tempContactUUID');
+    wipeVarsWarning('Contact');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

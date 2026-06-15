@@ -1,0 +1,20 @@
+meta {
+  name: 03 - Contacts
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/contacts/07ca9c8fda87490b843f2e123c1ab21a
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
