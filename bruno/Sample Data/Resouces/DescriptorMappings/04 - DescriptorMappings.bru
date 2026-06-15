@@ -1,0 +1,30 @@
+meta {
+  name: 04 - DescriptorMappings
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/descriptorMappings/{{tempDescriptorMappingUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempDescriptorMappingUUID}}",
+    "value": "Algebra II",
+    "namespace": "uri://ed-fi.org/AcademicSubjectDescriptor",
+    "mappedValue": "Algebra Advanced",
+    "mappedNamespace": "uri://ed-fi.org/AcademicSubjectDescriptor"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

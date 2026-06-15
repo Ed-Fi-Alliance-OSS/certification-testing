@@ -1,0 +1,44 @@
+meta {
+  name: 04 - Grades
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/grades/{{tempGradeUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempGradeUUID}}",
+    "gradeTypeDescriptor": "uri://ed-fi.org/GradeTypeDescriptor#Grading Period",
+    "studentSectionAssociationReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]",
+      "sectionIdentifier": "[ENTER_SECTION_ID]",
+      "localCourseCode": "[ENTER_LOCAL_COURSE_CODE]",
+      "schoolId": [ENTER_SCHOOL_ID],
+      "schoolYear": [ENTER_SCHOOL_YEAR],
+      "sessionName": "[ENTER_SESSION_NAME]",
+      "beginDate": "[ENTER_SECTION_BEGIN_DATE]"
+    },
+    "gradingPeriodReference": {
+      "schoolId": [ENTER_SCHOOL_ID],
+      "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+      "periodSequence": 1,
+      "schoolYear": [ENTER_SCHOOL_YEAR]
+    },
+    "letterGradeEarned": "A",
+    "numericGradeEarned": 80
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

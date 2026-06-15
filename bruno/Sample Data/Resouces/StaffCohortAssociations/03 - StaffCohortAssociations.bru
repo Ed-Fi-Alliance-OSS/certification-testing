@@ -1,0 +1,20 @@
+meta {
+  name: 03 - StaffCohortAssociations
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{tempStaffCohortAssocUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

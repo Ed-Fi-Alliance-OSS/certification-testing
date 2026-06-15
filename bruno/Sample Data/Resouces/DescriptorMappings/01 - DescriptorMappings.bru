@@ -1,0 +1,38 @@
+meta {
+  name: 01 - DescriptorMappings
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/descriptorMappings?namespace=[ENTER_NAMESPACE]&value=[ENTER_VALUE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  namespace: [ENTER_NAMESPACE]
+  value: [ENTER_VALUE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempDescriptorMappingUUID', item.id);
+    setVarsMessage('DescriptorMapping');
+  } else {
+    wipeVar(bru, 'tempDescriptorMappingUUID');
+    wipeVarsWarning('DescriptorMapping');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

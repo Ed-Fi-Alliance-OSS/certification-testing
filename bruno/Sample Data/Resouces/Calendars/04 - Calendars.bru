@@ -41,7 +41,7 @@ script:pre-request {
   validateDependency(bru, 'tempSchoolId', 'GET Schools');
 
   const calendarCode = generateId();
-  bru.setEnvVar('tempCalendarCode', calendarCode);
+  bru.setVar('tempCalendarCode', calendarCode);
 }
 
 settings {

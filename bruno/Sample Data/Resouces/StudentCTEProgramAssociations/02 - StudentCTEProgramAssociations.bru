@@ -1,0 +1,57 @@
+meta {
+  name: 02 - StudentCTEProgramAssociations
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentCTEProgramAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "programReference": {
+      "programName": "Career and Technical Education",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Career and Technical Education",
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "endDate": "[ENTER_END_DATE]",
+    "nonTraditionalGenderStatus": true,
+    "privateCTEProgram": false,
+    "technicalSkillsAssessmentDescriptor": "uri://ed-fi.org/TechnicalSkillsAssessmentDescriptor#Passed",
+    "cteProgramServices": [
+      {
+        "cteProgramServiceDescriptor": "uri://ed-fi.org/CTEProgramServiceDescriptor#Information Technology",
+        "cipCode": "11.0103",
+        "primaryIndicator": true
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempStudentCTEProgAssocUUID', uuid);
+    console.log('StudentCTEProgAssociation data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

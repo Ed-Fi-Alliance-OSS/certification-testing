@@ -1,0 +1,40 @@
+meta {
+  name: 01 - StudentDisciplineIncidentBehaviorAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentDisciplineIncidentBehaviorAssociations?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&incidentIdentifier=[ENTER_INCIDENT_ID]&schoolId=[ENTER_SCHOOL_ID]&behaviorDescriptor=[ENTER_BEHAVIOR_DESCRIPTOR]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  incidentIdentifier: [ENTER_INCIDENT_ID]
+  schoolId: [ENTER_SCHOOL_ID]
+  behaviorDescriptor: [ENTER_BEHAVIOR_DESCRIPTOR]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudDisciplineIncidentBehavAssocUUID', item.id);
+    setVarsMessage('StudentDisciplineIncidentBehaviorAssociation');
+  } else {
+    wipeVar(bru, 'tempStudDisciplineIncidentBehavAssocUUID');
+    wipeVarsWarning('StudentDisciplineIncidentBehaviorAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

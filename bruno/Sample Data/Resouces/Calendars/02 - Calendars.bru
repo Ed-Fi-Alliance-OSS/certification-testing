@@ -36,16 +36,16 @@ script:pre-request {
   const { validateDependency, generateId } = require('./utils');
 
   validateDependency(bru, 'tempSchoolId', 'GET Schools');
-  
+
   const calendarCode = generateId();
-  bru.setEnvVar('tempCalendarCode', calendarCode);
+  bru.setVar('tempCalendarCode', calendarCode);
 }
 
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
   if (locationHeader) {
     const CalendarId = locationHeader.split('/').pop();
-    bru.setEnvVar('tempCalendarUniqueId', CalendarId);
+    bru.setVar('tempCalendarUniqueId', CalendarId);
   }
 }
 

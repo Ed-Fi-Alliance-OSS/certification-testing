@@ -21,7 +21,7 @@ body:json {
       {
         "calendarEventDescriptor": "uri://ed-fi.org/CalendarEventDescriptor#Holiday"
       }
-    ],  
+    ],
     "calendarReference": {
       "calendarCode": "{{tempCalendarCode}}",
       "schoolId": "{{tempSchoolId}}",
@@ -39,10 +39,10 @@ script:pre-request {
 
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
-  
+
   if (locationHeader) {
     const id = locationHeader.split('/').pop();
-    bru.setEnvVar('tempCalendarDateUniqueId', id);
+    bru.setVar('tempCalendarDateUniqueId', id);
   }
 }
 

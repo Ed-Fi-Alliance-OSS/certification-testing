@@ -82,8 +82,8 @@ script:pre-request {
   const schoolId = generateId();
   const schoolIdentificationCode = generateId();
 
-  bru.setEnvVar('tempSchoolId', schoolId);
-  bru.setEnvVar('tempSchoolIdCode', schoolIdentificationCode);
+  bru.setVar('tempSchoolId', schoolId);
+  bru.setVar('tempSchoolIdCode', schoolIdentificationCode);
 }
 
 settings {

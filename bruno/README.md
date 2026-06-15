@@ -68,7 +68,7 @@ Developer Mode lets us `require` a curated set of external libs:
 const _ = require('lodash');
 const users = res.data;
 const active = _.filter(users, { status: 'active' });
-bru.setEnvVar('activeUserCount', active.length);
+bru.setVar('activeUserCount', active.length);
 ```
 
 - Mixed libraries Example
@@ -78,9 +78,9 @@ const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 const CryptoJS = require('crypto-js');
 
-bru.setEnvVar('today', moment().format('YYYY-MM-DD'));
-bru.setEnvVar('traceId', uuidv4());
-bru.setEnvVar('payloadSig', CryptoJS.SHA256('demo').toString());
+bru.setVar('today', moment().format('YYYY-MM-DD'));
+bru.setVar('traceId', uuidv4());
+bru.setVar('payloadSig', CryptoJS.SHA256('demo').toString());
 ```
 
 > 💡 Tip: Keep library usage purposeful; prefer native JS (e.g. `Array.prototype.reduce`) when simple—minimizes mental overhead.
@@ -135,7 +135,7 @@ const schools = res.getBody();
 const qualifyingSchools = _.filter(schools, s => Array.isArray(s.classPeriods) && s.classPeriods.length > 3);
 
 // Set their IDs as a comma-separated environment variable
-bru.setEnvVar('schoolsWithManyPeriods', qualifyingSchools.map(s => s.id).join(','));
+bru.setVar('schoolsWithManyPeriods', qualifyingSchools.map(s => s.id).join(','));
 
 test('At least one school has more than 3 class periods', () => {
     expect(qualifyingSchools.length).to.be.greaterThan(0);
@@ -152,15 +152,15 @@ test('At least one school has more than 3 class periods', () => {
   if(!!response && response.length === 1) {
     const { id, schoolId, nameOfInstitution: name } = response[0];
 
-    bru.setEnvVar('tempSchoolId', id);
-    bru.setEnvVar('tempSchoolUniqueId', schoolId);
-    bru.setEnvVar('tempSchoolName', name);
+    bru.setVar('tempSchoolId', id);
+    bru.setVar('tempSchoolUniqueId', schoolId);
+    bru.setVar('tempSchoolName', name);
 
     console.log('School data was fetched correctly.');
   } else {
-    bru.setEnvVar('tempSchoolId', null);
-    bru.setEnvVar('tempSchoolUniqueId', null);
-    bru.setEnvVar('tempSchoolName', null);
+    bru.setVar('tempSchoolId', null);
+    bru.setVar('tempSchoolUniqueId', null);
+    bru.setVar('tempSchoolName', null);
     
     console.warn('School data was wiped because no record was found or multiple records were returned. Please check the input "Params".');
   }
@@ -303,7 +303,7 @@ Quality checklist:
 | Naming | Prefix test titles with scenario step numbers (keeps report ordering stable) |
 | Logs | Keep them concise; remove noisy experimental logs before commit |
 | Fail Messages | Provide actionable expectation text (what was expected + what was found) |
-| Chaining | Always set next-step IDs via `bru.setEnvVar` right after validation |
+| Chaining | Always set next-step IDs via `bru.setVar` right after validation |
 | Utilities | Add cross-request helpers only at collection level, not per request |
 
 ## 10. Quick FAQ (Seed)

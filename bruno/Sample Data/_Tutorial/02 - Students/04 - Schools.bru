@@ -12,21 +12,21 @@ get {
 
 params:query {
   localEducationAgencyId: {{tempLocalEducationAgencieId}}
-  ~administrativeFundingControlDescriptor: 
-  ~charterApprovalAgencyTypeDescriptor: 
-  ~charterApprovalSchoolYear: 
-  ~charterStatusDescriptor: 
-  ~internetAccessDescriptor: 
+  ~administrativeFundingControlDescriptor:
+  ~charterApprovalAgencyTypeDescriptor:
+  ~charterApprovalSchoolYear:
+  ~charterStatusDescriptor:
+  ~internetAccessDescriptor:
   ~limit: 1
-  ~magnetSpecialProgramEmphasisSchoolDescriptor: 
-  ~maxChangeVersion: 
-  ~minChangeVersion: 
+  ~magnetSpecialProgramEmphasisSchoolDescriptor:
+  ~maxChangeVersion:
+  ~minChangeVersion:
   ~offset: 0
-  ~schoolId: 
-  ~schoolTypeDescriptor: 
-  ~Snapshot-Identifier: 
-  ~titleIPartASchoolDesignationDescriptor: 
-  ~totalCount: 
+  ~schoolId:
+  ~schoolTypeDescriptor:
+  ~Snapshot-Identifier:
+  ~titleIPartASchoolDesignationDescriptor:
+  ~totalCount:
 }
 
 auth:bearer {
@@ -34,7 +34,7 @@ auth:bearer {
 }
 
 script:post-response {
-  bru.setEnvVar('tempSchoolId', res.getBody()[0].schoolId);
+  bru.setVar('tempSchoolId', res.getBody()[0].schoolId);
 }
 
 settings {

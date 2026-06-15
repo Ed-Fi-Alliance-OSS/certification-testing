@@ -1,0 +1,49 @@
+meta {
+  name: 04 - StudentCTEProgramAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentCTEProgramAssociations/{{tempStudentCTEProgAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentCTEProgAssocUUID}}",
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "programReference": {
+      "programName": "Career and Technical Education",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Career and Technical Education",
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "endDate": "[ENTER_END_DATE]",
+    "nonTraditionalGenderStatus": true,
+    "privateCTEProgram": false,
+    "technicalSkillsAssessmentDescriptor": "uri://ed-fi.org/TechnicalSkillsAssessmentDescriptor#Passed",
+    "cteProgramServices": [
+      {
+        "cteProgramServiceDescriptor": "uri://ed-fi.org/CTEProgramServiceDescriptor#Information Technology",
+        "cipCode": "11.0103",
+        "primaryIndicator": false
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

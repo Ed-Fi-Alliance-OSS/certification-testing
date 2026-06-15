@@ -1,0 +1,41 @@
+meta {
+  name: 01 - CourseTranscripts
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courseTranscripts?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&educationOrganizationId=[ENTER_EDORG_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&termDescriptor=[ENTER_TERM_DESCRIPTOR]&courseCode=[ENTER_COURSE_CODE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  educationOrganizationId: [ENTER_EDORG_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  termDescriptor: [ENTER_TERM_DESCRIPTOR]
+  courseCode: [ENTER_COURSE_CODE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempCourseTranscriptUUID', item.id);
+    setVarsMessage('CourseTranscript');
+  } else {
+    wipeVar(bru, 'tempCourseTranscriptUUID');
+    wipeVarsWarning('CourseTranscript');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

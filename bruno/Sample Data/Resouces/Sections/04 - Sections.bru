@@ -1,0 +1,51 @@
+meta {
+  name: 04 - Sections
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/sections/{{tempSectionUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSectionUUID}}",
+    "sectionIdentifier": "[ENTER_SECTION_ID]",
+    "courseOfferingReference": {
+      "localCourseCode": "[ENTER_LOCAL_COURSE_CODE]",
+      "schoolId": [ENTER_SCHOOL_ID],
+      "schoolYear": [ENTER_SCHOOL_YEAR],
+      "sessionName": "[ENTER_SESSION_NAME]"
+    },
+    "locationReference": {
+      "classroomIdentificationCode": "[ENTER_CLASSROOM_ID]",
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "locationSchoolReference": {
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "sequenceOfCourse": 1,
+    "availableCredits": 2,
+    "classPeriods": [
+      {
+        "classPeriodReference": {
+          "classPeriodName": "[ENTER_CLASS_PERIOD_NAME]",
+          "schoolId": [ENTER_SCHOOL_ID]
+        }
+      }
+    ],
+    "educationalEnvironmentDescriptor": "uri://ed-fi.org/EducationalEnvironmentDescriptor#Classroom"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

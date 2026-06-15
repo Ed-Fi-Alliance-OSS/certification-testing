@@ -1,0 +1,40 @@
+meta {
+  name: 01 - StudentCohortAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentCohortAssociations?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&cohortIdentifier=[ENTER_COHORT_ID]&educationOrganizationId=[ENTER_EDORG_ID]&beginDate=[ENTER_BEGIN_DATE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  cohortIdentifier: [ENTER_COHORT_ID]
+  educationOrganizationId: [ENTER_EDORG_ID]
+  beginDate: [ENTER_BEGIN_DATE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentCohortAssocUUID', item.id);
+    setVarsMessage('StudentCohortAssociation');
+  } else {
+    wipeVar(bru, 'tempStudentCohortAssocUUID');
+    wipeVarsWarning('StudentCohortAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

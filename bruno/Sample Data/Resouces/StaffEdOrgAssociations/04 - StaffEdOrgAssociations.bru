@@ -1,0 +1,36 @@
+meta {
+  name: 04 - StaffEdOrgAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffEducationOrganizationAssignmentAssociations/{{tempStaffEdOrgAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStaffEdOrgAssocUUID}}",
+    "staffReference": {
+      "staffUniqueId": "[ENTER_STAFF_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "staffClassificationDescriptor": "uri://ed-fi.org/StaffClassificationDescriptor#Teacher",
+    "positionTitle": "2nd Grade teacher",
+    "endDate": "[ENTER_END_DATE]"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

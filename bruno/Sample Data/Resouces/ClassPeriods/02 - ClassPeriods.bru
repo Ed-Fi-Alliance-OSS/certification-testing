@@ -39,8 +39,8 @@ script:post-response {
 
   if (locationHeader) {
     const tempClassPeriodId = locationHeader.split('/').pop();
-    
-    bru.setEnvVar('tempClassPeriodId', tempClassPeriodId);
+
+    bru.setVar('tempClassPeriodId', tempClassPeriodId);
   }
 }
 
