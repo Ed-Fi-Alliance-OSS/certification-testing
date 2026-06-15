@@ -1,0 +1,106 @@
+{
+  "id": "string",
+  "contactUniqueId": "string",
+  "personReference": {
+    "personId": "string",
+    "sourceSystemDescriptor": "string"
+  },
+  "addresses": [
+    {
+      "addressTypeDescriptor": "string",
+      "stateAbbreviationDescriptor": "string",
+      "city": "string",
+      "postalCode": "string",
+      "streetNumberName": "string",
+      "localeDescriptor": "string",
+      "apartmentRoomSuiteNumber": "string",
+      "buildingSiteNumber": "string",
+      "congressionalDistrict": "string",
+      "countyFIPSCode": "strin",
+      "doNotPublishIndicator": true,
+      "latitude": "string",
+      "longitude": "string",
+      "nameOfCounty": "string",
+      "periods": [
+        {
+          "beginDate": "2026-06-12",
+          "endDate": "2026-06-12"
+        }
+      ]
+    }
+  ],
+  "electronicMails": [
+    {
+      "electronicMailTypeDescriptor": "string",
+      "electronicMailAddress": "strings",
+      "doNotPublishIndicator": true,
+      "primaryEmailAddressIndicator": true
+    }
+  ],
+  "firstName": "string",
+  "genderIdentity": "string",
+  "generationCodeSuffix": "string",
+  "highestCompletedLevelOfEducationDescriptor": "string",
+  "internationalAddresses": [
+    {
+      "addressTypeDescriptor": "string",
+      "countryDescriptor": "string",
+      "addressLine1": "string",
+      "addressLine2": "string",
+      "addressLine3": "string",
+      "addressLine4": "string",
+      "beginDate": "2026-06-12",
+      "endDate": "2026-06-12",
+      "latitude": "string",
+      "longitude": "string"
+    }
+  ],
+  "languages": [
+    {
+      "languageDescriptor": "string",
+      "uses": [
+        {
+          "languageUseDescriptor": "string"
+        }
+      ]
+    }
+  ],
+  "lastSurname": "string",
+  "loginId": "string",
+  "maidenName": "string",
+  "middleName": "string",
+  "otherNames": [
+    {
+      "otherNameTypeDescriptor": "string",
+      "firstName": "string",
+      "generationCodeSuffix": "string",
+      "lastSurname": "string",
+      "middleName": "string",
+      "personalTitlePrefix": "string"
+    }
+  ],
+  "personalIdentificationDocuments": [
+    {
+      "identificationDocumentUseDescriptor": "string",
+      "personalInformationVerificationDescriptor": "string",
+      "issuerCountryDescriptor": "string",
+      "documentExpirationDate": "2026-06-12",
+      "documentTitle": "string",
+      "issuerDocumentIdentificationCode": "string",
+      "issuerName": "string"
+    }
+  ],
+  "personalTitlePrefix": "string",
+  "preferredFirstName": "string",
+  "preferredLastSurname": "string",
+  "sexDescriptor": "string",
+  "telephones": [
+    {
+      "telephoneNumberTypeDescriptor": "string",
+      "telephoneNumber": "string",
+      "doNotPublishIndicator": true,
+      "orderOfPriority": 1,
+      "textMessageCapabilityIndicator": true
+    }
+  ]
+}

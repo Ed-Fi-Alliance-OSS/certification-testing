@@ -1,0 +1,57 @@
+meta {
+  name: 02 - Contacts
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/contacts
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "contactUniqueId": "[ENTER_CONTACT_UNIQUE_ID]",
+    "firstName": "Michael",
+    "lastSurname": "Jones",
+    "sexDescriptor": "uri://ed-fi.org/SexDescriptor#Male",
+    "addresses": [
+      {
+        "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Home",
+        "city": "Grand Bend",
+        "postalCode": "78834",
+        "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+        "streetNumberName": "654 Mission Hills",
+        "apartmentRoomSuiteNumber": "100",
+        "nameOfCounty": "WILLISTON",
+        "doNotPublishIndicator": true
+      }
+    ],
+    "electronicMails": [
+      {
+        "electronicMailAddress": "michaeljones@example.com",
+        "electronicMailTypeDescriptor": "uri://ed-fi.org/ElectronicMailTypeDescriptor#Home/Personal",
+        "primaryEmailAddressIndicator": true
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const contactUUID = locationHeader.split('/').pop();
+    bru.setVar('tempContactUUID', contactUUID);
+    console.log('Contact data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
