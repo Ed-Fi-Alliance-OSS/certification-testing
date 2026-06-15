@@ -1,0 +1,61 @@
+meta {
+  name: 01 - 1st StudentContactAssociation is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentContactAssociations?contactUniqueId=[ENTER FIRST CONTACT UNIQUE ID]&studentUniqueId=[ENTER FIRST STUDENT UNIQUE ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  contactUniqueId: [ENTER FIRST CONTACT UNIQUE ID]
+  studentUniqueId: [ENTER FIRST STUDENT UNIQUE ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].contactReference: isDefined
+  res.body[0].contactReference.contactUniqueId: isString
+  res.body[0].contactReference.contactUniqueId: isNotEmpty
+  res.body[0].studentReference: isDefined
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].relationDescriptor: isString
+  res.body[0].relationDescriptor: isNotEmpty
+  res.body[0].primaryContactStatus: isBoolean
+  res.body[0].emergencyContactStatus: isBoolean
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecStudentContactAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentContactAssociation';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+
+  if (!entity) {
+    wipeVars(bru, [
+      'firstStudentContactAssociationUniqueId',
+      'firstStudentContactAssociationId',
+      'firstStudentContactAssociationPrimaryContactStatus'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    firstStudentContactAssociationUniqueId: entity.id,
+    firstStudentContactAssociationId: entity.contactReference?.contactUniqueId,
+    firstStudentContactAssociationPrimaryContactStatus: entity.primaryContactStatus
+  }, entityName);
+  logScenario(entityName, scenarioName, entity, logSpecStudentContactAssociation);
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,16 @@
+{
+  "id": "string",
+  "contactReference": {
+    "contactUniqueId": "string"
+  },
+  "studentReference": {
+    "studentUniqueId": "string"
+  },
+  "contactPriority": 0,
+  "contactRestrictions": "string",
+  "emergencyContactStatus": true,
+  "legalGuardian": true,
+  "livesWith": true,
+  "primaryContactStatus": true,
+  "relationDescriptor": "string"
+}

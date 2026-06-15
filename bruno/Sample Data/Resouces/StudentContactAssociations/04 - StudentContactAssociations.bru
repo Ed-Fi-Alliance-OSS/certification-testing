@@ -1,0 +1,35 @@
+meta {
+  name: 04 - StudentContactAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentContactAssociations/{{tempStudentContactAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentContactAssociationUUID}}",
+    "contactReference": {
+      "contactUniqueId": "[ENTER_CONTACT_UNIQUE_ID]"
+    },
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "emergencyContactStatus": true,
+    "primaryContactStatus": false,
+    "relationDescriptor": "uri://ed-fi.org/RelationDescriptor#Father"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
