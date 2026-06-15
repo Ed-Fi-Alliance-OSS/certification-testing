@@ -1,0 +1,38 @@
+meta {
+  name: 01 - StudentContactAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentContactAssociations?contactUniqueId=[ENTER_CONTACT_UNIQUE_ID]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  contactUniqueId: [ENTER_CONTACT_UNIQUE_ID]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentContactAssociationUUID', item.id);
+    setVarsMessage('StudentContactAssociation');
+  } else {
+    wipeVar(bru, 'tempStudentContactAssociationUUID');
+    wipeVarsWarning('StudentContactAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
