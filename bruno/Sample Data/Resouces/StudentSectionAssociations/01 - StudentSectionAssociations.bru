@@ -1,0 +1,43 @@
+meta {
+  name: 01 - StudentSectionAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAssociations?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&sectionIdentifier=[ENTER_SECTION_ID]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&sessionName=[ENTER_SESSION_NAME]&beginDate=[ENTER_BEGIN_DATE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  sectionIdentifier: [ENTER_SECTION_ID]
+  localCourseCode: [ENTER_LOCAL_COURSE_CODE]
+  schoolId: [ENTER_SCHOOL_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  sessionName: [ENTER_SESSION_NAME]
+  beginDate: [ENTER_BEGIN_DATE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentSectionAssocUUID', item.id);
+    setVarsMessage('StudentSectionAssociation');
+  } else {
+    wipeVar(bru, 'tempStudentSectionAssocUUID');
+    wipeVarsWarning('StudentSectionAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,39 @@
+meta {
+  name: 02 - Locations
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/locations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "classroomIdentificationCode": "[ENTER_CLASSROOM_ID]",
+    "schoolReference": {
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "maximumNumberOfSeats": 22
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempLocationUUID', uuid);
+    console.log('Location data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

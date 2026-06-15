@@ -1,0 +1,44 @@
+meta {
+  name: 01 - StudentSectionAttendanceEvents
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSectionAttendanceEvents?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&sectionIdentifier=[ENTER_SECTION_ID]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&sessionName=[ENTER_SESSION_NAME]&eventDate=[ENTER_EVENT_DATE]&attendanceEventCategoryDescriptor=[ENTER_CATEGORY]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  sectionIdentifier: [ENTER_SECTION_ID]
+  localCourseCode: [ENTER_LOCAL_COURSE_CODE]
+  schoolId: [ENTER_SCHOOL_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  sessionName: [ENTER_SESSION_NAME]
+  eventDate: [ENTER_EVENT_DATE]
+  attendanceEventCategoryDescriptor: [ENTER_CATEGORY]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentSectionAttendEventUUID', item.id);
+    setVarsMessage('StudentSectionAttendanceEvent');
+  } else {
+    wipeVar(bru, 'tempStudentSectionAttendEventUUID');
+    wipeVarsWarning('StudentSectionAttendanceEvent');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

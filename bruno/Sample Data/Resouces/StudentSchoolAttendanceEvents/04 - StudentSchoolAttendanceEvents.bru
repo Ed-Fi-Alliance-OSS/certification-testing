@@ -1,0 +1,40 @@
+meta {
+  name: 04 - StudentSchoolAttendanceEvents
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAttendanceEvents/{{tempStudentSchoolAttendEventUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentSchoolAttendEventUUID}}",
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "schoolReference": {
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "sessionReference": {
+      "schoolId": [ENTER_SCHOOL_ID],
+      "schoolYear": [ENTER_SCHOOL_YEAR],
+      "sessionName": "[ENTER_SESSION_NAME]"
+    },
+    "attendanceEventCategoryDescriptor": "uri://ed-fi.org/AttendanceEventCategoryDescriptor#Tardy",
+    "eventDate": "[ENTER_EVENT_DATE]",
+    "attendanceEventReason": "Late"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

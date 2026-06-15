@@ -1,0 +1,38 @@
+meta {
+  name: 01 - StudentEdOrgAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationAssociations?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&educationOrganizationId=[ENTER_EDORG_ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  educationOrganizationId: [ENTER_EDORG_ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentEdOrgAssocUUID', item.id);
+    setVarsMessage('StudentEdOrgAssociation');
+  } else {
+    wipeVar(bru, 'tempStudentEdOrgAssocUUID');
+    wipeVarsWarning('StudentEdOrgAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

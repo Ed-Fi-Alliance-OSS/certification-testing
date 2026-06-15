@@ -58,7 +58,7 @@ script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
   if (locationHeader) {
     const newRecordId = locationHeader.split('/').pop();
-    bru.setEnvVar('tempStudentAcademicRecordUniqueId', newRecordId);
+    bru.setVar('tempStudentAcademicRecordUniqueId', newRecordId);
   }
 }
 

@@ -1,0 +1,46 @@
+meta {
+  name: 01 - Grades
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/grades?gradeTypeDescriptor=[ENTER_GRADE_TYPE]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&sectionIdentifier=[ENTER_SECTION_ID]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&sessionName=[ENTER_SESSION_NAME]&beginDate=[ENTER_SECTION_BEGIN_DATE]&gradingPeriodDescriptor=[ENTER_GRADING_PERIOD]&periodSequence=[ENTER_PERIOD_SEQUENCE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  gradeTypeDescriptor: [ENTER_GRADE_TYPE]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  sectionIdentifier: [ENTER_SECTION_ID]
+  localCourseCode: [ENTER_LOCAL_COURSE_CODE]
+  schoolId: [ENTER_SCHOOL_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  sessionName: [ENTER_SESSION_NAME]
+  beginDate: [ENTER_SECTION_BEGIN_DATE]
+  gradingPeriodDescriptor: [ENTER_GRADING_PERIOD]
+  periodSequence: [ENTER_PERIOD_SEQUENCE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempGradeUUID', item.id);
+    setVarsMessage('Grade');
+  } else {
+    wipeVar(bru, 'tempGradeUUID');
+    wipeVarsWarning('Grade');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

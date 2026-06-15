@@ -13,14 +13,14 @@ get {
 params:query {
   schoolId: {{tempSchoolId}}
   calendarCode: {{tempCalendarCode}}
-  ~date: 
-  ~schoolYear: 
+  ~date:
+  ~schoolYear:
   ~id: {{tempCalendarDateUniqueId}}
   ~limit: 10
-  ~maxChangeVersion: 
-  ~minChangeVersion: 
+  ~maxChangeVersion:
+  ~minChangeVersion:
   ~offset: 0
-  ~Snapshot-Identifier: 
+  ~Snapshot-Identifier:
   ~totalCount: false
 }
 
@@ -40,7 +40,7 @@ script:post-response {
   const item = pickSingle(res.getBody());
 
   if (item) {
-    bru.setEnvVar('tempCalendarDateUniqueId', item.id);
+    bru.setVar('tempCalendarDateUniqueId', item.id);
     setVarsMessage('CalendarDate');
   } else {
     wipeVars(bru, ['tempCalendarDateUniqueId']);

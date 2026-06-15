@@ -12,25 +12,25 @@ get {
 
 params:query {
   studentUniqueId: {{tempStudentId}}
-  ~calendarCode: 
-  ~classOfSchoolYear: 
-  ~educationOrganizationId: 
-  ~employedWhileEnrolled: 
-  ~entryDate: 
-  ~entryGradeLevelDescriptor: 
-  ~entryTypeDescriptor: 
-  ~exitWithdrawDate: 
-  ~exitWithdrawTypeDescriptor: 
-  ~fullTimeEquivalency: 
-  ~graduationPlanTypeDescriptor: 
-  ~graduationSchoolYear: 
-  ~id: 
-  ~primarySchool: 
-  ~repeatGradeIndicator: 
-  ~residencyStatusDescriptor: 
-  ~schoolChoiceTransfer: 
-  ~schoolId: 
-  ~termCompletionIndicator: 
+  ~calendarCode:
+  ~classOfSchoolYear:
+  ~educationOrganizationId:
+  ~employedWhileEnrolled:
+  ~entryDate:
+  ~entryGradeLevelDescriptor:
+  ~entryTypeDescriptor:
+  ~exitWithdrawDate:
+  ~exitWithdrawTypeDescriptor:
+  ~fullTimeEquivalency:
+  ~graduationPlanTypeDescriptor:
+  ~graduationSchoolYear:
+  ~id:
+  ~primarySchool:
+  ~repeatGradeIndicator:
+  ~residencyStatusDescriptor:
+  ~schoolChoiceTransfer:
+  ~schoolId:
+  ~termCompletionIndicator:
 }
 
 auth:bearer {
@@ -42,7 +42,7 @@ script:post-response {
   const response = res.getBody();
 
   if (response && response.length > 0) {
-    bru.setEnvVar('tempStudentSchoolAssociationId', response[0].id);
+    bru.setVar('tempStudentSchoolAssociationId', response[0].id);
   } else {
     wipeVars(bru, ['tempStudentSchoolAssociationId']);
   }

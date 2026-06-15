@@ -1,0 +1,40 @@
+meta {
+  name: 04 - StudentTitleIPartAProgramAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations/{{tempStudentTitleIPartAProgAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentTitleIPartAProgAssocUUID}}",
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "programReference": {
+      "programName": "Title I Part A",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Title I Part A",
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "endDate": "[ENTER_END_DATE]",
+    "titleIPartAParticipantDescriptor": "uri://ed-fi.org/TitleIPartAParticipantDescriptor#Public Schoolwide Program"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
