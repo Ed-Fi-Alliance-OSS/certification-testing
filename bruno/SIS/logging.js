@@ -889,6 +889,18 @@ const logSpecStudentSchoolAttendanceEvent = {
   departureTime: r => r?.departureTime
 };
 
+// StudentContactAssociation spec map (Contact > StudentContactAssociations)
+// Include identifiers and mutated fields (primaryContactStatus, emergencyContactStatus) plus selected required info.
+const logSpecStudentContactAssociation = {
+  contactUniqueId: r => r?.contactReference?.contactUniqueId,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  relationDescriptor: r => extractDescriptor(r?.relationDescriptor),
+  primaryContactStatus: r => r?.primaryContactStatus,
+  emergencyContactStatus: r => r?.emergencyContactStatus,
+  legalGuardian: r => r?.legalGuardian,
+  livesWith: r => r?.livesWith,
+};
+
 // Contact spec map (Contact > Contacts)
 // Include identifiers and mutated fields (electronicMailAddress, streetNumberName) plus selected required info.
 const logSpecContact = {
@@ -952,5 +964,6 @@ module.exports = {
   ,logSpecProgram
   ,logSpecStudentSectionAttendanceEvent
   ,logSpecStudentSchoolAttendanceEvent
+  ,logSpecStudentContactAssociation
   ,logSpecContact
 };

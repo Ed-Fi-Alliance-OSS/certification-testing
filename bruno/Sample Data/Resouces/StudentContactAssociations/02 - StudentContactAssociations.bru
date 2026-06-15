@@ -1,0 +1,43 @@
+meta {
+  name: 02 - StudentContactAssociations
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentContactAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "contactReference": {
+      "contactUniqueId": "[ENTER_CONTACT_UNIQUE_ID]"
+    },
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "emergencyContactStatus": true,
+    "primaryContactStatus": true,
+    "relationDescriptor": "uri://ed-fi.org/RelationDescriptor#Father"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const assocUUID = locationHeader.split('/').pop();
+    bru.setVar('tempStudentContactAssociationUUID', assocUUID);
+    console.log('StudentContactAssociation data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
