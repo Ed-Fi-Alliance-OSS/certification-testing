@@ -1,0 +1,60 @@
+meta {
+  name: StudentContactAssociations
+  seq: 2
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v5 Contact > StudentContactAssociation Scenarios
+
+  This interchange defines contacts and captures the relationship between the student and the guardian as well as indicators for the contact's residence, primary guardian, and emergency contact.
+
+  The StudentContactAssociation relates students to their parents, guardians or caretakers.
+
+  ## Prerequisites
+
+  * None
+
+  ## Scenarios tasks
+
+  1. __CREATE__ the `first` StudentContactAssociation
+  2. __CREATE__ the `second` StudentContactAssociation
+  3. __UPDATE__ the _primaryContactStatus_ on the `first` added StudentContactAssociation
+  4. __UPDATE__ the _emergencyContactStatus_ on the `second` added StudentContactAssociation
+
+  ## Scenarios example data
+
+  | Resource                      | Property Name          | Is Collection | Data Type          | Required | Scenario 1: POST                       | Scenario 2: POST                       | Scenario 3: PUT                        | Scenario 4: PUT                        |
+  | ----------------------------- | ---------------------- | ------------- | ------------------ | -------- | -------------------------------------- | -------------------------------------- | -------------------------------------- | -------------------------------------- |
+  | StudentContactAssociations    | contactReference       | FALSE         | contactReference   | REQUIRED |                                        |                                        |                                        |                                        |
+  | contactReference              | contactUniqueId        | FALSE         | string             | REQUIRED | 333333                                 | 444444                                 | 333333                                 | 444444                                 |
+  | StudentContactAssociations    | studentReference       | FALSE         | studentReference   | REQUIRED |                                        |                                        |                                        |                                        |
+  | studentReference              | studentUniqueId        | FALSE         | string             | REQUIRED | 111111                                 | 222222                                 | 111111                                 | 222222                                 |
+  | StudentContactAssociations    | emergencyContactStatus | FALSE         | boolean            | REQUIRED | TRUE                                   | TRUE                                   | TRUE                                   | FALSE                                  |
+  | StudentContactAssociations    | primaryContactStatus   | FALSE         | boolean            | REQUIRED | TRUE                                   | TRUE                                   | FALSE                                  | TRUE                                   |
+  | StudentContactAssociations    | relationDescriptor     | FALSE         | relationDescriptor | REQUIRED | Father                                 | Mother                                 | Father                                 | Mother                                 |
+
+  ## API response format
+
+  ```json
+  {
+    "id": "string",
+    "contactReference": {
+      "contactUniqueId": "string"
+    },
+    "studentReference": {
+      "studentUniqueId": "string"
+    },
+    "contactPriority": 0,
+    "contactRestrictions": "string",
+    "emergencyContactStatus": true,
+    "legalGuardian": true,
+    "livesWith": true,
+    "primaryContactStatus": true,
+    "relationDescriptor": "string"
+  }
+  ```
+}

@@ -2,10 +2,16 @@
  * Centralized logging module for SIS collection.
  */
 
-const {
-  extractDescriptor,
-  mapDescriptors
-} = require('./utils'); // relies on existing helpers in utils
+// Inlined from utils.js — avoids transitive require() path-resolution issues
+// in Bruno's sandbox when this module is loaded from a nested scenario script.
+function extractDescriptor(value) {
+  return typeof value === 'string' ? value.split('#').pop() : value;
+}
+
+function mapDescriptors(items, accessorFn) {
+  if (!Array.isArray(items)) return [];
+  return items.map(it => extractDescriptor(accessorFn(it)));
+}
 
 let dayjs;
 try {
@@ -883,6 +889,34 @@ const logSpecStudentSchoolAttendanceEvent = {
   departureTime: r => r?.departureTime
 };
 
+// StudentContactAssociation spec map (Contact > StudentContactAssociations)
+// Include identifiers and mutated fields (primaryContactStatus, emergencyContactStatus) plus selected required info.
+const logSpecStudentContactAssociation = {
+  contactUniqueId: r => r?.contactReference?.contactUniqueId,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  relationDescriptor: r => extractDescriptor(r?.relationDescriptor),
+  primaryContactStatus: r => r?.primaryContactStatus,
+  emergencyContactStatus: r => r?.emergencyContactStatus,
+  legalGuardian: r => r?.legalGuardian,
+  livesWith: r => r?.livesWith,
+};
+
+// Contact spec map (Contact > Contacts)
+// Include identifiers and mutated fields (electronicMailAddress, streetNumberName) plus selected required info.
+const logSpecContact = {
+  contactUniqueId: r => r?.contactUniqueId,
+  firstName: r => r?.firstName,
+  lastSurname: r => r?.lastSurname,
+  sexDescriptor: r => extractDescriptor(r?.sexDescriptor),
+  addressTypeDescriptor: r => extractDescriptor(r?.addresses?.[0]?.addressTypeDescriptor),
+  stateAbbreviationDescriptor: r => extractDescriptor(r?.addresses?.[0]?.stateAbbreviationDescriptor),
+  city: r => r?.addresses?.[0]?.city,
+  streetNumberName: r => r?.addresses?.[0]?.streetNumberName,
+  postalCode: r => r?.addresses?.[0]?.postalCode,
+  electronicMailTypeDescriptor: r => extractDescriptor(r?.electronicMails?.[0]?.electronicMailTypeDescriptor),
+  electronicMailAddress: r => r?.electronicMails?.[0]?.electronicMailAddress,
+};
+
 module.exports = {
   buildLogObject
   ,logScenario
@@ -930,4 +964,6 @@ module.exports = {
   ,logSpecProgram
   ,logSpecStudentSectionAttendanceEvent
   ,logSpecStudentSchoolAttendanceEvent
+  ,logSpecStudentContactAssociation
+  ,logSpecContact
 };

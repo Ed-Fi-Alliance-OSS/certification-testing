@@ -1,0 +1,82 @@
+meta {
+  name: 01 - 1st Contact is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/contacts?contactUniqueId=[ENTER FIRST CONTACT UNIQUE ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  contactUniqueId: [ENTER FIRST CONTACT UNIQUE ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].contactUniqueId: isString
+  res.body[0].contactUniqueId: isNotEmpty
+  res.body[0].firstName: isString
+  res.body[0].firstName: isNotEmpty
+  res.body[0].lastSurname: isString
+  res.body[0].lastSurname: isNotEmpty
+  res.body[0].sexDescriptor: isString
+  res.body[0].sexDescriptor: isNotEmpty
+  res.body[0].addresses: isArray
+  res.body[0].addresses: isNotEmpty
+  res.body[0].addresses[0].addressTypeDescriptor: isString
+  res.body[0].addresses[0].addressTypeDescriptor: isNotEmpty
+  res.body[0].addresses[0].city: isString
+  res.body[0].addresses[0].city: isNotEmpty
+  res.body[0].addresses[0].postalCode: isString
+  res.body[0].addresses[0].postalCode: isNotEmpty
+  res.body[0].addresses[0].stateAbbreviationDescriptor: isString
+  res.body[0].addresses[0].stateAbbreviationDescriptor: isNotEmpty
+  res.body[0].addresses[0].streetNumberName: isString
+  res.body[0].addresses[0].streetNumberName: isNotEmpty
+  res.body[0].addresses[0].apartmentRoomSuiteNumber: isString
+  res.body[0].addresses[0].apartmentRoomSuiteNumber: isNotEmpty
+  res.body[0].addresses[0].nameOfCounty: isString
+  res.body[0].addresses[0].nameOfCounty: isNotEmpty
+  res.body[0].addresses[0].doNotPublishIndicator: isBoolean
+  res.body[0].electronicMails: isArray
+  res.body[0].electronicMails: isNotEmpty
+  res.body[0].electronicMails[0].electronicMailAddress: isString
+  res.body[0].electronicMails[0].electronicMailAddress: isNotEmpty
+  res.body[0].electronicMails[0].electronicMailTypeDescriptor: isString
+  res.body[0].electronicMails[0].electronicMailTypeDescriptor: isNotEmpty
+  res.body[0].electronicMails[0].primaryEmailAddressIndicator: isBoolean
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logSpecContact, logScenario } = require('./logging');
+  const entityName = 'Contact';
+  const scenarioName = this.req.name;
+  const entity = pickSingle(res.getBody());
+
+  if (!entity) {
+    wipeVars(bru, [
+      'firstContactUniqueId',
+      'firstContactId',
+      'firstContactElectronicMailAddress'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    firstContactUniqueId: entity.id,
+    firstContactId: entity.contactUniqueId,
+    firstContactElectronicMailAddress: entity.electronicMails?.[0]?.electronicMailAddress
+  }, entityName);
+  logScenario(entityName, scenarioName, entity, logSpecContact);
+}
+
+settings {
+  encodeUrl: true
+}

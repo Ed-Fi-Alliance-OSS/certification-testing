@@ -1,0 +1,55 @@
+meta {
+  name: 04 - 2nd StudentContactAssociation - emergencyContactStatus was Updated
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentContactAssociations/{{secondStudentContactAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body: isNotEmpty
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.contactReference: isDefined
+  res.body.contactReference.contactUniqueId: isString
+  res.body.contactReference.contactUniqueId: isNotEmpty
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.relationDescriptor: isString
+  res.body.relationDescriptor: isNotEmpty
+  res.body.primaryContactStatus: isBoolean
+  res.body.emergencyContactStatus: isBoolean
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'secondStudentContactAssociationUniqueId', '02 - 2nd StudentContactAssociation is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  validateDependency(bru, 'secondStudentContactAssociationEmergencyContactStatus', '02 - 2nd StudentContactAssociation is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+}
+
+script:post-response {
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { logSpecStudentContactAssociation, logScenario } = require('./logging');
+  const entityName = 'StudentContactAssociation';
+  const scenarioName = this.req.name;
+
+  if (res.status === 200 && res.body) {
+    const current = res.getBody();
+    expectChanged(getVar(bru, 'secondStudentContactAssociationEmergencyContactStatus'), current.emergencyContactStatus, 'emergencyContactStatus');
+    logScenario(entityName, scenarioName, current, logSpecStudentContactAssociation, ['contactUniqueId', 'emergencyContactStatus']);
+  } else {
+    throwNotFoundOrSpecificError(entityName);
+  }
+}
+
+settings {
+  encodeUrl: true
+}
