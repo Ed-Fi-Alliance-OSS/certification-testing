@@ -1,0 +1,46 @@
+meta {
+  name: 04 - StudentMigrantEducationProgramAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentMigrantEducationProgramAssociations/{{tempStudentMigrantProgAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentMigrantProgAssocUUID}}",
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "programReference": {
+      "programName": "Migrant Education",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Migrant Education",
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "endDate": "[ENTER_END_DATE]",
+    "priorityForServices": false,
+    "lastQualifyingMove": "[ENTER_LAST_MOVE_DATE]",
+    "migrantEducationProgramServices": [
+      {
+        "migrantEducationProgramServiceDescriptor": "uri://ed-fi.org/MigrantEducationProgramServiceDescriptor#Instructional Services"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

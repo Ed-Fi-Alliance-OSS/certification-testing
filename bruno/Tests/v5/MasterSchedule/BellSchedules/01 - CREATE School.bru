@@ -101,14 +101,14 @@ assert {
 }
 
 script:pre-request {
-  bru.setEnvVar('tempSchoolId', [ENTER_SCHOOL_ID]);
+  bru.setVar('tempSchoolId', [ENTER_SCHOOL_ID]);
 }
 
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
   if (locationHeader) {
     const schoolUniqueId = locationHeader.split('/').pop();
-    bru.setEnvVar('tempSchoolUniqueId', schoolUniqueId);
+    bru.setVar('tempSchoolUniqueId', schoolUniqueId);
     console.log('School "[SCHOOL_NAME]" was created correctly. (uniqueId: ' + schoolUniqueId + ')');
   } else {
     console.log('There was an error creating School "[SCHOOL_NAME]" response:');

@@ -1,0 +1,41 @@
+meta {
+  name: 01 - Sections
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sections?sectionIdentifier=[ENTER_SECTION_ID]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&sessionName=[ENTER_SESSION_NAME]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  sectionIdentifier: [ENTER_SECTION_ID]
+  localCourseCode: [ENTER_LOCAL_COURSE_CODE]
+  schoolId: [ENTER_SCHOOL_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  sessionName: [ENTER_SESSION_NAME]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempSectionUUID', item.id);
+    setVarsMessage('Section');
+  } else {
+    wipeVar(bru, 'tempSectionUUID');
+    wipeVarsWarning('Section');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,52 @@
+meta {
+  name: 02 - Grades
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/grades
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "gradeTypeDescriptor": "uri://ed-fi.org/GradeTypeDescriptor#Grading Period",
+    "studentSectionAssociationReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]",
+      "sectionIdentifier": "[ENTER_SECTION_ID]",
+      "localCourseCode": "[ENTER_LOCAL_COURSE_CODE]",
+      "schoolId": [ENTER_SCHOOL_ID],
+      "schoolYear": [ENTER_SCHOOL_YEAR],
+      "sessionName": "[ENTER_SESSION_NAME]",
+      "beginDate": "[ENTER_SECTION_BEGIN_DATE]"
+    },
+    "gradingPeriodReference": {
+      "schoolId": [ENTER_SCHOOL_ID],
+      "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+      "periodSequence": 1,
+      "schoolYear": [ENTER_SCHOOL_YEAR]
+    },
+    "letterGradeEarned": "B",
+    "numericGradeEarned": 80
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempGradeUUID', uuid);
+    console.log('Grade data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

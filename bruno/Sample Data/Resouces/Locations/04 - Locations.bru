@@ -1,0 +1,31 @@
+meta {
+  name: 04 - Locations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/locations/{{tempLocationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempLocationUUID}}",
+    "classroomIdentificationCode": "[ENTER_CLASSROOM_ID]",
+    "schoolReference": {
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "maximumNumberOfSeats": 20
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

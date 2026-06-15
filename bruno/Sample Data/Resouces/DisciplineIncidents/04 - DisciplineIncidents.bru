@@ -1,0 +1,39 @@
+meta {
+  name: 04 - DisciplineIncidents
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineIncidents/{{tempDisciplineIncidentUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempDisciplineIncidentUUID}}",
+    "incidentIdentifier": "[ENTER_INCIDENT_ID]",
+    "schoolReference": {
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "incidentDate": "[ENTER_INCIDENT_DATE]",
+    "reporterName": "Villa, Mark",
+    "reporterDescriptionDescriptor": "uri://ed-fi.org/ReporterDescriptionDescriptor#Staff",
+    "incidentLocationDescriptor": "uri://ed-fi.org/IncidentLocationDescriptor#School bus",
+    "behaviors": [
+      {
+        "behaviorDescriptor": "uri://ed-fi.org/BehaviorDescriptor#School Code of Conduct"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

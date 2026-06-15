@@ -17,7 +17,7 @@ auth:bearer {
 body:json {
   {
     "id": null,
-    "schoolId": "1549697794",
+    "schoolId": "9999999901",
     "identificationCodes": [
       {
         "educationOrganizationIdentificationSystemDescriptor": "uri://ed-fi.org/EducationOrganizationIdentificationSystemDescriptor#School",
@@ -108,7 +108,7 @@ script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
   if (locationHeader) {
     const schoolUniqueId = locationHeader.split('/').pop();
-    bru.setEnvVar('tempSchoolUniqueId', schoolUniqueId);
+    bru.setVar('tempSchoolUniqueId', schoolUniqueId);
     console.log('School data was fetched correctly.');
   }
 
@@ -116,4 +116,5 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

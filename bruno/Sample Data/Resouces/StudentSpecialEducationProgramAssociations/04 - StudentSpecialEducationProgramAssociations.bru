@@ -1,0 +1,41 @@
+meta {
+  name: 04 - StudentSpecialEducationProgramAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentSpecialEducationProgramAssociations/{{tempStudentSpecEduProgAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentSpecEduProgAssocUUID}}",
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "programReference": {
+      "programName": "Special Education",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Special Education",
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "endDate": "[ENTER_END_DATE]",
+    "specialEducationSettingDescriptor": "uri://ed-fi.org/SpecialEducationSettingDescriptor#Inside regular class 80% or more of the day",
+    "ideaEligibility": false
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

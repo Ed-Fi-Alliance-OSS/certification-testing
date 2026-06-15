@@ -1,0 +1,49 @@
+meta {
+  name: 02 - StudentHomelessProgramAssociations
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentHomelessProgramAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "programReference": {
+      "programName": "Homeless",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Homeless",
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "endDate": "[ENTER_END_DATE]",
+    "homelessPrimaryNighttimeResidenceDescriptor": "uri://ed-fi.org/HomelessPrimaryNighttimeResidenceDescriptor#Shelters",
+    "homelessUnaccompaniedYouth": true
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempStudentHomelessProgAssocUUID', uuid);
+    console.log('StudentHomelessProgAssociation data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

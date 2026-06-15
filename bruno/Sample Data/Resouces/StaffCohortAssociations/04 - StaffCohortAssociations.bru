@@ -1,0 +1,35 @@
+meta {
+  name: 04 - StaffCohortAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{tempStaffCohortAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStaffCohortAssocUUID}}",
+    "staffReference": {
+      "staffUniqueId": "[ENTER_STAFF_UNIQUE_ID]"
+    },
+    "cohortReference": {
+      "cohortIdentifier": "[ENTER_COHORT_ID]",
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "endDate": "[ENTER_MODIFIED_END_DATE]"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

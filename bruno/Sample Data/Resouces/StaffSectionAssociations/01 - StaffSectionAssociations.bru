@@ -1,0 +1,43 @@
+meta {
+  name: 01 - StaffSectionAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations?staffUniqueId=[ENTER_STAFF_UNIQUE_ID]&sectionIdentifier=[ENTER_SECTION_ID]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&sessionName=[ENTER_SESSION_NAME]&beginDate=[ENTER_BEGIN_DATE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  staffUniqueId: [ENTER_STAFF_UNIQUE_ID]
+  sectionIdentifier: [ENTER_SECTION_ID]
+  localCourseCode: [ENTER_LOCAL_COURSE_CODE]
+  schoolId: [ENTER_SCHOOL_ID]
+  schoolYear: [ENTER_SCHOOL_YEAR]
+  sessionName: [ENTER_SESSION_NAME]
+  beginDate: [ENTER_BEGIN_DATE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStaffSectionAssocUUID', item.id);
+    setVarsMessage('StaffSectionAssociation');
+  } else {
+    wipeVar(bru, 'tempStaffSectionAssocUUID');
+    wipeVarsWarning('StaffSectionAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,35 @@
+meta {
+  name: 04 - Students
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/students/{{tempStudentUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentUUID}}",
+    "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]",
+    "birthCity": "Grand Bend",
+    "birthCountryDescriptor": "uri://ed-fi.org/CountryDescriptor#AG",
+    "birthDate": "2009-01-02",
+    "firstName": "Austin",
+    "middleName": "Samuel",
+    "lastSurname": "Jones",
+    "generationCodeSuffix": "JR",
+    "personalTitlePrefix": "Mr."
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

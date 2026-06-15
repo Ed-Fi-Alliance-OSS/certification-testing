@@ -1,0 +1,44 @@
+meta {
+  name: 04 - StudentSchoolFoodServiceProgramAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolFoodServiceProgramAssociations/{{tempStudentFoodServProgAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentFoodServProgAssocUUID}}",
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "programReference": {
+      "programName": "School Food Service",
+      "programTypeDescriptor": "uri://ed-fi.org/ProgramTypeDescriptor#Other",
+      "educationOrganizationId": [ENTER_LEA_ID]
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "endDate": "[ENTER_END_DATE]",
+    "schoolFoodServiceProgramServices": [
+      {
+        "schoolFoodServiceProgramServiceDescriptor": "uri://ed-fi.org/SchoolFoodServiceProgramServiceDescriptor#Free Lunch"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

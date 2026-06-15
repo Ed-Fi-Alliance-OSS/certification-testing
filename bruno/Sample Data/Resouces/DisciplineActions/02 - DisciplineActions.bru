@@ -1,0 +1,58 @@
+meta {
+  name: 02 - DisciplineActions
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/disciplineActions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "disciplineActionIdentifier": "[ENTER_ACTION_ID]",
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "responsibilitySchoolReference": {
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "disciplineDate": "[ENTER_DISCIPLINE_DATE]",
+    "actualDisciplineActionLength": 2,
+    "disciplines": [
+      {
+        "disciplineDescriptor": "uri://ed-fi.org/DisciplineDescriptor#Out of School Suspension"
+      }
+    ],
+    "studentDisciplineIncidentBehaviorAssociations": [
+      {
+        "studentDisciplineIncidentBehaviorAssociationReference": {
+          "incidentIdentifier": "[ENTER_INCIDENT_ID]",
+          "schoolId": [ENTER_SCHOOL_ID],
+          "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]",
+          "behaviorDescriptor": "uri://ed-fi.org/BehaviorDescriptor#School Code of Conduct"
+        }
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempDisciplineActionUUID', uuid);
+    console.log('DisciplineAction data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
