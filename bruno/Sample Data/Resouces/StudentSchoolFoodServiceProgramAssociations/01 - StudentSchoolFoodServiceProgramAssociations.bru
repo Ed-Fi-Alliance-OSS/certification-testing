@@ -1,0 +1,41 @@
+meta {
+  name: 01 - StudentSchoolFoodServiceProgramAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolFoodServiceProgramAssociations?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&educationOrganizationId=[ENTER_EDORG_ID]&programName=[ENTER_PROGRAM_NAME]&programTypeDescriptor=[ENTER_PROGRAM_TYPE]&beginDate=[ENTER_BEGIN_DATE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  educationOrganizationId: [ENTER_EDORG_ID]
+  programName: [ENTER_PROGRAM_NAME]
+  programTypeDescriptor: [ENTER_PROGRAM_TYPE]
+  beginDate: [ENTER_BEGIN_DATE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentFoodServProgAssocUUID', item.id);
+    setVarsMessage('StudentFoodServProgAssociation');
+  } else {
+    wipeVar(bru, 'tempStudentFoodServProgAssocUUID');
+    wipeVarsWarning('StudentFoodServProgAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

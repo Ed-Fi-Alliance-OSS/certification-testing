@@ -37,7 +37,7 @@ script:post-response {
 
   if (locationHeader) {
     const tempClassPeriodId = locationHeader.split('/').pop();
-    bru.setEnvVar('tempClassPeriodId_2', tempClassPeriodId);
+    bru.setVar('tempClassPeriodId_2', tempClassPeriodId);
     console.log('ClassPeriod "[CLASS_PERIOD_NAME_2]" was created correctly. (uniqueId: ' + tempClassPeriodId + ')');
   } else {
     console.log('There was an error creating ClassPeriod "[CLASS_PERIOD_NAME_2]" response:');

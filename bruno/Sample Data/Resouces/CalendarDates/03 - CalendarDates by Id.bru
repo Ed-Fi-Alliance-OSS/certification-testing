@@ -20,7 +20,7 @@ script:post-response {
   if (res.getStatus() === 200) {
     const { id } = res.getBody();
 
-    bru.setEnvVar('tempCalendarDateUniqueId', id);
+    bru.setVar('tempCalendarDateUniqueId', id);
     setVarsMessage('CalendarDate');
   } else {
     wipeVars(bru, ['tempCalendarDateUniqueId']);

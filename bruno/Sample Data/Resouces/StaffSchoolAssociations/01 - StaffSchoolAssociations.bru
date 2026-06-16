@@ -1,0 +1,38 @@
+meta {
+  name: 01 - StaffSchoolAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSchoolAssociations?staffUniqueId=[ENTER_STAFF_UNIQUE_ID]&schoolId=[ENTER_SCHOOL_ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  staffUniqueId: [ENTER_STAFF_UNIQUE_ID]
+  schoolId: [ENTER_SCHOOL_ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStaffSchoolAssocUUID', item.id);
+    setVarsMessage('StaffSchoolAssociation');
+  } else {
+    wipeVar(bru, 'tempStaffSchoolAssocUUID');
+    wipeVarsWarning('StaffSchoolAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,41 @@
+meta {
+  name: 02 - StaffSchoolAssociations
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/staffSchoolAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "staffReference": {
+      "staffUniqueId": "[ENTER_STAFF_UNIQUE_ID]"
+    },
+    "schoolReference": {
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "programAssignmentDescriptor": "uri://ed-fi.org/ProgramAssignmentDescriptor#Regular education"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempStaffSchoolAssocUUID', uuid);
+    console.log('StaffSchoolAssociation data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

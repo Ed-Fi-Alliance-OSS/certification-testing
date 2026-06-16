@@ -1,0 +1,39 @@
+meta {
+  name: 04 - StudentDisciplineIncidentBehaviorAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentDisciplineIncidentBehaviorAssociations/{{tempStudDisciplineIncidentBehavAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudDisciplineIncidentBehavAssocUUID}}",
+    "disciplineIncidentReference": {
+      "incidentIdentifier": "[ENTER_INCIDENT_ID]",
+      "schoolId": [ENTER_SCHOOL_ID]
+    },
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "behaviorDescriptor": "uri://ed-fi.org/BehaviorDescriptor#School Code of Conduct",
+    "disciplineIncidentParticipationCodes": [
+      {
+        "disciplineIncidentParticipationCodeDescriptor": "uri://ed-fi.org/DisciplineIncidentParticipationCodeDescriptor#Victim"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

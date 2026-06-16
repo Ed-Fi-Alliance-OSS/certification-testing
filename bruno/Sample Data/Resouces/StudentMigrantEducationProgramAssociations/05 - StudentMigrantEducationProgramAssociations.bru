@@ -1,0 +1,20 @@
+meta {
+  name: 05 - StudentMigrantEducationProgramAssociations
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/studentMigrantEducationProgramAssociations/{{tempStudentMigrantProgAssocUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

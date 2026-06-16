@@ -1,0 +1,66 @@
+meta {
+  name: 04 - StudentEdOrgAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationAssociations/{{tempStudentEdOrgAssocUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStudentEdOrgAssocUUID}}",
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER_EDORG_ID]
+    },
+    "limitedEnglishProficiencyDescriptor": "uri://ed-fi.org/LimitedEnglishProficiencyDescriptor#NotLimited",
+    "sexDescriptor": "uri://ed-fi.org/SexDescriptor#Male",
+    "hispanicLatinoEthnicity": false,
+    "studentCharacteristics": [
+      {
+        "studentCharacteristicDescriptor": "uri://ed-fi.org/StudentCharacteristicDescriptor#Immigrant"
+      }
+    ],
+    "addresses": [
+      {
+        "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Home",
+        "streetNumberName": "654 Mission Hills",
+        "city": "Grand Bend",
+        "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+        "postalCode": "78834"
+      }
+    ],
+    "telephones": [
+      {
+        "telephoneNumberTypeDescriptor": "uri://ed-fi.org/TelephoneNumberTypeDescriptor#Home",
+        "telephoneNumber": "111-222-4444"
+      }
+    ],
+    "electronicMails": [
+      {
+        "electronicMailTypeDescriptor": "uri://ed-fi.org/ElectronicMailTypeDescriptor#Other",
+        "electronicMailAddress": "Austin@edficert.org"
+      }
+    ],
+    "races": [
+      {
+        "raceDescriptor": "uri://ed-fi.org/RaceDescriptor#Black - African American"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

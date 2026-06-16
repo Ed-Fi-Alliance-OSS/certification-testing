@@ -1,0 +1,41 @@
+meta {
+  name: 01 - StudentTitleIPartAProgramAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentTitleIPartAProgramAssociations?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&programName=[ENTER_PROGRAM_NAME]&programTypeDescriptor=[ENTER_PROGRAM_TYPE]&educationOrganizationId=[ENTER_EDORG_ID]&beginDate=[ENTER_BEGIN_DATE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  programName: [ENTER_PROGRAM_NAME]
+  programTypeDescriptor: [ENTER_PROGRAM_TYPE]
+  educationOrganizationId: [ENTER_EDORG_ID]
+  beginDate: [ENTER_BEGIN_DATE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentTitleIPartAProgAssocUUID', item.id);
+    setVarsMessage('StudentTitleIPartAProgAssociation');
+  } else {
+    wipeVar(bru, 'tempStudentTitleIPartAProgAssocUUID');
+    wipeVarsWarning('StudentTitleIPartAProgAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

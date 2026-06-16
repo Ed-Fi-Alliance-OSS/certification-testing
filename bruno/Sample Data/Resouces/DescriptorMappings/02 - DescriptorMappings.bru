@@ -1,0 +1,38 @@
+meta {
+  name: 02 - DescriptorMappings
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/descriptorMappings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "value": "Algebra II",
+    "namespace": "uri://ed-fi.org/AcademicSubjectDescriptor",
+    "mappedValue": "Advanced Algebra",
+    "mappedNamespace": "uri://ed-fi.org/AcademicSubjectDescriptor"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempDescriptorMappingUUID', uuid);
+    console.log('DescriptorMapping data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

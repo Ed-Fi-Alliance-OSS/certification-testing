@@ -1,0 +1,44 @@
+meta {
+  name: 04 - StudentSchoolAssociations
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations/{{tempStudentSchoolAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {  
+    "id": "{{tempStudentSchoolAssociationUUID}}",
+    "schoolReference": {
+      "schoolId": "[ENTER_SCHOOL_UNIQUE_ID]",
+      "link": {
+        "rel": "School",
+        "href": "/ed-fi/schools/2ed6f66667ea4961be5b6272987cb96d"
+      }
+    },
+    "studentReference": {
+      "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]",
+      "link": {
+        "rel": "Student",
+        "href": "/ed-fi/students/645d84ccb94a44be8b3534a6f9286173"
+      }
+    },
+    "entryDate": "2026-01-01",
+    "enrollmentTypeDescriptor": "uri://ed-fi.org/EnrollmentTypeDescriptor#Current",
+    "entryGradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Fifth grade",
+    "fullTimeEquivalency": 1.00
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

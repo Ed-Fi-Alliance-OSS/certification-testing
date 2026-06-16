@@ -1,0 +1,50 @@
+meta {
+  name: 02 - Staffs
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/staffs
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "staffUniqueId": "[ENTER_STAFF_UNIQUE_ID]",
+    "firstName": "John",
+    "middleName": "Marcy",
+    "lastSurname": "Loyo",
+    "generationCodeSuffix": "Sr",
+    "birthDate": "1959-04-30",
+    "hispanicLatinoEthnicity": true,
+    "highestCompletedLevelOfEducationDescriptor": "uri://ed-fi.org/LevelOfEducationDescriptor#Master's",
+    "highlyQualifiedTeacher": true,
+    "sexDescriptor": "uri://ed-fi.org/SexDescriptor#Male",
+    "electronicMails": [
+      {
+        "electronicMailAddress": "johnloyo@edficert.org",
+        "electronicMailTypeDescriptor": "uri://ed-fi.org/ElectronicMailTypeDescriptor#Work"
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempStaffUUID', uuid);
+    console.log('Staff data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

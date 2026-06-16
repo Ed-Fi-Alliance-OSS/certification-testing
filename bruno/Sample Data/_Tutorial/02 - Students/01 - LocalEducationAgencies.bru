@@ -13,12 +13,12 @@ get {
 params:query {
   ~offset: 0
   ~limit: 25
-  ~localEducationAgencyId: 
-  ~educationServiceCenterId: 
-  ~parentLocalEducationAgencyId: 
-  ~stateEducationAgencyId: 
-  ~charterStatusDescriptor: 
-  ~localEducationAgencyCategoryDescriptor: 
+  ~localEducationAgencyId:
+  ~educationServiceCenterId:
+  ~parentLocalEducationAgencyId:
+  ~stateEducationAgencyId:
+  ~charterStatusDescriptor:
+  ~localEducationAgencyCategoryDescriptor:
 }
 
 auth:bearer {
@@ -31,11 +31,11 @@ script:post-response {
 
   if (Array.isArray(response) && response.length > 0) {
     const { localEducationAgencyId: id, nameOfInstitution: name } = response[0];
-    
-    bru.setEnvVar('tempLocalEducationAgencieId', id);
-    bru.setEnvVar('tempLocalEducationAgencieName', name);
+
+    bru.setVar('tempLocalEducationAgencieId', id);
+    bru.setVar('tempLocalEducationAgencieName', name);
   } else {
-    wipeVars(bru, ['tempLocalEducationAgencieId', 'tempLocalEducationAgencieName']);  
+    wipeVars(bru, ['tempLocalEducationAgencieId', 'tempLocalEducationAgencieName']);
   }
 }
 

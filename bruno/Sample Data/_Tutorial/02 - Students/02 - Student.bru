@@ -27,15 +27,15 @@ script:pre-request {
   const { generateId } = require('./utils');
   const studentId = generateId();
 
-  bru.setEnvVar('tempStudentId', studentId);
+  bru.setVar('tempStudentId', studentId);
 }
 
 script:post-response {
   const locationHeader = res.headers.Location || res.headers.location;
-  
+
   if (locationHeader) {
     const studentId = locationHeader.split('/').pop();
-    bru.setEnvVar('tempStudentUniqueId', studentId);
+    bru.setVar('tempStudentUniqueId', studentId);
     console.log(`Extracted studentId from Location header: ${studentId}`);
   }
 }
