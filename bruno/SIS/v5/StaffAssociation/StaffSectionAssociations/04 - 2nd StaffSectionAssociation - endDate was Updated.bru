@@ -1,5 +1,5 @@
 meta {
-  name: 04 - 2nd StaffSectionAssociation - beginDate was Updated
+  name: 04 - 2nd StaffSectionAssociation - endDate was Updated
   type: http
   seq: 4
 }
@@ -51,7 +51,7 @@ script:post-response {
   const { logScenario, logSpecStaffSectionAssociation } = require('./logging');
   const entityName = 'StaffSectionAssociation';
   const scenarioName = this.req.name;
-  
+
   if (res.status !== 200 || !res.body) {
     throwNotFoundOrSpecificError(entityName);
   }
