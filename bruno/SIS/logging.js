@@ -799,6 +799,7 @@ const logSpecStaffSectionAssociation = {
   sectionIdentifier: r => r?.sectionReference?.sectionIdentifier,
   sessionName: r => r?.sectionReference?.sessionName,
   classroomPositionDescriptor: r => extractDescriptor(r?.classroomPositionDescriptor),
+  beginDate: r => r?.beginDate,
   endDate: r => r?.endDate
 };
 
