@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/calendars?schoolId=[ENTER FIRST SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&calendarCode=[ENTER FIRST CALENDAR CODE]
+  url: {{resourceBaseUrl}}/ed-fi/calendars?schoolId=[ENTER FIRST SCHOOL ID]&schoolYear=[ENTER FIRST SCHOOL YEAR]&calendarCode=[ENTER FIRST CALENDAR CODE]
   body: none
   auth: inherit
 }
 
 params:query {
   schoolId: [ENTER FIRST SCHOOL ID]
-  schoolYear: [ENTER CURRENT SCHOOL YEAR]
+  schoolYear: [ENTER FIRST SCHOOL YEAR]
   calendarCode: [ENTER FIRST CALENDAR CODE]
 }
 
@@ -40,7 +40,7 @@ script:post-response {
   const entityName = 'Calendar';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-
+  
   if (!entity) {
     wipeVars(bru, [
       'firstCalendarUniqueId',
@@ -48,7 +48,7 @@ script:post-response {
       'firstCalendarGradeLevelDescriptorList'
     ], entityName, true);
   }
-
+  
   const gradeList = joinDescriptors(mapDescriptors(entity.gradeLevels || [], g => g.gradeLevelDescriptor));
   
   setVars(bru, {
