@@ -1,0 +1,35 @@
+meta {
+  name: Step 4 - Students
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/students/{{tempSecondStudentUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondStudentUUID}}",
+    "studentUniqueId": "99999902",
+    "birthCity": "Grand Oaks",
+    "birthCountryDescriptor": "uri://ed-fi.org/CountryDescriptor#US",
+    "birthDate": "2009-01-01",
+    "firstName": "Madison",
+    "middleName": "Mary",
+    "lastSurname": "Johnson",
+    "generationCodeSuffix": null,
+    "personalTitlePrefix": "Ms."
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

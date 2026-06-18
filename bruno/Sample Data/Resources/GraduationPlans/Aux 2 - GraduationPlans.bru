@@ -1,0 +1,42 @@
+meta {
+  name: Aux 2 - GraduationPlans
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlans
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "educationOrganizationReference": {
+      "educationOrganizationId": "[ENTER_EDORG_ID]"
+    },
+    "graduationSchoolYearTypeReference": {
+      "schoolYear": "[ENTER_SCHOOL_YEAR]"
+    },
+    "graduationPlanTypeDescriptor": "uri://ed-fi.org/GraduationPlanTypeDescriptor#Recommended",
+    "totalRequiredCredits": 28
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const uuid = locationHeader.split('/').pop();
+    bru.setVar('tempGraduationPlanUUID', uuid);
+    console.log('GraduationPlan data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

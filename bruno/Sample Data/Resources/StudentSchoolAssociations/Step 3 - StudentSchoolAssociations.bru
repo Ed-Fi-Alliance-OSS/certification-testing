@@ -1,0 +1,53 @@
+meta {
+  name: Step 3 - StudentSchoolAssociations
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations/{{tempFirstStudentSchoolAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempFirstStudentSchoolAssociationUUID}}",
+    "schoolReference": {
+      "schoolId": "9999999901",
+      "link": {
+        "rel": "School",
+        "href": "/ed-fi/schools/2ed6f66667ea4961be5b6272987cb96d"
+      }
+    },
+    "studentReference": {
+      "studentUniqueId": "99999901",
+      "link": {
+        "rel": "Student",
+        "href": "/ed-fi/students/645d84ccb94a44be8b3534a6f9286173"
+      }
+    },
+    "calendarReference": {
+      "calendarCode": "CC-9999999901",
+      "schoolId": "9999999901",
+      "schoolYear": 2026
+    },
+    "primarySchool": true,
+    "entryDate": "2026-09-01",
+    "enrollmentTypeDescriptor": "uri://ed-fi.org/EnrollmentTypeDescriptor#Current",
+    "entryGradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#First grade",
+    "entryTypeDescriptor": "uri://ed-fi.org/EntryTypeDescriptor#Next year school",
+    "fullTimeEquivalency": 1.00,
+    "residencyStatusDescriptor": "uri://ed-fi.org/ResidencyStatusDescriptor#Resident of admin unit and school area",
+    "repeatGradeIndicator": false
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,55 @@
+meta {
+  name: Aux 1 - Calendars
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~schoolId: [ENTER_SCHOOL_ID]
+  ~calendarCode: [ENTER_CALENDAR_CODE]
+  ~schoolYear: [ENTER_SCHOOL_YEAR]
+  ~calendarTypeDescriptor: [ENTER_CALENDAR_TYPE_DESCRIPTOR]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+  
+  validateDependency(bru, 'tempSchoolId', 'GET Schools');
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVars(bru, {
+      tempCalendarUniqueId: item.id,
+      tempCalendarCode: item.calendarCode,
+      tempCalendarName: item.schoolYearTypeReference?.schoolYear
+    });
+    setVarsMessage('Calendar');
+  } else {
+    wipeVars(bru, ['tempCalendarUniqueId', 'tempCalendarCode', 'tempCalendarName']);
+    wipeVarsWarning('Calendar');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  # Dependencies
+    * `GET` Schools (filtered) or `GET` School by ID
+}

@@ -1,0 +1,34 @@
+meta {
+  name: Step 3 - Calendars
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempFirstCalendarUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempFirstCalendarUniqueId}}",
+    "schoolReference": {
+      "schoolId": "9999999901"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "2026"
+    },
+    "calendarCode": "CC-9999999901",
+    "calendarTypeDescriptor": "uri://ed-fi.org/CalendarTypeDescriptor#Student Specific"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

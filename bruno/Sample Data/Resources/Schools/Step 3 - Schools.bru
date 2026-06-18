@@ -1,0 +1,69 @@
+meta {
+  name: Step 3 - Schools
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/schools/{{tempSchoolUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempFirstSchoolUniqueId}}",
+    "schoolId": "9999999901",
+    "localEducationAgencyReference": {
+      "localEducationAgencyId": "255901"
+    },
+    "nameOfInstitution": "Grand Oaks High School",
+    "shortNameOfInstitution": "GOHS",
+    "addresses": [
+      {
+        "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Physical",
+        "city": "Grand Oaks",
+        "postalCode": "73334",
+        "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+        "streetNumberName": "456 Oaks Street"
+      }
+    ],
+    "educationOrganizationCategories": [
+      {
+        "educationOrganizationCategoryDescriptor": "uri://ed-fi.org/EducationOrganizationCategoryDescriptor#School"
+      }
+    ],
+    "gradeLevels": [
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Ninth grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Tenth grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eleventh grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Twelfth grade"
+      }
+    ]
+  }
+}
+
+script:pre-request {
+  // const { generateId } = require('./utils');
+  // const schoolId = generateId();
+  // const schoolIdentificationCode = generateId();
+  
+  // bru.setVar('tempSchoolId', schoolId);
+  // bru.setVar('tempSchoolIdCode', schoolIdentificationCode);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

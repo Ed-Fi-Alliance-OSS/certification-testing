@@ -1,0 +1,42 @@
+meta {
+  name: Step 4 - Calendars
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempSecondCalendarUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondCalendarUniqueId}}",
+    "schoolReference": {
+      "schoolId": "9999999902"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "2026"
+    },
+    "calendarCode": "CC-9999999902",
+    "calendarTypeDescriptor": "uri://ed-fi.org/CalendarTypeDescriptor#IEP",
+    "gradeLevels": [
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Ninth grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Tenth grade"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

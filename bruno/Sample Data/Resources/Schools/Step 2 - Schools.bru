@@ -1,0 +1,75 @@
+meta {
+  name: Step 2 - Schools
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/schools
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": null,
+    "schoolId": "9999999902",
+    "localEducationAgencyReference": {
+      "localEducationAgencyId": "255901"
+    },
+    "nameOfInstitution": "Grand Oaks Middle School",
+    "shortNameOfInstitution": "GOMS",
+    "addresses": [
+      {
+        "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Physical",
+        "city": "Grand Oaks",
+        "postalCode": "00000",
+        "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+        "streetNumberName": "9993 West Blvd."
+      }
+    ],
+    "educationOrganizationCategories": [
+      {
+        "educationOrganizationCategoryDescriptor": "uri://ed-fi.org/EducationOrganizationCategoryDescriptor#School"
+      }
+    ],
+    "gradeLevels": [
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Sixth grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Seventh grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Eighth grade"
+      }
+    ]
+  }
+}
+
+script:pre-request {
+  // const { generateId, setVars } = require('./utils');
+  // const schoolId = generateId();
+  // const schoolIdentificationCode = generateId();
+  
+  // setVars(bru, { tempSecondSchoolId: schoolId, tempSecondSchoolIdCode: schoolIdentificationCode });
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const schoolUniqueId = locationHeader.split('/').pop();
+    bru.setVar('tempSecondSchoolUniqueId', schoolUniqueId);
+    console.log('School data was fetched correctly.');
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
