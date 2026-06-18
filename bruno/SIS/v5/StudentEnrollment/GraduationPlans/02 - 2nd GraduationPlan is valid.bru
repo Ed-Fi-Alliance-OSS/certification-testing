@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/graduationPlans?educationOrganizationId=[ENTER EDUCATION ORGANIZATION ID]&graduationPlanTypeDescriptor={{secondGraduationPlanTypeDescriptorEncoded}}&schoolYear=[ENTER SCHOOL YEAR]&graduationPlanTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER SECOND GRADUATION PLAN TYPE DESCRIPTOR]
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlans?educationOrganizationId=[ENTER SECOND EDUCATION ORGANIZATION ID]&schoolYear=[ENTER SECOND SCHOOL YEAR]&graduationPlanTypeDescriptor={{secondGraduationPlanTypeDescriptorEncoded}}&graduationPlanTypeDescriptor_KEEP_IT_AT_THE_END=[ENTER SECOND GRADUATION PLAN TYPE DESCRIPTOR]
   body: none
   auth: inherit
 }
 
 params:query {
-  educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
-  schoolYear: [ENTER SCHOOL YEAR]
+  educationOrganizationId: [ENTER SECOND EDUCATION ORGANIZATION ID]
+  schoolYear: [ENTER SECOND SCHOOL YEAR]
   graduationPlanTypeDescriptor: {{secondGraduationPlanTypeDescriptorEncoded}}
   graduationPlanTypeDescriptor_KEEP_IT_AT_THE_END: [ENTER SECOND GRADUATION PLAN TYPE DESCRIPTOR]
 }
@@ -38,7 +38,7 @@ assert {
 script:pre-request {
   const { encodeDescriptorParameter } = require('./utils');
   const encoded = encodeDescriptorParameter(req.url, 'graduationPlanTypeDescriptor_KEEP_IT_AT_THE_END');
-
+  
   bru.setVar('secondGraduationPlanTypeDescriptorEncoded', encoded);
 }
 
@@ -48,13 +48,13 @@ script:post-response {
   const entityName = 'GraduationPlan';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-
+  
   if (!entity) {
     wipeVars(bru, [
       'secondGraduationPlanUniqueId','secondGraduationPlanEducationOrganizationId','secondGraduationPlanGraduationPlanTypeDescriptor','secondGraduationPlanSchoolYear','secondGraduationPlanTotalRequiredCredits'
     ], entityName, true);
   }
-
+  
   setVars(bru, {
     secondGraduationPlanUniqueId: entity.id,
     secondGraduationPlanEducationOrganizationId: entity.educationOrganizationReference.educationOrganizationId,
