@@ -1,20 +1,18 @@
 meta {
-  name: SchoolTypeDescriptors
+  name: EnrollmentTypeDescriptors
   type: http
-  seq: 28
+  seq: 14
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/schoolTypeDescriptors
+  url: {{resourceBaseUrl}}/ed-fi/enrollmentTypeDescriptors
   body: none
   auth: bearer
 }
 
 params:query {
-  ~limit: 25
-  ~offset: 0
-  ~schoolTypeDescriptorId: 
-  ~totalCount: 
+  ~codeValue: Current
+  ~description: Current
 }
 
 auth:bearer {

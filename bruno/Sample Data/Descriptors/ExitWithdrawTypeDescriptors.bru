@@ -1,20 +1,18 @@
 meta {
-  name: SchoolTypeDescriptors
+  name: ExitWithdrawTypeDescriptors
   type: http
-  seq: 28
+  seq: 16
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/schoolTypeDescriptors
+  url: {{resourceBaseUrl}}/ed-fi/exitWithdrawTypeDescriptors
   body: none
   auth: bearer
 }
 
 params:query {
-  ~limit: 25
-  ~offset: 0
-  ~schoolTypeDescriptorId: 
-  ~totalCount: 
+  ~codeValue: Transferred
+  ~description: Transferred
 }
 
 auth:bearer {

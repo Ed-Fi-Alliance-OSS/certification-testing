@@ -1,20 +1,18 @@
 meta {
-  name: SchoolTypeDescriptors
+  name: GraduationPlanTypeDescriptors
   type: http
-  seq: 28
+  seq: 20
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/schoolTypeDescriptors
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlanTypeDescriptors
   body: none
   auth: bearer
 }
 
 params:query {
-  ~limit: 25
-  ~offset: 0
-  ~schoolTypeDescriptorId: 
-  ~totalCount: 
+  ~codeValue: Recommended
+  ~description: Recommended
 }
 
 auth:bearer {

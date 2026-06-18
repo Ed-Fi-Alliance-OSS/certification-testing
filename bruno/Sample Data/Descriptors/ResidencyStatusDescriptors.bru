@@ -1,0 +1,25 @@
+meta {
+  name: ResidencyStatusDescriptors
+  type: http
+  seq: 26
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/residencyStatusDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~codeValue: Resident of admin unit and school area
+  ~description: Resident of administrative unit and usual school attendance area
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
