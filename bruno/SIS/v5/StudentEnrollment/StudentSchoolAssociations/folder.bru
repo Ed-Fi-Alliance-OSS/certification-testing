@@ -35,7 +35,7 @@ docs {
 
   ## Scenarios example data:
 
-  | Resource                  | Property Name                | Is Collection | Data Type                    | Required | Scenario 1: POST                       | Scenario 2: POST                       | Scenario 3: PUT                        | Scenario 4: PUT                        | Scenario 4: PUT                        |
+  | Resource                  | Property Name                | Is Collection | Data Type                    | Required | Scenario 1: POST                       | Scenario 2: POST                       | Scenario 3: PUT                        | Scenario 4: PUT                        | Scenario 5: PUT                        |
   | ------------------------- | ---------------------------- | ------------- | ---------------------------- | -------- | -------------------------------------- | -------------------------------------- | -------------------------------------- | -------------------------------------- | -------------------------------------- |
   | StudentSchoolAssociations | schoolReference              | FALSE         | schoolReference              | REQUIRED |                                        |                                        |                                        |                                        |                                        |
   | schoolReference           | schoolId                     | FALSE         | integer                      | REQUIRED | 255901107                              | 255901001                              | 255901107                              | 255901001                              | 255901107                              |
@@ -62,7 +62,7 @@ docs {
   ```json
   {
     "id": "string",
-    "entryDate": "2025-10-17",
+    "entryDate": "2026-06-17",
     "calendarReference": {
       "calendarCode": "string",
       "schoolId": 0,
@@ -75,6 +75,9 @@ docs {
       "educationOrganizationId": 0,
       "graduationPlanTypeDescriptor": "string",
       "graduationSchoolYear": 0
+    },
+    "nextYearSchoolReference": {
+      "schoolId": 0
     },
     "schoolReference": {
       "schoolId": 0
@@ -100,15 +103,19 @@ docs {
       }
     ],
     "employedWhileEnrolled": true,
+    "enrollmentTypeDescriptor": "string",
     "entryGradeLevelDescriptor": "string",
     "entryGradeLevelReasonDescriptor": "string",
     "entryTypeDescriptor": "string",
-    "exitWithdrawDate": "2025-10-17",
+    "exitWithdrawDate": "2026-06-17",
     "exitWithdrawTypeDescriptor": "string",
-    "fullTimeEquivalency": 0,
+    "fullTimeEquivalency": 9.9999,
+    "nextYearGradeLevelDescriptor": "string",
     "primarySchool": true,
     "repeatGradeIndicator": true,
     "residencyStatusDescriptor": "string",
+    "schoolChoice": true,
+    "schoolChoiceBasisDescriptor": "string",
     "schoolChoiceTransfer": true,
     "termCompletionIndicator": true
   }

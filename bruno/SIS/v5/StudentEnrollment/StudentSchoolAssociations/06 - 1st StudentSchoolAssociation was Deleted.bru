@@ -22,6 +22,7 @@ script:pre-request {
 script:post-response {
   const { wipeVars } = require('./utils');
   const entityName = 'StudentSchoolAssociation';
+
   // On successful deletion verification, wipe cached vars tied to the first association.
   if(res.status  === 404) {
     wipeVars(bru, [

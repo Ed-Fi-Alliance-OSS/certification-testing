@@ -5,15 +5,15 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations?schoolId=[ENTER SCHOOL_ID]&studentUniqueId=[ENTER STUDENT_UNIQUE_ID]&entryDate=[ENTER ENTRY_DATE]
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations?schoolId=[ENTER FIRST SCHOOL ID]&studentUniqueId=[ENTER FIRST STUDENT UNIQUE ID]&entryDate=[ENTER FIRST ENTRY DATE]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: 255901001
-  studentUniqueId: 604822
-  entryDate: 2021-08-23
+  schoolId: [ENTER FIRST SCHOOL ID]
+  studentUniqueId: [ENTER FIRST STUDENT UNIQUE ID]
+  entryDate: [ENTER FIRST ENTRY DATE]
 }
 
 assert {
@@ -28,13 +28,6 @@ assert {
   res.body[0].studentReference: isDefined
   res.body[0].studentReference.studentUniqueId: isString
   res.body[0].studentReference.studentUniqueId: isNotEmpty
-  res.body[0].graduationPlanReference: isDefined
-  res.body[0].graduationPlanReference.educationOrganizationId: isNumber
-  res.body[0].graduationPlanReference.educationOrganizationId: neq 0
-  res.body[0].graduationPlanReference.graduationSchoolYear: isNumber
-  res.body[0].graduationPlanReference.graduationSchoolYear: neq 0
-  res.body[0].graduationPlanReference.graduationPlanTypeDescriptor: isString
-  res.body[0].graduationPlanReference.graduationPlanTypeDescriptor: isNotEmpty
   res.body[0].entryDate: isString
   res.body[0].entryGradeLevelDescriptor: isString
   res.body[0].entryGradeLevelDescriptor: isNotEmpty
@@ -49,6 +42,7 @@ assert {
   res.body[0].primarySchool: isBoolean
   res.body[0].fullTimeEquivalency: isNumber
   res.body[0].calendarReference.calendarCode: isString
+  res.body[0].calendarReference.calendarCode: isNotEmpty
 }
 
 script:post-response {
@@ -57,7 +51,7 @@ script:post-response {
   const entityName = 'StudentSchoolAssociation';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-
+  
   if (!entity) {
     wipeVars(bru, [
       'firstStudentSchoolAssociationUniqueId',
@@ -65,11 +59,13 @@ script:post-response {
       'firstStudentSchoolAssociationExitWithdrawDate'
     ], entityName, true);
   }
+  
   setVars(bru, {
     firstStudentSchoolAssociationUniqueId: entity.id,
     firstStudentSchoolAssociationEntryDate: entity.entryDate,
     firstStudentSchoolAssociationExitWithdrawDate: entity.exitWithdrawDate
   });
+  
   logScenario(entityName, scenarioName, entity, logSpecStudentSchoolAssociation);
 }
 

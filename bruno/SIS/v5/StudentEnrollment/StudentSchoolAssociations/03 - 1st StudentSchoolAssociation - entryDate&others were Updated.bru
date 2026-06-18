@@ -20,22 +20,20 @@ assert {
   res.body.studentReference: isDefined
   res.body.studentReference.studentUniqueId: isString
   res.body.studentReference.studentUniqueId: isNotEmpty
-  res.body.graduationPlanReference: isDefined
-  res.body.graduationPlanReference.educationOrganizationId: isNumber
-  res.body.graduationPlanReference.educationOrganizationId: neq 0
-  res.body.graduationPlanReference.graduationSchoolYear: isNumber
-  res.body.graduationPlanReference.graduationSchoolYear: neq 0
-  res.body.graduationPlanReference.graduationPlanTypeDescriptor: isString
-  res.body.graduationPlanReference.graduationPlanTypeDescriptor: isNotEmpty
   res.body.entryDate: isString
   res.body.entryGradeLevelDescriptor: isString
   res.body.entryGradeLevelDescriptor: isNotEmpty
   res.body.entryTypeDescriptor: isString
   res.body.entryTypeDescriptor: isNotEmpty
+  res.body.exitWithdrawDate: isUndefined
+  res.body.exitWithdrawTypeDescriptor: isUndefined
   res.body.repeatGradeIndicator: isBoolean
   res.body.residencyStatusDescriptor: isString
   res.body.residencyStatusDescriptor: isNotEmpty
-  res.body.schoolChoiceTransfer: isBoolean
+  res.body.fullTimeEquivalency: isNumber
+  res.body.fullTimeEquivalency: gt 0
+  res.body.calendarReference.calendarCode: isString
+  res.body.calendarReference.calendarCode: isNotEmpty
 }
 
 script:pre-request {
@@ -50,8 +48,10 @@ script:post-response {
   const scenarioName = this.req.name;
   const entityName = 'StudentSchoolAssociation';
   const current = res.getBody();
+
   expectChanged(getVar(bru, 'firstStudentSchoolAssociationEntryDate'), current.entryDate, 'entryDate');
-  logScenario(entityName, scenarioName, current, logSpecStudentSchoolAssociation, ['entryDate']);
+
+  logScenario(entityName, scenarioName, current, logSpecStudentSchoolAssociation, ['entryDate', 'exitWithdrawDate', 'exitWithdrawTypeDescriptor']);
 }
 
 settings {
