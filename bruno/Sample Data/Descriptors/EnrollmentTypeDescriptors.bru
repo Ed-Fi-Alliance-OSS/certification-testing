@@ -1,0 +1,25 @@
+meta {
+  name: EnrollmentTypeDescriptors
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/enrollmentTypeDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~codeValue: Current
+  ~description: Current
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Aux 4 - StudentSchoolAssociations by Id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations/{{tempStudentSchoolAssociationUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

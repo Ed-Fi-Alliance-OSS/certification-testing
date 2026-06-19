@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/calendars?schoolId=[ENTER SECOND SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&calendarCode=[ENTER SECOND CALENDAR CODE]
+  url: {{resourceBaseUrl}}/ed-fi/calendars?schoolId=[ENTER SECOND SCHOOL ID]&schoolYear=[ENTER SECOND SCHOOL YEAR]&calendarCode=[ENTER SECOND CALENDAR CODE]
   body: none
   auth: inherit
 }
 
 params:query {
   schoolId: [ENTER SECOND SCHOOL ID]
-  schoolYear: [ENTER CURRENT SCHOOL YEAR]
+  schoolYear: [ENTER SECOND SCHOOL YEAR]
   calendarCode: [ENTER SECOND CALENDAR CODE]
 }
 
@@ -66,4 +66,5 @@ script:post-response {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

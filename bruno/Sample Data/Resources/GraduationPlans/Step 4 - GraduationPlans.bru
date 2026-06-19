@@ -1,0 +1,34 @@
+meta {
+  name: Step 4 - GraduationPlans
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlans/{{tempSecondGraduationPlanUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondGraduationPlanUUID}}",
+    "educationOrganizationReference": {
+      "educationOrganizationId": "9999999902"
+    },
+    "graduationSchoolYearTypeReference": {
+      "schoolYear": "2026"
+    },
+    "graduationPlanTypeDescriptor": "uri://ed-fi.org/GraduationPlanTypeDescriptor#Minimum",
+    "totalRequiredCredits": 24
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

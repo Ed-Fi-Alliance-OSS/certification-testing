@@ -1,0 +1,25 @@
+meta {
+  name: EntryTypeDescriptors
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/entryTypeDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~codeValue: Next year school
+  ~description: Next year school
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

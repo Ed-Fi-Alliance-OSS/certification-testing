@@ -1,0 +1,25 @@
+meta {
+  name: GraduationPlanTypeDescriptors
+  type: http
+  seq: 20
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlanTypeDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~codeValue: Recommended
+  ~description: Recommended
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

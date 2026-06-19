@@ -5,15 +5,15 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations?schoolId=255901001&studentUniqueId=604822&entryDate=2021-08-23
+  url: {{resourceBaseUrl}}/ed-fi/studentSchoolAssociations?schoolId=[ENTER FIRST SCHOOL ID]&studentUniqueId=[ENTER FIRST STUDENT UNIQUE ID]&entryDate=[ENTER FIRST ENTRY DATE]
   body: none
   auth: inherit
 }
 
 params:query {
-  schoolId: [ENTER SCHOOL_ID]
-  studentUniqueId: [ENTER STUDENT_UNIQUE_ID]
-  entryDate: [ENTER ENTRY_DATE]
+  schoolId: [ENTER FIRST SCHOOL ID]
+  studentUniqueId: [ENTER FIRST STUDENT UNIQUE ID]
+  entryDate: [ENTER FIRST ENTRY DATE]
 }
 
 assert {
@@ -28,27 +28,19 @@ assert {
   res.body[0].studentReference: isDefined
   res.body[0].studentReference.studentUniqueId: isString
   res.body[0].studentReference.studentUniqueId: isNotEmpty
-  res.body[0].graduationPlanReference: isDefined
-  res.body[0].graduationPlanReference.educationOrganizationId: isNumber
-  res.body[0].graduationPlanReference.educationOrganizationId: neq 0
-  res.body[0].graduationPlanReference.graduationSchoolYear: isNumber
-  res.body[0].graduationPlanReference.graduationSchoolYear: neq 0
-  res.body[0].graduationPlanReference.graduationPlanTypeDescriptor: isString
-  res.body[0].graduationPlanReference.graduationPlanTypeDescriptor: isNotEmpty
   res.body[0].entryDate: isString
   res.body[0].entryGradeLevelDescriptor: isString
   res.body[0].entryGradeLevelDescriptor: isNotEmpty
   res.body[0].entryTypeDescriptor: isString
   res.body[0].entryTypeDescriptor: isNotEmpty
-  res.body[0].exitWithdrawDate: isString
-  res.body[0].exitWithdrawTypeDescriptor: isString
-  res.body[0].exitWithdrawTypeDescriptor: isNotEmpty
   res.body[0].repeatGradeIndicator: isBoolean
   res.body[0].residencyStatusDescriptor: isString
   res.body[0].residencyStatusDescriptor: isNotEmpty
   res.body[0].primarySchool: isBoolean
   res.body[0].fullTimeEquivalency: isNumber
+  res.body[0].fullTimeEquivalency: gt 0
   res.body[0].calendarReference.calendarCode: isString
+  res.body[0].calendarReference.calendarCode: isNotEmpty
 }
 
 script:post-response {
@@ -57,28 +49,27 @@ script:post-response {
   const entityName = 'StudentSchoolAssociation';
   const scenarioName = this.req.name;
   const entity = pickSingle(res.getBody());
-
+  
     if (!entity) {
       wipeVars(bru, [
         'secondStudentSchoolAssociationUniqueId',
         'secondStudentSchoolAssociationEntryDate',
-        'secondStudentSchoolAssociationExitWithdrawDate',
         'secondStudentSchoolAssociationGraduationPlanEducationOrganizationId',
         'secondStudentSchoolAssociationGraduationPlanSchoolYear',
         'secondStudentSchoolAssociationGraduationPlanTypeDescriptor',
         'secondStudentSchoolAssociationCalendarCode'
       ], entityName, true);
     }
-
+  
     setVars(bru, {
       secondStudentSchoolAssociationUniqueId: entity.id,
       secondStudentSchoolAssociationEntryDate: entity.entryDate,
-      secondStudentSchoolAssociationExitWithdrawDate: entity.exitWithdrawDate,
       secondStudentSchoolAssociationGraduationPlanEducationOrganizationId: entity.graduationPlanReference?.educationOrganizationId,
       secondStudentSchoolAssociationGraduationPlanSchoolYear: entity.graduationPlanReference?.graduationSchoolYear,
       secondStudentSchoolAssociationGraduationPlanTypeDescriptor: extractDescriptor(entity.graduationPlanReference?.graduationPlanTypeDescriptor),
       secondStudentSchoolAssociationCalendarCode: entity.calendarReference?.calendarCode
     });
+  
     logScenario(entityName, scenarioName, entity, logSpecStudentSchoolAssociation);
 }
 

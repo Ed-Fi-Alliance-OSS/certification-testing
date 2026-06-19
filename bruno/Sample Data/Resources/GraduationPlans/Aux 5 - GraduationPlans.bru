@@ -1,0 +1,20 @@
+meta {
+  name: Aux 5 - GraduationPlans
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/graduationPlans/{{tempGraduationPlanUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

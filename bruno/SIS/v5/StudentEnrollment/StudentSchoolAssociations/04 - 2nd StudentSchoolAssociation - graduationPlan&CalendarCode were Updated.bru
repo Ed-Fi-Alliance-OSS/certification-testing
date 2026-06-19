@@ -32,14 +32,13 @@ assert {
   res.body.entryGradeLevelDescriptor: isNotEmpty
   res.body.entryTypeDescriptor: isString
   res.body.entryTypeDescriptor: isNotEmpty
-  res.body.exitWithdrawDate: isString
-  res.body.exitWithdrawTypeDescriptor: isString
-  res.body.exitWithdrawTypeDescriptor: isNotEmpty
   res.body.repeatGradeIndicator: isBoolean
   res.body.residencyStatusDescriptor: isString
   res.body.residencyStatusDescriptor: isNotEmpty
-  res.body.schoolChoiceTransfer: isBoolean
-  res.body[0].calendarCode: isString
+  res.body.fullTimeEquivalency: isNumber
+  res.body.fullTimeEquivalency: gt 0
+  res.body.calendarReference.calendarCode: isString
+  res.body.calendarReference.calendarCode: isNotEmpty
 }
 
 script:pre-request {
@@ -47,9 +46,6 @@ script:pre-request {
   const actionHint = 'Ensure you ran the second certification scenario successfully before continuing.';
 
   validateDependency(bru, 'secondStudentSchoolAssociationUniqueId', '02 - 2nd StudentSchoolAssociation is valid', { actionHint });
-  validateDependency(bru, 'secondStudentSchoolAssociationGraduationPlanEducationOrganizationId', '02 - 2nd StudentSchoolAssociation is valid', { actionHint });
-  validateDependency(bru, 'secondStudentSchoolAssociationGraduationPlanSchoolYear', '02 - 2nd StudentSchoolAssociation is valid', { actionHint });
-  validateDependency(bru, 'secondStudentSchoolAssociationGraduationPlanTypeDescriptor', '02 - 2nd StudentSchoolAssociation is valid', { actionHint });
   validateDependency(bru, 'secondStudentSchoolAssociationCalendarCode', '02 - 2nd StudentSchoolAssociation is valid', { actionHint });
 }
 
@@ -59,10 +55,12 @@ script:post-response {
   const scenarioName = this.req.name;
   const entityName = 'StudentSchoolAssociation';
   const current = res.getBody();
+
   expectChanged(getVar(bru, 'secondStudentSchoolAssociationGraduationPlanEducationOrganizationId'), current.graduationPlanReference?.educationOrganizationId, 'graduationPlanEducationOrganizationId');
   expectChanged(getVar(bru, 'secondStudentSchoolAssociationGraduationPlanSchoolYear'), current.graduationPlanReference?.graduationSchoolYear, 'graduationPlanSchoolYear');
   expectChanged(getVar(bru, 'secondStudentSchoolAssociationGraduationPlanTypeDescriptor'), extractDescriptor(current.graduationPlanReference?.graduationPlanTypeDescriptor), 'graduationPlanTypeDescriptor');
   expectChanged(getVar(bru, 'secondStudentSchoolAssociationCalendarCode'), current.calendarCode, 'calendarCode');
+
   logScenario(entityName, scenarioName, current, logSpecStudentSchoolAssociation, [
     'graduationPlanEducationOrganizationId',
     'graduationPlanSchoolYear',

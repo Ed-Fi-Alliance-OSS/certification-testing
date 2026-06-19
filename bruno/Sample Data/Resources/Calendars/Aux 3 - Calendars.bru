@@ -1,0 +1,42 @@
+meta {
+  name: Aux 3 - Calendars
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/Calendars/{{tempCalendarUniqueId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempCalendarUniqueId}}",
+    "schoolReference": {
+      "schoolId": "[ENTER_SCHOOl_ID]"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "2026"
+    },
+    "calendarCode": "{{tempCalendarCode}}", //AUTO-GENERATED | EDIT TO ENTER A CUSTOM VALUE
+    "calendarTypeDescriptor": "uri://ed-fi.org/CalendarTypeDescriptor#Student Specific",
+    "gradeLevels": [
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Ninth grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Tenth grade"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

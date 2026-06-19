@@ -1,0 +1,25 @@
+meta {
+  name: ExitWithdrawTypeDescriptors
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/exitWithdrawTypeDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~codeValue: Transferred
+  ~description: Transferred
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

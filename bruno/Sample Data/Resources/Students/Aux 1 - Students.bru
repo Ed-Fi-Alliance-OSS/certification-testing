@@ -1,0 +1,37 @@
+meta {
+  name: Aux 1 - Students
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/students?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempStudentUUID', item.id);
+    setVarsMessage('Student');
+  } else {
+    wipeVar(bru, 'tempStudentUUID');
+    wipeVarsWarning('Student');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

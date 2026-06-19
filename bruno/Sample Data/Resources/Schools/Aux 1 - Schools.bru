@@ -1,0 +1,46 @@
+meta {
+  name: Aux 1 - Schools
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/schools?schoolId=[ENTER_SCHOOL_ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: [ENTER_SCHOOL_ID]
+  ~localEducationAgencyId: [ENTER_LOCAL_EDUCATION_AGENCY_ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVars, setVarsMessage, wipeVars, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVars(bru, {
+      tempSchoolId: item.schoolId,
+      tempSchoolUniqueId: item.id
+    });
+    setVarsMessage('School');
+  } else {
+    wipeVars(bru, ['tempSchoolId', 'tempSchoolUniqueId']);
+    wipeVarsWarning('School');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  # Dependencies
+    * `GET` LocalEducationAgencies
+}
