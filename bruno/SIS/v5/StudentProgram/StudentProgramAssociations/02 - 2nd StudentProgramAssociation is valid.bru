@@ -28,6 +28,8 @@ assert {
   res.body[0].id: isNotEmpty
   res.body[0].beginDate: isString
   res.body[0].beginDate: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
   res.body[0].educationOrganizationReference: isDefined
   res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
   res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
@@ -56,19 +58,19 @@ script:post-response {
   const entityName = 'StudentProgramAssociation';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'secondStudentProgramAssociationUniqueId',
       'secondStudentProgramAssociationBeginDate'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     secondStudentProgramAssociationUniqueId: single.id,
     secondStudentProgramAssociationBeginDate: single.beginDate
   }, entityName);
-  
+
   logScenario(entityName, scenarioName, single, logSpecStudentProgramAssociation);
 }
 
