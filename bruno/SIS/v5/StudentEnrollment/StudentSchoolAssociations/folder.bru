@@ -1,6 +1,6 @@
 meta {
   name: Student School Associations
-  seq: 19
+  seq: 2
 }
 
 auth {
@@ -9,30 +9,30 @@ auth {
 
 docs {
   # v5 Student Enrollment > StudentSchoolAssociation Scenarios
-
+  
   The Student Enrollment interchange describes student enrollments in schools and in sections.
   This association represents the School in which a student is enrolled. The semantics of enrollment may differ slightly by state. Non-enrollment relationships between a student and an education organization may be described using the StudentEducationOrganizationAssociation.
-
+  
   ## Prerequisites
-
+  
   * Student
   * EdOrg
   * Graduation Plan (if applicable)
-
+  
   ## Scenarios tasks
-
+  
   1. __CREATE__ a `first` `Student School Association` (school enrollment) for a `Student` at Grand Bend Elementary School.
   2. __CREATE__ a `second` `Student School Association` (school enrollment) for a `Student` at Grand Bend High School.
   3. __UPDATE__ the _entryDate_ for the `first` elementary student's `Student School Association`. And, remove the _exitWithdrawDate_ and _exitWithdrawTypeDescriptor_.
   4. __UPDATE__ the _graduationPlanReference_ and _calendarCode_ to the`second` High School student's `Student School Association`.
   5. __UPDATE__ the _exitWithdrawDate_ for the `first` elementary school `Student`.
   6. __DELETE__ the `Student School Association` for the `first` elementary school `Student`.
-
+  
   ## Additional Requirements for StudentSchoolAssociation
-
+  
   * The studentEducationOrganizationAssociations record should remain after the student withdraws in Scenario 5.  The association should not be deleted if the student enrollment in the education organization changes, or at the end of a school year.  Rather, the association should be thought of as a core part of the student record, but scoped to the education organization.
   * A student must have an association with a Calendar and the association should not be deleted, only updated.
-
+  
   ## Scenarios example data:
 
   | Resource                  | Property Name                | Is Collection | Data Type                    | Required | Scenario 1: POST                       | Scenario 2: POST                       | Scenario 3: PUT                        | Scenario 4: PUT                        | Scenario 5: PUT                        |
@@ -56,9 +56,9 @@ docs {
   | StudentSchoolAssociations | repeatGradeIndicator         | FALSE         | boolean                      | REQUIRED | FALSE                                  | FALSE                                  | FALSE                                  | FALSE                                  | FALSE                                  |
   | StudentSchoolAssociations | residencyStatusDescriptor    | FALSE         | residencyStatusDescriptor    | REQUIRED | Resident of admin unit and school area | Resident of admin unit and school area | Resident of admin unit and school area | Resident of admin unit and school area | Resident of admin unit and school area |
   | Calendars                 | calendarCode                 | FALSE         | string                       | REQUIRED | 107SS111111                            | [High School calendarCode]             | 107SS111111                            | [New High School calendarCode]         | 107SS111111                            |
-
+  
   ## API response format
-
+  
   ```json
   {
     "id": "string",
