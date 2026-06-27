@@ -1,0 +1,38 @@
+meta {
+  name: Aux 1 - Locations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/locations?schoolId=[ENTER SCHOOL ID]&classroomIdentificationCode=[ENTER CLASSROOM IDENTIFICATION CODE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL ID]
+  classroomIdentificationCode: [ENTER CLASSROOM IDENTIFICATION CODE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempLocationUUID', item.id);
+    setVarsMessage('Location');
+  } else {
+    wipeVar(bru, 'tempLocationUUID');
+    wipeVarsWarning('Location');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

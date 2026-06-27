@@ -1,0 +1,36 @@
+meta {
+  name: Aux 3 - ClassPeriods
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{tempClassPeriodUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempClassPeriodUUID}}",
+    "classPeriodName": "[ENTER CLASS PERIOD NAME]",
+    "schoolReference": {
+      "schoolId": [ENTER SCHOOL ID]
+    },
+    "meetingTimes": [
+      {
+        "startTime": null,
+        "endTime": null
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

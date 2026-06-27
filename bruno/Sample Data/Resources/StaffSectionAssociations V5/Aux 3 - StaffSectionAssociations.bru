@@ -1,0 +1,39 @@
+meta {
+  name: Aux 3 - StaffSectionAssociations
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations/{{tempStaffSectionAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStaffSectionAssociationUUID}}",
+    "sectionReference": {
+      "localCourseCode": "[ENTER LOCAL COURSE CODE]",
+      "schoolId": [ENTER SCHOOL ID],
+      "schoolYear": [ENTER SCHOOL YEAR],
+      "sessionName": "[ENTER SESSION NAME]",
+      "sectionIdentifier": "[ENTER SECTION IDENTIFIER]"
+    },
+    "staffReference": {
+      "staffUniqueId": "[ENTER STAFF UNIQUE ID]"
+    },
+    "classroomPositionDescriptor": "uri://ed-fi.org/ClassroomPositionDescriptor#Teacher of Record",
+    "beginDate": "[ENTER BEGIN DATE]",
+    "endDate": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

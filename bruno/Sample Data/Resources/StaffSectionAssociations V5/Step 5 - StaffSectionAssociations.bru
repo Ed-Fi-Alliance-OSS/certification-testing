@@ -1,0 +1,20 @@
+meta {
+  name: Step 5 - StaffSectionAssociations
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations/{{tempFirstStaffSectionAssociationUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

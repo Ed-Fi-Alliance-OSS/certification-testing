@@ -1,0 +1,39 @@
+meta {
+  name: Step 4 - StaffSectionAssociations
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations/{{tempSecondStaffSectionAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondStaffSectionAssociationUUID}}",
+    "sectionReference": {
+      "localCourseCode": "ART 01",
+      "schoolId": 9999999902,
+      "schoolYear": 2026,
+      "sessionName": "2026-2027 Fall Semester",
+      "sectionIdentifier": "ART01027RM901"
+    },
+    "staffReference": {
+      "staffUniqueId": "207269-test02"
+    },
+    "classroomPositionDescriptor": "uri://ed-fi.org/ClassroomPositionDescriptor#Teacher of Record",
+    "beginDate": "2026-08-31",
+    "endDate": "2026-06-01"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

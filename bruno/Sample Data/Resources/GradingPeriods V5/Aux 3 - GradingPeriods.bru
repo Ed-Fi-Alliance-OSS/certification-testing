@@ -1,0 +1,37 @@
+meta {
+  name: Aux 3 - GradingPeriods
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods/{{tempGradingPeriodUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempGradingPeriodUUID}}",
+    "gradingPeriodDescriptor": "[ENTER GRADING PERIOD DESCRIPTOR]",
+    "gradingPeriodName": "[ENTER GRADING PERIOD NAME]",
+    "schoolReference": {
+      "schoolId": "[ENTER SCHOOL ID]"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "[ENTER SCHOOL YEAR]"
+    },
+    "beginDate": "2026-01-15",
+    "endDate": "2027-01-15",
+    "totalInstructionalDays": 29
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

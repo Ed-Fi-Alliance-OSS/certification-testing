@@ -1,0 +1,45 @@
+meta {
+  name: Aux 2 - GradingPeriods
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "gradingPeriodDescriptor": "[ENTER GRADING PERIOD DESCRIPTOR]",
+    "gradingPeriodName": "[ENTER GRADING PERIOD NAME]",
+    "schoolReference": {
+      "schoolId": "[ENTER SCHOOL ID]"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "[ENTER SCHOOL YEAR]"
+    },
+    "beginDate": "2026-01-15",
+    "endDate": "2027-01-15",
+    "totalInstructionalDays": 29
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempGradingPeriodUUID', _UUID);
+    console.log('GradingPeriod data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

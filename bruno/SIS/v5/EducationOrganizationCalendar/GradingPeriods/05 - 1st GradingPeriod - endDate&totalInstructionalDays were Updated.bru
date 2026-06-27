@@ -28,6 +28,8 @@ assert {
 	res.body.endDate: isNotEmpty
 	res.body.totalInstructionalDays: isNumber
 	res.body.totalInstructionalDays: neq 0
+  res.body.gradingPeriodName: isString
+  res.body.gradingPeriodName: isNotEmpty
 }
 
 script:post-response {

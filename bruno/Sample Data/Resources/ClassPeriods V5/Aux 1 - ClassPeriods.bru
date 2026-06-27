@@ -1,0 +1,38 @@
+meta {
+  name: Aux 1 - ClassPeriods
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods?schoolId=[ENTER SCHOOL ID]&classPeriodName=[ENTER CLASS PERIOD NAME]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL ID]
+  classPeriodName: [ENTER CLASS PERIOD NAME]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempClassPeriodUUID', item.id);
+    setVarsMessage('ClassPeriod');
+  } else {
+    wipeVar(bru, 'tempClassPeriodUUID');
+    wipeVarsWarning('ClassPeriod');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

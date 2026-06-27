@@ -1,0 +1,39 @@
+meta {
+  name: Aux 1 - Sessions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sessions?schoolId=[ENTER SCHOOL ID]&schoolYear=[ENTER SCHOOL YEAR]&sessionName=[ENTER SESSION NAME]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL ID]
+  schoolYear: [ENTER SCHOOL YEAR]
+  sessionName: [ENTER SESSION NAME]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempSessionUUID', item.id);
+    setVarsMessage('Session');
+  } else {
+    wipeVar(bru, 'tempSessionUUID');
+    wipeVarsWarning('Session');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

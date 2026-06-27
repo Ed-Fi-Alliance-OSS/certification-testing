@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods?schoolId=[ENTER SECOND SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&periodSequence=1
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods?schoolId=[ENTER SECOND SCHOOL ID]&schoolYear=[ENTER CURRENT SCHOOL YEAR]&gradingPeriodName=[ENTER GRADING PERIOD NAME]&gradingPeriodDescriptor={{thirdGradingDescriptorEncoded}}&gradingPeriodDescriptor_KEEP_IT_AT_THE_END=[ENTER GRADING PERIOD DESCRIPTOR]
   body: none
   auth: inherit
 }
@@ -13,7 +13,9 @@ get {
 params:query {
   schoolId: [ENTER SECOND SCHOOL ID]
   schoolYear: [ENTER CURRENT SCHOOL YEAR]
-  periodSequence: 1
+  gradingPeriodName: [ENTER GRADING PERIOD NAME]
+  gradingPeriodDescriptor: {{thirdGradingDescriptorEncoded}}
+  gradingPeriodDescriptor_KEEP_IT_AT_THE_END: [ENTER GRADING PERIOD DESCRIPTOR]
 }
 
 assert {
@@ -38,6 +40,16 @@ assert {
   res.body[0].endDate: isNotEmpty
   res.body[0].totalInstructionalDays: isNumber
   res.body[0].totalInstructionalDays: neq 0
+  res.body[0].gradingPeriodName: isString
+  res.body[0].gradingPeriodName: isNotEmpty
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter } = require('./utils');
+  
+  const gradingPeriodDescriptorEncoded = encodeDescriptorParameter(req.url, 'gradingPeriodDescriptor_KEEP_IT_AT_THE_END');
+  
+  bru.setVar('thirdGradingDescriptorEncoded', gradingPeriodDescriptorEncoded);
 }
 
 script:post-response {
@@ -64,6 +76,8 @@ script:post-response {
 }
 
 settings {
-  encodeUrl: true
+  encodeUrl: false
   timeout: 0
+  followRedirects: true
+  maxRedirects: 5
 }

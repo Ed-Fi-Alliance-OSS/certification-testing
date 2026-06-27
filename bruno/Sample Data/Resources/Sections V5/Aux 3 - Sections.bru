@@ -1,0 +1,51 @@
+meta {
+  name: Aux 3 - Sections
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/sections/{{tempSectionUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSectionUUID}}",
+    "sectionIdentifier": "[ENTER SECTION IDENTIFIER]",
+    "courseOfferingReference": {
+      "localCourseCode": "[ENTER LOCAL COURSE CODE]",
+      "schoolId": "[ENTER SCHOOL ID]",
+      "schoolYear": "[ENTER SCHOOL YEAR]",
+      "sessionName": "[ENTER SESSION NAME]"
+    },
+    "locationReference": {
+      "classroomIdentificationCode": "501",
+      "schoolId": "[ENTER SCHOOL ID]"
+    },
+    "locationSchoolReference": {
+      "schoolId": "[ENTER SCHOOL ID]"
+    },
+    "sequenceOfCourse": 1,
+    "availableCredits": 1,
+    "classPeriods": [
+      {
+        "classPeriodReference": {
+          "classPeriodName": "Class Period 01",
+          "schoolId": "[ENTER SCHOOL ID]"
+        }
+      }
+    ],
+    "educationalEnvironmentDescriptor": "uri://ed-fi.org/EducationalEnvironmentDescriptor#Classroom"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

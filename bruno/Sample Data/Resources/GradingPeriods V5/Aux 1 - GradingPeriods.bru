@@ -1,0 +1,36 @@
+meta {
+  name: Aux 1 - GradingPeriods
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods?schoolId=[ENTER SCHOOL ID]&schoolYear=[ENTER SCHOOL YEAR]&gradingPeriodName=[ENTER GRADING PERIOD NAME]&gradingPeriodDescriptor={{tempGradingDescriptorEncoded}}&gradingPeriodDescriptor_KEEP_IT_AT_THE_END=[ENTER GRADING PERIOD DESCRIPTOR]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL ID]
+  schoolYear: [ENTER SCHOOL YEAR]
+  gradingPeriodName: [ENTER GRADING PERIOD NAME]
+  gradingPeriodDescriptor: {{tempGradingDescriptorEncoded}}
+  gradingPeriodDescriptor_KEEP_IT_AT_THE_END: [ENTER GRADING PERIOD DESCRIPTOR]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter } = require('./utils');
+  
+  const gradingPeriodDescriptorEncoded = encodeDescriptorParameter(req.url, 'gradingPeriodDescriptor_KEEP_IT_AT_THE_END');
+  
+  bru.setVar('tempGradingDescriptorEncoded', gradingPeriodDescriptorEncoded);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,43 @@
+meta {
+  name: Aux 1 - StaffSectionAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations?schoolId=[ENTER SCHOOL ID]&schoolYear=[ENTER SCHOOL YEAR]&localCourseCode=[ENTER LOCAL COURSE CODE]&sessionName=[ENTER SESSION NAME]&staffUniqueId=[ENTER STAFF UNIQUE ID]&sectionIdentifier=[ENTER SECTION IDENTIFIER]&beginDate=[ENTER BEGIN DATE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  schoolId: [ENTER SCHOOL ID]
+  schoolYear: [ENTER SCHOOL YEAR]
+  localCourseCode: [ENTER LOCAL COURSE CODE]
+  sessionName: [ENTER SESSION NAME]
+  staffUniqueId: [ENTER STAFF UNIQUE ID]
+  sectionIdentifier: [ENTER SECTION IDENTIFIER]
+  beginDate: [ENTER BEGIN DATE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempStaffSectionAssociationUUID', item.id);
+    setVarsMessage('StaffSectionAssociation');
+  } else {
+    wipeVar(bru, 'tempStaffSectionAssociationUUID');
+    wipeVarsWarning('StaffSectionAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

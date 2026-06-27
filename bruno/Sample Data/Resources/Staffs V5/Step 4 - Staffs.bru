@@ -1,0 +1,42 @@
+meta {
+  name: Step 4 - Staffs
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffs/{{tempSecondStaffUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondStaffUUID}}",
+    "staffUniqueId": "207269-test02",
+    "firstName": "Jane",
+    "middleName": "Marcy",
+    "lastSurname": "Smith",
+    "generationCodeSuffix": null,
+    "birthDate": "1973-07-20",
+    "hispanicLatinoEthnicity": false,
+    "highestCompletedLevelOfEducationDescriptor": "uri://ed-fi.org/LevelOfEducationDescriptor#Doctorate",
+    "highlyQualifiedTeacher": true,
+    "sexDescriptor": "uri://ed-fi.org/SexDescriptor#Female",
+    "electronicMails": [
+      {
+        "electronicMailAddress": "janesmith@edficert.org",
+        "electronicMailTypeDescriptor": "uri://ed-fi.org/ElectronicMailTypeDescriptor#Work"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

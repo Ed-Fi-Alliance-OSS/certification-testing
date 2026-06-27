@@ -1,0 +1,53 @@
+meta {
+  name: Aux 2 - Courses
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/courses
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "academicSubjectDescriptor": "uri://ed-fi.org/AcademicSubjectDescriptor#Mathematics",
+    "courseCode": "[ENTER COURSE CODE]",
+    "courseIdentificationCodes": [
+      {
+        "courseIdentificationSystemDescriptor": "uri://ed-fi.org/CourseIdentificationSystemDescriptor#State course code",
+        "identificationCode": "03100500"
+      }
+    ],
+    "levelCharacteristics": [
+      {
+        "courseLevelCharacteristicDescriptor": "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Core Subject"
+      }
+    ],
+    "courseTitle": "Algebra I",
+    "educationOrganizationReference": {
+      "educationOrganizationId": [ENTER EDUCATION ORGANIZATION ID]
+    },
+    "numberOfParts": 1,
+    "maxCompletionsForCredit": 3
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempCourseUUID', _UUID);
+    console.log('Course data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

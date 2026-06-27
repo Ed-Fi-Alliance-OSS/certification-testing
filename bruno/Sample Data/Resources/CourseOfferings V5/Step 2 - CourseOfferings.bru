@@ -1,0 +1,48 @@
+meta {
+  name: Step 2 - CourseOfferings
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "courseReference": {
+      "courseCode": "ALG 01",
+      "educationOrganizationId": 9999999901
+    },
+    "schoolReference": {
+      "schoolId": 9999999901
+    },
+    "sessionReference": {
+      "sessionName": "2026-2027 Fall Semester",
+      "schoolId": 9999999901,
+      "schoolYear": "2026"
+    },
+    "localCourseTitle": "Algebra 02 GBHS",
+    "localCourseCode": "ALG-2"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempSecondCourseOfferingUUID', _UUID);
+    console.log('CourseOffering data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

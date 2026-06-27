@@ -1,0 +1,49 @@
+meta {
+  name: Step 3 - Courses
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/courses/{{tempFirstCourseUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempFirstCourseUUID}}",
+    "academicSubjects": [
+      {
+        "academicSubjectDescriptor": "uri://ed-fi.org/AcademicSubjectDescriptor#Mathematics"
+      }
+    ],
+    "courseCode": "ALG 01",
+    "identificationCodes": [
+      {
+        "courseIdentificationSystemDescriptor": "uri://ed-fi.org/CourseIdentificationSystemDescriptor#State course code",
+        "identificationCode": "03100500"
+      }
+    ],
+    "levelCharacteristics": [
+      {
+        "courseLevelCharacteristicDescriptor": "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Core Subject"
+      }
+    ],
+    "courseTitle": "Algebra II",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 9999999901
+    },
+    "numberOfParts": 1,
+    "maxCompletionsForCredit": 3
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

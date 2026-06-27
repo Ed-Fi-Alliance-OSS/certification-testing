@@ -1,0 +1,38 @@
+meta {
+  name: Aux 1 - Courses
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/courses?educationOrganizationId=[ENTER EDUCATION ORGANIZATION ID]&courseCode=[ENTER COURSE CODE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  educationOrganizationId: [ENTER EDUCATION ORGANIZATION ID]
+  courseCode: [ENTER COURSE CODE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempCourseUUID', item.id);
+    setVarsMessage('Course');
+  } else {
+    wipeVar(bru, 'tempCourseUUID');
+    wipeVarsWarning('Course');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

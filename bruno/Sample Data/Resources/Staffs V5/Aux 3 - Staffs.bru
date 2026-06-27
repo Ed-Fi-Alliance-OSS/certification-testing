@@ -1,0 +1,42 @@
+meta {
+  name: Aux 3 - Staffs
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffs/{{tempStaffUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStaffUUID}}",
+    "staffUniqueId": "[ENTER_STAFF_UNIQUE_ID]",
+    "firstName": "John",
+    "middleName": "Marcy",
+    "lastSurname": "Loyo",
+    "generationCodeSuffix": "Sr",
+    "birthDate": "1959-04-30",
+    "hispanicLatinoEthnicity": true,
+    "highestCompletedLevelOfEducationDescriptor": "uri://ed-fi.org/LevelOfEducationDescriptor#Master's",
+    "highlyQualifiedTeacher": true,
+    "sexDescriptor": "uri://ed-fi.org/SexDescriptor#Male",
+    "electronicMails": [
+      {
+        "electronicMailAddress": "johnloyo@edficert.org",
+        "electronicMailTypeDescriptor": "uri://ed-fi.org/ElectronicMailTypeDescriptor#Work"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

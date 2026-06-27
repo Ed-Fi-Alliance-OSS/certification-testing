@@ -1,0 +1,31 @@
+meta {
+  name: Step 4 - Locations
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/locations/{{tempSecondLocationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondLocationUUID}}",
+    "classroomIdentificationCode": "901",
+    "schoolReference": {
+      "schoolId": 9999999902
+    },
+    "maximumNumberOfSeats": 18
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

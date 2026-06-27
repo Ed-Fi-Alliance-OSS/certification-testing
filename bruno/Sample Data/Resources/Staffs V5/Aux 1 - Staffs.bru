@@ -1,0 +1,37 @@
+meta {
+  name: Aux 1 - Staffs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffs?staffUniqueId=[ENTER STAFF UNIQUE ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  staffUniqueId: [ENTER STAFF UNIQUE ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempStaffUUID', item.id);
+    setVarsMessage('Staff');
+  } else {
+    wipeVar(bru, 'tempStaffUUID');
+    wipeVarsWarning('Staff');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

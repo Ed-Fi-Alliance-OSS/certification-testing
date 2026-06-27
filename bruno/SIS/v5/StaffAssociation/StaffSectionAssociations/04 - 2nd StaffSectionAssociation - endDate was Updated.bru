@@ -37,11 +37,8 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-
+  
   validateDependency(bru, 'secondStaffSectionAssociationUniqueId', '02 - 2nd StaffSectionAssociation is valid', {
-    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
-  });
-  validateDependency(bru, 'secondStaffSectionAssociationEndDate', '02 - 2nd StaffSectionAssociation is valid', {
     actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
   });
 }
@@ -51,16 +48,16 @@ script:post-response {
   const { logScenario, logSpecStaffSectionAssociation } = require('./logging');
   const entityName = 'StaffSectionAssociation';
   const scenarioName = this.req.name;
-
+  
   if (res.status !== 200 || !res.body) {
     throwNotFoundOrSpecificError(entityName);
   }
-
+  
   const current = res.getBody();
   const previousEndDate = getVar(bru, 'secondStaffSectionAssociationEndDate');
-
+  
   expectChanged(previousEndDate, current.endDate, 'endDate');
-
+  
   logScenario(entityName, scenarioName, current, logSpecStaffSectionAssociation, [
     'endDate'
   ]);

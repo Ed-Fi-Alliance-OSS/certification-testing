@@ -1,0 +1,41 @@
+meta {
+  name: Aux 1 - Sections
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/sections?sectionIdentifier=[ENTER SECTION IDENTIFIER]&localCourseCode=[ENTER LOCAL COURSE CODE]&schoolId=[ENTER SCHOOL ID]&schoolYear=[ENTER SCHOOL YEAR]&sessionName=[ENTER SESSION NAME]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  sectionIdentifier: [ENTER SECTION IDENTIFIER]
+  localCourseCode: [ENTER LOCAL COURSE CODE]
+  schoolId: [ENTER SCHOOL ID]
+  schoolYear: [ENTER SCHOOL YEAR]
+  sessionName: [ENTER SESSION NAME]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempSectionUUID', item.id);
+    setVarsMessage('Section');
+  } else {
+    wipeVar(bru, 'tempSectionUUID');
+    wipeVarsWarning('Section');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

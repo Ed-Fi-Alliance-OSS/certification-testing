@@ -1,0 +1,40 @@
+meta {
+  name: Step 4 - CourseOfferings
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings/{{tempSecondCourseOfferingUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondCourseOfferingUUID}}",
+    "courseReference": {
+      "courseCode": "ALG 01",
+      "educationOrganizationId": 9999999901
+    },
+    "schoolReference": {
+      "schoolId": 9999999901
+    },
+    "sessionReference": {
+      "sessionName": "2026-2027 Fall Semester",
+      "schoolId": 9999999901,
+      "schoolYear": "2026"
+    },
+    "localCourseTitle": "Algebra II",
+    "localCourseCode": "ALG-2"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

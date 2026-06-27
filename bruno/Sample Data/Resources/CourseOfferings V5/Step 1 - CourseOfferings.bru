@@ -1,0 +1,48 @@
+meta {
+  name: Step 1 - CourseOfferings
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "courseReference": {
+      "courseCode": "ART 01",
+      "educationOrganizationId": 9999999902
+    },
+    "schoolReference": {
+      "schoolId": 9999999902
+    },
+    "sessionReference": {
+      "sessionName": "2026-2027 Fall Semester",
+      "schoolId": 9999999902,
+      "schoolYear": "2026"
+    },
+    "localCourseTitle": "Art",
+    "localCourseCode": "ART 01"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempFirstCourseOfferingUUID', _UUID);
+    console.log('CourseOffering data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

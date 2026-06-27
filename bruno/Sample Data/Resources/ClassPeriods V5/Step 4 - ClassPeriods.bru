@@ -1,0 +1,36 @@
+meta {
+  name: Step 4 - ClassPeriods
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/classPeriods/{{tempSecondClassPeriodUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondClassPeriodUUID}}",
+    "classPeriodName": "Class Period 1",
+    "schoolReference": {
+      "schoolId": 9999999902
+    },
+    "meetingTimes": [
+      {
+        "startTime": "08:35:00",
+        "endTime": "09:25:00"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

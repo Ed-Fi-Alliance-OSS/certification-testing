@@ -5,12 +5,13 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations?schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&sessionName=[ENTER_SESSION_NAME]&staffUniqueId=[ENTER_STAFF_UNIQUE_ID]&sectionIdentifier=[ENTER_SECTION_IDENTIFIER]
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations?beginDate=[ENTER_BEGIN_DATE]&schoolId=[ENTER_SCHOOL_ID]&schoolYear=[ENTER_SCHOOL_YEAR]&localCourseCode=[ENTER_LOCAL_COURSE_CODE]&sessionName=[ENTER_SESSION_NAME]&staffUniqueId=[ENTER_STAFF_UNIQUE_ID]&sectionIdentifier=[ENTER_SECTION_IDENTIFIER]
   body: none
   auth: inherit
 }
 
 params:query {
+  beginDate: [ENTER_BEGIN_DATE]
   schoolId: [ENTER_SCHOOL_ID]
   schoolYear: [ENTER_SCHOOL_YEAR]
   localCourseCode: [ENTER_LOCAL_COURSE_CODE]
@@ -51,19 +52,19 @@ script:post-response {
   const entityName = 'StaffSectionAssociation';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-
+  
   if (!single) {
     wipeVars(bru, [
       'firstStaffSectionAssociationUniqueId',
       'firstStaffSectionAssociationClassroomPositionDescriptor'
     ], entityName, true);
   }
-
+  
   setVars(bru, {
     firstStaffSectionAssociationUniqueId: single.id,
     firstStaffSectionAssociationClassroomPositionDescriptor: extractDescriptor(single.classroomPositionDescriptor)
   }, entityName);
-
+  
   logScenario(entityName, scenarioName, single, logSpecStaffSectionAssociation);
 }
 

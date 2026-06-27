@@ -1,0 +1,46 @@
+meta {
+  name: Step 3 - GradingPeriods
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+    "gradingPeriodName": "2026-2027 Fall Semester",
+    "periodSequence": 1,
+    "schoolReference": {
+      "schoolId": "9999999902"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "2026"
+    },
+    "beginDate": "2026-08-23",
+    "endDate": "2026-10-04",
+    "totalInstructionalDays": 29
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempThirdGradingPeriodUUID', _UUID);
+    console.log('GradingPeriod data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
