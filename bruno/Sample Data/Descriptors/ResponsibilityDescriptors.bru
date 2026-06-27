@@ -1,0 +1,25 @@
+meta {
+  name: ResponsibilityDescriptors
+  type: http
+  seq: 27
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/responsibilityDescriptors
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~description: Individualized Education Program
+  ~codeValue: Residency
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

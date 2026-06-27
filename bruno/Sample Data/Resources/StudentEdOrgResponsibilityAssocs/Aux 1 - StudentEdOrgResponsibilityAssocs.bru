@@ -1,0 +1,50 @@
+meta {
+  name: Aux 1 - StudentEdOrgResponsibilityAssocs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations?studentUniqueId=99999901
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: 99999901
+  ~beginDate: 2026-08-23
+  ~educationOrganizationId: 9999999902
+  ~responsibilityDescriptor: {{tempResponsibilityDescriptorEncoded}}
+  ~responsibilityDescriptor_KEEP_IT_AT_THE_END: uri://ed-fi.org/ResponsibilityDescriptor#Individualized Education Program
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const responsibilityDescriptorEncoded = encodeDescriptorParameter(req.url, 'responsibilityDescriptor_KEEP_IT_AT_THE_END');
+  
+  setVar(bru, 'tempResponsibilityDescriptorEncoded', responsibilityDescriptorEncoded);
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempStudentEdOrgResponsibilityAssocUUID', item.id);
+    setVarsMessage('StudentEdOrgResponsibilityAssoc');
+  } else {
+    wipeVar(bru, 'tempStudentEdOrgResponsibilityAssocUUID');
+    wipeVarsWarning('StudentEdOrgResponsibilityAssoc');
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}

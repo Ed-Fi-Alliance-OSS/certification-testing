@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../../schemas/entity-config.schema.json",
+  "version": 1,
+  "identity": {
+    "primaryKeyFields": ["beginDate", "educationOrganizationId", "responsibilityDescriptor", "studentUniqueId"],
+    "naturalIdField": null
+  },
+  "overrides": {
+    "entityName": "StudentEdOrgResponsibilityAssoc",
+    "endpointSegment": "studentEducationOrganizationResponsibilityAssociations",
+    "loggingSpecName": "StudentEdOrgResponsibilityAssoc",
+    "fileNameAlias": "StudentEdOrgResponsibilityAssoc"
+  }
+}

@@ -1,0 +1,34 @@
+meta {
+  name: Step 3 - StudentEdOrgResponsibilityAssocs
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "responsibilityDescriptor": "uri://ed-fi.org/ResponsibilityDescriptor#Residency",
+    "educationOrganizationReference": {
+      "educationOrganizationId": "9999999902"
+    },
+    "studentReference": {
+      "studentUniqueId": "99999901" // This is not a typo. The test is "Same Student with a different EdOrg"
+    },
+    "beginDate": "2026-08-23",
+    "endDate": "2026-06-01"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -479,6 +479,17 @@ const logSpecStudentEdOrgAssociation = {
   raceDescriptors: r => (r?.races || []).map(rc => extractDescriptor(rc.raceDescriptor)),
 };
 
+// StudentEdOrgResponsibilityAssoc spec map (StudentEnrollment > StudentEdOrgResponsibilityAssocs)
+// Primary keys: beginDate, educationOrganizationId, responsibilityDescriptor, studentUniqueId
+// Include identifiers and mutated field (responsibilityDescriptor) plus endDate.
+const logSpecStudentEdOrgResponsibilityAssoc = {
+  beginDate: r => r?.beginDate,
+  responsibilityDescriptor: r => extractDescriptor(r?.responsibilityDescriptor),
+  educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
+  studentUniqueId: r => r?.studentReference?.studentUniqueId,
+  endDate: r => r?.endDate,
+};
+
 // StudentSchoolAssociation spec map (StudentEnrollment > StudentSchoolAssociations)
 // Primary keys per config: schoolId, studentUniqueId, entryDate (naturalIdField null)
 // Include required descriptors & mutated-capable fields (entryDate, exitWithdrawDate, exitWithdrawTypeDescriptor, graduationPlanReference constituents, calendarReference.calendarCode)
@@ -938,6 +949,7 @@ module.exports = {
   ,logSpecStudent
   ,logSpecGraduationPlan
   ,logSpecStudentEdOrgAssociation
+  ,logSpecStudentEdOrgResponsibilityAssoc
   ,logSpecStudentSchoolAssociation
   ,logSpecStudentSectionAssociation
   ,logSpecStudentCTEProgramAssociation

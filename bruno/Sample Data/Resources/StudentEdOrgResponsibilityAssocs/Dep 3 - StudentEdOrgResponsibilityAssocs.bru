@@ -1,0 +1,20 @@
+meta {
+  name: Dep 3 - StudentEdOrgResponsibilityAssocs
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations/{{tempSecondStudentEdOrgResponsibilityAssocUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

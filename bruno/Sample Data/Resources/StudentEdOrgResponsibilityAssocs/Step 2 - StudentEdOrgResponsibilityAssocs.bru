@@ -1,0 +1,43 @@
+meta {
+  name: Step 2 - StudentEdOrgResponsibilityAssocs
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "responsibilityDescriptor": "uri://ed-fi.org/ResponsibilityDescriptor#Residency",
+    "educationOrganizationReference": {
+      "educationOrganizationId": "9999999902"
+    },
+    "studentReference": {
+      "studentUniqueId": "99999901" // This is not a typo. The test is "Same Student with a different EdOrg"
+    },
+    "beginDate": "2026-08-23",
+    "endDate": "2026-06-01"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const assocUUID = locationHeader.split('/').pop();
+    bru.setVar('tempSecondStudentEdOrgResponsibilityAssocUUID', assocUUID);
+    console.log('StudentEdOrgResponsibilityAssoc data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
