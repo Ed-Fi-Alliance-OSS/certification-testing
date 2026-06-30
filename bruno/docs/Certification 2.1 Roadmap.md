@@ -14,14 +14,14 @@ Spike of this research: https://edfi.atlassian.net/browse/CERT-232
 | Metric | Value |
 |---|---|
 | Total dev story points | 42 |
-| Completed (Sprints 1 & 2) | 31 pts ✅ |
-| **Remaining dev points (In Review)** | **11 pts** |
+| Completed (All Sprints) | 42 pts ✅ |
+| **Remaining dev points** | **0 pts** |
 | Phase 1 points (gated) | 8 pts |
 | Phase 2 points (parallel) | 28 pts |
 | Sprints needed | 3 |
 | **Projected dev ETA** | **July 8, 2026** |
 | With QA buffer sprint | July 15, 2026 |
-| Documentation tickets | 7 (parallel, unestimated) |
+| Documentation tickets | 8 (parallel, unestimated) |
 
 ## Tickets missing to develop as part of Certification 2.1
 
@@ -35,12 +35,12 @@ Spike of this research: https://edfi.atlassian.net/browse/CERT-232
 | [CERT-242](https://edfi.atlassian.net/browse/CERT-242) | 2 | ✅ Done | 2 – Parallel | Scenario updates |
 | [CERT-243](https://edfi.atlassian.net/browse/CERT-243) | 3 | ✅ Done | 2 – Parallel | New scenario |
 | [CERT-244](https://edfi.atlassian.net/browse/CERT-244) | 3 | ✅ Done | 2 – Parallel | New scenario |
-| [CERT-245](https://edfi.atlassian.net/browse/CERT-245) | 3 | 🔄 In Review | 2 – Parallel | New scenario |
-| [CERT-246](https://edfi.atlassian.net/browse/CERT-246) | 3 | 🔄 In Review | 2 – Parallel | Scenario updates |
+| [CERT-245](https://edfi.atlassian.net/browse/CERT-245) | 3 | ✅ Done | 2 – Parallel | New scenario |
+| [CERT-246](https://edfi.atlassian.net/browse/CERT-246) | 3 | ✅ Done | 2 – Parallel | Scenario updates |
 | [CERT-239](https://edfi.atlassian.net/browse/CERT-239) | 3 | ✅ Done | 2 – Parallel | Scenario updates |
 | [CERT-237](https://edfi.atlassian.net/browse/CERT-237) | 3 | ✅ Done | 2 – Parallel | Scenario updates |
 | [CERT-250](https://edfi.atlassian.net/browse/CERT-250) | 1 | ✅ Done | 2 – Parallel | Scenario updates |
-| [CERT-256](https://edfi.atlassian.net/browse/CERT-256) | 5 | 🔄 In Review | 2 – Parallel | Scenario updates |
+| [CERT-256](https://edfi.atlassian.net/browse/CERT-256) | 5 | ✅ Done | 2 – Parallel | Scenario updates |
 | [CERT-258](https://edfi.atlassian.net/browse/CERT-258) | 1 | ✅ Done | 2 – Parallel | Regression follow-up |
 | [CERT-259](https://edfi.atlassian.net/browse/CERT-259) | 2 | ✅ Done | 2 – Parallel | Regression follow-up |
 > **Note:** Estimations are approximations based on original ticket estimates and complexity. They do **not** account for AI-assisted development using `bruno/ai-docs/spec.md`, which could meaningfully accelerate Phase 2 scenario tickets.
@@ -49,13 +49,14 @@ Spike of this research: https://edfi.atlassian.net/browse/CERT-232
 
 | Ticket | Status | Notes |
 |---|---|---|
-| [CERT-249](https://edfi.atlassian.net/browse/CERT-249) | 🔵 Open | Documentation updates |
-| [CERT-248](https://edfi.atlassian.net/browse/CERT-248) | 🔵 Open | Documentation updates |
-| [CERT-235](https://edfi.atlassian.net/browse/CERT-235) | 🔵 Open | Documentation updates |
-| [CERT-251](https://edfi.atlassian.net/browse/CERT-251) | 🔵 Open | Documentation updates |
-| [CERT-253](https://edfi.atlassian.net/browse/CERT-253) | 🔵 Open | Documentation updates |
-| [CERT-254](https://edfi.atlassian.net/browse/CERT-254) | 🔵 Open | Documentation updates |
-| [CERT-255](https://edfi.atlassian.net/browse/CERT-255) | 🔵 Open | Documentation updates |
+| [CERT-249](https://edfi.atlassian.net/browse/CERT-249) | ✅ Done | Documentation updates |
+| [CERT-248](https://edfi.atlassian.net/browse/CERT-248) | ✅ Done | Documentation updates |
+| [CERT-235](https://edfi.atlassian.net/browse/CERT-235) | ✅ Done | Documentation updates |
+| [CERT-251](https://edfi.atlassian.net/browse/CERT-251) | ✅ Done | Documentation updates |
+| [CERT-253](https://edfi.atlassian.net/browse/CERT-253) | ✅ Done | Documentation updates |
+| [CERT-254](https://edfi.atlassian.net/browse/CERT-254) | ✅ Done | Documentation updates |
+| [CERT-255](https://edfi.atlassian.net/browse/CERT-255) | ✅ Done | Documentation updates |
+| [CERT-260](https://edfi.atlassian.net/browse/CERT-260) | ✅ Done | Documentation updates |
 
 > Although these tickets are assigned to Certification 2.2, they will be moved to Certification 2.1, as they are part of the work that needs to be done for Certification 2.1, and they are not being worked on as part of Certification 2.2.
 
@@ -91,9 +92,9 @@ flowchart TB
 
     subgraph S3 ["Sprint 3 · Jun 25–Jul 8 · 11 pts"]
         direction LR
-        C256["🔄 CERT-256 · 5 pts"]
-        C245["🔄 CERT-245 · 3 pts"]
-        C246["🔄 CERT-246 · 3 pts"]
+        C256["✅ CERT-256 · 5 pts"]
+        C245["✅ CERT-245 · 3 pts"]
+        C246["✅ CERT-246 · 3 pts"]
         C256 ~~~ C245 ~~~ C246
     end
 
@@ -129,9 +130,9 @@ gantt
     CERT-259 SampleData scripts             :done, cert259, 2026-06-11, 2026-06-24
 
     section Sprint 3 · Jun 25–Jul 8 (11 pts)
-    CERT-256 Scenario Updates               :active, cert256, 2026-06-25, 2026-07-08
-    CERT-245 New Scenario                   :active, cert245, 2026-06-25, 2026-07-08
-    CERT-246 Scenario Updates               :active, cert246, 2026-06-25, 2026-07-08
+    CERT-256 Scenario Updates               :done, cert256, 2026-06-25, 2026-07-08
+    CERT-245 New Scenario                   :done, cert245, 2026-06-25, 2026-07-08
+    CERT-246 Scenario Updates               :done, cert246, 2026-06-25, 2026-07-08
 
     section Documentation (Parallel)
     CERT-248 / 235 / 249 / 251              :doc1, 2026-05-28, 2026-06-10
