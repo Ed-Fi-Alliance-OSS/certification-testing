@@ -1,0 +1,36 @@
+meta {
+  name: Step 4 - StaffEdOrgAssociations
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffEducationOrganizationAssignmentAssociations/{{tempSecondStaffEdOrgAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondStaffEdOrgAssociationUUID}}",
+    "staffReference": {
+      "staffUniqueId": "207269-test02"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": "9999999902"
+    },
+    "beginDate": "09/01/2026",
+    "staffClassificationDescriptor": "uri://ed-fi.org/StaffClassificationDescriptor#Teacher",
+    "positionTitle": "10th Grade Teacher",
+    "endDate": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

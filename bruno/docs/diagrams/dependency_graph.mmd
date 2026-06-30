@@ -1,0 +1,35 @@
+flowchart TB
+    C241["✅ CERT-241\nDS5 Boilerplate · Done"]
+
+    subgraph S1 ["Sprint 1 · May 28–Jun 10 · 14 pts"]
+        direction LR
+        C247["✅ CERT-247\nRegression Tests\n5 pts · QA"]
+        C257["✅ CERT-257\nPipeline Stabilization\n3 pts · Dev"]
+        C239["✅ CERT-239 · 3 pts"]
+        C237["✅ CERT-237 · 3 pts"]
+        C247 ~~~ C257 ~~~ C239 ~~~ C237
+    end
+
+    subgraph S2 ["Sprint 2 · Jun 11–Jun 24 · 14 pts"]
+        direction LR
+        C252["✅ CERT-252 · 2 pts"]
+        C242["✅ CERT-242 · 2 pts"]
+        C250["✅ CERT-250 · 1 pt"]
+        C243["✅ CERT-243 · 3 pts"]
+        C244["✅ CERT-244 · 3 pts"]
+        C258["✅ CERT-258 · 1 pt"]
+        C259["✅ CERT-259 · 2 pts"]
+        C252 ~~~ C242 ~~~ C250 ~~~ C243 ~~~ C244 ~~~ C258 ~~~ C259
+    end
+
+    subgraph S3 ["Sprint 3 · Jun 25–Jul 8 · 11 pts"]
+        direction LR
+        C256["✅ CERT-256 · 5 pts"]
+        C245["✅ CERT-245 · 3 pts"]
+        C246["✅ CERT-246 · 3 pts"]
+        C256 ~~~ C245 ~~~ C246
+    end
+
+    C241 --> S1 --> S2 --> S3
+
+    style C241 fill:#22c55e,color:#fff

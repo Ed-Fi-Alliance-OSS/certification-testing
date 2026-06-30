@@ -1,0 +1,50 @@
+meta {
+  name: Aux 1 - StudentEdOrgResponsibilityAssocs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations?beginDate=[ENTER_BEGIN_DATE]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&educationOrganizationId=[ENTER_SCHOOL_UNIQUE_ID]&responsibilityDescriptor={{tempResponsibilityDescriptorEncoded}}&responsibilityDescriptor_KEEP_IT_AT_THE_END=[ENTER_RESPONSIBILITY_DESCRIPTOR]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  beginDate: [ENTER_BEGIN_DATE]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  educationOrganizationId: [ENTER_SCHOOL_UNIQUE_ID]
+  responsibilityDescriptor: {{tempResponsibilityDescriptorEncoded}}
+  responsibilityDescriptor_KEEP_IT_AT_THE_END: [ENTER_RESPONSIBILITY_DESCRIPTOR]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  const responsibilityDescriptorEncoded = encodeDescriptorParameter(req.url, 'responsibilityDescriptor_KEEP_IT_AT_THE_END');
+  
+  setVar(bru, 'tempResponsibilityDescriptorEncoded', responsibilityDescriptorEncoded);
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+  
+  if (item) {
+    setVar(bru, 'tempStudentEdOrgResponsibilityAssocUUID', item.id);
+    setVarsMessage('StudentEdOrgResponsibilityAssoc');
+  } else {
+    wipeVar(bru, 'tempStudentEdOrgResponsibilityAssocUUID');
+    wipeVarsWarning('StudentEdOrgResponsibilityAssoc');
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}

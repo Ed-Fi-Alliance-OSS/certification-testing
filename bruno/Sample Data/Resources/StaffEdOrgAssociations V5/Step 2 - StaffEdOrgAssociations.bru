@@ -1,0 +1,44 @@
+meta {
+  name: Step 2 - StaffEdOrgAssociations
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/staffEducationOrganizationAssignmentAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "staffReference": {
+      "staffUniqueId": "207269-test02"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": "9999999902"
+    },
+    "beginDate": "09/01/2026",
+    "staffClassificationDescriptor": "uri://ed-fi.org/StaffClassificationDescriptor#Teacher",
+    "positionTitle": "9th Grade Teacher",
+    "endDate": null
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempSecondStaffEdOrgAssociationUUID', _UUID);
+    console.log('StaffEdOrgAssociation data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

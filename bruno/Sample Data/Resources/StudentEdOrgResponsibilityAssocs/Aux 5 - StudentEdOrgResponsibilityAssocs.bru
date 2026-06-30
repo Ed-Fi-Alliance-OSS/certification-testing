@@ -1,0 +1,20 @@
+meta {
+  name: Aux 5 - StudentEdOrgResponsibilityAssocs
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations/{{tempStudentEdOrgResponsibilityAssocUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

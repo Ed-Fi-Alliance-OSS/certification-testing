@@ -1,0 +1,36 @@
+meta {
+  name: Aux 3 - StaffEdOrgAssociations
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffEducationOrganizationAssignmentAssociations/{{tempStaffEdOrgAssociationsUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempStaffEdOrgAssociationsUUID}}",
+    "staffReference": {
+      "staffUniqueId": "[ENTER_STAFF_UNIQUE_ID]"
+    },
+    "educationOrganizationReference": {
+      "educationOrganizationId": "[ENTER_EDORG_ID]"
+    },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "staffClassificationDescriptor": "uri://ed-fi.org/StaffClassificationDescriptor#Teacher",
+    "positionTitle": "1st Grade teacher",
+    "endDate": "[ENTER_END_DATE]"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
