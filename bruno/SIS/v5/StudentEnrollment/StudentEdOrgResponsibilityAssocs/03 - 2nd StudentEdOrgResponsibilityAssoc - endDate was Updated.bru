@@ -1,5 +1,5 @@
 meta {
-  name: 03 - 2nd StudentEdOrgResponsibilityAssoc - responsibilityDescriptor was Updated
+  name: 03 - 2nd StudentEdOrgResponsibilityAssoc - endDate was Updated
   type: http
   seq: 3
 }
@@ -31,9 +31,9 @@ assert {
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-  
+
   validateDependency(bru, 'secondStudentEdOrgResponsibilityAssocUniqueId', '02 - 2nd StudentEdOrgResponsibilityAssoc is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
-  
+
   validateDependency(bru, 'secondStudentEdOrgResponsibilityAssocEndDate', '02 - 2nd StudentEdOrgResponsibilityAssoc is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
 }
 
@@ -42,16 +42,16 @@ script:post-response {
   const { logSpecStudentEdOrgResponsibilityAssoc, logScenario } = require('./logging');
   const entityName = 'StudentEdOrgResponsibilityAssoc';
   const scenarioName = this.req.name;
-  
+
   if (res.status !== 200 || !res.body) {
     throwNotFoundOrSpecificError(entityName);
   }
-  
+
   const current = res.getBody();
   const previousEndDate = getVar(bru, 'secondStudentEdOrgResponsibilityAssocEndDate');
-  
+
   expectChanged(previousEndDate, current.endDate, 'endDate');
-  
+
   logScenario(entityName, scenarioName, current, logSpecStudentEdOrgResponsibilityAssoc, [
     'endDate'
   ]);
