@@ -15,8 +15,26 @@ assert {
   res.body: isDefined
   res.body.id: isString
   res.body.id: isNotEmpty
+  res.body.beginDate: isString
+  res.body.beginDate: isNotEmpty
+  res.body.endDate: isString
+  res.body.endDate: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.programReference: isDefined
+  res.body.programReference.educationOrganizationId: isNumber
+  res.body.programReference.educationOrganizationId: neq 0
+  res.body.programReference.programName: isString
+  res.body.programReference.programName: isNotEmpty
+  res.body.programReference.programTypeDescriptor: isString
+  res.body.programReference.programTypeDescriptor: isNotEmpty
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
   res.body.homelessPrimaryNighttimeResidenceDescriptor: isString
   res.body.homelessPrimaryNighttimeResidenceDescriptor: isNotEmpty
+  res.body.homelessUnaccompaniedYouth: isBoolean
 }
 
 script:pre-request {
@@ -35,7 +53,7 @@ script:post-response {
   const { logSpecStudentHomelessProgramAssociation, logScenario } = require('./logging');
   const entityName = 'StudentHomelessProgramAssociation';
   const scenarioName = this.req.name;
-  
+
   if (res.status !== 200 || !res.body) {
     throwNotFoundOrSpecificError(entityName);
   }
@@ -43,9 +61,9 @@ script:post-response {
   const current = res.getBody();
   const previousDescriptor = getVar(bru, 'firstStudentHomelessProgramAssociationHomelessPrimaryNighttimeResidenceDescriptor');
   const currentDescriptor = extractDescriptor(current.homelessPrimaryNighttimeResidenceDescriptor);
-  
+
   expectChanged(previousDescriptor, currentDescriptor, 'homelessPrimaryNighttimeResidenceDescriptor');
-  
+
   logScenario(entityName, scenarioName, current, logSpecStudentHomelessProgramAssociation, [
     'educationOrganizationId',
     'programEducationOrganizationId',
