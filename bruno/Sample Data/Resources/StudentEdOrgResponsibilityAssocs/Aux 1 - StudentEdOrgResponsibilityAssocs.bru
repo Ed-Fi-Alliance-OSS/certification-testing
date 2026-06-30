@@ -5,17 +5,17 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations?studentUniqueId=99999901
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations?beginDate=[ENTER_BEGIN_DATE]&studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&educationOrganizationId=[ENTER_SCHOOL_UNIQUE_ID]&responsibilityDescriptor={{tempResponsibilityDescriptorEncoded}}&responsibilityDescriptor_KEEP_IT_AT_THE_END=[ENTER_RESPONSIBILITY_DESCRIPTOR]
   body: none
   auth: bearer
 }
 
 params:query {
-  studentUniqueId: 99999901
-  ~beginDate: 2026-08-23
-  ~educationOrganizationId: 9999999902
-  ~responsibilityDescriptor: {{tempResponsibilityDescriptorEncoded}}
-  ~responsibilityDescriptor_KEEP_IT_AT_THE_END: uri://ed-fi.org/ResponsibilityDescriptor#Individualized Education Program
+  beginDate: [ENTER_BEGIN_DATE]
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  educationOrganizationId: [ENTER_SCHOOL_UNIQUE_ID]
+  responsibilityDescriptor: {{tempResponsibilityDescriptorEncoded}}
+  responsibilityDescriptor_KEEP_IT_AT_THE_END: [ENTER_RESPONSIBILITY_DESCRIPTOR]
 }
 
 auth:bearer {
