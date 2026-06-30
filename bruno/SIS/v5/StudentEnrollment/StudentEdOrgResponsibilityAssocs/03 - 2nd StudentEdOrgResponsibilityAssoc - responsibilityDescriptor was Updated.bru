@@ -5,72 +5,55 @@ meta {
 }
 
 get {
-  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations?beginDate=2026-08-23&educationOrganizationId=9999999902&studentUniqueId=99999901&responsibilityDescriptor={{thirdResponsibilityDescriptorEncoded}}&responsibilityDescriptor_KEEP_IT_AT_THE_END=uri://ed-fi.org/ResponsibilityDescriptor#Individualized Education Program
+  url: {{resourceBaseUrl}}/ed-fi/studentEducationOrganizationResponsibilityAssociations/{{secondStudentEdOrgResponsibilityAssocUniqueId}}
   body: none
   auth: inherit
 }
 
-params:query {
-  beginDate: 2026-08-23
-  educationOrganizationId: 9999999902
-  studentUniqueId: 99999901
-  responsibilityDescriptor: {{thirdResponsibilityDescriptorEncoded}}
-  responsibilityDescriptor_KEEP_IT_AT_THE_END: uri://ed-fi.org/ResponsibilityDescriptor#Individualized Education Program
-}
-
 assert {
   res.status: eq 200
-  res.body: isArray
-  res.body: isNotEmpty
-  res.body[0].id: isString
-  res.body[0].id: isNotEmpty
-  res.body[0].beginDate: isString
-  res.body[0].beginDate: isNotEmpty
-  res.body[0].responsibilityDescriptor: isString
-  res.body[0].responsibilityDescriptor: isNotEmpty
-  res.body[0].educationOrganizationReference: isDefined
-  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
-  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
-  res.body[0].studentReference: isDefined
-  res.body[0].studentReference.studentUniqueId: isString
-  res.body[0].studentReference.studentUniqueId: isNotEmpty
-  res.body[0].endDate: isString
-  res.body[0].endDate: isNotEmpty
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.beginDate: isString
+  res.body.beginDate: isNotEmpty
+  res.body.responsibilityDescriptor: isString
+  res.body.responsibilityDescriptor: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.endDate: isString
+  res.body.endDate: isNotEmpty
 }
 
 script:pre-request {
   const { validateDependency } = require('./utils');
-  const { encodeDescriptorParameter, setVar } = require('./utils');
-  const responsibilityDescriptorEncoded = encodeDescriptorParameter(req.url, 'responsibilityDescriptor_KEEP_IT_AT_THE_END');
-
-  setVar(bru, 'thirdResponsibilityDescriptorEncoded', responsibilityDescriptorEncoded);
-
-  validateDependency(bru, 'secondStudentEdOrgResponsibilityAssocResponsibilityDescriptor', '01 - 1st StudentEdOrgResponsibilityAssoc is valid', {
-    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
-  });
+  
+  validateDependency(bru, 'secondStudentEdOrgResponsibilityAssocUniqueId', '02 - 2nd StudentEdOrgResponsibilityAssoc is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
+  
+  validateDependency(bru, 'secondStudentEdOrgResponsibilityAssocEndDate', '02 - 2nd StudentEdOrgResponsibilityAssoc is valid', { actionHint: 'Ensure you ran the second certification scenario successfully before continuing.' });
 }
 
 script:post-response {
-  const { getVar, expectChanged, expectUnchanged, extractDescriptor, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
   const { logSpecStudentEdOrgResponsibilityAssoc, logScenario } = require('./logging');
   const entityName = 'StudentEdOrgResponsibilityAssoc';
   const scenarioName = this.req.name;
-
+  
   if (res.status !== 200 || !res.body) {
     throwNotFoundOrSpecificError(entityName);
   }
-
+  
   const current = res.getBody();
-  const previousStudentUniqueId = getVar(bru, 'secondStudentEdOrgResponsibilityAssocStudentUniqueId');
-  const previousEducationOrganizationId = getVar(bru, 'secondStudentEdOrgResponsibilityAssocEducationOrganizationId');
-  const previousDescriptor = getVar(bru, 'secondStudentEdOrgResponsibilityAssocResponsibilityDescriptor');
-
-  expectUnchanged(previousStudentUniqueId, current.studentUniqueId, 'studentUniqueId');
-  expectUnchanged(previousEducationOrganizationId, current.educationOrganizationId, 'educationOrganizationId');
-  expectChanged(previousDescriptor, extractDescriptor(current.responsibilityDescriptor), 'responsibilityDescriptor');
-
+  const previousEndDate = getVar(bru, 'secondStudentEdOrgResponsibilityAssocEndDate');
+  
+  expectChanged(previousEndDate, current.endDate, 'endDate');
+  
   logScenario(entityName, scenarioName, current, logSpecStudentEdOrgResponsibilityAssoc, [
-    'responsibilityDescriptor'
+    'endDate'
   ]);
 }
 

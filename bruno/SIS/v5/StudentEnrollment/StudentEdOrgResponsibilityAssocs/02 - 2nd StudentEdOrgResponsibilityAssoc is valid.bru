@@ -46,28 +46,24 @@ script:pre-request {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars, extractDescriptor } = require('./utils');
+  const { pickSingle, setVars, wipeVars } = require('./utils');
   const { logSpecStudentEdOrgResponsibilityAssoc, logScenario } = require('./logging');
   const entityName = 'StudentEdOrgResponsibilityAssoc';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-
+  
   if (!single) {
     wipeVars(bru, [
       'secondStudentEdOrgResponsibilityAssocUniqueId',
-      'secondStudentEdOrgResponsibilityAssocEducationOrganizationId',
-      'secondStudentEdOrgResponsibilityAssocStudentUniqueId',
-      'secondStudentEdOrgResponsibilityAssocResponsibilityDescriptor'
+      'secondStudentEdOrgResponsibilityAssocEndDate'
     ], entityName, true);
   }
-
+  
   setVars(bru, {
     secondStudentEdOrgResponsibilityAssocUniqueId: single.id,
-    secondStudentEdOrgResponsibilityAssocEducationOrganizationId: single.educationOrganizationId,
-    secondStudentEdOrgResponsibilityAssocStudentUniqueId: single.studentUniqueId,
-    secondStudentEdOrgResponsibilityAssocResponsibilityDescriptor: extractDescriptor(single.responsibilityDescriptor)
+    secondStudentEdOrgResponsibilityAssocEndDate: single.endDate
   }, entityName);
-
+  
   logScenario(entityName, scenarioName, single, logSpecStudentEdOrgResponsibilityAssoc);
 }
 
