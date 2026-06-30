@@ -15,6 +15,34 @@ assert {
   res.body: isDefined
   res.body.id: isString
   res.body.id: isNotEmpty
+  res.body.beginDate: isString
+  res.body.beginDate: isNotEmpty
+  res.body.endDate: isString
+  res.body.endDate: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.programReference: isDefined
+  res.body.programReference.educationOrganizationId: isNumber
+  res.body.programReference.educationOrganizationId: neq 0
+  res.body.programReference.programName: isString
+  res.body.programReference.programName: isNotEmpty
+  res.body.programReference.programTypeDescriptor: isString
+  res.body.programReference.programTypeDescriptor: isNotEmpty
+  res.body.studentReference: isDefined
+  res.body.studentReference.studentUniqueId: isString
+  res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.nonTraditionalGenderStatus: isBoolean
+  res.body.privateCTEProgram: isBoolean
+  res.body.technicalSkillsAssessmentDescriptor: isString
+  res.body.technicalSkillsAssessmentDescriptor: isNotEmpty
+  res.body.cteProgramServices: isArray
+  res.body.cteProgramServices: isNotEmpty
+  res.body.cteProgramServices[0].cteProgramServiceDescriptor: isString
+  res.body.cteProgramServices[0].cteProgramServiceDescriptor: isNotEmpty
+  res.body.cteProgramServices[0].cipCode: isString
+  res.body.cteProgramServices[0].cipCode: isNotEmpty
+  res.body.cteProgramServices[0].primaryIndicator: isBoolean
 }
 
 script:pre-request {
