@@ -1,0 +1,20 @@
+meta {
+  name: Aux 4 - StaffSectionAssociations by Id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations/{{tempStaffSectionAssociationUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,50 @@
+meta {
+  name: Step 2 - Staffs
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/staffs
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "staffUniqueId": "207269-test02",
+    "firstName": "Jane",
+    "middleName": "Marcy",
+    "lastSurname": "Smith",
+    "generationCodeSuffix": null,
+    "birthDate": "1973-07-20",
+    "hispanicLatinoEthnicity": true,
+    "highestCompletedLevelOfEducationDescriptor": "uri://ed-fi.org/LevelOfEducationDescriptor#Doctorate",
+    "highlyQualifiedTeacher": true,
+    "sexDescriptor": "uri://ed-fi.org/SexDescriptor#Female",
+    "electronicMails": [
+      {
+        "electronicMailAddress": "janesmith@edficert.org",
+        "electronicMailTypeDescriptor": "uri://ed-fi.org/ElectronicMailTypeDescriptor#Work"
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempSecondStaffUUID', _UUID);
+    console.log('Staff data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

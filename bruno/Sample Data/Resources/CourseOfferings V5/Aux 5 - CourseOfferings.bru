@@ -1,0 +1,20 @@
+meta {
+  name: Aux 5 - CourseOfferings
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings/{{tempCourseOfferingUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

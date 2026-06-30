@@ -1,0 +1,39 @@
+meta {
+  name: Aux 2 - Locations
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/locations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "classroomIdentificationCode": "[ENTER CLASSROOM IDENTIFICATION CODE]",
+    "schoolReference": {
+      "schoolId": [ENTER SCHOOL ID]
+    },
+    "maximumNumberOfSeats": 22
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempLocationUUID', _UUID);
+    console.log('Location data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

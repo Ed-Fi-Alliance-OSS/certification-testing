@@ -1,0 +1,59 @@
+meta {
+  name: Step 1 - Sections
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/sections
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "sectionIdentifier": "ALG022027RM555",
+    "courseOfferingReference": {
+      "localCourseCode": "ALG-2",
+      "schoolId": 9999999901,
+      "schoolYear": 2026,
+      "sessionName": "2026-2027 Fall Semester"
+    },
+    "locationReference": {
+      "classroomIdentificationCode": "501",
+      "schoolId": 9999999901
+    },
+    "locationSchoolReference": {
+      "schoolId": 9999999901
+    },
+    "sequenceOfCourse": 1,
+    "availableCredits": 1,
+    "classPeriods": [
+      {
+        "classPeriodReference": {
+          "classPeriodName": "Class Period 1",
+          "schoolId": 9999999901
+        }
+      }
+    ],
+    "educationalEnvironmentDescriptor": "uri://ed-fi.org/EducationalEnvironmentDescriptor#Classroom"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempFirstSectionUUID', _UUID);
+    console.log('Section data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

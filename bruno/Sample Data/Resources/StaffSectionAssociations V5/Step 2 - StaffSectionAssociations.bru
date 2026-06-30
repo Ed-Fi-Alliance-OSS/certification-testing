@@ -1,0 +1,47 @@
+meta {
+  name: Step 2 - StaffSectionAssociations
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "sectionReference": {
+      "localCourseCode": "ART 01",
+      "schoolId": 9999999902,
+      "schoolYear": 2026,
+      "sessionName": "2026-2027 Fall Semester",
+      "sectionIdentifier": "ART01027RM901"
+    },
+    "staffReference": {
+      "staffUniqueId": "207269-test02"
+    },
+    "classroomPositionDescriptor": "uri://ed-fi.org/ClassroomPositionDescriptor#Teacher of Record",
+    "beginDate": "2026-08-31",
+    "endDate": null
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    const _UUID = locationHeader.split('/').pop();
+    bru.setVar('tempSecondStaffSectionAssociationUUID', _UUID);
+    console.log('StaffSectionAssociation data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

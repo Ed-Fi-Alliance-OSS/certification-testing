@@ -1,0 +1,53 @@
+meta {
+  name: Aux 3 - Sessions
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/sessions/{{tempSessionUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSessionUUID}}",
+    "schoolReference": {
+      "schoolId": [ENTER SCHOOL ID]
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": [ENTER SCHOOL YEAR]
+    },
+    "termDescriptor": "uri://ed-fi.org/TermDescriptor#Fall Semester",
+    "sessionName": "[ENTER SESSION NAME]",
+    "beginDate": "2026-08-23",
+    "endDate": "2026-12-15",
+    "totalInstructionalDays": 88,
+    "gradingPeriods": [
+      {
+        "gradingPeriodReference": {
+          "schoolId": 255901107,
+          "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+          "schoolYear": 2026
+        }
+      },
+      {
+        "gradingPeriodReference": {
+          "schoolId": 255901107,
+          "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#Second Six Weeks",
+          "schoolYear": 2026
+        }
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

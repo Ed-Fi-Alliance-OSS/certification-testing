@@ -1,0 +1,55 @@
+meta {
+  name: Step 4 - Sessions
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/sessions/{{tempSecondSessionUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondSessionUUID}}",
+    "schoolReference": {
+      "schoolId": 9999999902
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": 2026
+    },
+    "termDescriptor": "uri://ed-fi.org/TermDescriptor#Fall Semester",
+    "sessionName": "2026-2027 Fall Semester",
+    "beginDate": "2026-08-23",
+    "endDate": "2026-12-16",
+    "totalInstructionalDays": 89,
+    "gradingPeriods": [
+      {
+        "gradingPeriodReference": {
+          "gradingPeriodName": "2026-2027 Fall Semester",
+          "schoolId": 9999999902,
+          "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+          "schoolYear": 2026
+        }
+      },
+      {
+        "gradingPeriodReference": {
+          "gradingPeriodName": "2026-2027 Fall Semester",
+          "schoolId": 9999999902,
+          "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#Second Six Weeks",
+          "schoolYear": 2026
+        }
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

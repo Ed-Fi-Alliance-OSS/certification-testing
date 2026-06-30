@@ -1,0 +1,49 @@
+meta {
+  name: Step 4 - Courses
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/courses/{{tempSecondCourseUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondCourseUUID}}",
+    "academicSubjects": [
+      {
+        "academicSubjectDescriptor": "uri://ed-fi.org/AcademicSubjectDescriptor#Fine and Performing Arts"
+      }
+    ],
+    "courseCode": "ART 01",
+    "identificationCodes": [
+      {
+        "courseIdentificationSystemDescriptor": "uri://ed-fi.org/CourseIdentificationSystemDescriptor#LEA course code",
+        "identificationCode": "ART 01"
+      }
+    ],
+    "levelCharacteristics": [
+      {
+        "courseLevelCharacteristicDescriptor": "uri://ed-fi.org/CourseLevelCharacteristicDescriptor#Basic"
+      }
+    ],
+    "courseTitle": "Art, Grade 1",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 9999999902
+    },
+    "numberOfParts": 1,
+    "maxCompletionsForCredit": 3
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

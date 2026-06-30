@@ -1,0 +1,38 @@
+meta {
+  name: Step 5 - GradingPeriods
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/gradingPeriods/{{tempFirstGradingPeriodUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempFirstGradingPeriodUUID}}",
+    "gradingPeriodDescriptor": "uri://ed-fi.org/GradingPeriodDescriptor#First Six Weeks",
+    "gradingPeriodName": "2026-2027 Fall Semester",
+    "periodSequence": 1,
+    "schoolReference": {
+      "schoolId": "9999999901"
+    },
+    "schoolYearTypeReference": {
+      "schoolYear": "2026"
+    },
+    "beginDate": "2026-08-23",
+    "endDate": "2026-10-05",
+    "totalInstructionalDays": 30
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

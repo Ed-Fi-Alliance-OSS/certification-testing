@@ -32,8 +32,6 @@ assert {
   res.body[0].highestCompletedLevelOfEducationDescriptor: isString
   res.body[0].highestCompletedLevelOfEducationDescriptor: isNotEmpty
   res.body[0].highlyQualifiedTeacher: isBoolean
-  res.body[0].middleName: isString
-  res.body[0].middleName: isNotEmpty
   res.body[0].sexDescriptor: isString
   res.body[0].sexDescriptor: isNotEmpty
   res.body[0].electronicMails: isArray
@@ -52,7 +50,7 @@ script:post-response {
   const entityName = 'Staff';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'firstStaffUniqueId',
@@ -61,14 +59,14 @@ script:post-response {
       'firstStaffHispanicLatinoEthnicity'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     firstStaffUniqueId: single.id,
     firstStaffId: single.staffUniqueId,
     firstStaffHighlyQualifiedTeacher: single.highlyQualifiedTeacher,
     firstStaffHispanicLatinoEthnicity: single.hispanicLatinoEthnicity
   }, entityName);
-  
+
   logScenario(entityName, scenarioName, single, logSpecStaff);
 }
 

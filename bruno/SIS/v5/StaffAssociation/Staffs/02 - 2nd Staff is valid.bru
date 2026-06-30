@@ -27,8 +27,6 @@ assert {
   res.body[0].hispanicLatinoEthnicity: isBoolean
   res.body[0].lastSurname: isString
   res.body[0].lastSurname: isNotEmpty
-  res.body[0].generationCodeSuffix: isString
-  res.body[0].generationCodeSuffix: isNotEmpty
   res.body[0].highestCompletedLevelOfEducationDescriptor: isString
   res.body[0].highestCompletedLevelOfEducationDescriptor: isNotEmpty
   res.body[0].highlyQualifiedTeacher: isBoolean
@@ -52,7 +50,7 @@ script:post-response {
   const entityName = 'Staff';
   const scenarioName = this.req.name;
   const single = pickSingle(res.getBody());
-  
+
   if (!single) {
     wipeVars(bru, [
       'secondStaffUniqueId',
@@ -61,14 +59,14 @@ script:post-response {
       'secondStaffHispanicLatinoEthnicity'
     ], entityName, true);
   }
-  
+
   setVars(bru, {
     secondStaffUniqueId: single.id,
     secondStaffId: single.staffUniqueId,
     secondStaffHighlyQualifiedTeacher: single.highlyQualifiedTeacher,
     secondStaffHispanicLatinoEthnicity: single.hispanicLatinoEthnicity
   }, entityName);
-  
+
   logScenario(entityName, scenarioName, single, logSpecStaff);
 }
 

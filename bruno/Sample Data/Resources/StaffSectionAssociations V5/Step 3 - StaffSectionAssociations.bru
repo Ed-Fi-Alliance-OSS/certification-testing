@@ -1,0 +1,39 @@
+meta {
+  name: Step 3 - StaffSectionAssociations
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffSectionAssociations/{{tempFirstStaffSectionAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempFirstStaffSectionAssociationUUID}}",
+    "sectionReference": {
+      "localCourseCode": "ALG-2",
+      "schoolId": 9999999901,
+      "schoolYear": 2026,
+      "sessionName": "2026-2027 Fall Semester",
+      "sectionIdentifier": "ALG022027RM555"
+    },
+    "staffReference": {
+      "staffUniqueId": "207220-test01"
+    },
+    "classroomPositionDescriptor": "uri://ed-fi.org/ClassroomPositionDescriptor#Assistant Teacher",
+    "beginDate": "2026-08-31",
+    "endDate": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

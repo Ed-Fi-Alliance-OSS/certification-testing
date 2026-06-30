@@ -1,0 +1,51 @@
+meta {
+  name: Step 4 - Sections
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/sections/{{tempSecondSectionUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempSecondSectionUUID}}",
+    "sectionIdentifier": "ART01027RM901",
+    "courseOfferingReference": {
+      "localCourseCode": "ART 01",
+      "schoolId": 9999999902,
+      "schoolYear": 2026,
+      "sessionName": "2026-2027 Fall Semester"
+    },
+    "locationReference": {
+      "classroomIdentificationCode": "901",
+      "schoolId": 9999999902
+    },
+    "locationSchoolReference": {
+      "schoolId": 9999999902
+    },
+    "sequenceOfCourse": 1,
+    "availableCredits": 3,
+    "classPeriods": [
+      {
+        "classPeriodReference": {
+          "classPeriodName": "Class Period 1",
+          "schoolId": 9999999902
+        }
+      }
+    ],
+    "educationalEnvironmentDescriptor": "uri://ed-fi.org/EducationalEnvironmentDescriptor#Classroom"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

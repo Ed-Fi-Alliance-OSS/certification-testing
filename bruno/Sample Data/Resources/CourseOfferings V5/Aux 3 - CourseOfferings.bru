@@ -1,0 +1,40 @@
+meta {
+  name: Aux 3 - CourseOfferings
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/courseOfferings/{{tempCourseOfferingUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "id": "{{tempCourseOfferingUUID}}",
+    "courseReference": {
+      "courseCode": "ELA-01",
+      "educationOrganizationId": 255901107
+    },
+    "schoolReference": {
+      "schoolId": "[ENTER SCHOOL ID]"
+    },
+    "sessionReference": {
+      "sessionName": "[ENTER SESSION NAME]",
+      "schoolId": "[ENTER SCHOOL ID]",
+      "schoolYear": "[ENTER SCHOOL YEAR]"
+    },
+    "localCourseTitle": "English Language Arts GB Elementary",
+    "localCourseCode": "[ENTER LOCAL COURSE CODE]"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
