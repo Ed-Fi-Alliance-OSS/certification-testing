@@ -21,9 +21,9 @@ docs {
 
   ## Scenarios tasks
 
-  1. __CREATE__ a `first` `Student EdOrg Responsibility Association` for an elementary `Student` at Grand Bend
-     School District.
-  2. __UPDATE__ the _responsibilityDescriptor_ on the first `Student EdOrg Responsibility Association`.
+  1. __CREATE__ a `first` `Student EdOrg Responsibility Association` for an `elementary Student` at Grand Bend Elementary School District.
+  1. __CREATE__ a `second` `Student EdOrg Responsibility Association` for the same `elementary Student` at Grand Bend High School District.
+  2. __UPDATE__ the _endDate_ on the second `Student EdOrg Responsibility Association`.
 
   ### Additional Notes
 
@@ -32,15 +32,15 @@ docs {
 
   ## Scenarios example data
 
-  | Resource                                                           | Property Name                           | Is Collection | Data Type                             | Required    | Scenario 1: POST                         | Scenario 2: PUT                         |
-  | ------------------------------------------------------------------ | --------------------------------------- | ------------- | ------------------------------------- | ----------- | ---------------------------------------- | ---------------------------------------- |
-  | StudentEducationOrganizationResponsibilityAssociations             | educationOrganizationReference          | FALSE         | educationOrganizationReference        | REQUIRED    |                                          |                                          |
-  | educationOrganizationReference                                     | educationOrganizationId                 | FALSE         | integer                               | REQUIRED    | 255901                                   | 255901                                   |
-  | StudentEducationOrganizationResponsibilityAssociations             | studentReference                        | FALSE         | studentReference                      | REQUIRED    |                                          |                                          |
-  | studentReference                                                   | studentUniqueId                         | FALSE         | string                                | REQUIRED    | 111111                                   | 111111                                   |
-  | StudentEducationOrganizationResponsibilityAssociations             | beginDate                               | FALSE         | string                                | REQUIRED    | [current school year]-08-23              | [current school year]-08-23              |
-  | StudentEducationOrganizationResponsibilityAssociations             | responsibilityDescriptor                | FALSE         | string                                | REQUIRED    | __Residency__                            | __Individualized Education Program__     |
-  | StudentEducationOrganizationResponsibilityAssociations             | endDate                                 | FALSE         | string                                | REQUIRED    | [current school year]-06-01              | [current school year]-06-01              |
+  | Resource                                                           | Property Name                           | Is Collection | Data Type                             | Required    | Scenario 1: POST                         | Scenario 2: POST                         | Scenario 3: PUT                          |
+  | ------------------------------------------------------------------ | --------------------------------------- | ------------- | ------------------------------------- | ----------- | ---------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+  | StudentEducationOrganizationResponsibilityAssociations             | educationOrganizationReference          | FALSE         | educationOrganizationReference        | REQUIRED    |                                          |                                          |                                          |
+  | educationOrganizationReference                                     | educationOrganizationId                 | FALSE         | integer                               | REQUIRED    | 255901107                                | 255901001                                | 255901001                                |
+  | StudentEducationOrganizationResponsibilityAssociations             | studentReference                        | FALSE         | studentReference                      | REQUIRED    |                                          |                                          |                                          |
+  | studentReference                                                   | studentUniqueId                         | FALSE         | string                                | REQUIRED    | 111111                                   | 111111                                   | 222222                                   |
+  | StudentEducationOrganizationResponsibilityAssociations             | beginDate                               | FALSE         | string                                | REQUIRED    | [current school year]-08-23              | [current school year]-08-23              | [current school year]-08-23              |
+  | StudentEducationOrganizationResponsibilityAssociations             | responsibilityDescriptor                | FALSE         | string                                | REQUIRED    | Residency                                | Individualized Education Program         | Individualized Education Program         |
+  | StudentEducationOrganizationResponsibilityAssociations             | endDate                                 | FALSE         | string                                | REQUIRED    | [current school year]-06-01              | [current school year]-06-01              | [current school year]-10-01              |
 
   ## API response format
 
