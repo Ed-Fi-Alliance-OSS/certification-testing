@@ -7,6 +7,7 @@ on:
       - 'bruno/Tests/v4/**'
       - 'bruno/SIS/v4/**'
       - '.github/workflows/on-pullrequest-run-tests-v4.yml'
+      - '.github/scripts/qa-summary-comment.cjs'
   push:
     branches: [ main ]
     paths:
@@ -122,37 +123,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            const summaryPath = 'automation-testing/results/summary.json';
-            if (!fs.existsSync(summaryPath)) {
-              github.rest.issues.createComment({
-                issue_number: context.payload.pull_request.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: ':warning: QA Scenarios did not produce a summary.json file.'
-              });
-            } else {
-              const data = JSON.parse(fs.readFileSync(summaryPath,'utf8'));
-              const lines = [];
-              lines.push('### QA Scenarios Summary (DataStandard V4)');
-              lines.push(`Status: **${data.exitStatus}**`);
-              lines.push(`Entities Processed: **${data.totals.entitiesProcessed}**`);
-              lines.push(`Assertions: Passed **${data.totals.assertionsPassed}**, Failed **${data.totals.assertionsFailed}**, Total **${data.totals.assertionsTotal}**`);
-              if (data.entities) {
-                lines.push('');
-                lines.push('| Entity | Passed | Failed | Total |');
-                lines.push('|--------|--------|--------|-------|');
-                for (const e of data.entities) {
-                  const a = e.assertions; lines.push(`| ${e.entity} | ${a.passed} | ${a.failed} | ${a.total} |`);
-                }
-              }
-              github.rest.issues.createComment({
-                issue_number: context.payload.pull_request.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: lines.join('\n')
-              });
-            }
+            // Creates the summary comment once, then updates it on later runs.
+            const { postSummary } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/qa-summary-comment.cjs`);
+            await postSummary({
+              github, context,
+              summaryPath: 'automation-testing/results/summary.json',
+              title: 'SIS QA Scenarios Summary (DataStandard V4)',
+              marker: 'qa-scenarios-summary:sis:v4',
+              firstColumn: 'Entity'
+            });
 
       - name: Fail if scenarios failed
         if: steps.runqa.outputs.exit_code != '0'

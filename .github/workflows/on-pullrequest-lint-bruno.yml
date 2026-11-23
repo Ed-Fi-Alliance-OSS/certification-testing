@@ -12,6 +12,7 @@ on:
       - 'bruno/package.json'
       - 'bruno/Sample Data/utils.js'
       - 'scripts/run-scenarios.cjs'
+      - '.github/scripts/qa-summary-comment.cjs'
       - '.github/workflows/on-pullrequest-lint-bruno.yml'
   push:
     branches: [ main, master ]
@@ -81,9 +82,6 @@ jobs:
               '',
               'Triggered by workflow: lint-bruno.yml'
             ].join('\n');
-            github.rest.issues.createComment({
-              issue_number: context.payload.pull_request.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body
-            });
+            // Creates the report comment once, then updates it on later runs.
+            const { upsertComment } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/qa-summary-comment.cjs`);
+            await upsertComment({ github, context, marker: 'bruno-lint-report', body });
