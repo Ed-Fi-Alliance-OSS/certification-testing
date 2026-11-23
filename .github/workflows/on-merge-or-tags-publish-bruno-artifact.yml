@@ -84,6 +84,7 @@ jobs:
           mkdir -p stage/bruno dist
 
           cp -R bruno/SIS stage/bruno/
+          cp -R bruno/MTSS stage/bruno/
           cp bruno/package.json stage/bruno/
           cp bruno/package-lock.json stage/bruno/
           cp -R bruno/scripts stage/bruno/
@@ -153,6 +154,12 @@ jobs:
           unzip -q "dist/${ZIP_NAME}" -d validation/extracted
 
           test -d validation/extracted/bruno/SIS
+          test -d validation/extracted/bruno/MTSS
+          test -f validation/extracted/bruno/MTSS/bruno.json
+          test -f validation/extracted/bruno/MTSS/collection.bru
+          test -f validation/extracted/bruno/MTSS/utils.js
+          test -f validation/extracted/bruno/MTSS/logging.js
+          test -f validation/extracted/bruno/MTSS/package.json
           test -f validation/extracted/bruno/package.json
           test -f validation/extracted/bruno/package-lock.json
           test -d validation/extracted/bruno/scripts

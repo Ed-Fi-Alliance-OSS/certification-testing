@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ed-Fi Certification Scenario Config",
+  "description": "Per-scenario metadata for collections whose scenarios span several entities (MTSS). Read by bruno/scripts/lib/scenario-lint.cjs and, per AC-665/AC-666, by the Admin App catalog and runner.",
+  "type": "object",
+  "required": ["version"],
+  "additionalProperties": false,
+  "$defs": {
+    "option": {
+      "type": "object",
+      "description": "A choice within an option group. A vendor completes exactly one choice per group.",
+      "required": ["group", "choice"],
+      "additionalProperties": false,
+      "properties": {
+        "group": { "type": "string", "description": "Option group id, e.g. 'staff-delivery'." },
+        "choice": { "type": "integer", "minimum": 1, "description": "Choice number; matches [OPTION N] in names." }
+      }
+    }
+  },
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "option": {
+      "$ref": "#/$defs/option",
+      "description": "The whole scenario belongs to this choice."
+    },
+    "provides": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Runtime variables this scenario produces for other scenarios."
+    },
+    "needs": {
+      "type": "array",
+      "description": "Variables borrowed from other scenarios' capturedVars in the same certification run. The source scenario's value wins on restore.",
+      "items": {
+        "type": "object",
+        "required": ["scenario", "vars"],
+        "additionalProperties": false,
+        "properties": {
+          "scenario": { "type": "string", "description": "Source scenario folder name." },
+          "vars": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "steps": {
+      "type": "object",
+      "description": "Per-step markers keyed by step file name.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "optional": { "type": "boolean", "description": "The step may be skipped." },
+          "option": { "$ref": "#/$defs/option", "description": "The step is required only when this choice is taken." }
+        }
+      }
+    }
+  }
+}

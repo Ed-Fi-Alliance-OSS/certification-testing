@@ -6,6 +6,8 @@ on:
       - 'scripts/run-scenarios.cjs'
       - 'bruno/Tests/v5/**'
       - 'bruno/SIS/v5/**'
+      - 'bruno/MTSS/**'
+      - 'bruno/Sample Data/MTSS/**'
       - '.github/workflows/on-pullrequest-run-tests-v5.yml'
   push:
     branches: [ main ]
@@ -13,6 +15,8 @@ on:
       - 'scripts/run-scenarios.cjs'
       - 'bruno/Tests/v5/**'
       - 'bruno/SIS/v5/**'
+      - 'bruno/MTSS/**'
+      - 'bruno/Sample Data/MTSS/**'
   workflow_dispatch:
     inputs:
       env:
@@ -153,6 +157,31 @@ jobs:
                 body: lines.join('\n')
               });
             }
+
+      # MTSS runs after the SIS results are uploaded: run-scenarios resets automation-testing/.
+      # Non-blocking until one green run against ci-v5 confirms the seed data (students, staff,
+      # Intervention claims) exists there; then add steps.runmtss to the fail gate below.
+      - name: Run MTSS QA Scenarios (one Bruno run per option chain)
+        id: runmtss
+        if: always()
+        continue-on-error: true
+        env:
+          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
+        run: |
+          set -e
+          node scripts/run-scenarios.cjs --collection mtss --env "$BRUNO_ENV" --version v5 --include-steps || EXIT=$?
+          if [ -n "$EXIT" ]; then echo "exit_code=$EXIT" >> $GITHUB_OUTPUT; else echo "exit_code=0" >> $GITHUB_OUTPUT; fi
+
+      - name: Upload MTSS QA artifacts
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: qa-scenarios-results-v5-mtss
+          path: |
+            automation-testing/results/summary.json
+            automation-testing/results/*.json
+            automation-testing/results/last-output.txt
+          if-no-files-found: warn
 
       - name: Fail if scenarios failed
         if: steps.runqa.outputs.exit_code != '0'

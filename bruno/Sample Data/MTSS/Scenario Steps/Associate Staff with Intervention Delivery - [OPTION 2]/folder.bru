@@ -1,0 +1,24 @@
+meta {
+  name: [OPTION 2] Associate Staff with Intervention Delivery
+  seq: 5
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # MTSS Sample Data > Associate Staff with Intervention Delivery - [OPTION 2]
+  
+  Vendor actions behind the "Associate Staff with Intervention Delivery - [OPTION 2]" certification steps (`bruno/MTSS/v5/intervention`).
+  Run the Foundation first. Run each script, then the certification step it feeds.
+  
+  | Script | Feeds certification step |
+  | --- | --- |
+  | Step 1 | 01 - 1st Cohort is valid |
+  | Step 2 | 02 - 1st StaffCohortAssociation is valid |
+  | Step 3 | 03 - 2nd StaffCohortAssociation is valid |
+  | Step 4 | 04 - 1st StudentInterventionAssociation - cohortReference was Updated |
+  | Step 5 | 05 - 1st StaffCohortAssociation - endDate was Updated |
+  | Step 6 | 06 - 2nd StaffCohortAssociation was Deleted |
+}

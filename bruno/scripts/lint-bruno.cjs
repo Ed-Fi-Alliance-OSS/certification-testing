@@ -21,10 +21,12 @@
  *  6. Forbid mutating verbs in read-only “Check” scenario files.
  *  7. Warn on pickSingle mismatch (heuristic refined).
  *  8. settings { encodeUrl: true } required for request files.
+ *  9. MTSS scenarios: scenario.config.json shape/needs/markers, unique seq, docs task list (scripts/lib/scenario-lint.cjs).
  */
 
 const fs = require('fs');
 const path = require('path');
+const { lintScenarios } = require('./lib/scenario-lint.cjs');
 
 // Anchor to repository root (parent directory of this scripts folder)
 const ROOT = path.join(__dirname, '..');
@@ -173,10 +175,24 @@ function lintFile(file) {
 const bruFiles = walk(ROOT).filter(f => {
   // Normalize path separators for cross-platform compatibility
   const normalizedPath = f.replace(/\\/g, '/');
-  return /(^|\/)(SIS|Sample Data|Assessment)(\/|$)/.test(normalizedPath);
+  return /(^|\/)(SIS|MTSS|Sample Data|Assessment)(\/|$)/.test(normalizedPath);
 });
 
 bruFiles.forEach(lintFile);
+
+// Scenario-level rules for collections with scenario.config.json (MTSS/v*/<domain>/<scenario>)
+const MTSS_ROOT = path.join(ROOT, 'MTSS');
+if (fs.existsSync(MTSS_ROOT)) {
+  for (const version of fs.readdirSync(MTSS_ROOT, { withFileTypes: true })) {
+    if (!version.isDirectory() || !/^v\d+/.test(version.name)) continue;
+    const versionDir = path.join(MTSS_ROOT, version.name);
+    for (const domainEntry of fs.readdirSync(versionDir, { withFileTypes: true })) {
+      if (!domainEntry.isDirectory()) continue;
+      lintScenarios(path.join(versionDir, domainEntry.name))
+        .forEach(p => report(p.file, p.message, p.level));
+    }
+  }
+}
 
 SUMMARY.problems = problems.length;
 SUMMARY.errors = problems.filter(p => p.level === 'ERROR').length;

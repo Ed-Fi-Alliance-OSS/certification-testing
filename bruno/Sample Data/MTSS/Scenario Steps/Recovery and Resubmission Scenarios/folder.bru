@@ -1,0 +1,25 @@
+meta {
+  name: Recovery and Resubmission Scenarios
+  seq: 6
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # MTSS Sample Data > Recovery and Resubmission Scenarios
+  
+  Certification steps 01-08 delete your records. These `Sync` scripts play the vendor's
+  "normal synchronization": they re-POST every removed record with its **latest** values
+  (Intervention order first, then the association, then events). Run them after
+  certification step 08, then run certification steps 09-14.
+  
+  | Script | Option |
+  | --- | --- |
+  | Sync 1 - Intervention 1 | [OPTION 1] staffs = first staff only |
+  | Sync 1 - Intervention 1 | [OPTION 2] staffs = both staff |
+  | Sync 2 - StudentInterventionAssociation 1 | [OPTION 1] / [OPTION 2] (with cohortReference) |
+  | Sync 3-7 - Events 1, 2 (25 min), 3, 5, 6 [optional] | both |
+  | Sync 8 - StaffCohortAssociation 1 | [OPTION 2] (endDate 2026-12-18) |
+}

@@ -1,0 +1,58 @@
+meta {
+  name: 06 - 4th StudentInterventionAttendanceEvent was Deleted
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents?studentUniqueId={{firstStudentInterventionAssociationStudentUniqueId}}&educationOrganizationId={{firstInterventionEducationOrganizationId}}&interventionIdentificationCode={{firstInterventionIdentificationCode}}&eventDate={{fourthStudentInterventionAttendanceEventEventDate}}&attendanceEventCategoryDescriptor={{fourthStudentInterventionAttendanceEventCategoryEncoded}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  studentUniqueId: {{firstStudentInterventionAssociationStudentUniqueId}}
+  educationOrganizationId: {{firstInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{firstInterventionIdentificationCode}}
+  eventDate: {{fourthStudentInterventionAttendanceEventEventDate}}
+  attendanceEventCategoryDescriptor: {{fourthStudentInterventionAttendanceEventCategoryEncoded}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName, encodeDescriptorUri, getVar, setVar } = require('./utils');
+  const intervention = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
+  const student = dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid');
+  
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention);
+  validateDependency(bru, 'firstInterventionIdentificationCode', intervention);
+  validateDependency(bru, 'firstStudentInterventionAssociationStudentUniqueId', student);
+  const fourth = dependencyName('Record Intervention Participation Events', '04 - 4th StudentInterventionAttendanceEvent is valid');
+  
+  validateDependency(bru, 'fourthStudentInterventionAttendanceEventEventDate', fourth);
+  validateDependency(bru, 'fourthStudentInterventionAttendanceEventCategory', fourth);
+  setVar(bru, 'fourthStudentInterventionAttendanceEventCategoryEncoded', encodeDescriptorUri(getVar(bru, 'fourthStudentInterventionAttendanceEventCategory')));
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'StudentInterventionAttendanceEvent';
+  const body = res.getBody();
+  
+  // Checked by natural key so a deleted-then-re-posted record (new id) is still caught.
+  test('4th StudentInterventionAttendanceEvent no longer exists', () => {
+    expect(body).to.be.an('array').that.is.empty;
+  });
+  
+  if (res.status === 200 && Array.isArray(body) && body.length === 0) {
+    wipeVars(bru, ['fourthStudentInterventionAttendanceEventUniqueId'], entityName, false);
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

@@ -1,0 +1,61 @@
+meta {
+  name: 13 - [OPTION 1] 1st Intervention staffs is valid
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/interventions?educationOrganizationId={{firstInterventionEducationOrganizationId}}&interventionIdentificationCode={{firstInterventionIdentificationCode}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: {{firstInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{firstInterventionIdentificationCode}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].staffs: isArray
+  res.body[0].staffs: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const intervention = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
+
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention);
+  validateDependency(bru, 'firstInterventionIdentificationCode', intervention);
+  validateDependency(bru, 'firstInterventionStaffUniqueIds', dependencyName('Associate Staff with Intervention Delivery - [OPTION 1]', '02 - 1st Intervention - staffs was Updated'));
+}
+
+script:post-response {
+  const { pickSingle, getVar, joinIds, throwNotFoundOrSpecificError } = require('./utils');
+  const { logScenario, logSpecIntervention } = require('./logging');
+  const entityName = 'Intervention';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+
+  if (!single) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const restored = joinIds((single.staffs || []).map(s => s && s.staffReference && s.staffReference.staffUniqueId).filter(Boolean));
+
+  // Same staff as after the OPTION 1 update: the removed staff member must not reappear.
+  test('staffs restored with the latest list (OPTION 1)', () => {
+    expect(restored).to.equal(String(getVar(bru, 'firstInterventionStaffUniqueIds')));
+  });
+
+  logScenario(entityName, scenarioName, single, logSpecIntervention, [
+    'staffs'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

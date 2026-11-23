@@ -172,7 +172,41 @@ function expectUnchanged(previous, current, label, isMessageOverrode = false) {
   });
 }
 
+// Natural-key lookup helpers (used by MTSS/Reset). Keep identical to bruno/MTSS/utils.js;
+// bruno/tests-unit/lookup-helpers.test.cjs enforces it.
+// GETs {{resourceBaseUrl}}/<resourcePath>?<query> from a script and returns the array
+// body, or null when the request fails or the body is not an array.
+async function fetchRecords(bru, resourcePath, query) {
+  const qs = Object.entries(query || {})
+    .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+    .join('&');
+  const url = `${bru.getEnvVar('resourceBaseUrl')}/${resourcePath}${qs ? `?${qs}` : ''}`;
+  let records = null;
+  try {
+    // bru.sendRequest does not inherit the collection's bearer auth, so send the token explicitly.
+    const headers = { Authorization: `Bearer ${bru.getEnvVar('edFiCertToken')}` };
+    await bru.sendRequest({ url, method: 'GET', headers }, (err, res) => {
+      if (err) return;
+      const data = res && res.data;
+      if (Array.isArray(data)) records = data;
+    });
+  } catch {
+    records = null;
+  }
+  return records;
+}
+
+// Looks up a record by natural key and returns its current id, or fallbackId when
+// the lookup fails or does not return exactly one record.
+async function resolveCurrentId(bru, resourcePath, query, fallbackId) {
+  const records = await fetchRecords(bru, resourcePath, query);
+  return (records && records.length === 1 && records[0].id) || fallbackId;
+}
+
+
 module.exports = {
+  fetchRecords,
+  resolveCurrentId,
   validateDependency,
   extractDescriptor,
   mapDescriptors,

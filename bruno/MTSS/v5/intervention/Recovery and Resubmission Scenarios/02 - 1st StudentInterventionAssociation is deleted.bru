@@ -1,0 +1,50 @@
+meta {
+  name: 02 - 1st StudentInterventionAssociation is deleted
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAssociations/{{recoveryFirstStudentInterventionAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: in 204,404
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName, getVar, setVar, resolveCurrentId } = require('./utils');
+
+  validateDependency(bru, 'firstStudentInterventionAssociationStudentUniqueId', dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid'));
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+  validateDependency(bru, 'firstInterventionIdentificationCode', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+
+  // Restored records get a new id, so resolve the current one by natural key.
+  // When nothing is found (already deleted), the original id is used and the API answers 404.
+  const currentId = await resolveCurrentId(bru, 'ed-fi/studentInterventionAssociations', {
+    studentUniqueId: getVar(bru, 'firstStudentInterventionAssociationStudentUniqueId'),
+    educationOrganizationId: getVar(bru, 'firstInterventionEducationOrganizationId'),
+    interventionIdentificationCode: getVar(bru, 'firstInterventionIdentificationCode')
+  }, getVar(bru, 'firstStudentInterventionAssociationUniqueId') || '00000000000000000000000000000000');
+
+  setVar(bru, 'recoveryFirstStudentInterventionAssociationUniqueId', currentId);
+}
+
+script:post-response {
+  const { wipeVar } = require('./utils');
+
+  if (res.status === 204) {
+    console.log('1st StudentInterventionAssociation was removed. It must come back after your normal synchronization.');
+  } else if (res.status === 404) {
+    console.log('1st StudentInterventionAssociation was already removed (re-run of this scenario).');
+  }
+
+  wipeVar(bru, 'recoveryFirstStudentInterventionAssociationUniqueId');
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

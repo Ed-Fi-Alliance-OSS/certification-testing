@@ -1,0 +1,30 @@
+meta {
+  name: Aux 3 - StudentInterventionAttendanceEvents
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents/{{tempStudentInterventionAttendanceEventUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": { "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]" },
+    "interventionReference": { "educationOrganizationId": [ENTER_EDUCATION_ORGANIZATION_ID], "interventionIdentificationCode": "[ENTER_INTERVENTION_IDENTIFICATION_CODE]" },
+    "eventDate": "[ENTER_EVENT_DATE]",
+    "attendanceEventCategoryDescriptor": "[ENTER_ATTENDANCE_EVENT_CATEGORY_DESCRIPTOR]",
+    "interventionDuration": [ENTER_INTERVENTION_DURATION_MINUTES]
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

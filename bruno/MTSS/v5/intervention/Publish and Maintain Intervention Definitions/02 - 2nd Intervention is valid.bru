@@ -1,0 +1,70 @@
+meta {
+  name: 02 - 2nd Intervention is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/interventions?educationOrganizationId=[ENTER SECOND EDUCATION ORGANIZATION ID]&interventionIdentificationCode=[ENTER SECOND INTERVENTION IDENTIFICATION CODE]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: [ENTER SECOND EDUCATION ORGANIZATION ID]
+  interventionIdentificationCode: [ENTER SECOND INTERVENTION IDENTIFICATION CODE]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].interventionIdentificationCode: isString
+  res.body[0].interventionIdentificationCode: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].interventionClassDescriptor: isString
+  res.body[0].interventionClassDescriptor: isNotEmpty
+  res.body[0].deliveryMethodDescriptor: isString
+  res.body[0].deliveryMethodDescriptor: isNotEmpty
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].namespace: isString
+  res.body[0].namespace: isNotEmpty
+  res.body[0].diagnoses: isArray
+  res.body[0].diagnoses: isNotEmpty
+  res.body[0].diagnoses[0].diagnosisDescriptor: isString
+  res.body[0].diagnoses[0].diagnosisDescriptor: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecIntervention } = require('./logging');
+  const entityName = 'Intervention';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'secondInterventionUniqueId',
+      'secondInterventionIdentificationCode',
+      'secondInterventionEducationOrganizationId'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    secondInterventionUniqueId: single.id,
+    secondInterventionIdentificationCode: single.interventionIdentificationCode,
+    secondInterventionEducationOrganizationId: single.educationOrganizationReference.educationOrganizationId
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecIntervention);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

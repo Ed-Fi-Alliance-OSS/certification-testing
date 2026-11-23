@@ -1,0 +1,32 @@
+meta {
+  name: Step 6 - Delete Event 4
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents/{{tempFourthStudentInterventionAttendanceEventUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: eq 204
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempFourthStudentInterventionAttendanceEventUUID', 'Step 4 - Event 4', {
+    actionHint: 'Run the create script first so its id is cached.'
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

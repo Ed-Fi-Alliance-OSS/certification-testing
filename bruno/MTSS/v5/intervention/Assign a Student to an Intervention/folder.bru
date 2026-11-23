@@ -1,0 +1,63 @@
+meta {
+  name: Assign a Student to an Intervention
+  seq: 2
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v5 Intervention > Assign a Student to an Intervention
+
+  The StudentInterventionAssociation is the student's assignment to an
+  intervention, with the total minutes assigned (`dosage`) and, where the
+  product supports it, the reason for the assignment. This scenario checks
+  that the provider assigns more than one student to the same intervention,
+  updates an assignment, and deletes one.
+
+  ## Prerequisites
+
+  * "Publish and Maintain Intervention Definitions" completed (the `first`
+    Intervention is reused here).
+  * Two students, each enrolled in a school of the intervention's education
+    organization (the ODS/API authorizes this resource through the student's
+    StudentSchoolAssociation). Sample: `604863`, `604854`.
+
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` StudentInterventionAssociation for the `first` Intervention, with _dosage_ (sample: 600) and a diagnostic statement.
+  2. __CREATE__ a `second` StudentInterventionAssociation for another student and the same Intervention (sample: 600, no diagnostic statement).
+  3. __UPDATE__ the _dosage_ of the `first` StudentInterventionAssociation (sample: 900).
+  4. __DELETE__ the `second` StudentInterventionAssociation.
+
+  ## Scenarios example data
+
+  Values are illustrative; use identifiers that exist in your sandbox.
+
+  | Resource                       | Property Name                  | Is Collection | Data Type | Required | Scenario 1: POST | Scenario 2: POST | Scenario 3: PUT | Scenario 4: DELETE |
+  | ------------------------------ | ------------------------------ | ------------- | --------- | -------- | ---------------- | ---------------- | --------------- | ------------------ |
+  | studentReference               | studentUniqueId                | FALSE         | string    | REQUIRED | 604863           | 604854           | 604863          | 604854             |
+  | interventionReference          | educationOrganizationId        | FALSE         | integer   | REQUIRED | 255901           | 255901           | 255901          | 255901             |
+  | interventionReference          | interventionIdentificationCode | FALSE         | string    | REQUIRED | READ-T2-001      | READ-T2-001      | READ-T2-001     | READ-T2-001        |
+  | StudentInterventionAssociation | dosage                         | FALSE         | integer   | REQUIRED | 600              | 600              | **900**         |                    |
+  | StudentInterventionAssociation | diagnosticStatement            | FALSE         | string    | OPTIONAL | Student demonstrates reading fluency needs. | | Student demonstrates reading fluency needs. | |
+
+  Notes:
+
+  * `dosage` is the total minutes assigned for the intervention, not minutes per session. It is optional in the Data Standard but required for certification.
+  * The natural key is student + intervention, so a student has one association per intervention.
+  * `cohortReference` is used only by providers on Staff OPTION 2 (see that scenario).
+
+  ## API response format
+  ```json
+  {
+    "id": "string",
+    "interventionReference": { "educationOrganizationId": 0, "interventionIdentificationCode": "string" },
+    "studentReference": { "studentUniqueId": "string" },
+    "cohortReference": { "cohortIdentifier": "string", "educationOrganizationId": 0 },
+    "diagnosticStatement": "string",
+    "dosage": 0
+  }
+  ```
+}

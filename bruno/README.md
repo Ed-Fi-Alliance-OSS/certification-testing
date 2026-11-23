@@ -22,6 +22,14 @@ If you are a SIS vendor tester using the Bruno app (GUI), please refer to the en
 
 - Ed‑Fi SIS Certification — How to Use (Bruno GUI): `./SIS/README-User-Manual.md`
 
+## MTSS (Intervention) Collection
+
+`./MTSS` holds the Intervention (MTSS) v5 certification steps. It follows the SIS layout
+(`v5/intervention/<Scenario>/NN - <step>.bru`) but its scenarios are named by behaviour, share
+variables across scenarios, and carry a `scenario.config.json` with option/optional markers.
+See `./MTSS/README.md`. Its helpers and the scenario lint rules are unit-tested with
+`npm test` (from this folder).
+
 This manual provides version‑agnostic setup, `.env` credentials, environment selection, and step‑by‑step scenario execution guidance.
 
 ---

@@ -1,0 +1,59 @@
+meta {
+  name: 01 - 1st Cohort is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts?cohortIdentifier=[ENTER FIRST COHORT IDENTIFIER]&educationOrganizationId=[ENTER FIRST COHORT EDUCATION ORGANIZATION ID]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  cohortIdentifier: [ENTER FIRST COHORT IDENTIFIER]
+  educationOrganizationId: [ENTER FIRST COHORT EDUCATION ORGANIZATION ID]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].cohortIdentifier: isString
+  res.body[0].cohortIdentifier: isNotEmpty
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].cohortTypeDescriptor: isString
+  res.body[0].cohortTypeDescriptor: isNotEmpty
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecCohorts } = require('./logging');
+  const entityName = 'Cohort';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+
+  if (!single) {
+    wipeVars(bru, [
+      'firstCohortUniqueId',
+      'firstCohortIdentifier',
+      'firstCohortEducationOrganizationId'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    firstCohortUniqueId: single.id,
+    firstCohortIdentifier: single.cohortIdentifier,
+    firstCohortEducationOrganizationId: single.educationOrganizationReference.educationOrganizationId
+  }, entityName);
+
+  logScenario(entityName, scenarioName, single, logSpecCohorts);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

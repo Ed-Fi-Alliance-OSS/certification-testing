@@ -1,0 +1,60 @@
+meta {
+  name: 06 - [optional] - 6th StudentInterventionAttendanceEvent is deleted
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents/{{recoverySixthStudentInterventionAttendanceEventUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: in 204,404
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName, getVar, setVar, resolveCurrentId } = require('./utils');
+
+  validateDependency(bru, 'firstStudentInterventionAssociationStudentUniqueId', dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid'));
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+  validateDependency(bru, 'firstInterventionIdentificationCode', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+
+  // Optional record: when the vendor never recorded it (Record step 08 skipped) there is
+  // nothing to delete; target a missing id so the API answers 404 and the step passes.
+  if (!getVar(bru, 'sixthStudentInterventionAttendanceEventEventDate') || !getVar(bru, 'sixthStudentInterventionAttendanceEventCategory')) {
+    console.log('6th attendance event was never recorded (optional step skipped); nothing to delete.');
+    setVar(bru, 'recoverySixthStudentInterventionAttendanceEventUniqueId', '00000000000000000000000000000000');
+    return;
+  }
+
+  // Restored records get a new id, so resolve the current one by natural key.
+  // When nothing is found (already deleted), the original id is used and the API answers 404.
+  const currentId = await resolveCurrentId(bru, 'ed-fi/studentInterventionAttendanceEvents', {
+    studentUniqueId: getVar(bru, 'firstStudentInterventionAssociationStudentUniqueId'),
+    educationOrganizationId: getVar(bru, 'firstInterventionEducationOrganizationId'),
+    interventionIdentificationCode: getVar(bru, 'firstInterventionIdentificationCode'),
+    eventDate: getVar(bru, 'sixthStudentInterventionAttendanceEventEventDate'),
+    attendanceEventCategoryDescriptor: getVar(bru, 'sixthStudentInterventionAttendanceEventCategory')
+  }, getVar(bru, 'sixthStudentInterventionAttendanceEventUniqueId') || '00000000000000000000000000000000');
+
+  setVar(bru, 'recoverySixthStudentInterventionAttendanceEventUniqueId', currentId);
+}
+
+script:post-response {
+  const { wipeVar } = require('./utils');
+
+  if (res.status === 204) {
+    console.log('6th attendance event was removed. It must come back after your normal synchronization.');
+  } else if (res.status === 404) {
+    console.log('6th attendance event was already removed (re-run of this scenario).');
+  }
+
+  wipeVar(bru, 'recoverySixthStudentInterventionAttendanceEventUniqueId');
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -9,11 +9,12 @@
   "name": "sis",
   "version": "1.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test \"tests-unit/**/*.test.cjs\"",
     "lint:bru": "node scripts/lint-bruno.cjs",
     "lint:bru:json": "node scripts/lint-bruno.cjs --json",
     "prepare": "npx simple-git-hooks",
-    "scenarios:run": "node scripts/run-scenarios.cjs"
+    "scenarios:run": "node scripts/run-scenarios.cjs",
+    "test:coverage": "node --test --experimental-test-coverage \"tests-unit/**/*.test.cjs\""
   },
   "overrides": {
     "fast-xml-parser": "^5.5.6",

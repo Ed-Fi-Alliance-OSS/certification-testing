@@ -1,0 +1,38 @@
+meta {
+  name: Aux 1 - Cohorts
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts?cohortIdentifier=[ENTER_COHORT_IDENTIFIER]&educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  cohortIdentifier: [ENTER_COHORT_IDENTIFIER]
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempCohortUUID', item.id);
+    setVarsMessage('Cohort');
+  } else {
+    wipeVar(bru, 'tempCohortUUID');
+    wipeVarsWarning('Cohort');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

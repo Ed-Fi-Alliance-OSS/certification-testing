@@ -5,6 +5,10 @@ on:
     paths:
       - 'bruno/**/*.bru'
       - 'bruno/scripts/lint-bruno.cjs'
+      - 'bruno/scripts/lib/**'
+      - 'bruno/schemas/**'
+      - 'bruno/MTSS/**'
+      - 'bruno/tests-unit/**'
       - 'bruno/package.json'
       - '.github/workflows/on-pullrequest-lint-bruno.yml'
   push:
@@ -35,6 +39,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Run unit tests (MTSS helpers, scenario lint)
+        run: npm test
 
       - name: Run Bruno linter (JSON output)
         id: lint

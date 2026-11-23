@@ -1,0 +1,35 @@
+meta {
+  name: Down 9 - StaffCohortAssociation 1
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{tempResetUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: in 204,404
+}
+
+script:pre-request {
+  const { setVar, resolveCurrentId } = require('./utils');
+
+  // Natural-key lookup; when the record doesn't exist, target a missing id so the API answers 404.
+  setVar(bru, 'tempResetUUID', await resolveCurrentId(bru, 'ed-fi/staffCohortAssociations', {"staffUniqueId":"mtss-staff-01","beginDate":"2026-08-24","cohortIdentifier":"READ-T2-001-GRP-A","educationOrganizationId":9999999911}, '00000000000000000000000000000000'));
+}
+
+script:post-response {
+  console.log(res.status === 204 ? 'StaffCohortAssociation 1 was deleted.' : 'StaffCohortAssociation 1 was not present.');
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

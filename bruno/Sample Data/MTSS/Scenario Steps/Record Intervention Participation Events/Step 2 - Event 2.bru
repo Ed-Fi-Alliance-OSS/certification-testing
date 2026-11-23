@@ -1,0 +1,47 @@
+meta {
+  name: Step 2 - Event 2
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": {
+      "studentUniqueId": "99999911"
+    },
+    "interventionReference": {
+      "educationOrganizationId": 9999999911,
+      "interventionIdentificationCode": "READ-T2-001"
+    },
+    "eventDate": "2026-09-09",
+    "attendanceEventCategoryDescriptor": "uri://ed-fi.org/AttendanceEventCategoryDescriptor#In Attendance",
+    "interventionDuration": 30
+  }
+}
+
+assert {
+  res.status: in 200,201
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    bru.setVar('tempSecondStudentInterventionAttendanceEventUUID', locationHeader.split('/').pop());
+    console.log('StudentInterventionAttendanceEvent data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

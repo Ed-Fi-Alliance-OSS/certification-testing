@@ -1,0 +1,70 @@
+meta {
+  name: 03 - 2nd StaffCohortAssociation is valid
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations?staffUniqueId=[ENTER SECOND STAFF UNIQUE ID]&beginDate=[ENTER SECOND BEGIN DATE YYYY-MM-DD]&cohortIdentifier={{firstCohortIdentifier}}&educationOrganizationId={{firstCohortEducationOrganizationId}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  staffUniqueId: [ENTER SECOND STAFF UNIQUE ID]
+  beginDate: [ENTER SECOND BEGIN DATE YYYY-MM-DD]
+  cohortIdentifier: {{firstCohortIdentifier}}
+  educationOrganizationId: {{firstCohortEducationOrganizationId}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].staffReference.staffUniqueId: isString
+  res.body[0].staffReference.staffUniqueId: isNotEmpty
+  res.body[0].cohortReference.cohortIdentifier: isString
+  res.body[0].cohortReference.cohortIdentifier: isNotEmpty
+  res.body[0].cohortReference.educationOrganizationId: isNumber
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const source = dependencyName('Associate Staff with Intervention Delivery - [OPTION 2]', '01 - 1st Cohort is valid');
+
+  validateDependency(bru, 'firstCohortIdentifier', source);
+  validateDependency(bru, 'firstCohortEducationOrganizationId', source);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStaffCohortAssociation } = require('./logging');
+  const entityName = 'StaffCohortAssociation';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+
+  if (!single) {
+    wipeVars(bru, [
+      'secondStaffCohortAssociationUniqueId',
+      'secondStaffCohortAssociationStaffUniqueId',
+      'secondStaffCohortAssociationBeginDate'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    secondStaffCohortAssociationUniqueId: single.id,
+    secondStaffCohortAssociationStaffUniqueId: single.staffReference.staffUniqueId,
+    secondStaffCohortAssociationBeginDate: single.beginDate
+  }, entityName);
+
+  logScenario(entityName, scenarioName, single, logSpecStaffCohortAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

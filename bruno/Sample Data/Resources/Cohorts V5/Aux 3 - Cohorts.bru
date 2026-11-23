@@ -1,0 +1,30 @@
+meta {
+  name: Aux 3 - Cohorts
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/cohorts/{{tempCohortUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "cohortIdentifier": "[ENTER_COHORT_IDENTIFIER]",
+    "educationOrganizationReference": { "educationOrganizationId": [ENTER_EDUCATION_ORGANIZATION_ID] },
+    "cohortTypeDescriptor": "uri://ed-fi.org/CohortTypeDescriptor#Academic Intervention",
+    "cohortScopeDescriptor": "uri://ed-fi.org/CohortScopeDescriptor#District",
+    "cohortDescription": "[ENTER_COHORT_DESCRIPTION]"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

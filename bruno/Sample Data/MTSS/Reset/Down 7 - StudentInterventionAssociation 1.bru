@@ -1,0 +1,35 @@
+meta {
+  name: Down 7 - StudentInterventionAssociation 1
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAssociations/{{tempResetUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: in 204,404
+}
+
+script:pre-request {
+  const { setVar, resolveCurrentId } = require('./utils');
+
+  // Natural-key lookup; when the record doesn't exist, target a missing id so the API answers 404.
+  setVar(bru, 'tempResetUUID', await resolveCurrentId(bru, 'ed-fi/studentInterventionAssociations', {"studentUniqueId":"99999911","educationOrganizationId":9999999911,"interventionIdentificationCode":"READ-T2-001"}, '00000000000000000000000000000000'));
+}
+
+script:post-response {
+  console.log(res.status === 204 ? 'StudentInterventionAssociation 1 was deleted.' : 'StudentInterventionAssociation 1 was not present.');
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

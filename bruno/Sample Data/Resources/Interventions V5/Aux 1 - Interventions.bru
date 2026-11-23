@@ -1,0 +1,38 @@
+meta {
+  name: Aux 1 - Interventions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/interventions?educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]&interventionIdentificationCode=[ENTER_INTERVENTION_IDENTIFICATION_CODE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+  interventionIdentificationCode: [ENTER_INTERVENTION_IDENTIFICATION_CODE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempInterventionUUID', item.id);
+    setVarsMessage('Intervention');
+  } else {
+    wipeVar(bru, 'tempInterventionUUID');
+    wipeVarsWarning('Intervention');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

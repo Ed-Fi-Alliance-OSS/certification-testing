@@ -1,0 +1,40 @@
+meta {
+  name: Sync 5 - Event 3
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": {
+      "studentUniqueId": "99999911"
+    },
+    "interventionReference": {
+      "educationOrganizationId": 9999999911,
+      "interventionIdentificationCode": "READ-T2-001"
+    },
+    "eventDate": "2026-09-10",
+    "attendanceEventCategoryDescriptor": "uri://ed-fi.org/AttendanceEventCategoryDescriptor#Partial",
+    "interventionDuration": 15,
+    "attendanceEventReason": "Left early for nurse visit"
+  }
+}
+
+assert {
+  res.status: in 200,201
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

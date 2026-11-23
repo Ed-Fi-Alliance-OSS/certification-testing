@@ -23,6 +23,8 @@
  *  --entities A,B,C    Limit processing to specified folder entity names.
  *  --include-steps     Include detailed per-step data in aggregate summary.json.
  *  --version v4|v5     Limit processing to a specific data standard version.
+ *  --collection sis|mtss  Collection under test (default sis). mtss runs each Tests/<v>/Intervention
+ *                       config as ONE Bruno run so runtime variables flow across scenarios.
  *
  * Exit code:
  *  0 if all processed entities have zero failed assertions and no config errors.
@@ -36,6 +38,9 @@ const { spawnSync } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const TESTS_ROOT = path.join(ROOT, 'bruno', 'Tests');
 const SIS_ROOT = path.join(ROOT, 'bruno', 'SIS');
+const MTSS_ROOT = path.join(ROOT, 'bruno', 'MTSS');
+// Tests/<version>/<group> folder holding the MTSS end-to-end configs.
+const MTSS_TEST_GROUP = 'Intervention';
 const AUTOMATION_ROOT = path.join(ROOT, 'automation-testing');
 
 function log(msg) { console.log(msg); }
@@ -48,6 +53,7 @@ function error(msg) { console.error(msg); }
  *  --include-steps      Include per-step details inside aggregate summary.json
  *  --version <v4|v5>    Filter to a specific data standard version folder (default: v5)
  *  --env <envName>      Override environment used for Bruno runs (default: api-v5.ed-fi.org)
+ *  --collection <sis|mtss> Collection under test (default: sis)
  *                       Convention: env suffix must match --version (e.g. api-v4 with --version v4)
  */
 function parseArgs() {
@@ -56,6 +62,7 @@ function parseArgs() {
   let includeSteps = false;
   let envName = 'api-v5.ed-fi.org';
   let versionFilter = 'v5';
+  let collection = 'sis';
   for (let i=0; i<args.length; i++) {
     if (args[i] === '--entities') {
       const list = args[i+1];
@@ -71,9 +78,22 @@ function parseArgs() {
       const val = args[i+1];
       i++;
       if (val) versionFilter = val.trim();
+    } else if (args[i] === '--collection') {
+      const val = args[i+1];
+      i++;
+      if (val) collection = val.trim().toLowerCase();
     }
   }
-  return { entitiesFilter: entities, includeSteps, envName, versionFilter };
+  if (!['sis', 'mtss'].includes(collection)) throw new Error(`Unknown --collection '${collection}' (expected sis or mtss)`);
+  return { entitiesFilter: entities, includeSteps, envName, versionFilter, collection };
+}
+
+/**
+ * Which Tests/<version>/<group> configs belong to the collection under test.
+ * MTSS end-to-end configs live under the Intervention group; SIS runs skip them.
+ */
+function includeGroup(collection, group) {
+  return collection === 'mtss' ? group === MTSS_TEST_GROUP : group !== MTSS_TEST_GROUP;
 }
 
 /**
@@ -146,11 +166,12 @@ function resetAutomationRoot() {
 }
 
 /**
- * Copy entire Tests and SIS collections into automation root for isolated mutation.
+ * Copy entire Tests and the collection under test (SIS or MTSS) into automation root for isolated mutation.
+ * The collection is copied last so its utils.js / logging.js / collection.bru win.
  */
-function copyEntireCollections() {
+function copyEntireCollections(collection = 'sis') {
   copyDirRecursive(TESTS_ROOT, AUTOMATION_ROOT);
-  copyDirRecursive(SIS_ROOT, AUTOMATION_ROOT);
+  copyDirRecursive(collection === 'mtss' ? MTSS_ROOT : SIS_ROOT, AUTOMATION_ROOT);
 }
 
 function copyDirRecursive(src, dest) {
@@ -461,12 +482,12 @@ function rewriteMetaSeq(version, group, entity, orderedPaths) {
  * execute ordered tests, write aggregate summary, set exit code.
  */
 function main() {
-  const { entitiesFilter, includeSteps, envName, versionFilter } = parseArgs();
+  const { entitiesFilter, includeSteps, envName, versionFilter, collection } = parseArgs();
   // Ensure results directory exists early so last-output.txt can be written by first folder execution
   try { fs.mkdirSync(path.join(AUTOMATION_ROOT, 'results'), { recursive: true }); } catch {}
   verifyEnvironmentExists(envName);
   resetAutomationRoot();
-  copyEntireCollections();
+  copyEntireCollections(collection);
 
   const configs = findEntityConfigs();
   if (configs.length === 0) {
@@ -485,6 +506,8 @@ function main() {
     const cfgName = typeof cfg.name === 'string' && cfg.name.trim().length ? cfg.name.trim() : entity;
     // Filter by version (--version v4 or --version v5)
     if (versionFilter && version !== versionFilter) continue;
+    // SIS runs skip the MTSS end-to-end configs and vice versa (--collection)
+    if (!includeGroup(collection, group)) continue;
     // Filter by entity folder name (--entities A,B,C)
     if (entitiesFilter.length && !entitiesFilter.includes(entity)) {
       continue;
@@ -519,9 +542,14 @@ function main() {
 
     log(`Processing entity ${entitiesFilter.length ? entity : cfgName} (${group}) with ${order.length} steps.`);
     // Use folder entity name for directory operations; cfgName only for reporting label
-    mirrorEntity(version, group, entity, dataMap);
-    try { rewriteMetaSeq(version, group, entity, order); } catch (e) { error(`Failed to rewrite meta.seq for ${cfgName}: ${e.message}`); }
-  const resultSteps = executeOrder(order, envName);
+    let resultSteps;
+    if (collection === 'mtss') {
+      resultSteps = executeMtssOrder(version, entity, order, dataMap, envName);
+    } else {
+      mirrorEntity(version, group, entity, dataMap);
+      try { rewriteMetaSeq(version, group, entity, order); } catch (e) { error(`Failed to rewrite meta.seq for ${cfgName}: ${e.message}`); }
+      resultSteps = executeOrder(order, envName);
+    }
     const summary = summarizeEntity(cfgName, resultSteps);
     summaries.push(summary);
   }
@@ -572,7 +600,110 @@ function main() {
   process.exit(overallFail ? 1 : 0);
 }
 
-main();
+// ---------------------------------------------------------------------------
+// MTSS end-to-end mode (--collection mtss)
+// MTSS scenarios share runtime variables, so the whole ordered chain (seed
+// requests + certification steps) must run in ONE Bruno process. The ordered
+// files are copied into a single generated folder with their declared order as
+// seq, then that folder is run once.
+// ---------------------------------------------------------------------------
+
+/**
+ * Copy the ordered .bru files (repo-relative paths) into destDir as
+ * "NNN - <original name>.bru", with meta name/seq rewritten to the new order and
+ * placeholders replaced. Returns the new request names in order.
+ */
+function buildE2eFolder(orderList, destDir, dataMap = {}, repoRoot = ROOT) {
+  fs.rmSync(destDir, { recursive: true, force: true });
+  fs.mkdirSync(destDir, { recursive: true });
+  return orderList.map((item, i) => {
+    const src = path.join(repoRoot, item);
+    if (!fs.existsSync(src)) throw new Error(`Ordered file not found: ${item}`);
+    const name = `${String(i + 1).padStart(3, '0')} - ${path.basename(item, '.bru')}`;
+    let content = replacePlaceholders(fs.readFileSync(src, 'utf8').replace(/\r\n/g, '\n'), dataMap);
+    content = content.replace(/(meta\s*{[\s\S]*?\bname:)[^\n]*/m, `$1 ${name}`);
+    content = content.replace(/(meta\s*{[\s\S]*?\bseq:)\s*\d+/m, `$1 ${i + 1}`);
+    fs.writeFileSync(path.join(destDir, `${name}.bru`), content, 'utf8');
+    return name;
+  });
+}
+
+/**
+ * Parse per-request results from Bruno CLI 3.x output. Counts both test() results
+ * ("Pre-Request Tests" / "Post-Response Tests") and assert {} results.
+ * Accepts forward and back slashes in the request path.
+ */
+function parseMtssRequests(output) {
+  const header = /^v\d+[\/\\](?:.*[\/\\])?([^\/\\]+) \((\d{3})(?: [^)]*)?\) - \d+ ms$/;
+  const requests = [];
+  let current = null;
+  for (const line of output.split(/\r?\n/)) {
+    const m = line.match(header);
+    if (m) {
+      current = { name: m[1].trim(), statusCode: parseInt(m[2], 10), passed: 0, failed: 0 };
+      requests.push(current);
+      continue;
+    }
+    if (!current) continue;
+    if (/^\s+[✓Γ£ô]/.test(line)) current.passed += 1;
+    else if (/^\s+[✕✗]/.test(line)) current.failed += 1;
+  }
+  return requests;
+}
+
+/**
+ * Map ordered request names to step results. A step passes when it ran and had no
+ * failed tests/assertions; the HTTP status is not used because Recovery deletes
+ * legitimately answer 404 on a re-run (they assert "in 204,404").
+ */
+function mtssStepResults(names, requests) {
+  return names.map(name => {
+    const req = requests.find(r => r.name === name);
+    if (!req) return { file: name, status: 'NOT_EXECUTED', assertionsPassed: 0, assertionsFailed: 1 };
+    return {
+      file: name,
+      status: req.failed === 0 ? 'PASS' : 'FAIL',
+      httpStatus: req.statusCode,
+      assertionsPassed: req.passed,
+      assertionsFailed: req.failed
+    };
+  });
+}
+
+function runBrunoOnce(relativeFolder, envName) {
+  const opts = { encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true };
+  let proc = spawnSync(`bru run "${relativeFolder}" --env ${envName} 2>&1`, opts);
+  let out = proc.stdout || '';
+  if (proc.error || /not recognized|command not found/i.test(out)) {
+    const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    proc = spawnSync(`${npxCmd} -p @usebruno/cli bru run "${relativeFolder}" --env ${envName} 2>&1`, opts);
+    out = proc.stdout || '';
+  }
+  try {
+    const resultsDir = path.join(AUTOMATION_ROOT, 'results');
+    fs.mkdirSync(resultsDir, { recursive: true });
+    fs.writeFileSync(path.join(resultsDir, 'last-output.txt'), out, 'utf8');
+  } catch {}
+  log('[DEBUG] Bruno output:\n' + out);
+  return out;
+}
+
+function executeMtssOrder(version, entity, order, dataMap, envName) {
+  const folderRel = path.join(version, '_e2e', entity);
+  let names;
+  try {
+    names = buildE2eFolder(order, path.join(AUTOMATION_ROOT, folderRel), dataMap);
+  } catch (e) {
+    error(`MTSS config '${entity}': ${e.message}`);
+    return [{ file: `CONFIG_ERROR: ${e.message}`, folder: folderRel, status: 'FAIL', assertionsPassed: 0, assertionsFailed: 1 }];
+  }
+  const output = runBrunoOnce(folderRel.replace(/\\/g, '/'), envName);
+  return mtssStepResults(names, parseMtssRequests(output)).map(r => ({ ...r, folder: folderRel }));
+}
+
+if (require.main === module) main();
+
+module.exports = { includeGroup, buildE2eFolder, parseMtssRequests, mtssStepResults, replacePlaceholders };
 
 function verifyEnvironmentExists(envName) {
   const testsEnv = path.join(TESTS_ROOT, 'environments', `${envName}.bru`);

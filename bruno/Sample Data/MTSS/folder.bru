@@ -1,0 +1,25 @@
+meta {
+  name: MTSS
+  seq: 6
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # MTSS (Intervention) sample data
+  
+  Everything MTSS sample data needs, encapsulated so it never affects other certifications'
+  sample data (SIS will get its own `SIS/Dependencies` and `SIS/Scenario Steps`).
+  
+  | Folder | Purpose |
+  | --- | --- |
+  | Dependencies | Run once, in order (Dep 1-11): our school 9999999911 under LEA 255901, students, staff, their associations, and the provider descriptors. Persistent: no down scripts. |
+  | Scenario Steps | Vendor actions per certification scenario: `Step N` = the action checked by certification step N; `Sync N` = Recovery's "normal synchronization". |
+  | Reset | Deletes everything the scenarios create (Down 1-13), from any state. Run it before a new pass to start from scratch; Dependencies are kept. |
+  
+  Values follow the Confluence certification scenarios. All creates are POSTs (natural-key
+  upserts) and can be re-run. Set `providerNamespace` in the environment to one of your
+  client's namespace prefixes.
+}

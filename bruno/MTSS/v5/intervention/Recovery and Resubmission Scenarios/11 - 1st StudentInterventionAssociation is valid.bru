@@ -1,0 +1,77 @@
+meta {
+  name: 11 - 1st StudentInterventionAssociation is valid
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAssociations?studentUniqueId={{firstStudentInterventionAssociationStudentUniqueId}}&educationOrganizationId={{firstInterventionEducationOrganizationId}}&interventionIdentificationCode={{firstInterventionIdentificationCode}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  studentUniqueId: {{firstStudentInterventionAssociationStudentUniqueId}}
+  educationOrganizationId: {{firstInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{firstInterventionIdentificationCode}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].dosage: isNumber
+  res.body[0].dosage: gt 0
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const intervention = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
+  
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention);
+  validateDependency(bru, 'firstInterventionIdentificationCode', intervention);
+  validateDependency(bru, 'firstStudentInterventionAssociationStudentUniqueId', dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid'));
+  validateDependency(bru, 'secondStudentInterventionAssociationStudentUniqueId', dependencyName('Assign a Student to an Intervention', '02 - 2nd StudentInterventionAssociation is valid'));
+  validateDependency(bru, 'dosageAssignedMinutes', dependencyName('AssignedVersusDeliveredDosage', '01 - 1st StudentInterventionAssociation is valid'));
+}
+
+script:post-response {
+  const { pickSingle, getVar, setVars, wipeVars, expectUnchanged, fetchRecords } = require('./utils');
+  const { logScenario, logSpecStudentInterventionAssociation } = require('./logging');
+  const entityName = 'StudentInterventionAssociation';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, ['restoredFirstStudentInterventionAssociationUniqueId'], entityName, true);
+  }
+  
+  expectUnchanged(Number(getVar(bru, 'dosageAssignedMinutes')), single.dosage, 'dosage restored with the latest value', true);
+  
+  // The 2nd student's association was deleted by the provider earlier; it must not reappear.
+  const second = await fetchRecords(bru, 'ed-fi/studentInterventionAssociations', {
+    studentUniqueId: getVar(bru, 'secondStudentInterventionAssociationStudentUniqueId'),
+    educationOrganizationId: getVar(bru, 'firstInterventionEducationOrganizationId'),
+    interventionIdentificationCode: getVar(bru, 'firstInterventionIdentificationCode')
+  });
+  
+  test('Second StudentInterventionAssociation did not reappear after synchronization', () => {
+    expect(second, 'lookup of the 2nd association failed').to.be.an('array');
+    expect(second).to.be.empty;
+  });
+  
+  setVars(bru, {
+    restoredFirstStudentInterventionAssociationUniqueId: single.id
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStudentInterventionAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
