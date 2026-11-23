@@ -35,6 +35,8 @@ assert {
   res.body[0].attendanceEventCategoryDescriptor: isNotEmpty
   res.body[0].interventionDuration: isNumber
   res.body[0].interventionDuration: gte 0
+  res.body[0].attendanceEventReason: isString
+  res.body[0].attendanceEventReason: isNotEmpty
 }
 
 script:pre-request {

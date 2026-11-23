@@ -31,6 +31,18 @@ assert {
   res.body[0].namespace: isNotEmpty
   res.body[0].diagnoses: isArray
   res.body[0].diagnoses: isNotEmpty
+  res.body[0].endDate: isString
+  res.body[0].endDate: isNotEmpty
+  res.body[0].minDosage: isNumber
+  res.body[0].minDosage: gt 0
+  res.body[0].maxDosage: isNumber
+  res.body[0].maxDosage: gt 0
+  res.body[0].meetingTimes: isArray
+  res.body[0].meetingTimes: isNotEmpty
+  res.body[0].meetingTimes[0].startTime: isString
+  res.body[0].meetingTimes[0].startTime: isNotEmpty
+  res.body[0].meetingTimes[0].endTime: isString
+  res.body[0].meetingTimes[0].endTime: isNotEmpty
 }
 
 script:pre-request {

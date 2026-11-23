@@ -44,7 +44,9 @@ script:pre-request {
       }
     }, async function(err, res) {
       if (err) {
-        console.error('Error when generating the token:', err);
+        // Log only the status and message: the full error holds the request body with client_secret.
+        const status = err.response && err.response.status;
+        console.error(`Error when generating the token${status ? ` (HTTP ${status})` : ''}: ${err.message || err}`);
         throw new Error('Error when generating a new token. Please check your credentials in the "Global Environments" or ".env" file, and verify you are using the right "Collection Environment".');
       } else {
         const {

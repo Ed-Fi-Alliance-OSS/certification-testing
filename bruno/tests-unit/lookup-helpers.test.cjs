@@ -13,20 +13,41 @@ const fake = (body, err) => {
     sendRequest: async (opts, cb) => { calls.push(opts); return cb(err || null, { data: body }); }
   };
 };
+const httpError = status => Object.assign(new Error(`Request failed with status code ${status}`), { response: { status } });
 
 for (const [name, u] of [['MTSS', mtss], ['Sample Data', sampleData]]) {
-  test(`${name}: resolveCurrentId returns the single id with the bearer token, else the fallback`, async () => {
+  test(`${name}: resolveCurrentId returns the single match's id, sending the bearer token`, async () => {
     const b = fake([{ id: 'abc' }]);
     assert.equal(await u.resolveCurrentId(b, 'ed-fi/cohorts', { cohortIdentifier: 'G A' }, 'zero'), 'abc');
     assert.equal(b.calls[0].url, 'http://x/ed-fi/cohorts?cohortIdentifier=G%20A');
     assert.equal(b.calls[0].headers.Authorization, 'Bearer tok');
-    assert.equal(await u.resolveCurrentId(fake([]), 'p', {}, 'zero'), 'zero');
-    assert.equal(await u.resolveCurrentId(fake(null, new Error('x')), 'p', {}, 'zero'), 'zero');
   });
 
-  test(`${name}: fetchRecords returns the array body or null`, async () => {
+  test(`${name}: resolveCurrentId uses the fallback only when the lookup succeeds and finds nothing`, async () => {
+    assert.equal(await u.resolveCurrentId(fake([]), 'p', {}, 'zero'), 'zero');
+  });
+
+  test(`${name}: resolveCurrentId throws on an ambiguous natural key`, async () => {
+    await assert.rejects(u.resolveCurrentId(fake([{ id: 'a' }, { id: 'b' }]), 'ed-fi/cohorts', {}, 'zero'),
+      /Lookup of ed-fi\/cohorts matched 2 records instead of one/);
+  });
+
+  test(`${name}: resolveCurrentId throws instead of falling back when the lookup fails`, async () => {
+    await assert.rejects(u.resolveCurrentId(fake(null, httpError(401)), 'ed-fi/cohorts', {}, 'zero'),
+      /Lookup of ed-fi\/cohorts failed \(HTTP 401\)/);
+  });
+
+  test(`${name}: fetchRecords returns the array body`, async () => {
     assert.deepEqual(await u.fetchRecords(fake([{ id: 1 }]), 'p', {}), [{ id: 1 }]);
-    assert.equal(await u.fetchRecords(fake({ message: 'bad' }), 'p', {}), null);
+    assert.deepEqual(await u.fetchRecords(fake([]), 'p', {}), []);
+  });
+
+  test(`${name}: fetchRecords throws on HTTP errors, network errors, non-list bodies and transport throws`, async () => {
+    await assert.rejects(u.fetchRecords(fake(null, httpError(403)), 'p', {}), /\(HTTP 403\)/);
+    await assert.rejects(u.fetchRecords(fake(null, new Error('connect ECONNREFUSED')), 'p', {}), /\(connect ECONNREFUSED\)/);
+    await assert.rejects(u.fetchRecords(fake({ message: 'bad' }), 'p', {}), /\(the response is not a list\)/);
+    const throwing = { getEnvVar: () => 'x', sendRequest: async () => { throw new Error('sandbox'); } };
+    await assert.rejects(u.fetchRecords(throwing, 'p', {}), /\(sandbox\)/);
   });
 }
 

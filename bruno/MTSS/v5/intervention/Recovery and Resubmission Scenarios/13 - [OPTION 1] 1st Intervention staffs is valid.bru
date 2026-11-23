@@ -25,11 +25,12 @@ assert {
 
 script:pre-request {
   const { validateDependency, dependencyName } = require('./utils');
+  const optionOnly = { actionHint: 'Only for OPTION 1. If you certified with OPTION 2, skip this step.' };
   const intervention = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
 
-  validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention);
-  validateDependency(bru, 'firstInterventionIdentificationCode', intervention);
-  validateDependency(bru, 'firstInterventionStaffUniqueIds', dependencyName('Associate Staff with Intervention Delivery - [OPTION 1]', '02 - 1st Intervention - staffs was Updated'));
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention, optionOnly);
+  validateDependency(bru, 'firstInterventionIdentificationCode', intervention, optionOnly);
+  validateDependency(bru, 'firstInterventionStaffUniqueIds', dependencyName('Associate Staff with Intervention Delivery - [OPTION 1]', '02 - 1st Intervention - staffs was Updated'), optionOnly);
 }
 
 script:post-response {

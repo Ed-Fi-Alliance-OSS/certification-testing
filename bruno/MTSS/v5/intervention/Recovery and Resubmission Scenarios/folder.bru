@@ -21,6 +21,16 @@ docs {
   > starting again from "Publish and Maintain Intervention Definitions".
   > Steps 1–8 can be re-run safely: a record that is already gone counts as deleted.
 
+  > **Run it in one Bruno session.** Values captured by the earlier scenarios live
+  > only in the open Bruno session. If Bruno is closed or the environment is
+  > switched before step 14, steps 9–14 fail with "Missing required variable" and
+  > can't recover, because the records they would read were deleted by design.
+  > Start again from "Publish and Maintain Intervention Definitions" (Sample Data
+  > users: run `Sample Data › MTSS › Reset` first).
+  >
+  > Steps marked `[OPTION 1]` or `[OPTION 2]` belong to that staff option only;
+  > skip the ones for the option you did not certify.
+
   ## Prerequisites
 
   * All earlier scenarios completed on your chosen staff option.

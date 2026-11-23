@@ -27,6 +27,12 @@ assert {
   res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
   res.body[0].cohortTypeDescriptor: isString
   res.body[0].cohortTypeDescriptor: isNotEmpty
+  res.body[0].cohortScopeDescriptor: isString
+  res.body[0].cohortScopeDescriptor: isNotEmpty
+  res.body[0].academicSubjectDescriptor: isString
+  res.body[0].academicSubjectDescriptor: isNotEmpty
+  res.body[0].cohortDescription: isString
+  res.body[0].cohortDescription: isNotEmpty
 }
 
 script:post-response {

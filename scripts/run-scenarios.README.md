@@ -73,7 +73,23 @@ All occurrences of each `data` key or bracketed form `[KEY]` inside entity-level
 - `--entities BellSchedules,StudentSchoolAttendanceEvents` Filter execution to listed folder entity names (directory names under `<version>/<Group>`). Matches folder name only, not the `name` property.
 - `--version v4|v5` Limit execution to a specific data standard version (defaults to `v5`). Pass `--version v4` explicitly to run Data Standard 4 entities.
 - `--include-steps` Include per-step detail for each entity in aggregate `summary.json`. Without this flag, aggregate only contains per-entity totals.
-- `--env <envName>` Override environment used for Bruno runs (defaults to `api-v5.ed-fi.org`). The env name suffix should match `--version` — use `api-v5.ed-fi.org` with `--version v5` and `api-v4.ed-fi.org` with `--version v4`. Warns if no matching `.bru` file is found in `bruno/Tests/environments`.
+- `--env <envName>` Override environment used for Bruno runs (defaults to `api-v5.ed-fi.org`). The env name suffix should match `--version` — use `api-v5.ed-fi.org` with `--version v5` and `api-v4.ed-fi.org` with `--version v4`. Warns if no matching `.bru` file is found in `bruno/Tests/environments`. Only letters, digits, `.`, `_` and `-` are accepted (the name is passed to a shell command).
+- `--collection sis|mtss` Collection under test (defaults to `sis`). See [MTSS collection](#mtss-collection---collection-mtss).
+
+## MTSS Collection (`--collection mtss`)
+
+MTSS scenarios share runtime variables across scenarios, so each MTSS `test-config.json` (under `bruno/Tests/<version>/Intervention/<Chain>`, for example `OptionOne` and `OptionTwo`) describes one end-to-end chain instead of one entity:
+
+1. Copies `bruno/Tests` and `bruno/MTSS` into the automation root (SIS runs skip the `Intervention` group, MTSS runs use only it).
+2. Copies every file in `order` (paths relative to the repository root, across collections such as `bruno/Sample Data/MTSS` and `bruno/MTSS`) into `<version>/_e2e/<Chain>/`, prefixed `001 - `, `002 - `… with `meta.seq` rewritten, and applies the `data` placeholders.
+3. Runs that folder as **one** Bruno process, so variables captured by a step are visible to the next.
+4. Maps the output back to the ordered files. A step passes when it ran with no failed tests or assertions (the HTTP status is not used, because Reset and Recovery deletes accept 404). A step whose pre-request script throws never runs and is reported `NOT_EXECUTED`; a post-response script error counts as a failure.
+
+The chains Reset and re-seed fixed identities on a shared environment, so CI runs them in their own job (`Run MTSS Tests`) with a concurrency group shared by all branches.
+
+```powershell
+node scripts/run-scenarios.cjs --collection mtss --env ci-v5.ed-fi.org --include-steps
+```
 
 ## Exit Codes
 

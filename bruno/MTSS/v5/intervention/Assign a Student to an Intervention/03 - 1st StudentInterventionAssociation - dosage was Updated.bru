@@ -21,6 +21,8 @@ assert {
   res.body.interventionReference.interventionIdentificationCode: isNotEmpty
   res.body.dosage: isNumber
   res.body.dosage: gt 0
+  res.body.diagnosticStatement: isString
+  res.body.diagnosticStatement: isNotEmpty
 }
 
 script:pre-request {

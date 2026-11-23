@@ -32,15 +32,18 @@ permissions:
   contents: read
   pull-requests: write
 
-concurrency:
-  group: qa-scenarios-v5-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
 
 jobs:
   qa:
-    name: Run Tests
+    name: Run SIS Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # SIS: a newer push to the same ref cancels the older run.
+    concurrency:
+      group: qa-scenarios-v5-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -61,7 +64,6 @@ jobs:
         env:
           CLIENT_ID: ${{ secrets.EDFI_CLIENT_ID_V5 }}
           CLIENT_SECRET: ${{ secrets.EDFI_CLIENT_SECRET_V5 }}
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
         run: |
           ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
           if [ ! -f "$ENV_FILE" ]; then echo "ERROR: env file not found: $ENV_FILE"; exit 1; fi
@@ -75,8 +77,6 @@ jobs:
           "
 
       - name: Mask client secret (if present)
-        env:
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
         run: |
           ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
           if [ -f "$ENV_FILE" ]; then
@@ -90,7 +90,6 @@ jobs:
       - name: Run QA Scenarios
         id: runqa
         env:
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
           INCLUDE_STEPS: ${{ github.event.inputs.includeSteps || 'false' }}
         run: |
           set -e
@@ -158,32 +157,123 @@ jobs:
               });
             }
 
-      # MTSS runs after the SIS results are uploaded: run-scenarios resets automation-testing/.
-      # Non-blocking until one green run against ci-v5 confirms the seed data (students, staff,
-      # Intervention claims) exists there; then add steps.runmtss to the fail gate below.
+      - name: Fail if scenarios failed
+        if: steps.runqa.outputs.exit_code != '0'
+        run: |
+          echo "Scenario script exited with code ${{ steps.runqa.outputs.exit_code }}"; exit 1
+
+  mtss:
+    name: Run MTSS Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # The MTSS chains Reset and re-seed fixed identities (school 9999999911) on a shared
+    # environment, so only one MTSS run per environment may execute at a time, across all
+    # PRs and branches. Never cancel a run in progress: it would leave half-seeded data.
+    concurrency:
+      group: mtss-scenarios-${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: bruno/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm ci --prefix bruno
+          echo "$GITHUB_WORKSPACE/bruno/node_modules/.bin" >> $GITHUB_PATH
+
+      - name: Inject credentials into Bruno environment file
+        env:
+          CLIENT_ID: ${{ secrets.EDFI_CLIENT_ID_V5 }}
+          CLIENT_SECRET: ${{ secrets.EDFI_CLIENT_SECRET_V5 }}
+        run: |
+          ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
+          if [ ! -f "$ENV_FILE" ]; then echo "ERROR: env file not found: $ENV_FILE"; exit 1; fi
+          ENV_FILE="$ENV_FILE" node -e "
+            const fs = require('fs');
+            const f = process.env.ENV_FILE;
+            let c = fs.readFileSync(f, 'utf8');
+            c = c.replace(/edFiClientId:.*/, 'edFiClientId: ' + process.env.CLIENT_ID);
+            c = c.replace(/edFiClientSecret:.*/, 'edFiClientSecret: ' + process.env.CLIENT_SECRET);
+            fs.writeFileSync(f, c);
+          "
+
+      - name: Mask client secret (if present)
+        run: |
+          ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
+          if [ -f "$ENV_FILE" ]; then
+            SECRET_LINE=$(grep -E 'edFiClientSecret:' "$ENV_FILE" || true)
+            if [ -n "$SECRET_LINE" ]; then
+              SECRET_VAL=$(echo "$SECRET_LINE" | sed -E 's/.*edFiClientSecret:\s*([^ ]+)/\1/')
+              echo "::add-mask::$SECRET_VAL"
+            fi
+          fi
+
       - name: Run MTSS QA Scenarios (one Bruno run per option chain)
         id: runmtss
-        if: always()
-        continue-on-error: true
-        env:
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
         run: |
           set -e
           node scripts/run-scenarios.cjs --collection mtss --env "$BRUNO_ENV" --version v5 --include-steps || EXIT=$?
           if [ -n "$EXIT" ]; then echo "exit_code=$EXIT" >> $GITHUB_OUTPUT; else echo "exit_code=0" >> $GITHUB_OUTPUT; fi
 
+      - name: Show aggregate summary
+        if: always()
+        run: |
+          if [ -f automation-testing/results/summary.json ]; then
+            jq '{exitStatus, totals}' automation-testing/results/summary.json || cat automation-testing/results/summary.json
+          else
+            echo "summary.json not found"
+          fi
+
+      # Raw Bruno output (last-output.txt) is not uploaded: artifacts are never masked.
       - name: Upload MTSS QA artifacts
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: qa-scenarios-results-v5-mtss
           path: |
-            automation-testing/results/summary.json
             automation-testing/results/*.json
-            automation-testing/results/last-output.txt
           if-no-files-found: warn
 
-      - name: Fail if scenarios failed
-        if: steps.runqa.outputs.exit_code != '0'
+      - name: Comment summary on PR
+        if: github.event_name == 'pull_request' && !cancelled()
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const summaryPath = 'automation-testing/results/summary.json';
+            const body = [];
+            if (!fs.existsSync(summaryPath)) {
+              body.push(':warning: MTSS QA Scenarios did not produce a summary.json file.');
+            } else {
+              const data = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+              body.push('### MTSS QA Scenarios Summary (DataStandard V5)');
+              body.push(`Status: **${data.exitStatus}**`);
+              body.push(`Assertions: Passed **${data.totals.assertionsPassed}**, Failed **${data.totals.assertionsFailed}**, Total **${data.totals.assertionsTotal}**`);
+              if (data.entities) {
+                body.push('');
+                body.push('| Option chain | Passed | Failed | Total |');
+                body.push('|--------------|--------|--------|-------|');
+                for (const e of data.entities) {
+                  const a = e.assertions; body.push(`| ${e.entity} | ${a.passed} | ${a.failed} | ${a.total} |`);
+                }
+              }
+            }
+            await github.rest.issues.createComment({
+              issue_number: context.payload.pull_request.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body.join('\n')
+            });
+
+      - name: Fail if MTSS scenarios failed
+        if: steps.runmtss.outputs.exit_code != '0'
         run: |
-          echo "Scenario script exited with code ${{ steps.runqa.outputs.exit_code }}"; exit 1
+          echo "MTSS scenario script exited with code ${{ steps.runmtss.outputs.exit_code }}"; exit 1

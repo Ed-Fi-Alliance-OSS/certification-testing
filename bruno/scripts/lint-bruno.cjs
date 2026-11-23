@@ -28,8 +28,8 @@ const fs = require('fs');
 const path = require('path');
 const { lintScenarios } = require('./lib/scenario-lint.cjs');
 
-// Anchor to repository root (parent directory of this scripts folder)
-const ROOT = path.join(__dirname, '..');
+// Anchor to the bruno/ folder (parent of this scripts folder); BRU_LINT_ROOT overrides it for tests.
+const ROOT = process.env.BRU_LINT_ROOT ? path.resolve(process.env.BRU_LINT_ROOT) : path.join(__dirname, '..');
 const ARGS = process.argv.slice(2);
 const FIX_MODE = ARGS.includes('--fix');
 const JSON_MODE = ARGS.includes('--json');

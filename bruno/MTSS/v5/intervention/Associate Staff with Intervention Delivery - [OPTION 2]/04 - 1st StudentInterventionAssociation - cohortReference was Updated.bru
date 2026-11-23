@@ -19,6 +19,8 @@ assert {
   res.body.cohortReference: isDefined
   res.body.cohortReference.cohortIdentifier: isString
   res.body.cohortReference.cohortIdentifier: isNotEmpty
+  res.body.diagnosticStatement: isString
+  res.body.diagnosticStatement: isNotEmpty
 }
 
 script:pre-request {

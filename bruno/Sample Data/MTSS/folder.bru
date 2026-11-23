@@ -7,6 +7,14 @@ auth {
   mode: inherit
 }
 
+script:pre-request {
+  // Descriptors and interventions use the provider namespace; without it the API answers a
+  // generic 400/403. Fail early with the fix instead.
+  if (!bru.getEnvVar('providerNamespace')) {
+    throw new Error('The environment has no "providerNamespace". Add it to your Sample Data environment, set to one of your API client\'s namespace prefixes (for example uri://gbisd.edu), and run this request again.');
+  }
+}
+
 docs {
   # MTSS (Intervention) sample data
   

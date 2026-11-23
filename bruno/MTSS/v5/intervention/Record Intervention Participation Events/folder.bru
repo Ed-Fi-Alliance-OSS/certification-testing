@@ -52,10 +52,11 @@ docs {
   | eventDate                         | REQUIRED | 2026-09-08    | 2026-09-09    | 2026-09-10                 | 2026-09-11        | 2026-09-09    | 2026-09-11        | 2026-09-11        | 2026-09-14         |
   | attendanceEventCategoryDescriptor | REQUIRED | In Attendance | In Attendance | Partial                    | Unexcused Absence | In Attendance | Unexcused Absence | Excused Absence   | Session Not Held (provider namespace) |
   | interventionDuration              | REQUIRED | 30            | 30            | 15                         | 0                 | **25**        |                   | 0                 | 0                  |
-  | attendanceEventReason             | OPTIONAL |               |               | Left early for nurse visit |                   |               |                   | Family emergency  | Interventionist absent |
+  | attendanceEventReason             | CONDITIONAL |               |               | Left early for nurse visit |                   |               |                   | Family emergency  | Interventionist absent |
 
   Notes:
 
+  * CONDITIONAL: OPTIONAL in the Data Standard, but certification checks them in specific scenarios where those values are REQUIRED.
   * The natural key is student + intervention + `eventDate` + `attendanceEventCategoryDescriptor`; correcting the category takes a DELETE and a POST (steps 6 and 7).
   * `interventionDuration` is required for certification on every event, including absences (0).
   * "Session not held" events are excluded from delivered minutes and session counts in AssignedVersusDeliveredDosage.

@@ -30,6 +30,7 @@ assert {
   res.body[0].cohortReference.educationOrganizationId: isNumber
   res.body[0].beginDate: isString
   res.body[0].beginDate: isNotEmpty
+  res.body[0].studentRecordAccess: isBoolean
 }
 
 script:pre-request {

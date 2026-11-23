@@ -10,6 +10,8 @@ on:
       - 'bruno/MTSS/**'
       - 'bruno/tests-unit/**'
       - 'bruno/package.json'
+      - 'bruno/Sample Data/utils.js'
+      - 'scripts/run-scenarios.cjs'
       - '.github/workflows/on-pullrequest-lint-bruno.yml'
   push:
     branches: [ main, master ]

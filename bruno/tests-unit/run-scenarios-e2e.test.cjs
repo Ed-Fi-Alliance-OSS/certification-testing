@@ -30,6 +30,27 @@ test('parseMtssRequests reads both slash styles and counts tests plus assertions
   ]);
 });
 
+test('parseMtssRequests counts a throwing post-response script as a failure', () => {
+  // Captured from @usebruno/cli: a post-response throw prints no ✕ line, only this header.
+  const out = [
+    'v5\\_e2e\\X\\001 - lookup in post-response (200 OK) - 76 ms',
+    '[v5\\_e2e\\X\\001 - lookup in post-response.bru] Post-response script error:',
+    'Error: Lookup of ed-fi/x failed (HTTP 401).'
+  ].join('\n');
+  assert.deepEqual(rs.parseMtssRequests(out), [
+    { name: '001 - lookup in post-response', statusCode: 200, passed: 0, failed: 1 }
+  ]);
+});
+
+test('a throwing pre-request script prints no request header, so the step is NOT_EXECUTED', () => {
+  const out = [
+    '[v5\\_e2e\\X\\001 - lookup in pre-request.bru] Pre-request script error:',
+    'Error: Lookup of ed-fi/x failed (HTTP 401).'
+  ].join('\n');
+  const [result] = rs.mtssStepResults(['001 - lookup in pre-request'], rs.parseMtssRequests(out));
+  assert.equal(result.status, 'NOT_EXECUTED');
+});
+
 test('mtssStepResults passes on zero failures whatever the status code, and fails missing steps', () => {
   const requests = rs.parseMtssRequests(CLI_OUTPUT);
   const results = rs.mtssStepResults(['001 - probe ok', '002 - probe delete', '003 - never ran'], requests);

@@ -56,8 +56,7 @@ function error(msg) { console.error(msg); }
  *  --collection <sis|mtss> Collection under test (default: sis)
  *                       Convention: env suffix must match --version (e.g. api-v4 with --version v4)
  */
-function parseArgs() {
-  const args = process.argv.slice(2);
+function parseArgs(args = process.argv.slice(2)) {
   const entities = [];
   let includeSteps = false;
   let envName = 'api-v5.ed-fi.org';
@@ -85,6 +84,8 @@ function parseArgs() {
     }
   }
   if (!['sis', 'mtss'].includes(collection)) throw new Error(`Unknown --collection '${collection}' (expected sis or mtss)`);
+  // The env name is interpolated into a shell command: allow only an environment file name.
+  if (!/^[A-Za-z0-9_.-]+$/.test(envName)) throw new Error(`Invalid --env '${envName}' (letters, digits, '.', '_' and '-' only)`);
   return { entitiesFilter: entities, includeSteps, envName, versionFilter, collection };
 }
 
@@ -647,6 +648,9 @@ function parseMtssRequests(output) {
     if (!current) continue;
     if (/^\s+[✓Γ£ô]/.test(line)) current.passed += 1;
     else if (/^\s+[✕✗]/.test(line)) current.failed += 1;
+    // A post-response or tests script that throws prints no ✕ line; count it as a failure.
+    // (A pre-request error prints no request header at all, so that step is NOT_EXECUTED.)
+    else if (/^\[[^\]]+\] (?:Post-response|Test) script error/.test(line)) current.failed += 1;
   }
   return requests;
 }
@@ -670,17 +674,21 @@ function mtssStepResults(names, requests) {
   });
 }
 
-function runBrunoOnce(relativeFolder, envName) {
-  const opts = { encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true };
-  let proc = spawnSync(`bru run "${relativeFolder}" --env ${envName} 2>&1`, opts);
+/**
+ * Run one Bruno folder and return its combined output (also saved to results/last-output.txt).
+ * Falls back to npx when the bru CLI is not on PATH. spawn/root are injectable for unit tests.
+ */
+function runBrunoOnce(relativeFolder, envName, { spawn = spawnSync, root = AUTOMATION_ROOT } = {}) {
+  const opts = { encoding: 'utf8', cwd: root, env: { ...process.env, FORCE_COLOR: '0' }, shell: true };
+  let proc = spawn(`bru run "${relativeFolder}" --env "${envName}" 2>&1`, opts);
   let out = proc.stdout || '';
   if (proc.error || /not recognized|command not found/i.test(out)) {
     const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-    proc = spawnSync(`${npxCmd} -p @usebruno/cli bru run "${relativeFolder}" --env ${envName} 2>&1`, opts);
+    proc = spawn(`${npxCmd} -p @usebruno/cli bru run "${relativeFolder}" --env "${envName}" 2>&1`, opts);
     out = proc.stdout || '';
   }
   try {
-    const resultsDir = path.join(AUTOMATION_ROOT, 'results');
+    const resultsDir = path.join(root, 'results');
     fs.mkdirSync(resultsDir, { recursive: true });
     fs.writeFileSync(path.join(resultsDir, 'last-output.txt'), out, 'utf8');
   } catch {}
@@ -688,22 +696,26 @@ function runBrunoOnce(relativeFolder, envName) {
   return out;
 }
 
-function executeMtssOrder(version, entity, order, dataMap, envName) {
+/**
+ * Build one MTSS chain into <root>/<version>/_e2e/<entity>, run it as a single Bruno process
+ * (so runtime variables flow between steps) and map the output to per-step results.
+ */
+function executeMtssOrder(version, entity, order, dataMap, envName, { runBruno = runBrunoOnce, root = AUTOMATION_ROOT, repoRoot = ROOT } = {}) {
   const folderRel = path.join(version, '_e2e', entity);
   let names;
   try {
-    names = buildE2eFolder(order, path.join(AUTOMATION_ROOT, folderRel), dataMap);
+    names = buildE2eFolder(order, path.join(root, folderRel), dataMap, repoRoot);
   } catch (e) {
     error(`MTSS config '${entity}': ${e.message}`);
     return [{ file: `CONFIG_ERROR: ${e.message}`, folder: folderRel, status: 'FAIL', assertionsPassed: 0, assertionsFailed: 1 }];
   }
-  const output = runBrunoOnce(folderRel.replace(/\\/g, '/'), envName);
+  const output = runBruno(folderRel.replace(/\\/g, '/'), envName);
   return mtssStepResults(names, parseMtssRequests(output)).map(r => ({ ...r, folder: folderRel }));
 }
 
 if (require.main === module) main();
 
-module.exports = { includeGroup, buildE2eFolder, parseMtssRequests, mtssStepResults, replacePlaceholders };
+module.exports = { parseArgs, includeGroup, buildE2eFolder, parseMtssRequests, mtssStepResults, replacePlaceholders, runBrunoOnce, executeMtssOrder };
 
 function verifyEnvironmentExists(envName) {
   const testsEnv = path.join(TESTS_ROOT, 'environments', `${envName}.bru`);

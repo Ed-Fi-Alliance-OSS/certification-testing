@@ -45,16 +45,17 @@ docs {
   | Intervention                   | interventionClassDescriptor    | FALSE         | interventionClassDescriptor    | REQUIRED          | Practice            | Supplement         | Practice            |                    |
   | Intervention                   | deliveryMethodDescriptor       | FALSE         | deliveryMethodDescriptor       | REQUIRED          | Small Group         | Individual         | Small Group         |                    |
   | Intervention                   | beginDate                      | FALSE         | date                           | REQUIRED          | 2026-08-24          | 2026-08-24         | 2026-08-24          |                    |
-  | Intervention                   | endDate                        | FALSE         | date                           | OPTIONAL          |                     |                    | **2027-05-28**      |                    |
-  | Intervention                   | minDosage                      | FALSE         | integer                        | OPTIONAL          | 300                 |                    | 300                 |                    |
-  | Intervention                   | maxDosage                      | FALSE         | integer                        | OPTIONAL          | 1200                |                    | **1800**            |                    |
+  | Intervention                   | endDate                        | FALSE         | date                           | CONDITIONAL       |                     |                    | **2027-05-28**      |                    |
+  | Intervention                   | minDosage                      | FALSE         | integer                        | CONDITIONAL       | 300                 |                    | 300                 |                    |
+  | Intervention                   | maxDosage                      | FALSE         | integer                        | CONDITIONAL       | 1200                |                    | **1800**            |                    |
   | Intervention                   | namespace                      | FALSE         | string                         | REQUIRED          | uri://www.intervention-provider.com | uri://www.intervention-provider.com | uri://www.intervention-provider.com | |
   | interventionDiagnosis          | diagnosisDescriptor            | TRUE          | diagnosisDescriptor            | REQUIRED          | Reading Fluency (provider namespace) | Low Attendance | Reading Fluency (provider namespace) | |
   | staffReference                 | staffUniqueId                  | TRUE          | string                         | REQUIRED (Path 1) | 207288              |                    | 207288, 207289      |                    |
-  | interventionMeetingTime        | startTime / endTime            | TRUE          | string (hh:mm:ss)              | OPTIONAL          | 09:00:00 / 09:30:00 |                    | 09:00:00 / 09:30:00 |                    |
+  | interventionMeetingTime        | startTime / endTime            | TRUE          | string (hh:mm:ss)              | CONDITIONAL       | 09:00:00 / 09:30:00 |                    | 09:00:00 / 09:30:00 |                    |
 
   Notes:
 
+  * CONDITIONAL: OPTIONAL in the Data Standard, but certification checks them in specific scenarios where those values are REQUIRED.
   * The natural key is `educationOrganizationReference` + `interventionIdentificationCode`; a PUT cannot change either.
   * `namespace` and `diagnoses` are optional in the Data Standard but required for certification.
   * `minDosage`/`maxDosage` are total minutes for an assignment, the same scale as StudentInterventionAssociation `dosage`.

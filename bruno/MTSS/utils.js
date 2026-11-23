@@ -5,9 +5,10 @@
  * 
  * Keep this file in sync with the equivalent one under Sample Data and/or Assessment.
  *
- * MTSS copy: the shared helpers match bruno/SIS/utils.js; the "MTSS helpers" section
- * (dosage calculation, event checks, id lookups) is specific to this collection and is
- * unit-tested in bruno/tests-unit/mtss-utils.test.cjs.
+ * MTSS copy: the helpers shared with bruno/SIS/utils.js are identical except expectChanged
+ * (here a missing value never counts as a change); bruno/tests-unit/mtss-utils-helpers.test.cjs
+ * enforces that. The "MTSS helpers" section (dosage calculation, event checks, id lookups) is
+ * specific to this collection and is unit-tested in bruno/tests-unit/mtss-utils.test.cjs.
  */
 
 /**
@@ -282,33 +283,47 @@ function dependencyName(scenario, step) {
   return `${scenario} › ${step}`;
 }
 
-// GETs {{resourceBaseUrl}}/<resourcePath>?<query> from a script and returns the array
-// body, or null when the request fails or the body is not an array.
+// GETs {{resourceBaseUrl}}/<resourcePath>?<query> from a script and returns the array body.
+// Throws when the request fails or the body is not a list, so a broken lookup fails the step
+// instead of looking like "no record found".
 async function fetchRecords(bru, resourcePath, query) {
   const qs = Object.entries(query || {})
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&');
   const url = `${bru.getEnvVar('resourceBaseUrl')}/${resourcePath}${qs ? `?${qs}` : ''}`;
+  // bru.sendRequest does not inherit the collection's bearer auth, so send the token explicitly.
+  const headers = { Authorization: `Bearer ${bru.getEnvVar('edFiCertToken')}` };
   let records = null;
+  let failure = null;
   try {
-    // bru.sendRequest does not inherit the collection's bearer auth, so send the token explicitly.
-    const headers = { Authorization: `Bearer ${bru.getEnvVar('edFiCertToken')}` };
     await bru.sendRequest({ url, method: 'GET', headers }, (err, res) => {
-      if (err) return;
+      if (err) {
+        const status = err.response && err.response.status;
+        failure = status ? `HTTP ${status}` : (err.message || String(err));
+        return;
+      }
       const data = res && res.data;
       if (Array.isArray(data)) records = data;
+      else failure = 'the response is not a list';
     });
-  } catch {
-    records = null;
+  } catch (e) {
+    failure = (e && e.message) || String(e);
+  }
+  if (!records) {
+    throw new Error(`Lookup of ${resourcePath} failed (${failure || 'no response'}). Check the token, the base URL and your API client permissions, then run this step again.`);
   }
   return records;
 }
 
-// Looks up a record by natural key and returns its current id, or fallbackId when
-// the lookup fails or does not return exactly one record.
+// Looks up a record by natural key and returns its current id. fallbackId is used only when
+// the lookup succeeds and finds nothing (already deleted); more than one match throws.
 async function resolveCurrentId(bru, resourcePath, query, fallbackId) {
   const records = await fetchRecords(bru, resourcePath, query);
-  return (records && records.length === 1 && records[0].id) || fallbackId;
+  if (records.length === 0) return fallbackId;
+  if (records.length > 1) {
+    throw new Error(`Lookup of ${resourcePath} matched ${records.length} records instead of one; the natural key is ambiguous.`);
+  }
+  return records[0].id;
 }
 
 module.exports = {

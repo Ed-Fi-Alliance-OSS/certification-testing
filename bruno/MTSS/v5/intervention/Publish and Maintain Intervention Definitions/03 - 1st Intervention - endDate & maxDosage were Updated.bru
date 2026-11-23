@@ -29,7 +29,16 @@ assert {
   res.body.diagnoses: isNotEmpty
   res.body.endDate: isString
   res.body.endDate: isNotEmpty
+  res.body.minDosage: isNumber
+  res.body.minDosage: gt 0
   res.body.maxDosage: isNumber
+  res.body.maxDosage: gt 0
+  res.body.meetingTimes: isArray
+  res.body.meetingTimes: isNotEmpty
+  res.body.meetingTimes[0].startTime: isString
+  res.body.meetingTimes[0].startTime: isNotEmpty
+  res.body.meetingTimes[0].endTime: isString
+  res.body.meetingTimes[0].endTime: isNotEmpty
 }
 
 script:pre-request {

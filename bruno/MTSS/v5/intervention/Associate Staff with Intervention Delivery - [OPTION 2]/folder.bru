@@ -51,15 +51,20 @@ docs {
   | Cohort                         | cohortIdentifier                | REQUIRED          | READ-T2-001-GRP-A |                   |                   |                   |                   |                   |
   | Cohort                         | educationOrganizationId         | REQUIRED          | 255901            |                   |                   |                   |                   |                   |
   | Cohort                         | cohortTypeDescriptor            | REQUIRED          | Academic Intervention |               |                   |                   |                   |                   |
-  | Cohort                         | cohortScopeDescriptor           | OPTIONAL          | District          |                   |                   |                   |                   |                   |
+  | Cohort                         | cohortScopeDescriptor           | CONDITIONAL       | District          |                   |                   |                   |                   |                   |
+  | Cohort                         | academicSubjectDescriptor       | CONDITIONAL       | Reading           |                   |                   |                   |                   |                   |
+  | Cohort                         | cohortDescription               | CONDITIONAL       | READ-T2-001 small group A |           |                   |                   |                   |                   |
   | StaffCohortAssociation         | staffUniqueId                   | REQUIRED          |                   | 207288            | 207289            |                   | 207288            | 207289            |
   | StaffCohortAssociation         | cohortReference                 | REQUIRED          |                   | READ-T2-001-GRP-A | READ-T2-001-GRP-A |                   | READ-T2-001-GRP-A | READ-T2-001-GRP-A |
   | StaffCohortAssociation         | beginDate                       | REQUIRED          |                   | 2026-08-24        | 2026-08-24        |                   | 2026-08-24        | 2026-08-24        |
-  | StaffCohortAssociation         | endDate                         | OPTIONAL          |                   |                   |                   |                   | **2026-12-18**    |                   |
+  | StaffCohortAssociation         | endDate                         | CONDITIONAL       |                   |                   |                   |                   | **2026-12-18**    |                   |
+  | StaffCohortAssociation         | studentRecordAccess             | CONDITIONAL       |                   | true              | true              |                   | true              |                   |
   | StudentInterventionAssociation | cohortReference                 | REQUIRED (Path 2) |                   |                   |                   | **READ-T2-001-GRP-A** |               |                   |
+  | StudentInterventionAssociation | diagnosticStatement             | CONDITIONAL       |                   |                   |                   | Student demonstrates reading fluency needs. | |                 |
 
   Notes:
 
+  * CONDITIONAL: OPTIONAL in the Data Standard, but certification checks them in specific scenarios where those values are REQUIRED.
   * StaffCohortAssociation's natural key is staff + cohort + `beginDate`; a PUT can change only `endDate` and `studentRecordAccess`.
   * An association with an `endDate` still counts as a valid staff link.
   * `cohortReference` is not part of the StudentInterventionAssociation key, so a PUT can add it.

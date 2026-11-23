@@ -71,6 +71,51 @@ test('findEventProblems reports a missing studentReference', () => {
   assert.equal(u.findEventProblems([noStudent], { beginDate: '2026-08-24' }).length, 1);
 });
 
+// One test per rule, asserting the message the tester sees.
+const only = (event, opts = {}) => u.findEventProblems([event], opts);
+
+test('findEventProblems: missing interventionReference', () => {
+  const { interventionReference, ...e } = ev('Present', 10);
+  assert.deepEqual(only(e), ['Event #1 (2026-09-08): missing interventionReference']);
+});
+
+test('findEventProblems: missing eventDate is labelled "no date"', () => {
+  const { eventDate, ...e } = ev('Present', 10);
+  assert.deepEqual(only(e), ['Event #1 (no date): missing eventDate']);
+});
+
+test('findEventProblems: missing attendanceEventCategoryDescriptor', () => {
+  const { attendanceEventCategoryDescriptor, ...e } = ev('Present', 10);
+  assert.deepEqual(only(e), ['Event #1 (2026-09-08): missing attendanceEventCategoryDescriptor']);
+});
+
+test('findEventProblems: interventionDuration must be a number >= 0; 0 (absence) is valid', () => {
+  const msg = 'Event #1 (2026-09-08): interventionDuration must be a number >= 0 (absences use 0)';
+  assert.deepEqual(only(ev('Present', -1)), [msg]);
+  assert.deepEqual(only(ev('Present', '30')), [msg]);
+  assert.deepEqual(only(ev('Unexcused Absence', 0)), []);
+});
+
+test('findEventProblems: beginDate and endDate are inclusive boundaries', () => {
+  const range = { beginDate: '2026-08-24', endDate: '2027-05-28' };
+  assert.deepEqual(only(ev('Present', 10, '2026-08-24'), range), []);
+  assert.deepEqual(only(ev('Present', 10, '2027-05-28'), range), []);
+  assert.deepEqual(only(ev('Present', 10, '2026-08-23'), range), ['Event #1 (2026-08-23): eventDate is before the intervention beginDate 2026-08-24']);
+  assert.deepEqual(only(ev('Present', 10, '2027-05-29'), range), ['Event #1 (2027-05-29): eventDate is after the intervention endDate 2027-05-28']);
+});
+
+test('findEventProblems: a deleted key matches date and category code across namespaces', () => {
+  const deletedKey = { eventDate: '2026-09-11', category: 'uri://ed-fi.org/AttendanceEventCategoryDescriptor#Unexcused Absence' };
+  assert.deepEqual(only(ev('Unexcused Absence', 0, '2026-09-11', 'uri://gbisd.edu'), { deletedKey }),
+    ['Event #1 (2026-09-11): this event was deleted earlier and must not be present']);
+  assert.deepEqual(only(ev('Excused Absence', 0, '2026-09-11'), { deletedKey }), []);
+  assert.deepEqual(only(ev('Unexcused Absence', 0, '2026-09-12'), { deletedKey }), []);
+});
+
+test('findEventProblems: a non-array input has no problems', () => {
+  assert.deepEqual(u.findEventProblems(undefined), []);
+});
+
 test('findEventProblems on the clean sample without endDate returns []', () => {
   assert.deepEqual(u.findEventProblems(sample, { beginDate: '2026-08-24' }), []);
 });
@@ -97,36 +142,4 @@ test('dependencyName joins scenario and step', () => {
   assert.equal(u.dependencyName('A', '01 - x'), 'A › 01 - x');
 });
 
-test('resolveCurrentId returns the single id, else the fallback', async () => {
-  let url;
-  const fake = body => ({
-    getEnvVar: () => 'http://x',
-    sendRequest: async (opts, cb) => { url = opts.url; return cb(null, { data: body }); }
-  });
-  assert.equal(await u.resolveCurrentId(fake([{ id: 'new' }]), 'ed-fi/interventions', { a: '1 2' }, 'old'), 'new');
-  assert.equal(url, 'http://x/ed-fi/interventions?a=1%202');
-  assert.equal(await u.resolveCurrentId(fake([]), 'ed-fi/interventions', { a: '1' }, 'old'), 'old');
-  assert.equal(await u.resolveCurrentId(fake([{ id: 1 }, { id: 2 }]), 'ed-fi/interventions', {}, 'old'), 'old');
-});
-
-test('fetchRecords returns the array body, or null on error / non-array', async () => {
-  const fake = (err, data) => ({ getEnvVar: () => 'http://x', sendRequest: async (_o, cb) => cb(err, { data }) });
-  assert.deepEqual(await u.fetchRecords(fake(null, [{ id: 'a' }]), 'p', { q: '1' }), [{ id: 'a' }]);
-  assert.equal(await u.fetchRecords(fake(new Error('x')), 'p', {}), null);
-  assert.equal(await u.fetchRecords(fake(null, { message: 'bad' }), 'p', {}), null);
-});
-
-test('resolveCurrentId sends the collection bearer token (sendRequest does not inherit auth)', async () => {
-  let headers;
-  const fake = {
-    getEnvVar: k => (k === 'edFiCertToken' ? 'tok' : 'http://x'),
-    sendRequest: async (opts, cb) => { headers = opts.headers; return cb(null, { data: [] }); }
-  };
-  await u.resolveCurrentId(fake, 'p', {}, 'old');
-  assert.equal(headers.Authorization, 'Bearer tok');
-});
-
-test('resolveCurrentId returns the fallback on request error', async () => {
-  const fake = { getEnvVar: () => 'http://x', sendRequest: async (_o, cb) => cb(new Error('boom')) };
-  assert.equal(await u.resolveCurrentId(fake, 'p', {}, 'old'), 'old');
-});
+// fetchRecords / resolveCurrentId are covered for both copies in lookup-helpers.test.cjs.

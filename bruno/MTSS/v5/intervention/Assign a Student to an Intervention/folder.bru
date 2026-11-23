@@ -41,10 +41,11 @@ docs {
   | interventionReference          | educationOrganizationId        | FALSE         | integer   | REQUIRED | 255901           | 255901           | 255901          | 255901             |
   | interventionReference          | interventionIdentificationCode | FALSE         | string    | REQUIRED | READ-T2-001      | READ-T2-001      | READ-T2-001     | READ-T2-001        |
   | StudentInterventionAssociation | dosage                         | FALSE         | integer   | REQUIRED | 600              | 600              | **900**         |                    |
-  | StudentInterventionAssociation | diagnosticStatement            | FALSE         | string    | OPTIONAL | Student demonstrates reading fluency needs. | | Student demonstrates reading fluency needs. | |
+  | StudentInterventionAssociation | diagnosticStatement            | FALSE         | string    | CONDITIONAL | Student demonstrates reading fluency needs. | | Student demonstrates reading fluency needs. | |
 
   Notes:
 
+  * CONDITIONAL: OPTIONAL in the Data Standard, but certification checks them in specific scenarios where those values are REQUIRED.
   * `dosage` is the total minutes assigned for the intervention, not minutes per session. It is optional in the Data Standard but required for certification.
   * The natural key is student + intervention, so a student has one association per intervention.
   * `cohortReference` is used only by providers on Staff OPTION 2 (see that scenario).

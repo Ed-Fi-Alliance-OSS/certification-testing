@@ -26,6 +26,8 @@ assert {
   res.body[0].studentReference.studentUniqueId: isNotEmpty
   res.body[0].dosage: isNumber
   res.body[0].dosage: gt 0
+  res.body[0].diagnosticStatement: isString
+  res.body[0].diagnosticStatement: isNotEmpty
 }
 
 script:pre-request {
@@ -60,7 +62,6 @@ script:post-response {
   });
   
   test('Second StudentInterventionAssociation did not reappear after synchronization', () => {
-    expect(second, 'lookup of the 2nd association failed').to.be.an('array');
     expect(second).to.be.empty;
   });
   
