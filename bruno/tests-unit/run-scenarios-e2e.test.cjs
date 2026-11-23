@@ -30,6 +30,40 @@ test('parseMtssRequests reads both slash styles and counts tests plus assertions
   ]);
 });
 
+// Real @usebruno/cli 3.4.2 output (Windows paths): three passing Reset steps, one step with
+// 2 failed post-response tests and 2 failed assertions, and the 3.x summary table. If a CLI
+// upgrade changes the format, these tests fail instead of every CI step turning NOT_EXECUTED.
+const REAL_OUTPUT = fs.readFileSync(path.join(__dirname, 'fixtures', 'bru-cli-3.4.2-output.txt'), 'utf8');
+const STEP_03 = '029 - 03 - 1st Intervention - endDate & maxDosage were Updated';
+
+test('parseMtssRequests reads real CLI 3.4.2 output, counting failed tests and assertions', () => {
+  assert.deepEqual(rs.parseMtssRequests(REAL_OUTPUT), [
+    { name: '001 - Down 1 - Event 1', statusCode: 404, passed: 1, failed: 0 },
+    { name: '002 - Down 2 - Event 2', statusCode: 404, passed: 1, failed: 0 },
+    { name: '003 - Down 3 - Event 3', statusCode: 404, passed: 1, failed: 0 },
+    { name: STEP_03, statusCode: 200, passed: 26, failed: 4 }
+  ]);
+});
+
+test('parseBrunoSummary reads the CLI 3.x summary table (passed/total)', () => {
+  assert.deepEqual(rs.parseBrunoSummary(REAL_OUTPUT), { assertionsPassed: 106, assertionsFailed: 2 });
+});
+
+test('parseBrunoSummary still reads the CLI 1.x/2.x summary line', () => {
+  assert.deepEqual(rs.parseBrunoSummary('Requests:    3 passed, 3 total\nAssertions:  17 passed, 18 total\n'), { assertionsPassed: 17, assertionsFailed: 1 });
+  assert.deepEqual(rs.parseBrunoSummary('no summary here'), { assertionsPassed: 0, assertionsFailed: 0 });
+});
+
+test('parseRequests (SIS) reads real CLI output with Windows and POSIX paths', () => {
+  const posix = REAL_OUTPUT.split('\\').join('/');
+  for (const out of [REAL_OUTPUT, posix]) {
+    const requests = rs.parseRequests(out);
+    assert.deepEqual(requests.map(r => r.name), ['001 - Down 1 - Event 1', '002 - Down 2 - Event 2', '003 - Down 3 - Event 3', STEP_03]);
+    // SIS counts the Assertions block only.
+    assert.deepEqual(requests.map(r => [r.statusCode, r.assertionsPassed, r.assertionsFailed]), [[404, 1, 0], [404, 1, 0], [404, 1, 0], [200, 26, 2]]);
+  }
+});
+
 test('parseMtssRequests counts a throwing post-response script as a failure', () => {
   // Captured from @usebruno/cli: a post-response throw prints no ✕ line, only this header.
   const out = [
@@ -49,6 +83,11 @@ test('a throwing pre-request script prints no request header, so the step is NOT
   ].join('\n');
   const [result] = rs.mtssStepResults(['001 - lookup in pre-request'], rs.parseMtssRequests(out));
   assert.equal(result.status, 'NOT_EXECUTED');
+});
+
+test('mtssStepResults fails a step that ran but checked nothing, and counts it as a failure', () => {
+  const [result] = rs.mtssStepResults(['001 - no asserts'], [{ name: '001 - no asserts', statusCode: 200, passed: 0, failed: 0 }]);
+  assert.deepEqual(result, { file: '001 - no asserts', status: 'FAIL', httpStatus: 200, assertionsPassed: 0, assertionsFailed: 1 });
 });
 
 test('mtssStepResults passes on zero failures whatever the status code, and fails missing steps', () => {

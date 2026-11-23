@@ -11,6 +11,8 @@ on:
       - 'bruno/tests-unit/**'
       - 'bruno/package.json'
       - 'bruno/Sample Data/utils.js'
+      - 'bruno/SIS/*.js'
+      - 'bruno/package-lock.json'
       - 'scripts/run-scenarios.cjs'
       - '.github/scripts/qa-summary-comment.cjs'
       - '.github/workflows/on-pullrequest-lint-bruno.yml'
@@ -43,8 +45,11 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Run unit tests (MTSS helpers, scenario lint)
-        run: npm test
+      # Fails when the total coverage of the scripts under test drops below 80% (lines, branches,
+      # functions; Node applies the thresholds to the total, not per file). The SIS copies, loaded
+      # only by the parity tests, and the tests themselves are excluded.
+      - name: Run unit tests with coverage gate
+        run: npm run test:coverage
 
       - name: Run Bruno linter (JSON output)
         id: lint

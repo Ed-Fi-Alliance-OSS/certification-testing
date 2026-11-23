@@ -1,5 +1,11 @@
 /**
- * Centralized logging module for the MTSS collection (copy of the SIS module plus MTSS specs).
+ * Centralized logging module for the MTSS collection.
+ *
+ * Every function shared with bruno/SIS/logging.js is an identical copy (the Bruno sandbox
+ * blocks require() from parent folders, so each collection carries its own). MTSS-only:
+ * logSpecIntervention, logSpecStudentInterventionAssociation,
+ * logSpecStudentInterventionAttendanceEvent and logDosageMeasures.
+ * bruno/tests-unit/mtss-logging-functions.test.cjs enforces the parity.
  */
 
 // Inlined from utils.js — avoids transitive require() path-resolution issues

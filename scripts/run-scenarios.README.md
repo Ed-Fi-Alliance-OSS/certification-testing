@@ -83,9 +83,11 @@ MTSS scenarios share runtime variables across scenarios, so each MTSS `test-conf
 1. Copies `bruno/Tests` and `bruno/MTSS` into the automation root (SIS runs skip the `Intervention` group, MTSS runs use only it).
 2. Copies every file in `order` (paths relative to the repository root, across collections such as `bruno/Sample Data/MTSS` and `bruno/MTSS`) into `<version>/_e2e/<Chain>/`, prefixed `001 - `, `002 - `… with `meta.seq` rewritten, and applies the `data` placeholders.
 3. Runs that folder as **one** Bruno process, so variables captured by a step are visible to the next.
-4. Maps the output back to the ordered files. A step passes when it ran with no failed tests or assertions (the HTTP status is not used, because Reset and Recovery deletes accept 404). A step whose pre-request script throws never runs and is reported `NOT_EXECUTED`; a post-response script error counts as a failure.
+4. Maps the output back to the ordered files. A step passes when it ran, checked at least one test or assertion, and none failed (the HTTP status is not used, because Reset and Recovery deletes accept 404). A step whose pre-request script throws never runs and is reported `NOT_EXECUTED`; a post-response script error counts as a failure.
 
-The chains Reset and re-seed fixed identities on a shared environment, so CI runs them in their own job (`Run MTSS Tests`) with a concurrency group shared by all branches.
+The chains Reset and re-seed fixed identities on a shared environment, so CI runs them in their own workflow (`.github/workflows/on-pullrequest-run-tests-v5-mtss.yml`, job `Run MTSS Tests`) with a concurrency group shared by all branches. It triggers only on MTSS changes (and the runner), so SIS-only pull requests never wait for it.
+
+A step passes only when it ran, checked at least one test or assertion, and none failed. A step that checked nothing counts as one failure.
 
 ```powershell
 node scripts/run-scenarios.cjs --collection mtss --env ci-v5.ed-fi.org --include-steps

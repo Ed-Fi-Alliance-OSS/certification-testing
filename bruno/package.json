@@ -6,7 +6,7 @@
   "devDependencies": {
     "simple-git-hooks": "^2.11.1"
   },
-  "name": "sis",
+  "name": "certification",
   "version": "1.0.0",
   "scripts": {
     "test": "node --test \"tests-unit/**/*.test.cjs\"",
@@ -14,7 +14,7 @@
     "lint:bru:json": "node scripts/lint-bruno.cjs --json",
     "prepare": "npx simple-git-hooks",
     "scenarios:run": "node scripts/run-scenarios.cjs",
-    "test:coverage": "node --test --experimental-test-coverage \"tests-unit/**/*.test.cjs\""
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-exclude=\"SIS/**\" --test-coverage-exclude=\"tests-unit/**\" --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80 \"tests-unit/**/*.test.cjs\""
   },
   "overrides": {
     "fast-xml-parser": "^5.5.6",

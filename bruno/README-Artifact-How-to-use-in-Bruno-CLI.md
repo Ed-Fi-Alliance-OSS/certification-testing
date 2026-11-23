@@ -1,12 +1,12 @@
 # How to use with Bruno CLI
 
-This steps assume you have already downloaded and extracted the SIS artifact ZIP.
+These steps assume you have already downloaded and extracted the certification artifact ZIP (`certification-<version>.zip`, which contains the `SIS/` and `MTSS/` collections). The examples use `SIS/`; the same steps apply to `MTSS/`.
 
 ## Steps to configure and execute scenarios
 
-1. Open any comandline terminal (e.g. Command Prompt, PowerShell, Terminal).
-2. Navidate to the folder where you downloaded and extracted the SIS artifact ZIP (`<extracted-zip-location>`).
-3. Run `npm i` in the extracted `<extracted-zip-location>/` and `<extracted-zip-location>/SIS` folders.
+1. Open any command-line terminal (e.g. Command Prompt, PowerShell, Terminal).
+2. Navigate to the folder where you downloaded and extracted the certification artifact ZIP (`<extracted-zip-location>`).
+3. Run `npm i` in the extracted `<extracted-zip-location>/` folder and in the collection folder you use (`<extracted-zip-location>/SIS` or `<extracted-zip-location>/MTSS`).
 4. Configure environment variables.
 5. Configure collection variables.
 6. Configure scenario parameters.

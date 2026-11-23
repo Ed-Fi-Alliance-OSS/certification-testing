@@ -1,0 +1,70 @@
+v5\_e2e\NoPublishUpdate\001 - Down 1 - Event 1 (404 Not Found) - 4 ms
+Event 1 was not present.
+Assertions
+   ✓ res.status: in 204,404
+v5\_e2e\NoPublishUpdate\002 - Down 2 - Event 2 (404 Not Found) - 3 ms
+Event 2 was not present.
+Assertions
+   ✓ res.status: in 204,404
+v5\_e2e\NoPublishUpdate\003 - Down 3 - Event 3 (404 Not Found) - 2 ms
+Event 3 was not present.
+Assertions
+   ✓ res.status: in 204,404
+v5\_e2e\NoPublishUpdate\029 - 03 - 1st Intervention - endDate & maxDosage were Updated (200 OK) - 2 ms
+[logging] dayjs not available; date annotations will not be enriched. Install dayjs in the active working directory to enable. Error: Cannot find module dayjs
+Intervention data was cached correctly.
+Intervention > Scenario 029 - 03 - 1st Intervention - endDate & maxDosage were Updated - API Response: {
+  id: '1af2949db088423598ec4c300eeb061f',
+  maxDosage: 1200,
+  lastModifiedDate: '2026-11-23T21:08:54.645Z'
+}
+Post-Response Tests
+   ✕ endDate changed
+      endDate has no value after the update: expected 'has no value after the update' to equal null
+   ✕ maxDosage changed
+      maxDosage did not change (still 1200): expected 'did not change (still 1200)' to equal null
+Assertions
+   ✓ res.status: eq 200
+   ✓ res.body: isDefined
+   ✓ res.body.id: isString
+   ✓ res.body.id: isNotEmpty
+   ✓ res.body.interventionIdentificationCode: isString
+   ✓ res.body.interventionIdentificationCode: isNotEmpty
+   ✓ res.body.educationOrganizationReference.educationOrganizationId: isNumber
+   ✓ res.body.interventionClassDescriptor: isString
+   ✓ res.body.interventionClassDescriptor: isNotEmpty
+   ✓ res.body.deliveryMethodDescriptor: isString
+   ✓ res.body.deliveryMethodDescriptor: isNotEmpty
+   ✓ res.body.beginDate: isString
+   ✓ res.body.beginDate: isNotEmpty
+   ✓ res.body.namespace: isString
+   ✓ res.body.namespace: isNotEmpty
+   ✓ res.body.diagnoses: isNotEmpty
+   ✕ res.body.endDate: isString
+      expected undefined to be a string
+   ✕ res.body.endDate: isNotEmpty
+      .empty was passed non-string primitive undefined
+   ✓ res.body.minDosage: isNumber
+   ✓ res.body.minDosage: gt 0
+   ✓ res.body.maxDosage: isNumber
+   ✓ res.body.maxDosage: gt 0
+   ✓ res.body.meetingTimes: isArray
+   ✓ res.body.meetingTimes: isNotEmpty
+   ✓ res.body.meetingTimes[0].startTime: isString
+   ✓ res.body.meetingTimes[0].startTime: isNotEmpty
+   ✓ res.body.meetingTimes[0].endTime: isString
+   ✓ res.body.meetingTimes[0].endTime: isNotEmpty
+📊 Execution Summary
+┌───────────────┬──────────────────────────┐
+│ Metric        │          Result          │
+├───────────────┼──────────────────────────┤
+│ Status        │          ✗ FAIL          │
+├───────────────┼──────────────────────────┤
+│ Requests      │ 29 (28 Passed, 1 Failed) │
+├───────────────┼──────────────────────────┤
+│ Tests         │           0/0            │
+├───────────────┼──────────────────────────┤
+│ Assertions    │         106/108          │
+├───────────────┼──────────────────────────┤
+│ Duration (ms) │           4975           │
+└───────────────┴──────────────────────────┘

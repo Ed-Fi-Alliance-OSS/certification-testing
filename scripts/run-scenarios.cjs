@@ -35,7 +35,8 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const ROOT = path.resolve(__dirname, '..');
+// RUN_SCENARIOS_ROOT points the runner at another repository root (used by the unit tests).
+const ROOT = process.env.RUN_SCENARIOS_ROOT ? path.resolve(process.env.RUN_SCENARIOS_ROOT) : path.resolve(__dirname, '..');
 const TESTS_ROOT = path.join(ROOT, 'bruno', 'Tests');
 const SIS_ROOT = path.join(ROOT, 'bruno', 'SIS');
 const MTSS_ROOT = path.join(ROOT, 'bruno', 'MTSS');
@@ -296,6 +297,21 @@ function replacePlaceholders(content, dataMap) {
   return relParts.join('/');
  }
 
+// Bruno output can be long (one block per request); spawnSync's 1 MB default would truncate it.
+const SPAWN_MAX_BUFFER = 64 * 1024 * 1024;
+
+/**
+ * True when the shell could not find the `bru` command, so the npx fallback should run.
+ * Exit code 127 = POSIX shells ("sh: 1: bru: not found" on dash/Ubuntu), 9009 = cmd.exe;
+ * the messages are a backstop. Other spawn errors (e.g. ENOBUFS) are real failures and must
+ * not re-run the folder against the API.
+ */
+function bruNotFound(proc, output) {
+  if (proc.error) return proc.error.code === 'ENOENT';
+  return proc.status === 127 || proc.status === 9009
+    || /not recognized|command not found|: not found/i.test(output || '');
+}
+
 /**
  * Invoke Bruno CLI for a folder, attempt PATH first then fallback to npx install.
  * Merges stderr into stdout to preserve chronological ordering.
@@ -306,16 +322,17 @@ function replacePlaceholders(content, dataMap) {
   // Previous approach concatenated stdout + stderr which caused out-of-order lines.
   const baseCmd = `bru run "${relativeFolder}" --env ${envName} 2>&1`;
   let proc = spawnSync(baseCmd, {
-    encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true
+    encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true, maxBuffer: SPAWN_MAX_BUFFER
   });
   let combined = proc.stdout || '';
   let exitCode = proc.status;
-  // Fallback to npx package invocation if summary line not detected (CLI not on PATH)
-  if (!/Assertions:\s+\d+\s+passed/i.test(combined)) {
+  // Fall back to npx only when the bru CLI is not on PATH. (Checking for a summary line here
+  // re-ran every folder with an unpinned CLI, because Bruno 3.x prints its summary as a table.)
+  if (bruNotFound(proc, combined)) {
     const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
   const fallbackCmd = `${npxCmd} -p @usebruno/cli bru run "${relativeFolder}" --env ${envName} 2>&1`;
     proc = spawnSync(fallbackCmd, {
-      encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true
+      encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true, maxBuffer: SPAWN_MAX_BUFFER
     });
     combined = proc.stdout || '';
     exitCode = proc.status;
@@ -343,17 +360,15 @@ function replacePlaceholders(content, dataMap) {
  * Uses the last occurrence if multiple appear.
  */
  function parseBrunoSummary(output) {
-  // Expected lines similar to:
-  // Requests:    3 passed, 3 total
-  // Tests:       0 passed, 0 total
-  // Assertions:  17 passed, 17 total
+  // Bruno CLI 1.x/2.x:   "Assertions:  17 passed, 17 total"
+  // Bruno CLI 3.x table:  "│ Assertions    │     106/108      │"  (passed/total)
   let assertionsPassed = 0;
   let assertionsTotal = 0;
   const lines = output.split(/\r?\n/);
   // Some executions print summary twice; take the last occurrence
   for (let i = lines.length - 1; i >= 0; i--) {
     const l = lines[i];
-    const m = l.match(/Assertions:\s+(\d+)\s+passed,\s+(\d+)\s+total/i);
+    const m = l.match(/Assertions:\s+(\d+)\s+passed,\s+(\d+)\s+total/i) || l.match(/│\s*Assertions\s*│\s*(\d+)\/(\d+)\s*│/);
     if (m) {
       assertionsPassed = parseInt(m[1],10);
       assertionsTotal = parseInt(m[2],10);
@@ -363,19 +378,6 @@ function replacePlaceholders(content, dataMap) {
   return { assertionsPassed, assertionsFailed: assertionsTotal - assertionsPassed };
  }
 
-// Helper (currently unused externally) to map original source to mirrored path if needed later.
-function getMirroredPath(original) {
-  // Map bruno/Tests/... to automation-testing/Tests/... similarly for SIS
-  const rel = path.relative(ROOT, original);
-  if (rel.startsWith(path.join('bruno', 'Tests'))) {
-    return path.join(AUTOMATION_ROOT, rel.substring(path.join('bruno', 'Tests').length + 1));
-  }
-  if (rel.startsWith(path.join('bruno', 'SIS'))) {
-    return path.join(AUTOMATION_ROOT, rel.substring(path.join('bruno', 'SIS').length + 1));
-  }
-  return null;
-}
-
 /**
  * Parse per-request sections from Bruno output: request header + assertions block.
  * Collects status code, timing, and raw assertion pass/fail counts.
@@ -384,9 +386,9 @@ function parseRequests(output) {
   const lines = output.split(/\r?\n/);
   // Match lines like:
   // v4/MasterSchedule/BellSchedules/01 - CREATE a BellSchedule (201 Created) - 907 ms
-  // or with backslashes on some platforms. Capture groups: (1) filename, (2) statusCode, (3) timeMs
-  const requestHeaderRegex = /^v\d+[\/\\].*?\/([^\/]+) \((\d{3})(?: [^)]+)?\) - (\d+) ms$/;
-  const requestHeaderRegexAlt = /^v\d+[\/\\].*?\/([^\/]+) \((\d{3})\) - (\d+) ms$/; // fallback variant
+  // or with backslashes on Windows. Capture groups: (1) filename, (2) statusCode, (3) timeMs
+  const requestHeaderRegex = /^v\d+[\/\\].*?[\/\\]([^\/\\]+) \((\d{3})(?: [^)]+)?\) - (\d+) ms$/;
+  const requestHeaderRegexAlt = /^v\d+[\/\\].*?[\/\\]([^\/\\]+) \((\d{3})\) - (\d+) ms$/; // fallback variant
   const requests = [];
   let current = null;
   let inAssertions = false;
@@ -646,6 +648,7 @@ function parseMtssRequests(output) {
       continue;
     }
     if (!current) continue;
+    // "Γ£ô" is how ✓ (UTF-8 E2 9C 93) reads when the output is decoded as code page 437 on Windows.
     if (/^\s+[✓Γ£ô]/.test(line)) current.passed += 1;
     else if (/^\s+[✕✗]/.test(line)) current.failed += 1;
     // A post-response or tests script that throws prints no ✕ line; count it as a failure.
@@ -656,20 +659,23 @@ function parseMtssRequests(output) {
 }
 
 /**
- * Map ordered request names to step results. A step passes when it ran and had no
- * failed tests/assertions; the HTTP status is not used because Recovery deletes
- * legitimately answer 404 on a re-run (they assert "in 204,404").
+ * Map ordered request names to step results. A step passes when it ran, checked at least
+ * one test/assertion and none failed. The HTTP status is not used because Reset and Recovery
+ * deletes legitimately answer 404 on a re-run (they assert "in 204,404"). Every MTSS step,
+ * Reset included, has at least one assertion, so a step that checked nothing (for example
+ * its assert block was lost) fails and counts as one failed assertion in the totals.
  */
 function mtssStepResults(names, requests) {
   return names.map(name => {
     const req = requests.find(r => r.name === name);
     if (!req) return { file: name, status: 'NOT_EXECUTED', assertionsPassed: 0, assertionsFailed: 1 };
+    const checkedNothing = req.passed === 0 && req.failed === 0;
     return {
       file: name,
-      status: req.failed === 0 ? 'PASS' : 'FAIL',
+      status: req.failed === 0 && !checkedNothing ? 'PASS' : 'FAIL',
       httpStatus: req.statusCode,
       assertionsPassed: req.passed,
-      assertionsFailed: req.failed
+      assertionsFailed: checkedNothing ? 1 : req.failed
     };
   });
 }
@@ -679,10 +685,10 @@ function mtssStepResults(names, requests) {
  * Falls back to npx when the bru CLI is not on PATH. spawn/root are injectable for unit tests.
  */
 function runBrunoOnce(relativeFolder, envName, { spawn = spawnSync, root = AUTOMATION_ROOT } = {}) {
-  const opts = { encoding: 'utf8', cwd: root, env: { ...process.env, FORCE_COLOR: '0' }, shell: true };
+  const opts = { encoding: 'utf8', cwd: root, env: { ...process.env, FORCE_COLOR: '0' }, shell: true, maxBuffer: SPAWN_MAX_BUFFER };
   let proc = spawn(`bru run "${relativeFolder}" --env "${envName}" 2>&1`, opts);
   let out = proc.stdout || '';
-  if (proc.error || /not recognized|command not found/i.test(out)) {
+  if (bruNotFound(proc, out)) {
     const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
     proc = spawn(`${npxCmd} -p @usebruno/cli bru run "${relativeFolder}" --env "${envName}" 2>&1`, opts);
     out = proc.stdout || '';
@@ -715,7 +721,7 @@ function executeMtssOrder(version, entity, order, dataMap, envName, { runBruno =
 
 if (require.main === module) main();
 
-module.exports = { parseArgs, includeGroup, buildE2eFolder, parseMtssRequests, mtssStepResults, replacePlaceholders, runBrunoOnce, executeMtssOrder };
+module.exports = { parseArgs, includeGroup, buildE2eFolder, parseMtssRequests, mtssStepResults, replacePlaceholders, runBrunoOnce, executeMtssOrder, parseBrunoSummary, parseRequests, bruNotFound };
 
 function verifyEnvironmentExists(envName) {
   const testsEnv = path.join(TESTS_ROOT, 'environments', `${envName}.bru`);

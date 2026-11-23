@@ -4,11 +4,37 @@ Bruno certification steps for the Ed-Fi **Intervention (MTSS) v5** certification
 Business rules: [Intervention / MTSS API v5 Certification - Test Scenarios](https://edfi.atlassian.net/wiki/pages/viewpage.action?pageId=2939813909)
 (Confluence). Work item: [CERT-275](https://edfi.atlassian.net/browse/CERT-275).
 
+## Scope
+
+Resources and scenarios follow the Confluence certification page above:
+
+| In scope | Used by |
+| --- | --- |
+| Interventions | Publish and Maintain Intervention Definitions; OPTION 1 (`staffs`) |
+| StudentInterventionAssociations | Assign a Student to an Intervention; OPTION 2 (`cohortReference`) |
+| StudentInterventionAttendanceEvents | Record Intervention Participation Events; AssignedVersusDeliveredDosage |
+| Cohorts, StaffCohortAssociations | Associate Staff with Intervention Delivery - [OPTION 2] |
+
+All of them are also exercised by "Recovery and Resubmission Scenarios".
+
+**Out of scope:** InterventionPrescriptions and InterventionStudies. They were candidates in
+CERT-275, but the Confluence certification scenarios don't use them.
+
 ## Layout
 
-`v5/intervention/<Scenario>/NN - <step>.bru`, the same layout as SIS so the Admin App
-catalog parser can read it. Scenario folders are named after the behaviour they certify,
-not after a single resource.
+`v5/intervention/<Scenario>/NN - <step>.bru`. Folders are per certification **scenario**,
+not per resource (`<Area>/<EntityPlural>/` in SIS), because:
+
+- each MTSS scenario spans several resources (for example, OPTION 2 creates a Cohort, two
+  StaffCohortAssociations and updates a StudentInterventionAssociation);
+- later scenarios reuse values captured by earlier ones, which `scenario.config.json`
+  declares (`needs` / `provides`). The SIS `entity.config.json` has no way to express that.
+
+Inside each scenario the SIS conventions are unchanged, so the Admin App catalog parser can
+read the steps the same way: `folder.bru` docs with the `N. __CREATE|UPDATE|DELETE__` task
+list, numbered steps with unique `seq`, `[ENTER …]` inputs, `setVars` and `logSpec`.
+Loading MTSS in Admin App is AC-665: it adds a Certification Type column, removes the
+hard-coded `SIS` root and reads `scenario.config.json`.
 
 Run the scenarios in this order (folder `meta.seq`):
 

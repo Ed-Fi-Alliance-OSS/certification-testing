@@ -56,11 +56,30 @@ test('runBrunoOnce falls back to npx when the bru CLI is not on PATH', () => {
   assert.match(calls[1], /^npx(\.cmd)? -p @usebruno\/cli bru run "v5\/_e2e\/X" --env "local" 2>&1$/);
 });
 
-test('runBrunoOnce also falls back when spawning bru fails', () => {
+test('runBrunoOnce also falls back when the shell itself cannot be started (ENOENT)', () => {
   const calls = [];
-  const spawn = cmd => { calls.push(cmd); return calls.length === 1 ? { error: new Error('ENOENT') } : { stdout: 'ok' }; };
+  const enoent = Object.assign(new Error('spawn /bin/sh ENOENT'), { code: 'ENOENT' });
+  const spawn = cmd => { calls.push(cmd); return calls.length === 1 ? { error: enoent } : { stdout: 'ok' }; };
   assert.equal(rs.runBrunoOnce('f', 'local', { spawn, root: tmp('rs-root-') }), 'ok');
   assert.equal(calls.length, 2);
+});
+
+test('runBrunoOnce falls back on Ubuntu/dash, where a missing command exits 127', () => {
+  const calls = [];
+  const spawn = cmd => { calls.push(cmd); return calls.length === 1 ? { status: 127, stdout: 'sh: 1: bru: not found\n' } : { stdout: 'ok' }; };
+  assert.equal(rs.runBrunoOnce('f', 'local', { spawn, root: tmp('rs-root-') }), 'ok');
+  assert.equal(calls.length, 2);
+});
+
+test('bruNotFound: missing command by exit code or message, but never on other failures', () => {
+  assert.equal(rs.bruNotFound({ status: 127, stdout: '' }, ''), true);
+  assert.equal(rs.bruNotFound({ status: 9009 }, ''), true);
+  assert.equal(rs.bruNotFound({ status: 1 }, "'bru' is not recognized as an internal or external command"), true);
+  assert.equal(rs.bruNotFound({ status: 1 }, 'bash: bru: command not found'), true);
+  // A failing run, or output larger than the buffer, must not re-run the folder through npx.
+  assert.equal(rs.bruNotFound({ status: 1 }, '│ Assertions    │ 3/4 │'), false);
+  assert.equal(rs.bruNotFound({ error: Object.assign(new Error('spawnSync /bin/sh ENOBUFS'), { code: 'ENOBUFS' }) }, ''), false);
+  assert.equal(rs.bruNotFound({ status: 0 }, ''), false);
 });
 
 test('executeMtssOrder builds the chain under <root>/<version>/_e2e/<entity> and maps Bruno output to steps', () => {
