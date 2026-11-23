@@ -27,13 +27,16 @@ script:pre-request {
   const { validateDependency, dependencyName } = require('./utils');
   const cohort = dependencyName('Associate Staff with Intervention Delivery - [OPTION 2]', '01 - 1st Cohort is valid');
 
-  validateDependency(bru, 'firstStudentInterventionAssociationUniqueId', dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid'));
+  const assign = dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid');
+
+  validateDependency(bru, 'firstStudentInterventionAssociationUniqueId', assign);
+  validateDependency(bru, 'firstStudentInterventionAssociationCohortKey', assign);
   validateDependency(bru, 'firstCohortIdentifier', cohort);
   validateDependency(bru, 'firstCohortEducationOrganizationId', cohort);
 }
 
 script:post-response {
-  const { getVar, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, expectChanged, cohortKeyOf, throwNotFoundOrSpecificError } = require('./utils');
   const { logScenario, logSpecStudentInterventionAssociation } = require('./logging');
   const entityName = 'StudentInterventionAssociation';
   const scenarioName = this.req.name;
@@ -49,6 +52,9 @@ script:post-response {
     expect(cohortRef.cohortIdentifier).to.equal(getVar(bru, 'firstCohortIdentifier'));
     expect(String(cohortRef.educationOrganizationId)).to.equal(String(getVar(bru, 'firstCohortEducationOrganizationId')));
   });
+  // The baseline from "Assign a Student to an Intervention" must differ: an association that
+  // already referenced the Cohort before this scenario was not updated here.
+  expectChanged(getVar(bru, 'firstStudentInterventionAssociationCohortKey'), cohortKeyOf(current.cohortReference), 'cohortReference');
 
   logScenario(entityName, scenarioName, current, logSpecStudentInterventionAssociation, [
     'studentUniqueId',

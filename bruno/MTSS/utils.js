@@ -273,6 +273,12 @@ function findEventProblems(events, { beginDate, endDate, deletedKey } = {}) {
   return problems;
 }
 
+// Flat key of a cohortReference ("<cohortIdentifier>|<educationOrganizationId>"), or 'none'
+// when the record has none, so the reference can be captured and compared like any variable.
+function cohortKeyOf(ref) {
+  return ref && ref.cohortIdentifier ? `${ref.cohortIdentifier}|${ref.educationOrganizationId}` : 'none';
+}
+
 // Sorted, comma-joined list stored as a single string variable.
 function joinIds(ids) {
   return (Array.isArray(ids) ? ids : []).map(String).sort().join(',');
@@ -334,6 +340,7 @@ module.exports = {
   toDosageVars,
   findEventProblems,
   joinIds,
+  cohortKeyOf,
   dependencyName,
   fetchRecords,
   resolveCurrentId,

@@ -42,7 +42,7 @@ script:pre-request {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { pickSingle, setVars, wipeVars, cohortKeyOf } = require('./utils');
   const { logScenario, logSpecStudentInterventionAssociation } = require('./logging');
   const entityName = 'StudentInterventionAssociation';
   const scenarioName = this.req.name;
@@ -52,14 +52,17 @@ script:post-response {
     wipeVars(bru, [
       'firstStudentInterventionAssociationUniqueId',
       'firstStudentInterventionAssociationStudentUniqueId',
-      'firstStudentInterventionAssociationDosage'
+      'firstStudentInterventionAssociationDosage',
+      'firstStudentInterventionAssociationCohortKey'
     ], entityName, true);
   }
   
   setVars(bru, {
     firstStudentInterventionAssociationUniqueId: single.id,
     firstStudentInterventionAssociationStudentUniqueId: single.studentReference.studentUniqueId,
-    firstStudentInterventionAssociationDosage: single.dosage
+    firstStudentInterventionAssociationDosage: single.dosage,
+    // Baseline for OPTION 2 step 04, which must show the cohortReference was added or changed.
+    firstStudentInterventionAssociationCohortKey: cohortKeyOf(single.cohortReference)
   }, entityName);
   
   logScenario(entityName, scenarioName, single, logSpecStudentInterventionAssociation);

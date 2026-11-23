@@ -134,6 +134,15 @@ test('changeProblem: same value is not a change; a new value is', () => {
   assert.equal(u.changeProblem(undefined, 0), null);
 });
 
+test('cohortKeyOf flattens a cohortReference and returns "none" without one', () => {
+  assert.equal(u.cohortKeyOf({ cohortIdentifier: 'READ-T2-001-GRP-A', educationOrganizationId: 9999999911 }), 'READ-T2-001-GRP-A|9999999911');
+  assert.equal(u.cohortKeyOf(undefined), 'none');
+  assert.equal(u.cohortKeyOf({}), 'none');
+  // Adding a cohort counts as a change; keeping the same one does not.
+  assert.equal(u.changeProblem('none', 'READ-T2-001-GRP-A|9999999911'), null);
+  assert.match(u.changeProblem('READ-T2-001-GRP-A|9999999911', 'READ-T2-001-GRP-A|9999999911'), /did not change/);
+});
+
 test('joinIds sorts and joins without spaces', () => {
   assert.equal(u.joinIds(['207289', '207288']), '207288,207289');
 });

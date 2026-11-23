@@ -5,7 +5,7 @@
   "needs": [
     {
       "scenario": "Assign a Student to an Intervention",
-      "vars": ["firstStudentInterventionAssociationUniqueId"]
+      "vars": ["firstStudentInterventionAssociationUniqueId", "firstStudentInterventionAssociationCohortKey"]
     }
   ],
   "provides": [

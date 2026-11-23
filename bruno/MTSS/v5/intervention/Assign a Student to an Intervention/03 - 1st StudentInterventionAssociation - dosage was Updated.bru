@@ -34,7 +34,7 @@ script:pre-request {
 }
 
 script:post-response {
-  const { getVar, setVars, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, setVars, expectChanged, throwNotFoundOrSpecificError, cohortKeyOf } = require('./utils');
   const { logScenario, logSpecStudentInterventionAssociation } = require('./logging');
   const entityName = 'StudentInterventionAssociation';
   const scenarioName = this.req.name;
@@ -48,7 +48,8 @@ script:post-response {
   expectChanged(getVar(bru, 'firstStudentInterventionAssociationDosage'), current.dosage, 'dosage');
 
   setVars(bru, {
-    firstStudentInterventionAssociationDosage: current.dosage
+    firstStudentInterventionAssociationDosage: current.dosage,
+    firstStudentInterventionAssociationCohortKey: cohortKeyOf(current.cohortReference)
   }, entityName);
 
   logScenario(entityName, scenarioName, current, logSpecStudentInterventionAssociation, [
