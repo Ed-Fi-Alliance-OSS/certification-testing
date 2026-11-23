@@ -1,10 +1,10 @@
 # How to use in Ed-Fi Admin App
 
-1. Download the ZIP (e.g. "sis-v2.1.0.zip")
+1. Download the ZIP (e.g. "certification-v2.2.0.zip"; releases up to v2.1.0 used "sis-v2.1.0.zip")
 2. Verify the checksum (see section below — do not skip this step).
 3. Extract the ZIP.
 4. Run `npm ci` in the extracted `bruno/` folder.
-5. Configure Admin App to execute scenarios from `./SIS`.
+5. Configure Admin App to execute scenarios from `./SIS` (SIS) and `./MTSS` (Intervention / MTSS).
 
 ## Download and verify from Node.js
 
@@ -14,18 +14,26 @@ checksum verification. Extraction requires a library such as `adm-zip`.
 ### Step 1 — Read the metadata to get the exact filename and expected checksum
 
 ```js
-const VERSION = 'v2.1.0'; // pin to a specific release tag
+const VERSION = 'v2.2.0'; // pin to a specific release tag
 const BASE_URL = 'https://github.com/Ed-Fi-Alliance-OSS/certification-testing/releases/download';
 
-const metadata = await fetch(`${BASE_URL}/${VERSION}/sis-${VERSION}.metadata.json`)
+const metadata = await fetch(`${BASE_URL}/${VERSION}/certification-${VERSION}.metadata.json`)
 .then((res) => {
     if (!res.ok) throw new Error(`Failed to fetch metadata: ${res.status}`);
     return res.json();
 });
 
-// metadata.zipFileName  → "sis-v2.1.0.zip"
+// metadata.zipFileName  → "certification-v2.2.0.zip"
 // metadata.sha256       → expected SHA-256 hex string (64 chars)
+// metadata.collections  → ["SIS", "MTSS"]
 ```
+
+> **Artifact name change.** From v2.2.0 the artifact contains every certification collection,
+> so its files are named `certification-<version>.*`. Releases up to v2.1.0 use
+> `sis-<version>.*`. During the transition each new release also publishes
+> `sis-<version>.metadata.json` (the same document, pointing to the `certification-` zip),
+> so Admin App builds that still request the `sis-` metadata keep working. Read the zip name
+> from `metadata.zipFileName`; never build it.
 
 ### Step 2 — Download the ZIP into memory
 
@@ -62,11 +70,11 @@ import fs from 'node:fs';
 import { execSync } from 'node:child_process';
 import AdmZip from 'adm-zip'; // npm install adm-zip
 
-const EXTRACT_DIR = './sis-artifact';
+const EXTRACT_DIR = './certification-artifact';
 
-fs.writeFileSync('sis-artifact.zip', zipBuffer);
+fs.writeFileSync('certification-artifact.zip', zipBuffer);
 
-const zip = new AdmZip('sis-artifact.zip');
+const zip = new AdmZip('certification-artifact.zip');
 zip.extractAllTo(EXTRACT_DIR, /* overwrite */ true);
 
 // Install the exact dependency versions from the artifact's package-lock.json
@@ -78,4 +86,4 @@ stdio: 'inherit',
 
 After `npm ci` completes, the Bruno CLI is available at
 `${EXTRACT_DIR}/bruno/node_modules/.bin/bru` and the SIS scenarios
-are under `${EXTRACT_DIR}/bruno/SIS/`.
+are under `${EXTRACT_DIR}/bruno/SIS/` and the MTSS scenarios under `${EXTRACT_DIR}/bruno/MTSS/`.
