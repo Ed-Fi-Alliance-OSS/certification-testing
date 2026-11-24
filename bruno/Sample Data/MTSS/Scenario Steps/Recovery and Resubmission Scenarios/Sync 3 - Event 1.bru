@@ -1,0 +1,39 @@
+meta {
+  name: Sync 3 - Event 1
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": {
+      "studentUniqueId": "99999911"
+    },
+    "interventionReference": {
+      "educationOrganizationId": 9999999911,
+      "interventionIdentificationCode": "READ-T2-001"
+    },
+    "eventDate": "2026-09-08",
+    "attendanceEventCategoryDescriptor": "uri://ed-fi.org/AttendanceEventCategoryDescriptor#In Attendance",
+    "interventionDuration": 30
+  }
+}
+
+assert {
+  res.status: in 200,201
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

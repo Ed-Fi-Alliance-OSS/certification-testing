@@ -1,0 +1,42 @@
+meta {
+  name: 10 - 2nd Intervention was Deleted
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/interventions?educationOrganizationId={{secondInterventionEducationOrganizationId}}&interventionIdentificationCode={{secondInterventionIdentificationCode}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: {{secondInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{secondInterventionIdentificationCode}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const source = dependencyName('Publish and Maintain Intervention Definitions', '02 - 2nd Intervention is valid');
+  
+  validateDependency(bru, 'secondInterventionEducationOrganizationId', source);
+  validateDependency(bru, 'secondInterventionIdentificationCode', source);
+}
+
+script:post-response {
+  const body = res.getBody();
+  
+  // The 2nd Intervention was deleted by the provider earlier; synchronization must not bring it back.
+  test('Second Intervention did not reappear after synchronization', () => {
+    expect(body).to.be.an('array').that.is.empty;
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

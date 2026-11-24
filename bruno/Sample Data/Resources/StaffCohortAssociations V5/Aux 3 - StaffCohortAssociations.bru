@@ -1,0 +1,29 @@
+meta {
+  name: Aux 3 - StaffCohortAssociations
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{tempStaffCohortAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "staffReference": { "staffUniqueId": "[ENTER_STAFF_UNIQUE_ID]" },
+    "cohortReference": { "cohortIdentifier": "[ENTER_COHORT_IDENTIFIER]", "educationOrganizationId": [ENTER_EDUCATION_ORGANIZATION_ID] },
+    "beginDate": "[ENTER_BEGIN_DATE]",
+    "studentRecordAccess": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

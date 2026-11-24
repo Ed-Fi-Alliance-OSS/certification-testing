@@ -1,0 +1,33 @@
+meta {
+  name: Dep 10 - DiagnosisDescriptor Reading Fluency
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/diagnosisDescriptors
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "codeValue": "Reading Fluency",
+    "namespace": "{{providerNamespace}}/DiagnosisDescriptor",
+    "shortDescription": "Reading Fluency",
+    "description": "Student needs support with oral reading fluency."
+  }
+}
+
+assert {
+  res.status: in 200,201
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

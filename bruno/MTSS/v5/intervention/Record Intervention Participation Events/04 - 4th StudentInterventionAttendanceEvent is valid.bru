@@ -1,0 +1,79 @@
+meta {
+  name: 04 - 4th StudentInterventionAttendanceEvent is valid
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents?studentUniqueId={{firstStudentInterventionAssociationStudentUniqueId}}&educationOrganizationId={{firstInterventionEducationOrganizationId}}&interventionIdentificationCode={{firstInterventionIdentificationCode}}&eventDate=[ENTER FOURTH EVENT DATE YYYY-MM-DD]&attendanceEventCategoryDescriptor={{fourthStudentInterventionAttendanceEventCategoryEncoded}}&attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END=[ENTER FOURTH ATTENDANCE EVENT CATEGORY DESCRIPTOR]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  studentUniqueId: {{firstStudentInterventionAssociationStudentUniqueId}}
+  educationOrganizationId: {{firstInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{firstInterventionIdentificationCode}}
+  eventDate: [ENTER FOURTH EVENT DATE YYYY-MM-DD]
+  attendanceEventCategoryDescriptor: {{fourthStudentInterventionAttendanceEventCategoryEncoded}}
+  attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END: [ENTER FOURTH ATTENDANCE EVENT CATEGORY DESCRIPTOR]
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].interventionReference.interventionIdentificationCode: isString
+  res.body[0].interventionReference.interventionIdentificationCode: isNotEmpty
+  res.body[0].eventDate: isString
+  res.body[0].eventDate: isNotEmpty
+  res.body[0].attendanceEventCategoryDescriptor: isString
+  res.body[0].attendanceEventCategoryDescriptor: isNotEmpty
+  res.body[0].interventionDuration: isNumber
+  res.body[0].interventionDuration: gte 0
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName, encodeDescriptorParameter, setVar } = require('./utils');
+  const intervention = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
+  const student = dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid');
+  
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention);
+  validateDependency(bru, 'firstInterventionIdentificationCode', intervention);
+  validateDependency(bru, 'firstStudentInterventionAssociationStudentUniqueId', student);
+  
+  setVar(bru, 'fourthStudentInterventionAttendanceEventCategoryEncoded', encodeDescriptorParameter(req.url, 'attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END'));
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStudentInterventionAttendanceEvent } = require('./logging');
+  const entityName = 'StudentInterventionAttendanceEvent';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+  
+  if (!single) {
+    wipeVars(bru, [
+      'fourthStudentInterventionAttendanceEventUniqueId',
+      'fourthStudentInterventionAttendanceEventEventDate',
+      'fourthStudentInterventionAttendanceEventCategory'
+    ], entityName, true);
+  }
+  
+  setVars(bru, {
+    fourthStudentInterventionAttendanceEventUniqueId: single.id,
+    fourthStudentInterventionAttendanceEventEventDate: single.eventDate,
+    fourthStudentInterventionAttendanceEventCategory: single.attendanceEventCategoryDescriptor
+  }, entityName);
+  
+  logScenario(entityName, scenarioName, single, logSpecStudentInterventionAttendanceEvent);
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

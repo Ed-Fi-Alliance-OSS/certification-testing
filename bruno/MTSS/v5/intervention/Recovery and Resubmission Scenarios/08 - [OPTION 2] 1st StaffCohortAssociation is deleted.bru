@@ -1,0 +1,53 @@
+meta {
+  name: 08 - [OPTION 2] 1st StaffCohortAssociation is deleted
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{recoveryFirstStaffCohortAssociationUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: in 204,404
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName, getVar, setVar, resolveCurrentId } = require('./utils');
+  const optionOnly = { actionHint: 'Only for OPTION 2. If you certified with OPTION 1, skip this step.' };
+
+  validateDependency(bru, 'firstStaffCohortAssociationStaffUniqueId', dependencyName('Associate Staff with Intervention Delivery - [OPTION 2]', '02 - 1st StaffCohortAssociation is valid'), optionOnly);
+  validateDependency(bru, 'firstStaffCohortAssociationBeginDate', dependencyName('Associate Staff with Intervention Delivery - [OPTION 2]', '02 - 1st StaffCohortAssociation is valid'), optionOnly);
+  validateDependency(bru, 'firstCohortIdentifier', dependencyName('Associate Staff with Intervention Delivery - [OPTION 2]', '01 - 1st Cohort is valid'), optionOnly);
+  validateDependency(bru, 'firstCohortEducationOrganizationId', dependencyName('Associate Staff with Intervention Delivery - [OPTION 2]', '01 - 1st Cohort is valid'), optionOnly);
+
+  // Restored records get a new id, so resolve the current one by natural key.
+  // When nothing is found (already deleted), the original id is used and the API answers 404.
+  const currentId = await resolveCurrentId(bru, 'ed-fi/staffCohortAssociations', {
+    staffUniqueId: getVar(bru, 'firstStaffCohortAssociationStaffUniqueId'),
+    beginDate: getVar(bru, 'firstStaffCohortAssociationBeginDate'),
+    cohortIdentifier: getVar(bru, 'firstCohortIdentifier'),
+    educationOrganizationId: getVar(bru, 'firstCohortEducationOrganizationId')
+  }, getVar(bru, 'firstStaffCohortAssociationUniqueId') || '00000000000000000000000000000000');
+
+  setVar(bru, 'recoveryFirstStaffCohortAssociationUniqueId', currentId);
+}
+
+script:post-response {
+  const { wipeVar } = require('./utils');
+
+  if (res.status === 204) {
+    console.log('1st StaffCohortAssociation was removed. It must come back after your normal synchronization.');
+  } else if (res.status === 404) {
+    console.log('1st StaffCohortAssociation was already removed (re-run of this scenario).');
+  }
+
+  wipeVar(bru, 'recoveryFirstStaffCohortAssociationUniqueId');
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

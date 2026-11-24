@@ -1,0 +1,39 @@
+meta {
+  name: Aux 1 - StudentInterventionAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAssociations?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]&interventionIdentificationCode=[ENTER_INTERVENTION_IDENTIFICATION_CODE]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+  interventionIdentificationCode: [ENTER_INTERVENTION_IDENTIFICATION_CODE]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentInterventionAssociationUUID', item.id);
+    setVarsMessage('StudentInterventionAssociation');
+  } else {
+    wipeVar(bru, 'tempStudentInterventionAssociationUUID');
+    wipeVarsWarning('StudentInterventionAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

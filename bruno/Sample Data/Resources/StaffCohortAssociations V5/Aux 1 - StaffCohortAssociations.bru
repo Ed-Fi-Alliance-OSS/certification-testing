@@ -1,0 +1,40 @@
+meta {
+  name: Aux 1 - StaffCohortAssociations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations?staffUniqueId=[ENTER_STAFF_UNIQUE_ID]&beginDate=[ENTER_BEGIN_DATE]&cohortIdentifier=[ENTER_COHORT_IDENTIFIER]&educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  staffUniqueId: [ENTER_STAFF_UNIQUE_ID]
+  beginDate: [ENTER_BEGIN_DATE]
+  cohortIdentifier: [ENTER_COHORT_IDENTIFIER]
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStaffCohortAssociationUUID', item.id);
+    setVarsMessage('StaffCohortAssociation');
+  } else {
+    wipeVar(bru, 'tempStaffCohortAssociationUUID');
+    wipeVarsWarning('StaffCohortAssociation');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

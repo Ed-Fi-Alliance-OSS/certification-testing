@@ -1,0 +1,50 @@
+meta {
+  name: Step 4 - StudentInterventionAssociation 1 cohortReference
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAssociations/{{tempFirstStudentInterventionAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": {
+      "studentUniqueId": "99999911"
+    },
+    "interventionReference": {
+      "educationOrganizationId": 9999999911,
+      "interventionIdentificationCode": "READ-T2-001"
+    },
+    "dosage": 900,
+    "diagnosticStatement": "Student demonstrates reading fluency needs.",
+    "cohortReference": {
+      "cohortIdentifier": "READ-T2-001-GRP-A",
+      "educationOrganizationId": 9999999911
+    }
+  }
+}
+
+assert {
+  res.status: in 200,204
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempFirstStudentInterventionAssociationUUID', 'Assign a Student to an Intervention > Step 1 - StudentInterventionAssociation 1', {
+    actionHint: 'Run the create script first so its id is cached.'
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

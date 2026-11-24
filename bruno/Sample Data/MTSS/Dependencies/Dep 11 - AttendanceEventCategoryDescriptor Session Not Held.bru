@@ -1,0 +1,33 @@
+meta {
+  name: Dep 11 - AttendanceEventCategoryDescriptor Session Not Held
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/attendanceEventCategoryDescriptors
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "codeValue": "Session Not Held",
+    "namespace": "{{providerNamespace}}/AttendanceEventCategoryDescriptor",
+    "shortDescription": "Session Not Held",
+    "description": "The scheduled intervention session did not take place."
+  }
+}
+
+assert {
+  res.status: in 200,201
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

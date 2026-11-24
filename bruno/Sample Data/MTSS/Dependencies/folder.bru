@@ -1,0 +1,57 @@
+meta {
+  name: Dependencies
+  seq: 1
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # MTSS > Dependencies
+  
+  Creates the school and people that certification scenarios need, so tests do not
+  depend on the Ed-Fi populated sandbox's students and staff. Run once, in order
+  (Dep 1 → Dep 11). Every request is a POST (natural-key upsert), so re-running is safe.
+  
+  ## Environment prerequisite
+  
+  Everything hangs under our own school `9999999911`, inside LEA `255901`. The LEA is only
+  referenced, never written. The API client must be authorized for LEA `255901` (its
+  education organization claims; a 403 lists them). That is the case on ci-v5 and on
+  populated-template environments. On an ODS without that LEA, create an LEA, authorize
+  the client for it in Admin App / Admin API, and change the LEA id in Dep 1 (the only
+  place it appears).
+  
+  Ed-Fi default descriptors must be loaded (minimal or populated template, or a bulk
+  load); the scripts in `Descriptors` only read descriptors, they don't create them.
+  
+  ## Why there are no "down" scripts
+  
+  The Foundation is persistent by design. With a relationship-based key (like the CI
+  key), a student or staff member can only be deleted while their enrollment or
+  assignment exists, and that association blocks the delete (409); deleting the
+  association first removes the relationship, so deleting the person returns 403. A
+  partial teardown would leave orphaned people and break the next run. Instead the
+  Foundation uses reserved identities and is upserted on every run, and the MTSS
+  records built on it are fully removed by the MTSS scripts / CI cleanup.
+  
+  ## Records
+  
+  | Dep | Resource | Identity |
+  | --- | --- | --- |
+  | 1 | School | 9999999911 under LEA 255901 |
+  | 2-3 | Student | 99999911, 99999912 |
+  | 4-5 | StudentSchoolAssociation | each student → school 9999999911 |
+  | 6-7 | Staff | mtss-staff-01, mtss-staff-02 |
+  | 8-9 | StaffEducationOrganizationAssignmentAssociation | each staff → school 9999999911 |
+  | 10 | DiagnosisDescriptor | `{{providerNamespace}}/DiagnosisDescriptor#Reading Fluency` |
+  | 11 | AttendanceEventCategoryDescriptor | `{{providerNamespace}}/AttendanceEventCategoryDescriptor#Session Not Held` |
+  
+  Dep 10-11 create descriptors in your provider namespace: set `providerNamespace` in the
+  environment to one of the client's namespace prefixes (a 403 "namespace-mismatch" lists them;
+  ci-v5 uses `uri://gbisd.edu`).
+  
+  These identities are reserved for MTSS sample data (SIS will get its own); SIS sample data uses `9999999901`,
+  `99999901` and `207220-test01`.
+}

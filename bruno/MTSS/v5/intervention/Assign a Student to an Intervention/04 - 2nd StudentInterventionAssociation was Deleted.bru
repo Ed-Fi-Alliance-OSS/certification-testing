@@ -1,0 +1,49 @@
+meta {
+  name: 04 - 2nd StudentInterventionAssociation was Deleted
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAssociations?studentUniqueId={{secondStudentInterventionAssociationStudentUniqueId}}&educationOrganizationId={{firstInterventionEducationOrganizationId}}&interventionIdentificationCode={{firstInterventionIdentificationCode}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  studentUniqueId: {{secondStudentInterventionAssociationStudentUniqueId}}
+  educationOrganizationId: {{firstInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{firstInterventionIdentificationCode}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  
+  validateDependency(bru, 'secondStudentInterventionAssociationStudentUniqueId', dependencyName('Assign a Student to an Intervention', '02 - 2nd StudentInterventionAssociation is valid'));
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+  validateDependency(bru, 'firstInterventionIdentificationCode', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'StudentInterventionAssociation';
+  const body = res.getBody();
+  
+  // Checked by natural key so a deleted-then-re-posted record (new id) is still caught.
+  test('Second StudentInterventionAssociation no longer exists', () => {
+    expect(body).to.be.an('array').that.is.empty;
+  });
+  
+  if (res.status === 200 && Array.isArray(body) && body.length === 0) {
+    wipeVars(bru, ['secondStudentInterventionAssociationUniqueId'], entityName, false);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

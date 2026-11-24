@@ -1,0 +1,52 @@
+meta {
+  name: 06 - 2nd StaffCohortAssociation was Deleted
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations?staffUniqueId={{secondStaffCohortAssociationStaffUniqueId}}&beginDate={{secondStaffCohortAssociationBeginDate}}&cohortIdentifier={{firstCohortIdentifier}}&educationOrganizationId={{firstCohortEducationOrganizationId}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  staffUniqueId: {{secondStaffCohortAssociationStaffUniqueId}}
+  beginDate: {{secondStaffCohortAssociationBeginDate}}
+  cohortIdentifier: {{firstCohortIdentifier}}
+  educationOrganizationId: {{firstCohortEducationOrganizationId}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const scenario = 'Associate Staff with Intervention Delivery - [OPTION 2]';
+
+  validateDependency(bru, 'secondStaffCohortAssociationStaffUniqueId', dependencyName(scenario, '03 - 2nd StaffCohortAssociation is valid'));
+  validateDependency(bru, 'secondStaffCohortAssociationBeginDate', dependencyName(scenario, '03 - 2nd StaffCohortAssociation is valid'));
+  validateDependency(bru, 'firstCohortIdentifier', dependencyName(scenario, '01 - 1st Cohort is valid'));
+  validateDependency(bru, 'firstCohortEducationOrganizationId', dependencyName(scenario, '01 - 1st Cohort is valid'));
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'StaffCohortAssociation';
+  const body = res.getBody();
+
+  // Checked by natural key so a deleted-then-re-posted record (new id) is still caught.
+  test('2nd StaffCohortAssociation no longer exists (searched by natural key)', () => {
+    expect(body).to.be.an('array').that.is.empty;
+  });
+
+  if (res.status === 200 && Array.isArray(body) && body.length === 0) {
+    wipeVars(bru, ['secondStaffCohortAssociationUniqueId'], entityName, false);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

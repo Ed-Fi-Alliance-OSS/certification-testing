@@ -1,18 +1,25 @@
 name: DataStandard V5
 
+# SIS scenarios. The MTSS (Intervention) chains run in on-pullrequest-run-tests-v5-mtss.yml.
+
 on:
   pull_request:
     paths:
       - 'scripts/run-scenarios.cjs'
       - 'bruno/Tests/v5/**'
+      - '!bruno/Tests/v5/Intervention/**'
       - 'bruno/SIS/v5/**'
+      - 'bruno/package-lock.json'
       - '.github/workflows/on-pullrequest-run-tests-v5.yml'
+      - '.github/scripts/qa-summary-comment.cjs'
   push:
     branches: [ main ]
     paths:
       - 'scripts/run-scenarios.cjs'
       - 'bruno/Tests/v5/**'
+      - '!bruno/Tests/v5/Intervention/**'
       - 'bruno/SIS/v5/**'
+      - 'bruno/package-lock.json'
   workflow_dispatch:
     inputs:
       env:
@@ -28,15 +35,18 @@ permissions:
   contents: read
   pull-requests: write
 
-concurrency:
-  group: qa-scenarios-v5-${{ github.ref }}
-  cancel-in-progress: true
+env:
+  BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
 
 jobs:
   qa:
-    name: Run Tests
+    name: Run SIS Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # SIS: a newer push to the same ref cancels the older run.
+    concurrency:
+      group: qa-scenarios-v5-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -57,7 +67,6 @@ jobs:
         env:
           CLIENT_ID: ${{ secrets.EDFI_CLIENT_ID_V5 }}
           CLIENT_SECRET: ${{ secrets.EDFI_CLIENT_SECRET_V5 }}
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
         run: |
           ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
           if [ ! -f "$ENV_FILE" ]; then echo "ERROR: env file not found: $ENV_FILE"; exit 1; fi
@@ -71,8 +80,6 @@ jobs:
           "
 
       - name: Mask client secret (if present)
-        env:
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
         run: |
           ENV_FILE="bruno/Tests/environments/${BRUNO_ENV}.bru"
           if [ -f "$ENV_FILE" ]; then
@@ -86,7 +93,6 @@ jobs:
       - name: Run QA Scenarios
         id: runqa
         env:
-          BRUNO_ENV: ${{ github.event.inputs.env || 'ci-v5.ed-fi.org' }}
           INCLUDE_STEPS: ${{ github.event.inputs.includeSteps || 'false' }}
         run: |
           set -e
@@ -122,37 +128,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
-            const summaryPath = 'automation-testing/results/summary.json';
-            if (!fs.existsSync(summaryPath)) {
-              github.rest.issues.createComment({
-                issue_number: context.payload.pull_request.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: ':warning: QA Scenarios did not produce a summary.json file.'
-              });
-            } else {
-              const data = JSON.parse(fs.readFileSync(summaryPath,'utf8'));
-              const lines = [];
-              lines.push('### QA Scenarios Summary (DataStandard V5)');
-              lines.push(`Status: **${data.exitStatus}**`);
-              lines.push(`Entities Processed: **${data.totals.entitiesProcessed}**`);
-              lines.push(`Assertions: Passed **${data.totals.assertionsPassed}**, Failed **${data.totals.assertionsFailed}**, Total **${data.totals.assertionsTotal}**`);
-              if (data.entities) {
-                lines.push('');
-                lines.push('| Entity | Passed | Failed | Total |');
-                lines.push('|--------|--------|--------|-------|');
-                for (const e of data.entities) {
-                  const a = e.assertions; lines.push(`| ${e.entity} | ${a.passed} | ${a.failed} | ${a.total} |`);
-                }
-              }
-              github.rest.issues.createComment({
-                issue_number: context.payload.pull_request.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: lines.join('\n')
-              });
-            }
+            // Creates the summary comment once, then updates it on later runs.
+            const { postSummary } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/qa-summary-comment.cjs`);
+            await postSummary({
+              github, context,
+              summaryPath: 'automation-testing/results/summary.json',
+              title: 'SIS QA Scenarios Summary (DataStandard V5)',
+              marker: 'qa-scenarios-summary:sis:v5',
+              firstColumn: 'Entity'
+            });
 
       - name: Fail if scenarios failed
         if: steps.runqa.outputs.exit_code != '0'

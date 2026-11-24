@@ -1,0 +1,48 @@
+meta {
+  name: 07 - 1st Intervention is deleted
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/interventions/{{recoveryFirstInterventionUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: in 204,404
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName, getVar, setVar, resolveCurrentId } = require('./utils');
+
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+  validateDependency(bru, 'firstInterventionIdentificationCode', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+
+  // Restored records get a new id, so resolve the current one by natural key.
+  // When nothing is found (already deleted), the original id is used and the API answers 404.
+  const currentId = await resolveCurrentId(bru, 'ed-fi/interventions', {
+    educationOrganizationId: getVar(bru, 'firstInterventionEducationOrganizationId'),
+    interventionIdentificationCode: getVar(bru, 'firstInterventionIdentificationCode')
+  }, getVar(bru, 'firstInterventionUniqueId') || '00000000000000000000000000000000');
+
+  setVar(bru, 'recoveryFirstInterventionUniqueId', currentId);
+}
+
+script:post-response {
+  const { wipeVar } = require('./utils');
+
+  if (res.status === 204) {
+    console.log('1st Intervention was removed. It must come back after your normal synchronization.');
+  } else if (res.status === 404) {
+    console.log('1st Intervention was already removed (re-run of this scenario).');
+  }
+
+  wipeVar(bru, 'recoveryFirstInterventionUniqueId');
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

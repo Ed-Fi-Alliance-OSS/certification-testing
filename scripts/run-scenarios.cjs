@@ -23,6 +23,8 @@
  *  --entities A,B,C    Limit processing to specified folder entity names.
  *  --include-steps     Include detailed per-step data in aggregate summary.json.
  *  --version v4|v5     Limit processing to a specific data standard version.
+ *  --collection sis|mtss  Collection under test (default sis). mtss runs each Tests/<v>/Intervention
+ *                       config as ONE Bruno run so runtime variables flow across scenarios.
  *
  * Exit code:
  *  0 if all processed entities have zero failed assertions and no config errors.
@@ -33,9 +35,13 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const ROOT = path.resolve(__dirname, '..');
+// RUN_SCENARIOS_ROOT points the runner at another repository root (used by the unit tests).
+const ROOT = process.env.RUN_SCENARIOS_ROOT ? path.resolve(process.env.RUN_SCENARIOS_ROOT) : path.resolve(__dirname, '..');
 const TESTS_ROOT = path.join(ROOT, 'bruno', 'Tests');
 const SIS_ROOT = path.join(ROOT, 'bruno', 'SIS');
+const MTSS_ROOT = path.join(ROOT, 'bruno', 'MTSS');
+// Tests/<version>/<group> folder holding the MTSS end-to-end configs.
+const MTSS_TEST_GROUP = 'Intervention';
 const AUTOMATION_ROOT = path.join(ROOT, 'automation-testing');
 
 function log(msg) { console.log(msg); }
@@ -48,14 +54,15 @@ function error(msg) { console.error(msg); }
  *  --include-steps      Include per-step details inside aggregate summary.json
  *  --version <v4|v5>    Filter to a specific data standard version folder (default: v5)
  *  --env <envName>      Override environment used for Bruno runs (default: api-v5.ed-fi.org)
+ *  --collection <sis|mtss> Collection under test (default: sis)
  *                       Convention: env suffix must match --version (e.g. api-v4 with --version v4)
  */
-function parseArgs() {
-  const args = process.argv.slice(2);
+function parseArgs(args = process.argv.slice(2)) {
   const entities = [];
   let includeSteps = false;
   let envName = 'api-v5.ed-fi.org';
   let versionFilter = 'v5';
+  let collection = 'sis';
   for (let i=0; i<args.length; i++) {
     if (args[i] === '--entities') {
       const list = args[i+1];
@@ -71,9 +78,24 @@ function parseArgs() {
       const val = args[i+1];
       i++;
       if (val) versionFilter = val.trim();
+    } else if (args[i] === '--collection') {
+      const val = args[i+1];
+      i++;
+      if (val) collection = val.trim().toLowerCase();
     }
   }
-  return { entitiesFilter: entities, includeSteps, envName, versionFilter };
+  if (!['sis', 'mtss'].includes(collection)) throw new Error(`Unknown --collection '${collection}' (expected sis or mtss)`);
+  // The env name is interpolated into a shell command: allow only an environment file name.
+  if (!/^[A-Za-z0-9_.-]+$/.test(envName)) throw new Error(`Invalid --env '${envName}' (letters, digits, '.', '_' and '-' only)`);
+  return { entitiesFilter: entities, includeSteps, envName, versionFilter, collection };
+}
+
+/**
+ * Which Tests/<version>/<group> configs belong to the collection under test.
+ * MTSS end-to-end configs live under the Intervention group; SIS runs skip them.
+ */
+function includeGroup(collection, group) {
+  return collection === 'mtss' ? group === MTSS_TEST_GROUP : group !== MTSS_TEST_GROUP;
 }
 
 /**
@@ -146,11 +168,12 @@ function resetAutomationRoot() {
 }
 
 /**
- * Copy entire Tests and SIS collections into automation root for isolated mutation.
+ * Copy entire Tests and the collection under test (SIS or MTSS) into automation root for isolated mutation.
+ * The collection is copied last so its utils.js / logging.js / collection.bru win.
  */
-function copyEntireCollections() {
+function copyEntireCollections(collection = 'sis') {
   copyDirRecursive(TESTS_ROOT, AUTOMATION_ROOT);
-  copyDirRecursive(SIS_ROOT, AUTOMATION_ROOT);
+  copyDirRecursive(collection === 'mtss' ? MTSS_ROOT : SIS_ROOT, AUTOMATION_ROOT);
 }
 
 function copyDirRecursive(src, dest) {
@@ -274,6 +297,21 @@ function replacePlaceholders(content, dataMap) {
   return relParts.join('/');
  }
 
+// Bruno output can be long (one block per request); spawnSync's 1 MB default would truncate it.
+const SPAWN_MAX_BUFFER = 64 * 1024 * 1024;
+
+/**
+ * True when the shell could not find the `bru` command, so the npx fallback should run.
+ * Exit code 127 = POSIX shells ("sh: 1: bru: not found" on dash/Ubuntu), 9009 = cmd.exe;
+ * the messages are a backstop. Other spawn errors (e.g. ENOBUFS) are real failures and must
+ * not re-run the folder against the API.
+ */
+function bruNotFound(proc, output) {
+  if (proc.error) return proc.error.code === 'ENOENT';
+  return proc.status === 127 || proc.status === 9009
+    || /not recognized|command not found|: not found/i.test(output || '');
+}
+
 /**
  * Invoke Bruno CLI for a folder, attempt PATH first then fallback to npx install.
  * Merges stderr into stdout to preserve chronological ordering.
@@ -284,16 +322,17 @@ function replacePlaceholders(content, dataMap) {
   // Previous approach concatenated stdout + stderr which caused out-of-order lines.
   const baseCmd = `bru run "${relativeFolder}" --env ${envName} 2>&1`;
   let proc = spawnSync(baseCmd, {
-    encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true
+    encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true, maxBuffer: SPAWN_MAX_BUFFER
   });
   let combined = proc.stdout || '';
   let exitCode = proc.status;
-  // Fallback to npx package invocation if summary line not detected (CLI not on PATH)
-  if (!/Assertions:\s+\d+\s+passed/i.test(combined)) {
+  // Fall back to npx only when the bru CLI is not on PATH. (Checking for a summary line here
+  // re-ran every folder with an unpinned CLI, because Bruno 3.x prints its summary as a table.)
+  if (bruNotFound(proc, combined)) {
     const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
   const fallbackCmd = `${npxCmd} -p @usebruno/cli bru run "${relativeFolder}" --env ${envName} 2>&1`;
     proc = spawnSync(fallbackCmd, {
-      encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true
+      encoding: 'utf8', cwd: AUTOMATION_ROOT, env: { ...process.env, FORCE_COLOR: '0' }, shell: true, maxBuffer: SPAWN_MAX_BUFFER
     });
     combined = proc.stdout || '';
     exitCode = proc.status;
@@ -321,17 +360,15 @@ function replacePlaceholders(content, dataMap) {
  * Uses the last occurrence if multiple appear.
  */
  function parseBrunoSummary(output) {
-  // Expected lines similar to:
-  // Requests:    3 passed, 3 total
-  // Tests:       0 passed, 0 total
-  // Assertions:  17 passed, 17 total
+  // Bruno CLI 1.x/2.x:   "Assertions:  17 passed, 17 total"
+  // Bruno CLI 3.x table:  "│ Assertions    │     106/108      │"  (passed/total)
   let assertionsPassed = 0;
   let assertionsTotal = 0;
   const lines = output.split(/\r?\n/);
   // Some executions print summary twice; take the last occurrence
   for (let i = lines.length - 1; i >= 0; i--) {
     const l = lines[i];
-    const m = l.match(/Assertions:\s+(\d+)\s+passed,\s+(\d+)\s+total/i);
+    const m = l.match(/Assertions:\s+(\d+)\s+passed,\s+(\d+)\s+total/i) || l.match(/│\s*Assertions\s*│\s*(\d+)\/(\d+)\s*│/);
     if (m) {
       assertionsPassed = parseInt(m[1],10);
       assertionsTotal = parseInt(m[2],10);
@@ -341,19 +378,6 @@ function replacePlaceholders(content, dataMap) {
   return { assertionsPassed, assertionsFailed: assertionsTotal - assertionsPassed };
  }
 
-// Helper (currently unused externally) to map original source to mirrored path if needed later.
-function getMirroredPath(original) {
-  // Map bruno/Tests/... to automation-testing/Tests/... similarly for SIS
-  const rel = path.relative(ROOT, original);
-  if (rel.startsWith(path.join('bruno', 'Tests'))) {
-    return path.join(AUTOMATION_ROOT, rel.substring(path.join('bruno', 'Tests').length + 1));
-  }
-  if (rel.startsWith(path.join('bruno', 'SIS'))) {
-    return path.join(AUTOMATION_ROOT, rel.substring(path.join('bruno', 'SIS').length + 1));
-  }
-  return null;
-}
-
 /**
  * Parse per-request sections from Bruno output: request header + assertions block.
  * Collects status code, timing, and raw assertion pass/fail counts.
@@ -362,9 +386,9 @@ function parseRequests(output) {
   const lines = output.split(/\r?\n/);
   // Match lines like:
   // v4/MasterSchedule/BellSchedules/01 - CREATE a BellSchedule (201 Created) - 907 ms
-  // or with backslashes on some platforms. Capture groups: (1) filename, (2) statusCode, (3) timeMs
-  const requestHeaderRegex = /^v\d+[\/\\].*?\/([^\/]+) \((\d{3})(?: [^)]+)?\) - (\d+) ms$/;
-  const requestHeaderRegexAlt = /^v\d+[\/\\].*?\/([^\/]+) \((\d{3})\) - (\d+) ms$/; // fallback variant
+  // or with backslashes on Windows. Capture groups: (1) filename, (2) statusCode, (3) timeMs
+  const requestHeaderRegex = /^v\d+[\/\\].*?[\/\\]([^\/\\]+) \((\d{3})(?: [^)]+)?\) - (\d+) ms$/;
+  const requestHeaderRegexAlt = /^v\d+[\/\\].*?[\/\\]([^\/\\]+) \((\d{3})\) - (\d+) ms$/; // fallback variant
   const requests = [];
   let current = null;
   let inAssertions = false;
@@ -461,12 +485,12 @@ function rewriteMetaSeq(version, group, entity, orderedPaths) {
  * execute ordered tests, write aggregate summary, set exit code.
  */
 function main() {
-  const { entitiesFilter, includeSteps, envName, versionFilter } = parseArgs();
+  const { entitiesFilter, includeSteps, envName, versionFilter, collection } = parseArgs();
   // Ensure results directory exists early so last-output.txt can be written by first folder execution
   try { fs.mkdirSync(path.join(AUTOMATION_ROOT, 'results'), { recursive: true }); } catch {}
   verifyEnvironmentExists(envName);
   resetAutomationRoot();
-  copyEntireCollections();
+  copyEntireCollections(collection);
 
   const configs = findEntityConfigs();
   if (configs.length === 0) {
@@ -485,6 +509,8 @@ function main() {
     const cfgName = typeof cfg.name === 'string' && cfg.name.trim().length ? cfg.name.trim() : entity;
     // Filter by version (--version v4 or --version v5)
     if (versionFilter && version !== versionFilter) continue;
+    // SIS runs skip the MTSS end-to-end configs and vice versa (--collection)
+    if (!includeGroup(collection, group)) continue;
     // Filter by entity folder name (--entities A,B,C)
     if (entitiesFilter.length && !entitiesFilter.includes(entity)) {
       continue;
@@ -519,9 +545,14 @@ function main() {
 
     log(`Processing entity ${entitiesFilter.length ? entity : cfgName} (${group}) with ${order.length} steps.`);
     // Use folder entity name for directory operations; cfgName only for reporting label
-    mirrorEntity(version, group, entity, dataMap);
-    try { rewriteMetaSeq(version, group, entity, order); } catch (e) { error(`Failed to rewrite meta.seq for ${cfgName}: ${e.message}`); }
-  const resultSteps = executeOrder(order, envName);
+    let resultSteps;
+    if (collection === 'mtss') {
+      resultSteps = executeMtssOrder(version, entity, order, dataMap, envName);
+    } else {
+      mirrorEntity(version, group, entity, dataMap);
+      try { rewriteMetaSeq(version, group, entity, order); } catch (e) { error(`Failed to rewrite meta.seq for ${cfgName}: ${e.message}`); }
+      resultSteps = executeOrder(order, envName);
+    }
     const summary = summarizeEntity(cfgName, resultSteps);
     summaries.push(summary);
   }
@@ -572,7 +603,125 @@ function main() {
   process.exit(overallFail ? 1 : 0);
 }
 
-main();
+// ---------------------------------------------------------------------------
+// MTSS end-to-end mode (--collection mtss)
+// MTSS scenarios share runtime variables, so the whole ordered chain (seed
+// requests + certification steps) must run in ONE Bruno process. The ordered
+// files are copied into a single generated folder with their declared order as
+// seq, then that folder is run once.
+// ---------------------------------------------------------------------------
+
+/**
+ * Copy the ordered .bru files (repo-relative paths) into destDir as
+ * "NNN - <original name>.bru", with meta name/seq rewritten to the new order and
+ * placeholders replaced. Returns the new request names in order.
+ */
+function buildE2eFolder(orderList, destDir, dataMap = {}, repoRoot = ROOT) {
+  fs.rmSync(destDir, { recursive: true, force: true });
+  fs.mkdirSync(destDir, { recursive: true });
+  return orderList.map((item, i) => {
+    const src = path.join(repoRoot, item);
+    if (!fs.existsSync(src)) throw new Error(`Ordered file not found: ${item}`);
+    const name = `${String(i + 1).padStart(3, '0')} - ${path.basename(item, '.bru')}`;
+    let content = replacePlaceholders(fs.readFileSync(src, 'utf8').replace(/\r\n/g, '\n'), dataMap);
+    content = content.replace(/(meta\s*{[\s\S]*?\bname:)[^\n]*/m, `$1 ${name}`);
+    content = content.replace(/(meta\s*{[\s\S]*?\bseq:)\s*\d+/m, `$1 ${i + 1}`);
+    fs.writeFileSync(path.join(destDir, `${name}.bru`), content, 'utf8');
+    return name;
+  });
+}
+
+/**
+ * Parse per-request results from Bruno CLI 3.x output. Counts both test() results
+ * ("Pre-Request Tests" / "Post-Response Tests") and assert {} results.
+ * Accepts forward and back slashes in the request path.
+ */
+function parseMtssRequests(output) {
+  const header = /^v\d+[\/\\](?:.*[\/\\])?([^\/\\]+) \((\d{3})(?: [^)]*)?\) - \d+ ms$/;
+  const requests = [];
+  let current = null;
+  for (const line of output.split(/\r?\n/)) {
+    const m = line.match(header);
+    if (m) {
+      current = { name: m[1].trim(), statusCode: parseInt(m[2], 10), passed: 0, failed: 0 };
+      requests.push(current);
+      continue;
+    }
+    if (!current) continue;
+    // "Γ£ô" is how ✓ (UTF-8 E2 9C 93) reads when the output is decoded as code page 437 on Windows.
+    if (/^\s+[✓Γ£ô]/.test(line)) current.passed += 1;
+    else if (/^\s+[✕✗]/.test(line)) current.failed += 1;
+    // A post-response or tests script that throws prints no ✕ line; count it as a failure.
+    // (A pre-request error prints no request header at all, so that step is NOT_EXECUTED.)
+    else if (/^\[[^\]]+\] (?:Post-response|Test) script error/.test(line)) current.failed += 1;
+  }
+  return requests;
+}
+
+/**
+ * Map ordered request names to step results. A step passes when it ran, checked at least
+ * one test/assertion and none failed. The HTTP status is not used because Reset and Recovery
+ * deletes legitimately answer 404 on a re-run (they assert "in 204,404"). Every MTSS step,
+ * Reset included, has at least one assertion, so a step that checked nothing (for example
+ * its assert block was lost) fails and counts as one failed assertion in the totals.
+ */
+function mtssStepResults(names, requests) {
+  return names.map(name => {
+    const req = requests.find(r => r.name === name);
+    if (!req) return { file: name, status: 'NOT_EXECUTED', assertionsPassed: 0, assertionsFailed: 1 };
+    const checkedNothing = req.passed === 0 && req.failed === 0;
+    return {
+      file: name,
+      status: req.failed === 0 && !checkedNothing ? 'PASS' : 'FAIL',
+      httpStatus: req.statusCode,
+      assertionsPassed: req.passed,
+      assertionsFailed: checkedNothing ? 1 : req.failed
+    };
+  });
+}
+
+/**
+ * Run one Bruno folder and return its combined output (also saved to results/last-output.txt).
+ * Falls back to npx when the bru CLI is not on PATH. spawn/root are injectable for unit tests.
+ */
+function runBrunoOnce(relativeFolder, envName, { spawn = spawnSync, root = AUTOMATION_ROOT } = {}) {
+  const opts = { encoding: 'utf8', cwd: root, env: { ...process.env, FORCE_COLOR: '0' }, shell: true, maxBuffer: SPAWN_MAX_BUFFER };
+  let proc = spawn(`bru run "${relativeFolder}" --env "${envName}" 2>&1`, opts);
+  let out = proc.stdout || '';
+  if (bruNotFound(proc, out)) {
+    const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    proc = spawn(`${npxCmd} -p @usebruno/cli bru run "${relativeFolder}" --env "${envName}" 2>&1`, opts);
+    out = proc.stdout || '';
+  }
+  try {
+    const resultsDir = path.join(root, 'results');
+    fs.mkdirSync(resultsDir, { recursive: true });
+    fs.writeFileSync(path.join(resultsDir, 'last-output.txt'), out, 'utf8');
+  } catch {}
+  log('[DEBUG] Bruno output:\n' + out);
+  return out;
+}
+
+/**
+ * Build one MTSS chain into <root>/<version>/_e2e/<entity>, run it as a single Bruno process
+ * (so runtime variables flow between steps) and map the output to per-step results.
+ */
+function executeMtssOrder(version, entity, order, dataMap, envName, { runBruno = runBrunoOnce, root = AUTOMATION_ROOT, repoRoot = ROOT } = {}) {
+  const folderRel = path.join(version, '_e2e', entity);
+  let names;
+  try {
+    names = buildE2eFolder(order, path.join(root, folderRel), dataMap, repoRoot);
+  } catch (e) {
+    error(`MTSS config '${entity}': ${e.message}`);
+    return [{ file: `CONFIG_ERROR: ${e.message}`, folder: folderRel, status: 'FAIL', assertionsPassed: 0, assertionsFailed: 1 }];
+  }
+  const output = runBruno(folderRel.replace(/\\/g, '/'), envName);
+  return mtssStepResults(names, parseMtssRequests(output)).map(r => ({ ...r, folder: folderRel }));
+}
+
+if (require.main === module) main();
+
+module.exports = { parseArgs, includeGroup, buildE2eFolder, parseMtssRequests, mtssStepResults, replacePlaceholders, runBrunoOnce, executeMtssOrder, parseBrunoSummary, parseRequests, bruNotFound };
 
 function verifyEnvironmentExists(envName) {
   const testsEnv = path.join(TESTS_ROOT, 'environments', `${envName}.bru`);

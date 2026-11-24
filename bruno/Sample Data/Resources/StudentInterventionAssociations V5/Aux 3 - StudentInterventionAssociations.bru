@@ -1,0 +1,29 @@
+meta {
+  name: Aux 3 - StudentInterventionAssociations
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAssociations/{{tempStudentInterventionAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": { "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]" },
+    "interventionReference": { "educationOrganizationId": [ENTER_EDUCATION_ORGANIZATION_ID], "interventionIdentificationCode": "[ENTER_INTERVENTION_IDENTIFICATION_CODE]" },
+    "dosage": [ENTER_DOSAGE_MINUTES],
+    "diagnosticStatement": "[ENTER_DIAGNOSTIC_STATEMENT]"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

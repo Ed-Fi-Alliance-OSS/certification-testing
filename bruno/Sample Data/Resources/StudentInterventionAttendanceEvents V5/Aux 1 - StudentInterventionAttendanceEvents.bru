@@ -1,0 +1,48 @@
+meta {
+  name: Aux 1 - StudentInterventionAttendanceEvents
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents?studentUniqueId=[ENTER_STUDENT_UNIQUE_ID]&educationOrganizationId=[ENTER_EDUCATION_ORGANIZATION_ID]&interventionIdentificationCode=[ENTER_INTERVENTION_IDENTIFICATION_CODE]&eventDate=[ENTER_EVENT_DATE]&attendanceEventCategoryDescriptor={{tempStudentInterventionAttendanceEventCategoryEncoded}}&attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END=[ENTER_ATTENDANCE_EVENT_CATEGORY_DESCRIPTOR]
+  body: none
+  auth: bearer
+}
+
+params:query {
+  studentUniqueId: [ENTER_STUDENT_UNIQUE_ID]
+  educationOrganizationId: [ENTER_EDUCATION_ORGANIZATION_ID]
+  interventionIdentificationCode: [ENTER_INTERVENTION_IDENTIFICATION_CODE]
+  eventDate: [ENTER_EVENT_DATE]
+  attendanceEventCategoryDescriptor: {{tempStudentInterventionAttendanceEventCategoryEncoded}}
+  attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END: [ENTER_ATTENDANCE_EVENT_CATEGORY_DESCRIPTOR]
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+script:pre-request {
+  const { encodeDescriptorParameter, setVar } = require('./utils');
+  
+  setVar(bru, 'tempStudentInterventionAttendanceEventCategoryEncoded', encodeDescriptorParameter(req.url, 'attendanceEventCategoryDescriptor_KEEP_IT_AT_THE_END'));
+}
+
+script:post-response {
+  const { setVar, setVarsMessage, wipeVar, wipeVarsWarning, pickSingle } = require('./utils');
+  const item = pickSingle(res.getBody());
+
+  if (item) {
+    setVar(bru, 'tempStudentInterventionAttendanceEventUUID', item.id);
+    setVarsMessage('StudentInterventionAttendanceEvent');
+  } else {
+    wipeVar(bru, 'tempStudentInterventionAttendanceEventUUID');
+    wipeVarsWarning('StudentInterventionAttendanceEvent');
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schemas/scenario-config.schema.json",
+  "version": 1,
+  "needs": [
+    {
+      "scenario": "Publish and Maintain Intervention Definitions",
+      "vars": ["firstInterventionEducationOrganizationId", "firstInterventionIdentificationCode"]
+    },
+    {
+      "scenario": "Assign a Student to an Intervention",
+      "vars": ["firstStudentInterventionAssociationStudentUniqueId"]
+    }
+  ],
+  "provides": [
+    "firstStudentInterventionAttendanceEventUniqueId",
+    "firstStudentInterventionAttendanceEventEventDate",
+    "firstStudentInterventionAttendanceEventCategory",
+    "secondStudentInterventionAttendanceEventUniqueId",
+    "secondStudentInterventionAttendanceEventEventDate",
+    "secondStudentInterventionAttendanceEventCategory",
+    "secondStudentInterventionAttendanceEventInterventionDuration",
+    "thirdStudentInterventionAttendanceEventUniqueId",
+    "thirdStudentInterventionAttendanceEventEventDate",
+    "thirdStudentInterventionAttendanceEventCategory",
+    "fourthStudentInterventionAttendanceEventUniqueId",
+    "fourthStudentInterventionAttendanceEventEventDate",
+    "fourthStudentInterventionAttendanceEventCategory",
+    "fifthStudentInterventionAttendanceEventUniqueId",
+    "fifthStudentInterventionAttendanceEventEventDate",
+    "fifthStudentInterventionAttendanceEventCategory",
+    "sixthStudentInterventionAttendanceEventUniqueId",
+    "sixthStudentInterventionAttendanceEventEventDate",
+    "sixthStudentInterventionAttendanceEventCategory",
+    "sessionNotHeldCategory"
+  ],
+  "steps": {
+    "08 - [optional] - 6th StudentInterventionAttendanceEvent is valid.bru": { "optional": true }
+  }
+}

@@ -1,0 +1,47 @@
+meta {
+  name: Step 5 - StaffCohortAssociation 1 endDate
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations/{{tempFirstStaffCohortAssociationUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "staffReference": {
+      "staffUniqueId": "mtss-staff-01"
+    },
+    "cohortReference": {
+      "cohortIdentifier": "READ-T2-001-GRP-A",
+      "educationOrganizationId": 9999999911
+    },
+    "beginDate": "2026-08-24",
+    "endDate": "2026-12-18",
+    "studentRecordAccess": true
+  }
+}
+
+assert {
+  res.status: in 200,204
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempFirstStaffCohortAssociationUUID', 'Step 2 - StaffCohortAssociation 1', {
+    actionHint: 'Run the create script first so its id is cached.'
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

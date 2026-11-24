@@ -1,0 +1,38 @@
+meta {
+  name: Aux 2 - StudentInterventionAttendanceEvents
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": { "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]" },
+    "interventionReference": { "educationOrganizationId": [ENTER_EDUCATION_ORGANIZATION_ID], "interventionIdentificationCode": "[ENTER_INTERVENTION_IDENTIFICATION_CODE]" },
+    "eventDate": "[ENTER_EVENT_DATE]",
+    "attendanceEventCategoryDescriptor": "[ENTER_ATTENDANCE_EVENT_CATEGORY_DESCRIPTOR]",
+    "interventionDuration": [ENTER_INTERVENTION_DURATION_MINUTES]
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    bru.setVar('tempStudentInterventionAttendanceEventUUID', locationHeader.split('/').pop());
+    console.log('StudentInterventionAttendanceEvent data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

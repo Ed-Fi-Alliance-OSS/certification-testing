@@ -1,0 +1,26 @@
+meta {
+  name: Record Intervention Participation Events
+  seq: 3
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # MTSS Sample Data > Record Intervention Participation Events
+  
+  Vendor actions behind the "Record Intervention Participation Events" certification steps (`bruno/MTSS/v5/intervention`).
+  Run the Foundation first. Run each script, then the certification step it feeds.
+  
+  | Script | Feeds certification step |
+  | --- | --- |
+  | Step 1 | 01 - 1st StudentInterventionAttendanceEvent is valid |
+  | Step 2 | 02 - 2nd StudentInterventionAttendanceEvent is valid |
+  | Step 3 | 03 - 3rd StudentInterventionAttendanceEvent is valid |
+  | Step 4 | 04 - 4th StudentInterventionAttendanceEvent is valid |
+  | Step 5 | 05 - 2nd StudentInterventionAttendanceEvent - interventionDuration was Updated |
+  | Step 6 | 06 - 4th StudentInterventionAttendanceEvent was Deleted |
+  | Step 7 | 07 - 5th StudentInterventionAttendanceEvent is valid |
+  | Step 8 [optional] | 08 - [optional] - 6th StudentInterventionAttendanceEvent is valid |
+}

@@ -1,0 +1,82 @@
+meta {
+  name: Publish and Maintain Intervention Definitions
+  seq: 1
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v5 Intervention > Publish and Maintain Intervention Definitions
+
+  The Intervention is the provider's definition of an intervention: its
+  identifier, classification, delivery parameters, owning education
+  organization, and purpose (diagnoses). This scenario checks that the provider
+  publishes intervention definitions, maintains them, and deletes one.
+
+  ## Prerequisites
+
+  * The education organization (sample: Grand Bend ISD `255901`) exists.
+  * Staff referenced by `staffs` exist (sample: `207288`, `207289`).
+  * Academic interventions need a provider-namespaced DiagnosisDescriptor (the
+    Data Standard 5.2 defaults are only `Dropout Risk` and `Low Attendance`).
+    Sample: POST `/ed-fi/diagnosisDescriptors` with codeValue `Reading Fluency`
+    and namespace `uri://www.intervention-provider.com/DiagnosisDescriptor`.
+
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` Intervention (sample: small-group reading intervention `READ-T2-001`).
+  2. __CREATE__ a `second` Intervention (sample: individual attendance intervention `ATTD-T2-001`).
+  3. __UPDATE__ the _endDate_ and _maxDosage_ of the `first` Intervention.
+  4. __DELETE__ the `second` Intervention (it has no StudentInterventionAssociation).
+
+  > Staff on the Intervention (`staffs`) are checked in the
+  > "Associate Staff with Intervention Delivery - [OPTION 1]" scenario.
+
+  ## Scenarios example data
+
+  Values are illustrative; use identifiers that exist in your sandbox.
+
+  | Resource                       | Property Name                  | Is Collection | Data Type                      | Required          | Scenario 1: POST    | Scenario 2: POST   | Scenario 3: PUT     | Scenario 4: DELETE |
+  | ------------------------------ | ------------------------------ | ------------- | ------------------------------ | ----------------- | ------------------- | ------------------ | ------------------- | ------------------ |
+  | Intervention                   | interventionIdentificationCode | FALSE         | string                         | REQUIRED          | READ-T2-001         | ATTD-T2-001        | READ-T2-001         | ATTD-T2-001        |
+  | educationOrganizationReference | educationOrganizationId        | FALSE         | integer                        | REQUIRED          | 255901              | 255901             | 255901              | 255901             |
+  | Intervention                   | interventionClassDescriptor    | FALSE         | interventionClassDescriptor    | REQUIRED          | Practice            | Supplement         | Practice            |                    |
+  | Intervention                   | deliveryMethodDescriptor       | FALSE         | deliveryMethodDescriptor       | REQUIRED          | Small Group         | Individual         | Small Group         |                    |
+  | Intervention                   | beginDate                      | FALSE         | date                           | REQUIRED          | 2026-08-24          | 2026-08-24         | 2026-08-24          |                    |
+  | Intervention                   | endDate                        | FALSE         | date                           | CONDITIONAL       |                     |                    | **2027-05-28**      |                    |
+  | Intervention                   | minDosage                      | FALSE         | integer                        | CONDITIONAL       | 300                 |                    | 300                 |                    |
+  | Intervention                   | maxDosage                      | FALSE         | integer                        | CONDITIONAL       | 1200                |                    | **1800**            |                    |
+  | Intervention                   | namespace                      | FALSE         | string                         | REQUIRED          | uri://www.intervention-provider.com | uri://www.intervention-provider.com | uri://www.intervention-provider.com | |
+  | interventionDiagnosis          | diagnosisDescriptor            | TRUE          | diagnosisDescriptor            | REQUIRED          | Reading Fluency (provider namespace) | Low Attendance | Reading Fluency (provider namespace) | |
+  | staffReference                 | staffUniqueId                  | TRUE          | string                         | REQUIRED (Path 1) | 207288              |                    | 207288, 207289      |                    |
+  | interventionMeetingTime        | startTime / endTime            | TRUE          | string (hh:mm:ss)              | CONDITIONAL       | 09:00:00 / 09:30:00 |                    | 09:00:00 / 09:30:00 |                    |
+
+  Notes:
+
+  * CONDITIONAL: OPTIONAL in the Data Standard, but certification checks them in specific scenarios where those values are REQUIRED.
+  * The natural key is `educationOrganizationReference` + `interventionIdentificationCode`; a PUT cannot change either.
+  * `namespace` and `diagnoses` are optional in the Data Standard but required for certification.
+  * `minDosage`/`maxDosage` are total minutes for an assignment, the same scale as StudentInterventionAssociation `dosage`.
+  * The API rejects deleting an intervention that still has associations or attendance events.
+
+  ## API response format
+  ```json
+  {
+    "id": "string",
+    "educationOrganizationReference": { "educationOrganizationId": 0 },
+    "interventionIdentificationCode": "string",
+    "beginDate": "2026-08-24",
+    "deliveryMethodDescriptor": "string",
+    "interventionClassDescriptor": "string",
+    "endDate": "2027-05-28",
+    "maxDosage": 0,
+    "minDosage": 0,
+    "namespace": "string",
+    "diagnoses": [ { "diagnosisDescriptor": "string" } ],
+    "meetingTimes": [ { "startTime": "string", "endTime": "string" } ],
+    "staffs": [ { "staffReference": { "staffUniqueId": "string" } } ]
+  }
+  ```
+}

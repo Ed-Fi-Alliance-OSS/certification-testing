@@ -1,0 +1,37 @@
+meta {
+  name: Aux 2 - StudentInterventionAssociations
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAssociations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": { "studentUniqueId": "[ENTER_STUDENT_UNIQUE_ID]" },
+    "interventionReference": { "educationOrganizationId": [ENTER_EDUCATION_ORGANIZATION_ID], "interventionIdentificationCode": "[ENTER_INTERVENTION_IDENTIFICATION_CODE]" },
+    "dosage": [ENTER_DOSAGE_MINUTES],
+    "diagnosticStatement": "[ENTER_DIAGNOSTIC_STATEMENT]"
+  }
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    bru.setVar('tempStudentInterventionAssociationUUID', locationHeader.split('/').pop());
+    console.log('StudentInterventionAssociation data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

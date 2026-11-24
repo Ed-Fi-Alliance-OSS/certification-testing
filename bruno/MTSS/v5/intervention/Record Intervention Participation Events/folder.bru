@@ -1,0 +1,78 @@
+meta {
+  name: Record Intervention Participation Events
+  seq: 3
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v5 Intervention > Record Intervention Participation Events
+
+  The StudentInterventionAttendanceEvent is the session-level record of
+  delivery: one event per student, intervention, session date and attendance
+  category, with the minutes actually delivered (`interventionDuration`). This
+  scenario checks that the provider publishes attended, partial and absent
+  sessions, corrects a duration, and corrects a category (delete + post).
+
+  ## Prerequisites
+
+  * "Publish and Maintain Intervention Definitions" and "Assign a Student to an
+    Intervention" completed. Events use the `first` student and the `first`
+    Intervention, and every event must match that StudentInterventionAssociation.
+  * Event dates fall between the intervention's `beginDate` and `endDate`.
+  * Step 8 only: a provider-namespaced AttendanceEventCategoryDescriptor for a
+    session that was not held. Sample: POST `/ed-fi/attendanceEventCategoryDescriptors`
+    with codeValue `Session Not Held` and namespace
+    `uri://www.intervention-provider.com/AttendanceEventCategoryDescriptor`.
+
+  ## Scenarios tasks
+
+  1. __CREATE__ a `first` StudentInterventionAttendanceEvent: a full session attended (sample: 2026-09-08, In Attendance, 30).
+  2. __CREATE__ a `second` StudentInterventionAttendanceEvent: another full session (sample: 2026-09-09, In Attendance, 30).
+  3. __CREATE__ a `third` StudentInterventionAttendanceEvent: a partial session (sample: 2026-09-10, Partial, 15).
+  4. __CREATE__ a `fourth` StudentInterventionAttendanceEvent: an absence (sample: 2026-09-11, Unexcused Absence, 0).
+  5. __UPDATE__ the _interventionDuration_ of the `second` event (sample: 25).
+  6. __DELETE__ the `fourth` event (recorded in error).
+  7. __CREATE__ a `fifth` StudentInterventionAttendanceEvent: the same session recorded again with the right category (sample: 2026-09-11, Excused Absence, 0).
+  8. __CREATE__ [optional] a `sixth` StudentInterventionAttendanceEvent: a session that was not held, using your own namespaced category (sample: 2026-09-14, Session Not Held, 0). Required when your product records sessions that don't fit the default categories.
+
+  > Enter the full descriptor URI for each category, for example
+  > `uri://ed-fi.org/AttendanceEventCategoryDescriptor#In Attendance`.
+
+  ## Scenarios example data
+
+  Values are illustrative; use identifiers that exist in your sandbox.
+
+  | Property Name                     | Required | 1: POST       | 2: POST       | 3: POST                    | 4: POST           | 5: PUT        | 6: DELETE         | 7: POST           | 8: POST [optional] |
+  | --------------------------------- | -------- | ------------- | ------------- | -------------------------- | ----------------- | ------------- | ----------------- | ----------------- | ------------------ |
+  | studentReference.studentUniqueId  | REQUIRED | 604863        | 604863        | 604863                     | 604863            | 604863        | 604863            | 604863            | 604863             |
+  | interventionReference             | REQUIRED | 255901 / READ-T2-001 | 255901 / READ-T2-001 | 255901 / READ-T2-001 | 255901 / READ-T2-001 | 255901 / READ-T2-001 | 255901 / READ-T2-001 | 255901 / READ-T2-001 | 255901 / READ-T2-001 |
+  | eventDate                         | REQUIRED | 2026-09-08    | 2026-09-09    | 2026-09-10                 | 2026-09-11        | 2026-09-09    | 2026-09-11        | 2026-09-11        | 2026-09-14         |
+  | attendanceEventCategoryDescriptor | REQUIRED | In Attendance | In Attendance | Partial                    | Unexcused Absence | In Attendance | Unexcused Absence | Excused Absence   | Session Not Held (provider namespace) |
+  | interventionDuration              | REQUIRED | 30            | 30            | 15                         | 0                 | **25**        |                   | 0                 | 0                  |
+  | attendanceEventReason             | CONDITIONAL |               |               | Left early for nurse visit |                   |               |                   | Family emergency  | Interventionist absent |
+
+  Notes:
+
+  * CONDITIONAL: OPTIONAL in the Data Standard, but certification checks them in specific scenarios where those values are REQUIRED.
+  * The natural key is student + intervention + `eventDate` + `attendanceEventCategoryDescriptor`; correcting the category takes a DELETE and a POST (steps 6 and 7).
+  * `interventionDuration` is required for certification on every event, including absences (0).
+  * "Session not held" events are excluded from delivered minutes and session counts in AssignedVersusDeliveredDosage.
+
+  ## API response format
+  ```json
+  {
+    "id": "string",
+    "attendanceEventCategoryDescriptor": "string",
+    "eventDate": "2026-09-08",
+    "interventionReference": { "educationOrganizationId": 0, "interventionIdentificationCode": "string" },
+    "studentReference": { "studentUniqueId": "string" },
+    "attendanceEventReason": "string",
+    "educationalEnvironmentDescriptor": "string",
+    "eventDuration": 0,
+    "interventionDuration": 0
+  }
+  ```
+}

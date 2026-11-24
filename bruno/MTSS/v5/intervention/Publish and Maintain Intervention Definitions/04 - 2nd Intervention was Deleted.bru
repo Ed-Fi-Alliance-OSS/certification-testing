@@ -1,0 +1,53 @@
+meta {
+  name: 04 - 2nd Intervention was Deleted
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/interventions?educationOrganizationId={{secondInterventionEducationOrganizationId}}&interventionIdentificationCode={{secondInterventionIdentificationCode}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: {{secondInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{secondInterventionIdentificationCode}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const source = dependencyName('Publish and Maintain Intervention Definitions', '02 - 2nd Intervention is valid');
+  
+  validateDependency(bru, 'secondInterventionEducationOrganizationId', source, {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+  validateDependency(bru, 'secondInterventionIdentificationCode', source, {
+    actionHint: 'Ensure you ran the second certification scenario successfully before continuing.'
+  });
+}
+
+script:post-response {
+  const { wipeVars } = require('./utils');
+  const entityName = 'Intervention';
+  const body = res.getBody();
+  
+  // Checked by natural key: a vendor that deletes and re-posts the record gets a new id,
+  // so a GET by the old id would return 404 and hide the re-created record.
+  test('Second Intervention no longer exists', () => {
+    expect(body).to.be.an('array').that.is.empty;
+  });
+  
+  if (res.status === 200 && Array.isArray(body) && body.length === 0) {
+    wipeVars(bru, ['secondInterventionUniqueId'], entityName, false);
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,4 +1,4 @@
-name: Publish SIS Artifact
+name: Publish Certification Artifact
 
 on:
   push:
@@ -11,12 +11,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: sis-artifact-${{ github.ref }}
+  group: certification-artifact-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  publish-sis-artifact:
-    name: Build, Validate, and Publish SIS Artifact
+  publish-certification-artifact:
+    name: Build, Validate, and Publish Certification Artifact
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,7 +29,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: bruno/package-lock.json
 
-      - name: Derive SIS metadata
+      - name: Derive artifact metadata
         id: meta
         shell: bash
         run: |
@@ -52,10 +52,11 @@ jobs:
             TARGET_DOWNLOAD_REF="commit-${GITHUB_SHA}"
           fi
 
-          BASE_NAME="sis-${ARTIFACT_VERSION}"
+          # The artifact holds every certification collection (SIS and MTSS), hence "certification-".
+          BASE_NAME="certification-${ARTIFACT_VERSION}"
           ZIP_NAME="${BASE_NAME}.zip"
           SHA_NAME="${BASE_NAME}.zip.sha256"
-          META_NAME="sis-${TARGET_DOWNLOAD_REF}.metadata.json"
+          META_NAME="certification-${TARGET_DOWNLOAD_REF}.metadata.json"
 
           echo "artifactVersion=${ARTIFACT_VERSION}" >> "$GITHUB_OUTPUT"
           echo "buildTimestamp=${BUILD_TIMESTAMP}" >> "$GITHUB_OUTPUT"
@@ -66,7 +67,7 @@ jobs:
           echo "shaName=${SHA_NAME}" >> "$GITHUB_OUTPUT"
           echo "metaName=${META_NAME}" >> "$GITHUB_OUTPUT"
 
-          echo "--- SIS Artifact Metadata ---"
+          echo "--- Certification Artifact Metadata ---"
           echo "artifactVersion   : ${ARTIFACT_VERSION}"
           echo "targetDownloadRef : ${TARGET_DOWNLOAD_REF}"
           echo "zipName           : ${ZIP_NAME}"
@@ -84,15 +85,16 @@ jobs:
           mkdir -p stage/bruno dist
 
           cp -R bruno/SIS stage/bruno/
+          cp -R bruno/MTSS stage/bruno/
           cp bruno/package.json stage/bruno/
           cp bruno/package-lock.json stage/bruno/
           cp -R bruno/scripts stage/bruno/
           cp -R bruno/schemas stage/bruno/
           cp -R bruno/templates stage/bruno/
           cp bruno/README-User-Manual.md stage/bruno/
-          cp bruno/README-SIS-Artifact.md stage/bruno/
-          cp bruno/README-SIS-Artifact-How-to-use-in-AdminApp.md stage/bruno/
-          cp bruno/README-SIS-Artifact-How-to-use-in-Bruno-CLI.md stage/bruno/
+          cp bruno/README-Artifact.md stage/bruno/
+          cp bruno/README-Artifact-How-to-use-in-AdminApp.md stage/bruno/
+          cp bruno/README-Artifact-How-to-use-in-Bruno-CLI.md stage/bruno/
 
           # Defensive exclusions in case local cache artifacts are present.
           find stage -type d -name node_modules -prune -exec rm -rf {} +
@@ -132,7 +134,8 @@ jobs:
             "buildTimestamp": "${{ steps.meta.outputs.buildTimestamp }}",
             "sourceRef": "${{ steps.meta.outputs.sourceRef }}",
             "zipFileName": "${{ steps.meta.outputs.zipName }}",
-            "sha256": "${{ steps.package.outputs.sha256 }}"
+            "sha256": "${{ steps.package.outputs.sha256 }}",
+            "collections": ["SIS", "MTSS"]
           }
           EOF
 
@@ -149,19 +152,28 @@ jobs:
             sha256sum --check "${SHA_NAME}"
           )
 
+          # The metadata must point at the zip that was just built.
+          node -e "const m=require('./dist/${{ steps.meta.outputs.metaName }}'); if (m.zipFileName !== '${{ steps.meta.outputs.zipName }}') { console.error('zipFileName mismatch'); process.exit(1); }"
+
           mkdir -p validation/extracted
           unzip -q "dist/${ZIP_NAME}" -d validation/extracted
 
           test -d validation/extracted/bruno/SIS
+          test -d validation/extracted/bruno/MTSS
+          test -f validation/extracted/bruno/MTSS/bruno.json
+          test -f validation/extracted/bruno/MTSS/collection.bru
+          test -f validation/extracted/bruno/MTSS/utils.js
+          test -f validation/extracted/bruno/MTSS/logging.js
+          test -f validation/extracted/bruno/MTSS/package.json
           test -f validation/extracted/bruno/package.json
           test -f validation/extracted/bruno/package-lock.json
           test -d validation/extracted/bruno/scripts
           test -d validation/extracted/bruno/schemas
           test -d validation/extracted/bruno/templates
           test -f validation/extracted/bruno/README-User-Manual.md
-          test -f validation/extracted/bruno/README-SIS-Artifact.md
-          test -f validation/extracted/bruno/README-SIS-Artifact-How-to-use-in-AdminApp.md
-          test -f validation/extracted/bruno/README-SIS-Artifact-How-to-use-in-Bruno-CLI.md
+          test -f validation/extracted/bruno/README-Artifact.md
+          test -f validation/extracted/bruno/README-Artifact-How-to-use-in-AdminApp.md
+          test -f validation/extracted/bruno/README-Artifact-How-to-use-in-Bruno-CLI.md
 
       - name: Consumer validation smoke test (npm ci)
         shell: bash
@@ -173,7 +185,7 @@ jobs:
       - name: Upload workflow artifact (main and tags)
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: sis-${{ steps.meta.outputs.artifactVersion }}
+          name: certification-${{ steps.meta.outputs.artifactVersion }}
           path: |
             dist/${{ steps.meta.outputs.zipName }}
             dist/${{ steps.meta.outputs.shaName }}
@@ -208,11 +220,11 @@ jobs:
             if [[ "${IS_TAG}" == "true" ]]; then
               gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
                 --title "${RELEASE_TAG}" \
-                --notes "SIS artifact release for ${RELEASE_TAG}."
+                --notes "Certification artifact (SIS and MTSS collections) for ${RELEASE_TAG}."
             else
               gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
                 --title "${RELEASE_TAG:0:20}" \
-                --notes "Automated SIS artifact for ${RELEASE_TAG}." \
+                --notes "Automated certification artifact (SIS and MTSS) for ${RELEASE_TAG}." \
                 --prerelease
             fi
           fi

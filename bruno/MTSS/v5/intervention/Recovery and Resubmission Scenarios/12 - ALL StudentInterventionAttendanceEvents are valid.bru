@@ -1,0 +1,94 @@
+meta {
+  name: 12 - ALL StudentInterventionAttendanceEvents are valid
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents?studentUniqueId={{firstStudentInterventionAssociationStudentUniqueId}}&educationOrganizationId={{firstInterventionEducationOrganizationId}}&interventionIdentificationCode={{firstInterventionIdentificationCode}}&limit=500
+  body: none
+  auth: inherit
+}
+
+params:query {
+  studentUniqueId: {{firstStudentInterventionAssociationStudentUniqueId}}
+  educationOrganizationId: {{firstInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{firstInterventionIdentificationCode}}
+  limit: 500
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const intervention = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
+  const record = 'Record Intervention Participation Events';
+  const dosage = dependencyName('AssignedVersusDeliveredDosage', '02 - ALL StudentInterventionAttendanceEvents are valid');
+
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention);
+  validateDependency(bru, 'firstInterventionIdentificationCode', intervention);
+  validateDependency(bru, 'firstInterventionBeginDate', intervention);
+  validateDependency(bru, 'firstStudentInterventionAssociationStudentUniqueId', dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid'));
+  validateDependency(bru, 'fourthStudentInterventionAttendanceEventEventDate', dependencyName(record, '04 - 4th StudentInterventionAttendanceEvent is valid'));
+  validateDependency(bru, 'fourthStudentInterventionAttendanceEventCategory', dependencyName(record, '04 - 4th StudentInterventionAttendanceEvent is valid'));
+  validateDependency(bru, 'secondStudentInterventionAttendanceEventEventDate', dependencyName(record, '02 - 2nd StudentInterventionAttendanceEvent is valid'));
+  validateDependency(bru, 'secondStudentInterventionAttendanceEventInterventionDuration', dependencyName(record, '05 - 2nd StudentInterventionAttendanceEvent - interventionDuration was Updated'));
+  validateDependency(bru, 'dosageAssignedMinutes', dosage);
+  validateDependency(bru, 'dosageDeliveredMinutes', dosage);
+}
+
+script:post-response {
+  const { getVar, findEventProblems, computeDosageMeasures, toDosageVars, codeValueOf, expectUnchanged } = require('./utils');
+  const { logDosageMeasures } = require('./logging');
+  const scenarioName = this.req.name;
+  const body = res.getBody();
+  const events = Array.isArray(body) ? body : [];
+
+  test('attendance events were restored', () => {
+    expect(body).to.be.an('array').that.is.not.empty;
+  });
+
+  const problems = findEventProblems(events, {
+    beginDate: getVar(bru, 'firstInterventionBeginDate'),
+    endDate: getVar(bru, 'firstInterventionEndDate') || undefined,
+    deletedKey: {
+      eventDate: getVar(bru, 'fourthStudentInterventionAttendanceEventEventDate'),
+      category: getVar(bru, 'fourthStudentInterventionAttendanceEventCategory')
+    }
+  });
+
+  test('every restored attendance event passes the certification checks', () => {
+    expect(problems, problems.join(' | ')).to.be.empty;
+  });
+
+  // The 2nd event must come back with the updated duration (Record step 05), not the original one.
+  const secondDate = getVar(bru, 'secondStudentInterventionAttendanceEventEventDate');
+  const secondCode = codeValueOf(getVar(bru, 'secondStudentInterventionAttendanceEventCategory'));
+  const secondEvent = events.find(e => e.eventDate === secondDate && codeValueOf(e.attendanceEventCategoryDescriptor) === secondCode);
+
+  test('2nd attendance event restored with the latest interventionDuration', () => {
+    expect(secondEvent, '2nd attendance event not found').to.not.equal(undefined);
+    expect(secondEvent.interventionDuration).to.equal(Number(getVar(bru, 'secondStudentInterventionAttendanceEventInterventionDuration')));
+  });
+
+  // Same assigned vs delivered results as before the deletions.
+  const measures = computeDosageMeasures(
+    Number(getVar(bru, 'dosageAssignedMinutes')),
+    events,
+    getVar(bru, 'sessionNotHeldCategory') || undefined
+  );
+  const after = toDosageVars(measures);
+
+  Object.entries(after).forEach(([key, value]) => {
+    expectUnchanged(Number(getVar(bru, key)), value, `${key} matches the result before the deletions`, true);
+  });
+
+  logDosageMeasures(scenarioName, measures);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,32 @@
+meta {
+  name: Step 4 - Delete Intervention 2
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{resourceBaseUrl}}/ed-fi/interventions/{{tempSecondInterventionUUID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+assert {
+  res.status: eq 204
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempSecondInterventionUUID', 'Step 2 - Intervention 2 ATTD-T2-001', {
+    actionHint: 'Run the create script first so its id is cached.'
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

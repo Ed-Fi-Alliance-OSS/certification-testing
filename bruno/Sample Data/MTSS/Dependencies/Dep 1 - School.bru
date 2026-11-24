@@ -1,0 +1,68 @@
+meta {
+  name: Dep 1 - School
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/schools
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "schoolId": 9999999911,
+    "nameOfInstitution": "Foundation Testing School",
+    "shortNameOfInstitution": "FTS",
+    "localEducationAgencyReference": {
+      "localEducationAgencyId": 255901
+    },
+    "educationOrganizationCategories": [
+      {
+        "educationOrganizationCategoryDescriptor": "uri://ed-fi.org/EducationOrganizationCategoryDescriptor#School"
+      }
+    ],
+    "gradeLevels": [
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Second grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Third grade"
+      },
+      {
+        "gradeLevelDescriptor": "uri://ed-fi.org/GradeLevelDescriptor#Fourth grade"
+      }
+    ],
+    "addresses": [
+      {
+        "addressTypeDescriptor": "uri://ed-fi.org/AddressTypeDescriptor#Physical",
+        "city": "Foundation City",
+        "postalCode": "73301",
+        "stateAbbreviationDescriptor": "uri://ed-fi.org/StateAbbreviationDescriptor#TX",
+        "streetNumberName": "100 Foundation Way"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: in 200,201
+}
+
+script:post-response {
+  const locationHeader = res.headers.Location || res.headers.location;
+  if (locationHeader) {
+    bru.setVar('tempFoundationSchoolUUID', locationHeader.split('/').pop());
+    console.log('School data was created correctly.');
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,47 @@
+meta {
+  name: Step 5 - Event 2 interventionDuration
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents/{{tempSecondStudentInterventionAttendanceEventUUID}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "studentReference": {
+      "studentUniqueId": "99999911"
+    },
+    "interventionReference": {
+      "educationOrganizationId": 9999999911,
+      "interventionIdentificationCode": "READ-T2-001"
+    },
+    "eventDate": "2026-09-09",
+    "attendanceEventCategoryDescriptor": "uri://ed-fi.org/AttendanceEventCategoryDescriptor#In Attendance",
+    "interventionDuration": 25
+  }
+}
+
+assert {
+  res.status: in 200,204
+}
+
+script:pre-request {
+  const { validateDependency } = require('./utils');
+
+  validateDependency(bru, 'tempSecondStudentInterventionAttendanceEventUUID', 'Step 2 - Event 2', {
+    actionHint: 'Run the create script first so its id is cached.'
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

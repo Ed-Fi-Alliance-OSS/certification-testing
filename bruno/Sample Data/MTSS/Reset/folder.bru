@@ -1,0 +1,22 @@
+meta {
+  name: Reset
+  seq: 3
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # MTSS > Reset
+  
+  Deletes everything the MTSS scenarios create, from any state (complete, partial, failed or
+  replayed pass), so the next pass starts from scratch. Run Down 1 → Down 13 in order (events and
+  associations before the records they reference). Every script is safe to re-run: 204 = deleted,
+  404 = not present.
+  
+  Dependencies (school, students, staff, their associations, descriptors) are kept: scenarios never
+  change them, and people can't be deleted with a relationship-based key.
+  
+  CI runs Reset at the start and at the end of each chain.
+}
