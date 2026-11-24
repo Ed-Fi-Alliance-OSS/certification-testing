@@ -30,10 +30,8 @@ const metadata = await fetch(`${BASE_URL}/${VERSION}/certification-${VERSION}.me
 
 > **Artifact name change.** From v2.2.0 the artifact contains every certification collection,
 > so its files are named `certification-<version>.*`. Releases up to v2.1.0 use
-> `sis-<version>.*`. During the transition each new release also publishes
-> `sis-<version>.metadata.json` (the same document, pointing to the `certification-` zip),
-> so Admin App builds that still request the `sis-` metadata keep working. Read the zip name
-> from `metadata.zipFileName`; never build it.
+> `sis-<version>.*`, so pick the metadata prefix by version: `sis-` up to v2.1.0,
+> `certification-` from v2.2.0. Read the zip name from `metadata.zipFileName`; never build it.
 
 ### Step 2 — Download the ZIP into memory
 

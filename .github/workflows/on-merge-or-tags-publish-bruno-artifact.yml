@@ -57,10 +57,6 @@ jobs:
           ZIP_NAME="${BASE_NAME}.zip"
           SHA_NAME="${BASE_NAME}.zip.sha256"
           META_NAME="certification-${TARGET_DOWNLOAD_REF}.metadata.json"
-          # Transitional: Admin App builds "sis-<ref>.metadata.json" itself. Publish the same metadata
-          # under that name (it points to the certification zip) until Admin App reads the new
-          # prefix (AC-665); then remove LEGACY_META_NAME.
-          LEGACY_META_NAME="sis-${TARGET_DOWNLOAD_REF}.metadata.json"
 
           echo "artifactVersion=${ARTIFACT_VERSION}" >> "$GITHUB_OUTPUT"
           echo "buildTimestamp=${BUILD_TIMESTAMP}" >> "$GITHUB_OUTPUT"
@@ -70,14 +66,12 @@ jobs:
           echo "zipName=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
           echo "shaName=${SHA_NAME}" >> "$GITHUB_OUTPUT"
           echo "metaName=${META_NAME}" >> "$GITHUB_OUTPUT"
-          echo "legacyMetaName=${LEGACY_META_NAME}" >> "$GITHUB_OUTPUT"
 
           echo "--- Certification Artifact Metadata ---"
           echo "artifactVersion   : ${ARTIFACT_VERSION}"
           echo "targetDownloadRef : ${TARGET_DOWNLOAD_REF}"
           echo "zipName           : ${ZIP_NAME}"
           echo "metaName          : ${META_NAME}"
-          echo "legacyMetaName    : ${LEGACY_META_NAME}"
           echo "buildTimestamp    : ${BUILD_TIMESTAMP}"
           echo "sourceRef         : ${SOURCE_REF}"
           echo "isTag             : ${IS_TAG}"
@@ -145,9 +139,6 @@ jobs:
           }
           EOF
 
-          # Transitional copy for Admin App versions that still request sis-<ref>.metadata.json.
-          cp "dist/${{ steps.meta.outputs.metaName }}" "dist/${{ steps.meta.outputs.legacyMetaName }}"
-
       - name: Contract validation (checksum, extract, required paths)
         shell: bash
         run: |
@@ -161,8 +152,7 @@ jobs:
             sha256sum --check "${SHA_NAME}"
           )
 
-          # The transitional sis- metadata must be the same document as the certification one.
-          cmp "dist/${{ steps.meta.outputs.metaName }}" "dist/${{ steps.meta.outputs.legacyMetaName }}"
+          # The metadata must point at the zip that was just built.
           node -e "const m=require('./dist/${{ steps.meta.outputs.metaName }}'); if (m.zipFileName !== '${{ steps.meta.outputs.zipName }}') { console.error('zipFileName mismatch'); process.exit(1); }"
 
           mkdir -p validation/extracted
@@ -200,7 +190,6 @@ jobs:
             dist/${{ steps.meta.outputs.zipName }}
             dist/${{ steps.meta.outputs.shaName }}
             dist/${{ steps.meta.outputs.metaName }}
-            dist/${{ steps.meta.outputs.legacyMetaName }}
           if-no-files-found: error
 
       - name: Publish GitHub Release assets (tags and main)
@@ -215,7 +204,6 @@ jobs:
           ZIP_PATH="dist/${{ steps.meta.outputs.zipName }}"
           SHA_PATH="dist/${{ steps.meta.outputs.shaName }}"
           META_PATH="dist/${{ steps.meta.outputs.metaName }}"
-          LEGACY_META_PATH="dist/${{ steps.meta.outputs.legacyMetaName }}"
 
           echo "--- Publishing GitHub Release Assets ---"
           echo "releaseTag        : ${RELEASE_TAG}"
@@ -223,19 +211,18 @@ jobs:
           echo "zipAsset          : ${{ steps.meta.outputs.zipName }}"
           echo "shaAsset          : ${{ steps.meta.outputs.shaName }}"
           echo "metaAsset         : ${{ steps.meta.outputs.metaName }}"
-          echo "legacyMetaAsset   : ${{ steps.meta.outputs.legacyMetaName }}"
 
           if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
             echo "Release '${RELEASE_TAG}' already exists — uploading assets (clobber)."
-            gh release upload "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" "${LEGACY_META_PATH}" --clobber
+            gh release upload "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" --clobber
           else
             echo "Release '${RELEASE_TAG}' does not exist — creating and uploading assets."
             if [[ "${IS_TAG}" == "true" ]]; then
-              gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" "${LEGACY_META_PATH}" \
+              gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
                 --title "${RELEASE_TAG}" \
                 --notes "Certification artifact (SIS and MTSS collections) for ${RELEASE_TAG}."
             else
-              gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" "${LEGACY_META_PATH}" \
+              gh release create "${RELEASE_TAG}" "${ZIP_PATH}" "${SHA_PATH}" "${META_PATH}" \
                 --title "${RELEASE_TAG:0:20}" \
                 --notes "Automated certification artifact (SIS and MTSS) for ${RELEASE_TAG}." \
                 --prerelease
