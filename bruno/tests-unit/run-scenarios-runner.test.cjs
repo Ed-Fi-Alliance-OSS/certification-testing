@@ -91,21 +91,21 @@ test('executeMtssOrder builds the chain under <root>/<version>/_e2e/<entity> and
   let ran;
   const runBruno = (folder, env) => {
     ran = { folder, env };
-    return ['v5/_e2e/OptionOne/001 - 01 - seed (201 Created) - 3 ms', '   ✓ res.status: eq 201',
-      'v5/_e2e/OptionOne/002 - 02 - check (200 OK) - 2 ms', '   ✕ value matches'].join('\n');
+    return ['v5/_e2e/PathOne/001 - 01 - seed (201 Created) - 3 ms', '   ✓ res.status: eq 201',
+      'v5/_e2e/PathOne/002 - 02 - check (200 OK) - 2 ms', '   ✕ value matches'].join('\n');
   };
-  const results = rs.executeMtssOrder('v5', 'OptionOne', ['a/01 - seed.bru', 'a/02 - check.bru'], {}, 'local', { runBruno, root, repoRoot: repo });
-  assert.deepEqual(ran, { folder: 'v5/_e2e/OptionOne', env: 'local' });
-  assert.ok(fs.existsSync(path.join(root, 'v5', '_e2e', 'OptionOne', '002 - 02 - check.bru')));
+  const results = rs.executeMtssOrder('v5', 'PathOne', ['a/01 - seed.bru', 'a/02 - check.bru'], {}, 'local', { runBruno, root, repoRoot: repo });
+  assert.deepEqual(ran, { folder: 'v5/_e2e/PathOne', env: 'local' });
+  assert.ok(fs.existsSync(path.join(root, 'v5', '_e2e', 'PathOne', '002 - 02 - check.bru')));
   assert.deepEqual(results.map(r => [r.file, r.status, r.folder.replace(/\\/g, '/')]), [
-    ['001 - 01 - seed', 'PASS', 'v5/_e2e/OptionOne'],
-    ['002 - 02 - check', 'FAIL', 'v5/_e2e/OptionOne']
+    ['001 - 01 - seed', 'PASS', 'v5/_e2e/PathOne'],
+    ['002 - 02 - check', 'FAIL', 'v5/_e2e/PathOne']
   ]);
 });
 
 test('executeMtssOrder reports a config error without running Bruno when an ordered file is missing', () => {
   let called = false;
-  const results = rs.executeMtssOrder('v5', 'OptionTwo', ['missing/01 - x.bru'], {}, 'local', {
+  const results = rs.executeMtssOrder('v5', 'PathTwo', ['missing/01 - x.bru'], {}, 'local', {
     runBruno: () => { called = true; return ''; }, root: tmp('rs-auto-'), repoRoot: tmp('rs-repo-')
   });
   assert.equal(called, false);

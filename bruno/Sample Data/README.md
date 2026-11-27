@@ -86,8 +86,8 @@ records built on them are fully removed by the MTSS scripts and CI cleanup.
 
 **Run order (manual):** `MTSS/Reset` (to start from scratch) → `MTSS/Dependencies` → for each scenario in `MTSS/Scenario Steps`,
 alternate `Step N` with certification step N in `bruno/MTSS`; for Recovery, run
-certification steps 01-07 (OPTION 1) or 01-08 (OPTION 2), then the `Sync` scripts for your
-option, then certification steps 09-14.
+certification steps 01-07 (PATH 1) or 01-08 (PATH 2), then the `Sync` scripts for your
+path, then certification steps 09-14.
 
 All creates are POSTs (natural-key upserts), so every script can be re-run.
 

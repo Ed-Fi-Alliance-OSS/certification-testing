@@ -36,7 +36,7 @@ docs {
   5. __UPDATE__ the _interventionDuration_ of the `second` event (sample: 25).
   6. __DELETE__ the `fourth` event (recorded in error).
   7. __CREATE__ a `fifth` StudentInterventionAttendanceEvent: the same session recorded again with the right category (sample: 2026-09-11, Excused Absence, 0).
-  8. __CREATE__ [optional] a `sixth` StudentInterventionAttendanceEvent: a session that was not held, using your own namespaced category (sample: 2026-09-14, Session Not Held, 0). Required when your product records sessions that don't fit the default categories.
+  8. __CREATE__ [optional] a `sixth` StudentInterventionAttendanceEvent: a session that was not held, using your own namespaced category (sample: 2026-09-14, Session Not Held, 0). Required when your product records sessions that don't fit the default categories. A category in the default `uri://ed-fi.org` namespace fails this step.
 
   > Enter the full descriptor URI for each category, for example
   > `uri://ed-fi.org/AttendanceEventCategoryDescriptor#In Attendance`.
@@ -59,7 +59,7 @@ docs {
   * CONDITIONAL: OPTIONAL in the Data Standard, but certification checks them in specific scenarios where those values are REQUIRED.
   * The natural key is student + intervention + `eventDate` + `attendanceEventCategoryDescriptor`; correcting the category takes a DELETE and a POST (steps 6 and 7).
   * `interventionDuration` is required for certification on every event, including absences (0).
-  * "Session not held" events are excluded from delivered minutes and session counts in AssignedVersusDeliveredDosage.
+  * "Session not held" events are excluded from delivered minutes and session counts in Assigned Versus Delivered Dosage.
 
   ## API response format
   ```json

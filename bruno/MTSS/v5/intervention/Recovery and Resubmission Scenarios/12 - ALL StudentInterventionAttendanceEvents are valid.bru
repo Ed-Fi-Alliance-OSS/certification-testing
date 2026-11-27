@@ -25,7 +25,7 @@ script:pre-request {
   const { validateDependency, dependencyName } = require('./utils');
   const intervention = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
   const record = 'Record Intervention Participation Events';
-  const dosage = dependencyName('AssignedVersusDeliveredDosage', '02 - ALL StudentInterventionAttendanceEvents are valid');
+  const dosage = dependencyName('Assigned Versus Delivered Dosage', '02 - ALL StudentInterventionAttendanceEvents are valid');
 
   validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention);
   validateDependency(bru, 'firstInterventionIdentificationCode', intervention);
@@ -35,6 +35,14 @@ script:pre-request {
   validateDependency(bru, 'fourthStudentInterventionAttendanceEventCategory', dependencyName(record, '04 - 4th StudentInterventionAttendanceEvent is valid'));
   validateDependency(bru, 'secondStudentInterventionAttendanceEventEventDate', dependencyName(record, '02 - 2nd StudentInterventionAttendanceEvent is valid'));
   validateDependency(bru, 'secondStudentInterventionAttendanceEventInterventionDuration', dependencyName(record, '05 - 2nd StudentInterventionAttendanceEvent - interventionDuration was Updated'));
+  const third = dependencyName(record, '03 - 3rd StudentInterventionAttendanceEvent is valid');
+  const fifth = dependencyName(record, '07 - 5th StudentInterventionAttendanceEvent is valid');
+  validateDependency(bru, 'thirdStudentInterventionAttendanceEventEventDate', third);
+  validateDependency(bru, 'thirdStudentInterventionAttendanceEventCategory', third);
+  validateDependency(bru, 'thirdStudentInterventionAttendanceEventReason', third);
+  validateDependency(bru, 'fifthStudentInterventionAttendanceEventEventDate', fifth);
+  validateDependency(bru, 'fifthStudentInterventionAttendanceEventCategory', fifth);
+  validateDependency(bru, 'fifthStudentInterventionAttendanceEventReason', fifth);
   validateDependency(bru, 'dosageAssignedMinutes', dosage);
   validateDependency(bru, 'dosageDeliveredMinutes', dosage);
 }
@@ -71,6 +79,18 @@ script:post-response {
   test('2nd attendance event restored with the latest interventionDuration', () => {
     expect(secondEvent, '2nd attendance event not found').to.not.equal(undefined);
     expect(secondEvent.interventionDuration).to.equal(Number(getVar(bru, 'secondStudentInterventionAttendanceEventInterventionDuration')));
+  });
+
+  // The 3rd (Partial) and 5th (Excused Absence) events must come back with the reason they were published with.
+  [['3rd', 'third'], ['5th', 'fifth']].forEach(([label, prefix]) => {
+    const date = getVar(bru, `${prefix}StudentInterventionAttendanceEventEventDate`);
+    const code = codeValueOf(getVar(bru, `${prefix}StudentInterventionAttendanceEventCategory`));
+    const event = events.find(e => e.eventDate === date && codeValueOf(e.attendanceEventCategoryDescriptor) === code);
+
+    test(`${label} attendance event restored with its attendanceEventReason`, () => {
+      expect(event, `${label} attendance event not found`).to.not.equal(undefined);
+      expect(event.attendanceEventReason).to.equal(String(getVar(bru, `${prefix}StudentInterventionAttendanceEventReason`)));
+    });
   });
 
   // Same assigned vs delivered results as before the deletions.

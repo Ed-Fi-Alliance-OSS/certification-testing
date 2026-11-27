@@ -1,0 +1,102 @@
+meta {
+  name: 02 - ALL StudentInterventionAttendanceEvents are valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/studentInterventionAttendanceEvents?studentUniqueId={{firstStudentInterventionAssociationStudentUniqueId}}&educationOrganizationId={{firstInterventionEducationOrganizationId}}&interventionIdentificationCode={{firstInterventionIdentificationCode}}&limit=500
+  body: none
+  auth: inherit
+}
+
+params:query {
+  studentUniqueId: {{firstStudentInterventionAssociationStudentUniqueId}}
+  educationOrganizationId: {{firstInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{firstInterventionIdentificationCode}}
+  limit: 500
+}
+
+assert {
+  res.status: eq 200
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].studentReference.studentUniqueId: isString
+  res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].interventionReference: isDefined
+  res.body[0].interventionReference.educationOrganizationId: isNumber
+  res.body[0].interventionReference.educationOrganizationId: neq 0
+  res.body[0].interventionReference.interventionIdentificationCode: isString
+  res.body[0].interventionReference.interventionIdentificationCode: isNotEmpty
+  res.body[0].eventDate: isString
+  res.body[0].eventDate: isNotEmpty
+  res.body[0].attendanceEventCategoryDescriptor: isString
+  res.body[0].attendanceEventCategoryDescriptor: isNotEmpty
+  res.body[0].interventionDuration: isNumber
+  res.body[0].interventionDuration: gte 0
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const intervention = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
+  const record = 'Record Intervention Participation Events';
+
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', intervention);
+  validateDependency(bru, 'firstInterventionIdentificationCode', intervention);
+  validateDependency(bru, 'firstInterventionBeginDate', intervention);
+  validateDependency(bru, 'firstStudentInterventionAssociationStudentUniqueId', dependencyName('Assign a Student to an Intervention', '01 - 1st StudentInterventionAssociation is valid'));
+  validateDependency(bru, 'fourthStudentInterventionAttendanceEventEventDate', dependencyName(record, '04 - 4th StudentInterventionAttendanceEvent is valid'));
+  validateDependency(bru, 'fourthStudentInterventionAttendanceEventCategory', dependencyName(record, '04 - 4th StudentInterventionAttendanceEvent is valid'));
+  validateDependency(bru, 'dosageAssignedMinutes', dependencyName('Assigned Versus Delivered Dosage', '01 - 1st StudentInterventionAssociation is valid'));
+}
+
+script:post-response {
+  const { getVar, setVars, findEventProblems, computeDosageMeasures, toDosageVars } = require('./utils');
+  const { logDosageMeasures } = require('./logging');
+  const scenarioName = this.req.name;
+  const body = res.getBody();
+  const events = Array.isArray(body) ? body : [];
+
+  test('attendance events were returned', () => {
+    expect(body).to.be.an('array').that.is.not.empty;
+  });
+
+  const problems = findEventProblems(events, {
+    beginDate: getVar(bru, 'firstInterventionBeginDate'),
+    endDate: getVar(bru, 'firstInterventionEndDate') || undefined,
+    deletedKey: {
+      eventDate: getVar(bru, 'fourthStudentInterventionAttendanceEventEventDate'),
+      category: getVar(bru, 'fourthStudentInterventionAttendanceEventCategory')
+    }
+  });
+
+  test('every attendance event passes the certification checks', () => {
+    expect(problems, problems.join(' | ')).to.be.empty;
+  });
+
+  const measures = computeDosageMeasures(
+    Number(getVar(bru, 'dosageAssignedMinutes')),
+    events,
+    getVar(bru, 'sessionNotHeldCategory') || undefined
+  );
+  const dosageVars = toDosageVars(measures);
+
+  test('assigned vs delivered dosage can be calculated', () => {
+    Object.entries(dosageVars).forEach(([key, value]) => {
+      expect(Number.isFinite(value), `${key} = ${value}`).to.equal(true);
+    });
+  });
+
+  if (measures.unmapped.length) {
+    console.warn(`Unmapped attendance categories (counted in delivered minutes, not in attended/missed): ${measures.unmapped.join(', ')}. Document how they map.`);
+  }
+
+  setVars(bru, dosageVars, 'Dosage');
+  logDosageMeasures(scenarioName, measures);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

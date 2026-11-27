@@ -12,6 +12,7 @@
     "firstStudentInterventionAssociationStudentUniqueId",
     "firstStudentInterventionAssociationDosage",
     "firstStudentInterventionAssociationCohortKey",
+    "firstStudentInterventionAssociationDiagnosticStatement",
     "secondStudentInterventionAssociationUniqueId",
     "secondStudentInterventionAssociationStudentUniqueId"
   ]

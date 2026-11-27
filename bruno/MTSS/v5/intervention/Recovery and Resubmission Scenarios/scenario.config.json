@@ -11,6 +11,9 @@
         "firstInterventionBeginDate",
         "firstInterventionEndDate",
         "firstInterventionMaxDosage",
+        "firstInterventionMinDosage",
+        "firstInterventionMeetingTimesKey",
+        "firstInterventionDiagnosesKey",
         "secondInterventionEducationOrganizationId",
         "secondInterventionIdentificationCode"
       ]
@@ -20,6 +23,7 @@
       "vars": [
         "firstStudentInterventionAssociationUniqueId",
         "firstStudentInterventionAssociationStudentUniqueId",
+        "firstStudentInterventionAssociationDiagnosticStatement",
         "secondStudentInterventionAssociationStudentUniqueId"
       ]
     },
@@ -36,11 +40,13 @@
         "thirdStudentInterventionAttendanceEventUniqueId",
         "thirdStudentInterventionAttendanceEventEventDate",
         "thirdStudentInterventionAttendanceEventCategory",
+        "thirdStudentInterventionAttendanceEventReason",
         "fourthStudentInterventionAttendanceEventEventDate",
         "fourthStudentInterventionAttendanceEventCategory",
         "fifthStudentInterventionAttendanceEventUniqueId",
         "fifthStudentInterventionAttendanceEventEventDate",
         "fifthStudentInterventionAttendanceEventCategory",
+        "fifthStudentInterventionAttendanceEventReason",
         "sixthStudentInterventionAttendanceEventUniqueId",
         "sixthStudentInterventionAttendanceEventEventDate",
         "sixthStudentInterventionAttendanceEventCategory",
@@ -48,7 +54,7 @@
       ]
     },
     {
-      "scenario": "AssignedVersusDeliveredDosage",
+      "scenario": "Assigned Versus Delivered Dosage",
       "vars": [
         "dosageAssignedMinutes",
         "dosageDeliveredMinutes",
@@ -60,32 +66,33 @@
       ]
     },
     {
-      "scenario": "Associate Staff with Intervention Delivery - [OPTION 1]",
+      "scenario": "Associate Staff with Intervention Delivery - [PATH 1]",
       "vars": ["firstInterventionStaffUniqueIds"]
     },
     {
-      "scenario": "Associate Staff with Intervention Delivery - [OPTION 2]",
+      "scenario": "Associate Staff with Intervention Delivery - [PATH 2]",
       "vars": [
         "firstCohortIdentifier",
         "firstCohortEducationOrganizationId",
         "firstStaffCohortAssociationUniqueId",
         "firstStaffCohortAssociationStaffUniqueId",
         "firstStaffCohortAssociationBeginDate",
-        "firstStaffCohortAssociationEndDate"
+        "firstStaffCohortAssociationEndDate",
+        "firstStaffCohortAssociationStudentRecordAccess"
       ]
     }
   ],
   "provides": [],
   "steps": {
     "06 - [optional] - 6th StudentInterventionAttendanceEvent is deleted.bru": { "optional": true },
-    "08 - [OPTION 2] 1st StaffCohortAssociation is deleted.bru": {
-      "option": { "group": "staff-delivery", "choice": 2 }
+    "08 - [PATH 2] 1st StaffCohortAssociation is deleted.bru": {
+      "path": { "group": "staff-delivery", "choice": 2 }
     },
-    "13 - [OPTION 1] 1st Intervention staffs is valid.bru": {
-      "option": { "group": "staff-delivery", "choice": 1 }
+    "13 - [PATH 1] 1st Intervention staffs is valid.bru": {
+      "path": { "group": "staff-delivery", "choice": 1 }
     },
-    "14 - [OPTION 2] 1st StaffCohortAssociation is valid.bru": {
-      "option": { "group": "staff-delivery", "choice": 2 }
+    "14 - [PATH 2] 1st StaffCohortAssociation is valid.bru": {
+      "path": { "group": "staff-delivery", "choice": 2 }
     }
   }
 }

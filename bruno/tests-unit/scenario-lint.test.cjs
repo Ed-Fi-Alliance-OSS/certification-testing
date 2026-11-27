@@ -13,7 +13,7 @@ const folder = (name, seq, types) =>
 function domain(mutate) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'scn-lint-'));
   const a = path.join(dir, 'Alpha');
-  const b = path.join(dir, 'Beta - [OPTION 2]');
+  const b = path.join(dir, 'Beta - [PATH 2]');
   fs.mkdirSync(a);
   fs.mkdirSync(b);
   fs.writeFileSync(path.join(a, 'folder.bru'), folder('Alpha', 1, ['CREATE', 'UPDATE']));
@@ -23,10 +23,10 @@ function domain(mutate) {
     version: 1, provides: ['firstXUniqueId'],
     steps: { '02 - [optional] - 1st X was Updated.bru': { optional: true } }
   }));
-  fs.writeFileSync(path.join(b, 'folder.bru'), folder('Beta - [OPTION 2]', 2, ['DELETE']));
+  fs.writeFileSync(path.join(b, 'folder.bru'), folder('Beta - [PATH 2]', 2, ['DELETE']));
   fs.writeFileSync(path.join(b, '01 - 1st X was Deleted.bru'), step('01 - 1st X was Deleted', 1));
   fs.writeFileSync(path.join(b, 'scenario.config.json'), JSON.stringify({
-    version: 1, option: { group: 'g', choice: 2 }, provides: [],
+    version: 1, path: { group: 'g', choice: 2 }, provides: [],
     needs: [{ scenario: 'Alpha', vars: ['firstXUniqueId'] }]
   }));
   if (mutate) mutate({ dir, a, b });
@@ -78,13 +78,21 @@ test('needs pointing to an unknown scenario or an unprovided var is an error', (
   assert.ok(m.some(x => /"missingVar" is not in "Alpha" provides/.test(x)));
 });
 
-test('[OPTION N] or [optional] names without a matching marker are warnings', () => {
+test('[PATH N] or [optional] names without a matching marker are warnings', () => {
   const m = messages(domain(({ a, b }) => {
-    editJson(path.join(b, 'scenario.config.json'), c => { delete c.option; return c; });
+    editJson(path.join(b, 'scenario.config.json'), c => { delete c.path; return c; });
     editJson(path.join(a, 'scenario.config.json'), c => ({ ...c, steps: {} }));
   }));
-  assert.ok(m.some(x => x.startsWith('WARN') && /\[OPTION 2\] but has no option 2 marker/.test(x)));
+  assert.ok(m.some(x => x.startsWith('WARN') && /\[PATH 2\] but has no path 2 marker/.test(x)));
   assert.ok(m.some(x => x.startsWith('WARN') && /\[optional\] but is not marked optional/.test(x)));
+});
+
+test('the retired "option" key is an error; "path" is the marker key', () => {
+  const m = messages(domain(({ b }) => editJson(path.join(b, 'scenario.config.json'), c => {
+    const { path: marker, ...rest } = c;
+    return { ...rest, option: marker };
+  })));
+  assert.ok(m.some(x => x.startsWith('ERROR') && /unknown key "option"/.test(x)));
 });
 
 test('invalid JSON is an error', () => {

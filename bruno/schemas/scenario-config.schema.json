@@ -6,23 +6,23 @@
   "required": ["version"],
   "additionalProperties": false,
   "$defs": {
-    "option": {
+    "path": {
       "type": "object",
-      "description": "A choice within an option group. A vendor completes exactly one choice per group.",
+      "description": "A choice within a path group. A vendor completes exactly one path per group.",
       "required": ["group", "choice"],
       "additionalProperties": false,
       "properties": {
-        "group": { "type": "string", "description": "Option group id, e.g. 'staff-delivery'." },
-        "choice": { "type": "integer", "minimum": 1, "description": "Choice number; matches [OPTION N] in names." }
+        "group": { "type": "string", "description": "Path group id, e.g. 'staff-delivery'." },
+        "choice": { "type": "integer", "minimum": 1, "description": "Path number; matches [PATH N] in names." }
       }
     }
   },
   "properties": {
     "$schema": { "type": "string" },
     "version": { "type": "integer", "minimum": 1 },
-    "option": {
-      "$ref": "#/$defs/option",
-      "description": "The whole scenario belongs to this choice."
+    "path": {
+      "$ref": "#/$defs/path",
+      "description": "The whole scenario belongs to this path."
     },
     "provides": {
       "type": "array",
@@ -50,7 +50,7 @@
         "additionalProperties": false,
         "properties": {
           "optional": { "type": "boolean", "description": "The step may be skipped." },
-          "option": { "$ref": "#/$defs/option", "description": "The step is required only when this choice is taken." }
+          "path": { "$ref": "#/$defs/path", "description": "The step is required only when this path is taken." }
         }
       }
     }

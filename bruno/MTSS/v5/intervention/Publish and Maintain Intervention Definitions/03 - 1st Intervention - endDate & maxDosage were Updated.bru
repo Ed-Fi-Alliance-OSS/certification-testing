@@ -26,7 +26,10 @@ assert {
   res.body.beginDate: isNotEmpty
   res.body.namespace: isString
   res.body.namespace: isNotEmpty
+  res.body.diagnoses: isArray
   res.body.diagnoses: isNotEmpty
+  res.body.diagnoses[0].diagnosisDescriptor: isString
+  res.body.diagnoses[0].diagnosisDescriptor: isNotEmpty
   res.body.endDate: isString
   res.body.endDate: isNotEmpty
   res.body.minDosage: isNumber
@@ -50,7 +53,7 @@ script:pre-request {
 }
 
 script:post-response {
-  const { getVar, setVars, expectChanged, throwNotFoundOrSpecificError } = require('./utils');
+  const { getVar, setVars, expectChanged, throwNotFoundOrSpecificError, meetingTimesKeyOf, diagnosesKeyOf } = require('./utils');
   const { logScenario, logSpecIntervention } = require('./logging');
   const entityName = 'Intervention';
   const scenarioName = this.req.name;
@@ -66,7 +69,10 @@ script:post-response {
 
   setVars(bru, {
     firstInterventionEndDate: current.endDate,
-    firstInterventionMaxDosage: current.maxDosage
+    firstInterventionMaxDosage: current.maxDosage,
+    firstInterventionMinDosage: current.minDosage,
+    firstInterventionMeetingTimesKey: meetingTimesKeyOf(current.meetingTimes),
+    firstInterventionDiagnosesKey: diagnosesKeyOf(current.diagnoses)
   }, entityName);
 
   logScenario(entityName, scenarioName, current, logSpecIntervention, [

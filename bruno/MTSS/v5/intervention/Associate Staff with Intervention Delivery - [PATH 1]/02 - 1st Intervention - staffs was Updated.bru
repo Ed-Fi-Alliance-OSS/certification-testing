@@ -1,0 +1,80 @@
+meta {
+  name: 02 - 1st Intervention - staffs was Updated
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/interventions/{{firstInterventionUniqueId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+  res.body.id: isString
+  res.body.id: isNotEmpty
+  res.body.interventionIdentificationCode: isString
+  res.body.interventionIdentificationCode: isNotEmpty
+  res.body.educationOrganizationReference: isDefined
+  res.body.educationOrganizationReference.educationOrganizationId: isNumber
+  res.body.educationOrganizationReference.educationOrganizationId: neq 0
+  res.body.staffs: isArray
+  res.body.staffs: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+
+  validateDependency(bru, 'firstInterventionUniqueId', dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid'));
+  validateDependency(bru, 'firstInterventionStaffUniqueIds', dependencyName('Associate Staff with Intervention Delivery - [PATH 1]', '01 - 1st Intervention is valid'));
+}
+
+script:post-response {
+  const { getVar, setVars, joinIds, throwNotFoundOrSpecificError, meetingTimesKeyOf, diagnosesKeyOf } = require('./utils');
+  const { logScenario, logSpecIntervention } = require('./logging');
+  const entityName = 'Intervention';
+  const scenarioName = this.req.name;
+
+  if (res.status !== 200 || !res.body) {
+    throwNotFoundOrSpecificError(entityName);
+  }
+
+  const current = res.getBody();
+  const previousIds = String(getVar(bru, 'firstInterventionStaffUniqueIds')).split(',').filter(Boolean);
+  const currentIds = (current.staffs || [])
+    .map(s => s && s.staffReference && s.staffReference.staffUniqueId)
+    .filter(id => typeof id === 'string' && id.trim() !== '');
+
+  test('staffs changed: a staff member was removed', () => {
+    expect(currentIds.length).to.be.below(previousIds.length);
+  });
+  test('the Intervention still lists at least one valid staff', () => {
+    expect(currentIds.length).to.be.at.least(1);
+  });
+  test('the remaining staff were already linked (removed, not replaced)', () => {
+    const added = currentIds.filter(id => !previousIds.includes(id));
+    expect(added, `staff not in the original list: ${added.join(', ')}`).to.be.empty;
+  });
+
+  setVars(bru, {
+    firstInterventionStaffUniqueIds: joinIds(currentIds),
+    // This update re-sends the whole Intervention: it is now the latest source for
+    // the values "Recovery and Resubmission" step 09 expects after synchronization.
+    firstInterventionEndDate: current.endDate,
+    firstInterventionMaxDosage: current.maxDosage,
+    firstInterventionMinDosage: current.minDosage,
+    firstInterventionMeetingTimesKey: meetingTimesKeyOf(current.meetingTimes),
+    firstInterventionDiagnosesKey: diagnosesKeyOf(current.diagnoses)
+  }, entityName);
+
+  logScenario(entityName, scenarioName, current, logSpecIntervention, [
+    'staffs'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

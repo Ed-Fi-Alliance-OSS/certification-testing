@@ -51,7 +51,7 @@ assert {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { pickSingle, setVars, wipeVars, meetingTimesKeyOf, diagnosesKeyOf } = require('./utils');
   const { logScenario, logSpecIntervention } = require('./logging');
   const entityName = 'Intervention';
   const scenarioName = this.req.name;
@@ -64,7 +64,10 @@ script:post-response {
       'firstInterventionEducationOrganizationId',
       'firstInterventionBeginDate',
       'firstInterventionEndDate',
-      'firstInterventionMaxDosage'
+      'firstInterventionMaxDosage',
+      'firstInterventionMinDosage',
+      'firstInterventionMeetingTimesKey',
+      'firstInterventionDiagnosesKey'
     ], entityName, true);
   }
   
@@ -74,7 +77,11 @@ script:post-response {
     firstInterventionEducationOrganizationId: single.educationOrganizationReference.educationOrganizationId,
     firstInterventionBeginDate: single.beginDate,
     firstInterventionEndDate: single.endDate,
-    firstInterventionMaxDosage: single.maxDosage
+    firstInterventionMaxDosage: single.maxDosage,
+    // Baselines for "Recovery and Resubmission" step 09 (restored with the latest values).
+    firstInterventionMinDosage: single.minDosage,
+    firstInterventionMeetingTimesKey: meetingTimesKeyOf(single.meetingTimes),
+    firstInterventionDiagnosesKey: diagnosesKeyOf(single.diagnoses)
   }, entityName);
   
   logScenario(entityName, scenarioName, single, logSpecIntervention);

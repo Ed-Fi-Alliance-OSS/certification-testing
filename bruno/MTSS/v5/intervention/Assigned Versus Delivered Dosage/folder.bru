@@ -1,0 +1,71 @@
+meta {
+  name: Assigned Versus Delivered Dosage
+  seq: 4
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # v5 Intervention > Assigned vs. Delivered Dosage
+  
+  Checks that the published data supports fidelity tracking: the minutes
+  assigned on the StudentInterventionAssociation can be compared with the
+  minutes delivered, summed from the attendance events. No new records are
+  published; these steps read back what you published and calculate the
+  comparison.
+  
+  ## Prerequisites
+  
+  * "Assign a Student to an Intervention" steps 1–4 completed.
+  * "Record Intervention Participation Events" steps 1–7 completed, plus step 8
+    if your product records sessions that were not held.
+  * The `first` Intervention holds only the certification records (other
+    students or events on it would change the totals).
+  
+  ## Scenarios tasks
+  
+  1. __CREATE__ Read the `first` StudentInterventionAssociation and confirm its assigned minutes (_dosage_).
+  2. __CREATE__ Read ALL attendance events of that student for that Intervention, check each one, and calculate assigned vs. delivered minutes.
+  
+  ## Checks on every attendance event (step 2)
+  
+  * studentReference, interventionReference, eventDate, attendanceEventCategoryDescriptor present.
+  * `interventionDuration` is a number >= 0 (absences use 0).
+  * `eventDate` is within the intervention's `beginDate` and `endDate`.
+  * The event deleted in "Record Intervention Participation Events" step 6 is not present.
+  
+  ## Calculation
+  
+  Categories are matched by code value (the text after `#`), ignoring case, so
+  your own namespace works.
+  
+  | Measure                 | Rule                                                                                         | Sample result |
+  | ----------------------- | -------------------------------------------------------------------------------------------- | ------------- |
+  | Assigned minutes        | `dosage` on the StudentInterventionAssociation                                               | 900           |
+  | Delivered minutes       | Sum of `interventionDuration` over the events, excluding the "session not held" category     | 70            |
+  | Percent delivered       | Delivered ÷ assigned × 100, rounded to one decimal place                                     | 7.8           |
+  | Minutes remaining       | Assigned − delivered (can be negative: over-delivery is a finding, not a failure)            | 830           |
+  | Sessions attended       | Events with In Attendance, Present, Partial, Tardy or Early departure                        | 3             |
+  | Sessions missed         | Events with Excused Absence or Unexcused Absence                                             | 1             |
+  | Sessions not held       | Events with the category captured in "Record…" step 8; reported separately, not counted above | 1 (0 if step 8 was skipped) |
+  
+  Any other category is reported as a warning ("unmapped"); document how your
+  own categories map to attended or missed. The results are kept and compared
+  again at the end of "Recovery and Resubmission Scenarios".
+  
+  ## API response format
+  ```json
+  [
+    {
+      "id": "string",
+      "attendanceEventCategoryDescriptor": "string",
+      "eventDate": "2026-09-08",
+      "interventionReference": { "educationOrganizationId": 0, "interventionIdentificationCode": "string" },
+      "studentReference": { "studentUniqueId": "string" },
+      "interventionDuration": 0
+    }
+  ]
+  ```
+}

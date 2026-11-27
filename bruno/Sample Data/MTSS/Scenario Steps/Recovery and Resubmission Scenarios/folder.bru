@@ -16,17 +16,17 @@ docs {
   certification step 08, then run certification steps 09-14.
 
   > **Run the scripts one by one, not the whole folder.** The folder holds both the
-  > `[OPTION 1]` and `[OPTION 2]` versions of Sync 1 and Sync 2. Running the folder sends
-  > both, and the last one wins: after OPTION 1, `Sync 1 - [OPTION 2]` restores both staff
-  > and certification step 13 fails. Run only the scripts for your option.
+  > `[PATH 1]` and `[PATH 2]` versions of Sync 1 and Sync 2. Running the folder sends
+  > both, and the last one wins: after PATH 1, `Sync 1 - [PATH 2]` restores both staff
+  > and certification step 13 fails. Run only the scripts for your path.
 
   | Script | Run for | Restores |
   | --- | --- | --- |
-  | Sync 1 - [OPTION 1] Intervention 1 | OPTION 1 | staffs = first staff only |
-  | Sync 1 - [OPTION 2] Intervention 1 | OPTION 2 | staffs = both staff |
-  | Sync 2 - [OPTION 1] StudentInterventionAssociation 1 | OPTION 1 | dosage 900 |
-  | Sync 2 - [OPTION 2] StudentInterventionAssociation 1 | OPTION 2 | dosage 900, cohortReference |
+  | Sync 1 - [PATH 1] Intervention 1 | PATH 1 | staffs = first staff only |
+  | Sync 1 - [PATH 2] Intervention 1 | PATH 2 | staffs = both staff |
+  | Sync 2 - [PATH 1] StudentInterventionAssociation 1 | PATH 1 | dosage 900 |
+  | Sync 2 - [PATH 2] StudentInterventionAssociation 1 | PATH 2 | dosage 900, cohortReference |
   | Sync 3 - Event 1, Sync 4 - Event 2, Sync 5 - Event 3, Sync 6 - Event 5 | both | Event 2 with 25 min |
   | Sync 7 - [optional] - Event 6 | both, if you recorded event 6 | Session Not Held |
-  | Sync 8 - [OPTION 2] StaffCohortAssociation 1 | OPTION 2 | endDate 2026-12-18 |
+  | Sync 8 - [PATH 2] StaffCohortAssociation 1 | PATH 2 | endDate 2026-12-18 |
 }

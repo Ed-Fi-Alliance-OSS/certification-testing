@@ -49,8 +49,8 @@ function repo(mutate) {
   write(root, 'bruno/Sample Data/MTSS/Dependencies/Dep 1 - School.bru', req('Dep 1 - School', { seq: 2, url: '{{resourceBaseUrl}}/schools/[SCHOOL_ID]' }));
   write(root, 'bruno/MTSS/v5/intervention/Publish/01 - 1st Intervention is valid.bru', req('01 - 1st Intervention is valid', { seq: 1 }));
   write(root, 'bruno/MTSS/bruno.json', '{}');
-  write(root, 'bruno/Tests/v5/Intervention/OptionOne/test-config.json', {
-    name: 'MTSS OptionOne',
+  write(root, 'bruno/Tests/v5/Intervention/PathOne/test-config.json', {
+    name: 'MTSS PathOne',
     data: { SCHOOL_ID: 9999999911 },
     order: ['bruno/Sample Data/MTSS/Dependencies/Dep 1 - School.bru', 'bruno/MTSS/v5/intervention/Publish/01 - 1st Intervention is valid.bru']
   });
@@ -110,8 +110,8 @@ test('MTSS mode runs each Intervention chain as one Bruno folder and fails a ste
   const pass = run(repo(), ['--collection', 'mtss', '--env', 'local', '--include-steps']);
   assert.equal(pass.status, 0, pass.out);
   assert.deepEqual(steps(pass.summary), [
-    ['MTSS OptionOne', '001 - Dep 1 - School', 'PASS'],
-    ['MTSS OptionOne', '002 - 01 - 1st Intervention is valid', 'PASS']
+    ['MTSS PathOne', '001 - Dep 1 - School', 'PASS'],
+    ['MTSS PathOne', '002 - 01 - 1st Intervention is valid', 'PASS']
   ]);
 
   const root = repo(r => write(r, 'bruno/MTSS/v5/intervention/Publish/01 - 1st Intervention is valid.bru',
@@ -124,14 +124,14 @@ test('MTSS mode runs each Intervention chain as one Bruno folder and fails a ste
 
 test('MTSS mode reports a chain whose ordered file is missing as a config error', () => {
   const root = repo(r => {
-    const cfg = 'bruno/Tests/v5/Intervention/OptionOne/test-config.json';
+    const cfg = 'bruno/Tests/v5/Intervention/PathOne/test-config.json';
     const c = JSON.parse(fs.readFileSync(path.join(r, cfg), 'utf8'));
     c.order.push('bruno/MTSS/v5/intervention/Publish/99 - gone.bru');
     write(r, cfg, c);
   });
   const r = run(root, ['--collection', 'mtss', '--env', 'local']);
   assert.equal(r.status, 1, r.out);
-  assert.match(r.out, /MTSS config 'OptionOne'/);
+  assert.match(r.out, /MTSS config 'PathOne'/);
   assert.equal(r.summary.entities[0].steps, undefined, 'steps omitted without --include-steps');
 });
 

@@ -1,0 +1,58 @@
+meta {
+  name: Sync 1 - [PATH 1] Intervention 1
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{resourceBaseUrl}}/ed-fi/interventions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{edFiCertToken}}
+}
+
+body:json {
+  {
+    "interventionIdentificationCode": "READ-T2-001",
+    "educationOrganizationReference": {
+      "educationOrganizationId": 9999999911
+    },
+    "interventionClassDescriptor": "uri://ed-fi.org/InterventionClassDescriptor#Practice",
+    "deliveryMethodDescriptor": "uri://ed-fi.org/DeliveryMethodDescriptor#Small Group",
+    "beginDate": "2026-08-24",
+    "endDate": "2027-05-28",
+    "minDosage": 300,
+    "maxDosage": 1800,
+    "namespace": "{{providerNamespace}}",
+    "diagnoses": [
+      {
+        "diagnosisDescriptor": "{{providerNamespace}}/DiagnosisDescriptor#Reading Fluency"
+      }
+    ],
+    "staffs": [
+      {
+        "staffReference": {
+          "staffUniqueId": "mtss-staff-01"
+        }
+      }
+    ],
+    "meetingTimes": [
+      {
+        "startTime": "09:00:00",
+        "endTime": "09:30:00"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: in 200,201
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

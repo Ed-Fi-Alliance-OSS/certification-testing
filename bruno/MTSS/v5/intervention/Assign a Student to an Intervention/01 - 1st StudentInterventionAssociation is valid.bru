@@ -53,7 +53,8 @@ script:post-response {
       'firstStudentInterventionAssociationUniqueId',
       'firstStudentInterventionAssociationStudentUniqueId',
       'firstStudentInterventionAssociationDosage',
-      'firstStudentInterventionAssociationCohortKey'
+      'firstStudentInterventionAssociationCohortKey',
+      'firstStudentInterventionAssociationDiagnosticStatement'
     ], entityName, true);
   }
   
@@ -61,8 +62,10 @@ script:post-response {
     firstStudentInterventionAssociationUniqueId: single.id,
     firstStudentInterventionAssociationStudentUniqueId: single.studentReference.studentUniqueId,
     firstStudentInterventionAssociationDosage: single.dosage,
-    // Baseline for OPTION 2 step 04, which must show the cohortReference was added or changed.
-    firstStudentInterventionAssociationCohortKey: cohortKeyOf(single.cohortReference)
+    // Baseline for PATH 2 step 04, which must show the cohortReference was added or changed.
+    firstStudentInterventionAssociationCohortKey: cohortKeyOf(single.cohortReference),
+    // Baseline for "Recovery and Resubmission" step 11 (restored with the latest value).
+    firstStudentInterventionAssociationDiagnosticStatement: single.diagnosticStatement
   }, entityName);
   
   logScenario(entityName, scenarioName, single, logSpecStudentInterventionAssociation);

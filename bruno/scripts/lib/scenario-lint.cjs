@@ -12,10 +12,11 @@ const CONFIG_FILE = 'scenario.config.json';
 const SEQ_RE = /^meta \{[\s\S]*?\bseq:\s*(\d+)/m;
 const DOCS_RE = /^docs \{([\s\S]*?)\n\}/m;
 const DOCS_TASK_RE = /^\s*(\d+)\.\s*__(CREATE|UPDATE|DELETE)__/gm;
-const TOP_KEYS = ['$schema', 'version', 'option', 'provides', 'needs', 'steps'];
-const STEP_KEYS = ['optional', 'option'];
+const TOP_KEYS = ['$schema', 'version', 'path', 'provides', 'needs', 'steps'];
+const STEP_KEYS = ['optional', 'path'];
 
-function isOption(o) {
+// A staff-delivery choice marker: { group, choice }, matching [PATH N] in names.
+function isPathMarker(o) {
   return o && typeof o === 'object' && typeof o.group === 'string' && Number.isInteger(o.choice) && o.choice >= 1
     && Object.keys(o).every(k => k === 'group' || k === 'choice');
 }
@@ -29,7 +30,7 @@ function shapeProblems(cfg) {
   if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) return ['config must be a JSON object'];
   Object.keys(cfg).filter(k => !TOP_KEYS.includes(k)).forEach(k => out.push(`unknown key "${k}"`));
   if (!Number.isInteger(cfg.version) || cfg.version < 1) out.push('"version" must be an integer >= 1');
-  if (cfg.option !== undefined && !isOption(cfg.option)) out.push('"option" must be { group: string, choice: integer >= 1 }');
+  if (cfg.path !== undefined && !isPathMarker(cfg.path)) out.push('"path" must be { group: string, choice: integer >= 1 }');
   if (cfg.provides !== undefined && !isStringArray(cfg.provides)) out.push('"provides" must be an array of strings');
   if (cfg.needs !== undefined) {
     const ok = Array.isArray(cfg.needs) && cfg.needs.every(n => n && typeof n.scenario === 'string' && isStringArray(n.vars)
@@ -43,8 +44,8 @@ function shapeProblems(cfg) {
       for (const [file, s] of Object.entries(cfg.steps)) {
         const ok = s && typeof s === 'object' && Object.keys(s).every(k => STEP_KEYS.includes(k))
           && (s.optional === undefined || typeof s.optional === 'boolean')
-          && (s.option === undefined || isOption(s.option));
-        if (!ok) out.push(`steps entry "${file}" must be { optional?: boolean, option?: { group, choice } }`);
+          && (s.path === undefined || isPathMarker(s.path));
+        if (!ok) out.push(`steps entry "${file}" must be { optional?: boolean, path?: { group, choice } }`);
       }
     }
   }
@@ -134,16 +135,16 @@ function lintScenarios(domainDir) {
     }
 
     // Human markers in names must have machine-readable markers.
-    const folderOption = name.match(/\[OPTION (\d+)\]/);
-    if (folderOption && !(cfg.option && cfg.option.choice === parseInt(folderOption[1], 10))) {
-      report(cfgFile, `folder name has [OPTION ${folderOption[1]}] but has no option ${folderOption[1]} marker`, 'WARN');
+    const folderPath = name.match(/\[PATH (\d+)\]/);
+    if (folderPath && !(cfg.path && cfg.path.choice === parseInt(folderPath[1], 10))) {
+      report(cfgFile, `folder name has [PATH ${folderPath[1]}] but has no path ${folderPath[1]} marker`, 'WARN');
     }
     for (const f of stepFiles) {
       const s = steps[f] || {};
-      const opt = f.match(/\[OPTION (\d+)\]/);
-      if (opt && !(s.option && s.option.choice === parseInt(opt[1], 10))
-        && !(cfg.option && cfg.option.choice === parseInt(opt[1], 10))) {
-        report(cfgFile, `"${f}" has [OPTION ${opt[1]}] but has no option ${opt[1]} marker`, 'WARN');
+      const pathMatch = f.match(/\[PATH (\d+)\]/);
+      if (pathMatch && !(s.path && s.path.choice === parseInt(pathMatch[1], 10))
+        && !(cfg.path && cfg.path.choice === parseInt(pathMatch[1], 10))) {
+        report(cfgFile, `"${f}" has [PATH ${pathMatch[1]}] but has no path ${pathMatch[1]} marker`, 'WARN');
       }
       if (/\[optional\]/i.test(f) && s.optional !== true) {
         report(cfgFile, `"${f}" has [optional] but is not marked optional`, 'WARN');
