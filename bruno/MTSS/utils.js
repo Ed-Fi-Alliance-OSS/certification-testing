@@ -257,7 +257,11 @@ function findEventProblems(events, { beginDate, endDate, deletedKey } = {}) {
   (Array.isArray(events) ? events : []).forEach((e, i) => {
     const label = `Event #${i + 1} (${e.eventDate || 'no date'})`;
     if (!e.studentReference || !e.studentReference.studentUniqueId) problems.push(`${label}: missing studentReference.studentUniqueId`);
-    if (!e.interventionReference || !e.interventionReference.interventionIdentificationCode) problems.push(`${label}: missing interventionReference`);
+    const ref = e.interventionReference;
+    if (!ref || !ref.interventionIdentificationCode) problems.push(`${label}: missing interventionReference`);
+    if (ref && !(typeof ref.educationOrganizationId === 'number' && ref.educationOrganizationId !== 0)) {
+      problems.push(`${label}: missing interventionReference.educationOrganizationId`);
+    }
     if (!e.eventDate) problems.push(`${label}: missing eventDate`);
     if (!e.attendanceEventCategoryDescriptor) problems.push(`${label}: missing attendanceEventCategoryDescriptor`);
     if (typeof e.interventionDuration !== 'number' || e.interventionDuration < 0) {
@@ -277,6 +281,29 @@ function findEventProblems(events, { beginDate, endDate, deletedKey } = {}) {
 // when the record has none, so the reference can be captured and compared like any variable.
 function cohortKeyOf(ref) {
   return ref && ref.cohortIdentifier ? `${ref.cohortIdentifier}|${ref.educationOrganizationId}` : 'none';
+}
+
+// Flat, order-independent key of meetingTimes ("<start>-<end>|..."), or 'none' when no entry has both times.
+function meetingTimesKeyOf(meetingTimes) {
+  const keys = (Array.isArray(meetingTimes) ? meetingTimes : [])
+    .filter(m => m && m.startTime && m.endTime)
+    .map(m => `${m.startTime}-${m.endTime}`)
+    .sort();
+  return keys.length ? keys.join('|') : 'none';
+}
+
+// Flat, order-independent key of diagnoses ("<descriptor>|..."), or 'none' when none has a descriptor.
+function diagnosesKeyOf(diagnoses) {
+  const keys = (Array.isArray(diagnoses) ? diagnoses : [])
+    .map(d => d && d.diagnosisDescriptor)
+    .filter(d => typeof d === 'string' && d.trim() !== '')
+    .sort();
+  return keys.length ? keys.join('|') : 'none';
+}
+
+// True when a descriptor is in the default Ed-Fi namespace (uri://ed-fi.org/), not the provider's own.
+function isEdFiDefaultDescriptor(descriptor) {
+  return typeof descriptor === 'string' && descriptor.trim().toLowerCase().startsWith('uri://ed-fi.org/');
 }
 
 // Sorted, comma-joined list stored as a single string variable.
@@ -341,6 +368,9 @@ module.exports = {
   findEventProblems,
   joinIds,
   cohortKeyOf,
+  meetingTimesKeyOf,
+  diagnosesKeyOf,
+  isEdFiDefaultDescriptor,
   dependencyName,
   fetchRecords,
   resolveCurrentId,

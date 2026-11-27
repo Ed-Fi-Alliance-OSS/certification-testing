@@ -17,6 +17,8 @@ assert {
   res.body.id: isNotEmpty
   res.body.studentReference.studentUniqueId: isString
   res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.interventionReference.educationOrganizationId: isNumber
+  res.body.interventionReference.educationOrganizationId: neq 0
   res.body.interventionReference.interventionIdentificationCode: isString
   res.body.interventionReference.interventionIdentificationCode: isNotEmpty
   res.body.dosage: isNumber
@@ -49,7 +51,8 @@ script:post-response {
 
   setVars(bru, {
     firstStudentInterventionAssociationDosage: current.dosage,
-    firstStudentInterventionAssociationCohortKey: cohortKeyOf(current.cohortReference)
+    firstStudentInterventionAssociationCohortKey: cohortKeyOf(current.cohortReference),
+    firstStudentInterventionAssociationDiagnosticStatement: current.diagnosticStatement
   }, entityName);
 
   logScenario(entityName, scenarioName, current, logSpecStudentInterventionAssociation, [

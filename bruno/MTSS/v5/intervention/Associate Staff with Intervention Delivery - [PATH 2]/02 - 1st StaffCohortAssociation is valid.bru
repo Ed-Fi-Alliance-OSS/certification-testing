@@ -1,0 +1,76 @@
+meta {
+  name: 02 - 1st StaffCohortAssociation is valid
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/staffCohortAssociations?staffUniqueId=[ENTER FIRST STAFF UNIQUE ID]&beginDate=[ENTER FIRST BEGIN DATE YYYY-MM-DD]&cohortIdentifier={{firstCohortIdentifier}}&educationOrganizationId={{firstCohortEducationOrganizationId}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  staffUniqueId: [ENTER FIRST STAFF UNIQUE ID]
+  beginDate: [ENTER FIRST BEGIN DATE YYYY-MM-DD]
+  cohortIdentifier: {{firstCohortIdentifier}}
+  educationOrganizationId: {{firstCohortEducationOrganizationId}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].staffReference.staffUniqueId: isString
+  res.body[0].staffReference.staffUniqueId: isNotEmpty
+  res.body[0].cohortReference.cohortIdentifier: isString
+  res.body[0].cohortReference.cohortIdentifier: isNotEmpty
+  res.body[0].cohortReference.educationOrganizationId: isNumber
+  res.body[0].beginDate: isString
+  res.body[0].beginDate: isNotEmpty
+  res.body[0].studentRecordAccess: isBoolean
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const source = dependencyName('Associate Staff with Intervention Delivery - [PATH 2]', '01 - 1st Cohort is valid');
+
+  validateDependency(bru, 'firstCohortIdentifier', source);
+  validateDependency(bru, 'firstCohortEducationOrganizationId', source);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { logScenario, logSpecStaffCohortAssociation } = require('./logging');
+  const entityName = 'StaffCohortAssociation';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+
+  if (!single) {
+    wipeVars(bru, [
+      'firstStaffCohortAssociationUniqueId',
+      'firstStaffCohortAssociationStaffUniqueId',
+      'firstStaffCohortAssociationBeginDate',
+      'firstStaffCohortAssociationEndDate',
+      'firstStaffCohortAssociationStudentRecordAccess'
+    ], entityName, true);
+  }
+
+  setVars(bru, {
+    firstStaffCohortAssociationUniqueId: single.id,
+    firstStaffCohortAssociationStaffUniqueId: single.staffReference.staffUniqueId,
+    firstStaffCohortAssociationBeginDate: single.beginDate,
+    firstStaffCohortAssociationEndDate: single.endDate,
+    // Baseline for "Recovery and Resubmission" step 14 (restored with the latest value).
+    firstStaffCohortAssociationStudentRecordAccess: single.studentRecordAccess
+  }, entityName);
+
+  logScenario(entityName, scenarioName, single, logSpecStaffCohortAssociation);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -21,6 +21,11 @@ assert {
   res.body: isNotEmpty
   res.body[0].id: isString
   res.body[0].id: isNotEmpty
+  res.body[0].interventionIdentificationCode: isString
+  res.body[0].interventionIdentificationCode: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
   res.body[0].interventionClassDescriptor: isString
   res.body[0].interventionClassDescriptor: isNotEmpty
   res.body[0].deliveryMethodDescriptor: isString
@@ -54,10 +59,13 @@ script:pre-request {
   validateDependency(bru, 'firstInterventionIdentificationCode', first);
   validateDependency(bru, 'firstInterventionEndDate', updated);
   validateDependency(bru, 'firstInterventionMaxDosage', updated);
+  validateDependency(bru, 'firstInterventionMinDosage', updated);
+  validateDependency(bru, 'firstInterventionMeetingTimesKey', updated);
+  validateDependency(bru, 'firstInterventionDiagnosesKey', updated);
 }
 
 script:post-response {
-  const { pickSingle, getVar, setVars, wipeVars, expectUnchanged } = require('./utils');
+  const { pickSingle, getVar, setVars, wipeVars, expectUnchanged, meetingTimesKeyOf, diagnosesKeyOf } = require('./utils');
   const { logScenario, logSpecIntervention } = require('./logging');
   const entityName = 'Intervention';
   const scenarioName = this.req.name;
@@ -67,9 +75,12 @@ script:post-response {
     wipeVars(bru, ['restoredFirstInterventionUniqueId'], entityName, true);
   }
 
-  // Restored with the latest values published (Publish step 03), not older ones.
+  // Restored with the latest values published (Publish step 03, or PATH 1 step 02), not older ones.
   expectUnchanged(getVar(bru, 'firstInterventionEndDate'), single.endDate, 'endDate restored with the latest value', true);
   expectUnchanged(Number(getVar(bru, 'firstInterventionMaxDosage')), single.maxDosage, 'maxDosage restored with the latest value', true);
+  expectUnchanged(Number(getVar(bru, 'firstInterventionMinDosage')), single.minDosage, 'minDosage restored with the latest value', true);
+  expectUnchanged(getVar(bru, 'firstInterventionMeetingTimesKey'), meetingTimesKeyOf(single.meetingTimes), 'meetingTimes restored with the latest values', true);
+  expectUnchanged(getVar(bru, 'firstInterventionDiagnosesKey'), diagnosesKeyOf(single.diagnoses), 'diagnoses restored with the latest values', true);
 
   setVars(bru, {
     restoredFirstInterventionUniqueId: single.id

@@ -1,0 +1,22 @@
+meta {
+  name: [PATH 1] Associate Staff with Intervention Delivery
+  seq: 4
+}
+
+auth {
+  mode: inherit
+}
+
+docs {
+  # MTSS Sample Data > Associate Staff with Intervention Delivery - [PATH 1]
+  
+  Vendor actions behind the "Associate Staff with Intervention Delivery - [PATH 1]" certification steps (`bruno/MTSS/v5/intervention`).
+  Run the Foundation first. Run each script, then the certification step it feeds.
+  
+  | Script | Feeds certification step |
+  | --- | --- |
+  | (none) | 01 - 1st Intervention is valid (reads Publish Step 3) |
+  | Step 2 | 02 - 1st Intervention - staffs was Updated |
+  
+  Run certification step 01 before Step 2: it checks the two staff added by Publish Step 3.
+}

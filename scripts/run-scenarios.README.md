@@ -78,7 +78,7 @@ All occurrences of each `data` key or bracketed form `[KEY]` inside entity-level
 
 ## MTSS Collection (`--collection mtss`)
 
-MTSS scenarios share runtime variables across scenarios, so each MTSS `test-config.json` (under `bruno/Tests/<version>/Intervention/<Chain>`, for example `OptionOne` and `OptionTwo`) describes one end-to-end chain instead of one entity:
+MTSS scenarios share runtime variables across scenarios, so each MTSS `test-config.json` (under `bruno/Tests/<version>/Intervention/<Chain>`, for example `PathOne` and `PathTwo`) describes one end-to-end chain instead of one entity:
 
 1. Copies `bruno/Tests` and `bruno/MTSS` into the automation root (SIS runs skip the `Intervention` group, MTSS runs use only it).
 2. Copies every file in `order` (paths relative to the repository root, across collections such as `bruno/Sample Data/MTSS` and `bruno/MTSS`) into `<version>/_e2e/<Chain>/`, prefixed `001 - `, `002 - `… with `meta.seq` rewritten, and applies the `data` placeholders.

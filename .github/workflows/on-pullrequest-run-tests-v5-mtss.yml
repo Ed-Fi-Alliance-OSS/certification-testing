@@ -41,7 +41,7 @@ jobs:
   mtss:
     name: Run MTSS Tests
     runs-on: ubuntu-latest
-    # The two option chains take about 4 minutes; time waiting in the concurrency queue does not count.
+    # The two path chains take about 4 minutes; time waiting in the concurrency queue does not count.
     timeout-minutes: 15
     # The MTSS chains Reset and re-seed fixed identities (school 9999999911) on a shared
     # environment, so only one MTSS run per environment may execute at a time, across all
@@ -92,7 +92,7 @@ jobs:
             fi
           fi
 
-      - name: Run MTSS QA Scenarios (one Bruno run per option chain)
+      - name: Run MTSS QA Scenarios (one Bruno run per path chain)
         id: runmtss
         run: |
           set -e
@@ -131,7 +131,7 @@ jobs:
               summaryPath: 'automation-testing/results/summary.json',
               title: 'MTSS QA Scenarios Summary (DataStandard V5)',
               marker: 'qa-scenarios-summary:mtss:v5',
-              firstColumn: 'Option chain'
+              firstColumn: 'Path chain'
             });
 
       - name: Fail if MTSS scenarios failed

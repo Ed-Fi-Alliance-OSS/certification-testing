@@ -939,7 +939,7 @@ const logSpecContact = {
 
 const joinStaffIds = r => (Array.isArray(r?.staffs) ? r.staffs.map(s => String(s?.staffReference?.staffUniqueId)).sort().join(',') : undefined);
 
-// Intervention spec map (Intervention > Publish / Staff OPTION 1 / Recovery)
+// Intervention spec map (Intervention > Publish / Staff PATH 1 / Recovery)
 const logSpecIntervention = {
   educationOrganizationId: r => r?.educationOrganizationReference?.educationOrganizationId,
   interventionIdentificationCode: 'interventionIdentificationCode',
@@ -954,7 +954,7 @@ const logSpecIntervention = {
   staffs: joinStaffIds
 };
 
-// StudentInterventionAssociation spec map (Intervention > Assign / Dosage / Staff OPTION 2 / Recovery)
+// StudentInterventionAssociation spec map (Intervention > Assign / Dosage / Staff PATH 2 / Recovery)
 const logSpecStudentInterventionAssociation = {
   studentUniqueId: r => r?.studentReference?.studentUniqueId,
   educationOrganizationId: r => r?.interventionReference?.educationOrganizationId,

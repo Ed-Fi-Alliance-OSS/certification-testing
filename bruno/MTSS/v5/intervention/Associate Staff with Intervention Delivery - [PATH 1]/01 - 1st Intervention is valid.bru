@@ -1,0 +1,74 @@
+meta {
+  name: 01 - 1st Intervention is valid
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{resourceBaseUrl}}/ed-fi/interventions?educationOrganizationId={{firstInterventionEducationOrganizationId}}&interventionIdentificationCode={{firstInterventionIdentificationCode}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  educationOrganizationId: {{firstInterventionEducationOrganizationId}}
+  interventionIdentificationCode: {{firstInterventionIdentificationCode}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body: isNotEmpty
+  res.body[0].id: isString
+  res.body[0].id: isNotEmpty
+  res.body[0].interventionIdentificationCode: isString
+  res.body[0].interventionIdentificationCode: isNotEmpty
+  res.body[0].educationOrganizationReference: isDefined
+  res.body[0].educationOrganizationReference.educationOrganizationId: isNumber
+  res.body[0].educationOrganizationReference.educationOrganizationId: neq 0
+  res.body[0].staffs: isArray
+  res.body[0].staffs: isNotEmpty
+}
+
+script:pre-request {
+  const { validateDependency, dependencyName } = require('./utils');
+  const source = dependencyName('Publish and Maintain Intervention Definitions', '01 - 1st Intervention is valid');
+
+  validateDependency(bru, 'firstInterventionEducationOrganizationId', source);
+  validateDependency(bru, 'firstInterventionIdentificationCode', source);
+}
+
+script:post-response {
+  const { pickSingle, setVars, wipeVars, joinIds } = require('./utils');
+  const { logScenario, logSpecIntervention } = require('./logging');
+  const entityName = 'Intervention';
+  const scenarioName = this.req.name;
+  const single = pickSingle(res.getBody());
+
+  if (!single) {
+    wipeVars(bru, ['firstInterventionStaffUniqueIds'], entityName, true);
+  }
+
+  const staffIds = (single.staffs || [])
+    .map(s => s && s.staffReference && s.staffReference.staffUniqueId)
+    .filter(id => typeof id === 'string' && id.trim() !== '');
+
+  test('the Intervention lists at least two valid staff (Intervention.staffs)', () => {
+    expect(staffIds.length).to.be.at.least(2);
+    expect(staffIds.length).to.equal((single.staffs || []).length);
+  });
+
+  setVars(bru, {
+    firstInterventionStaffUniqueIds: joinIds(staffIds)
+  }, entityName);
+
+  logScenario(entityName, scenarioName, single, logSpecIntervention, [
+    'interventionIdentificationCode',
+    'staffs'
+  ]);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

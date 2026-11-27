@@ -35,19 +35,19 @@ test('buildSummaryComment renders status, totals and a per-entity table', () => 
   const f = summaryFile({
     exitStatus: 'PASS',
     totals: { entitiesProcessed: 2, assertionsPassed: 10, assertionsFailed: 0, assertionsTotal: 10 },
-    entities: [{ entity: 'OptionOne', assertions: { passed: 6, failed: 0, total: 6 } }, { entity: 'OptionTwo', assertions: { passed: 4, failed: 0, total: 4 } }]
+    entities: [{ entity: 'PathOne', assertions: { passed: 6, failed: 0, total: 6 } }, { entity: 'PathTwo', assertions: { passed: 4, failed: 0, total: 4 } }]
   });
-  const body = q.buildSummaryComment(f, 'MTSS QA Scenarios Summary (DataStandard V5)', { firstColumn: 'Option chain', footer: 'foot' });
+  const body = q.buildSummaryComment(f, 'MTSS QA Scenarios Summary (DataStandard V5)', { firstColumn: 'Path chain', footer: 'foot' });
   assert.equal(body, [
     '### MTSS QA Scenarios Summary (DataStandard V5)',
     'Status: **PASS**',
     'Entities Processed: **2**',
     'Assertions: Passed **10**, Failed **0**, Total **10**',
     '',
-    '| Option chain | Passed | Failed | Total |',
+    '| Path chain | Passed | Failed | Total |',
     '|---|---|---|---|',
-    '| OptionOne | 6 | 0 | 6 |',
-    '| OptionTwo | 4 | 0 | 4 |',
+    '| PathOne | 6 | 0 | 6 |',
+    '| PathTwo | 4 | 0 | 4 |',
     '',
     'foot'
   ].join('\n'));

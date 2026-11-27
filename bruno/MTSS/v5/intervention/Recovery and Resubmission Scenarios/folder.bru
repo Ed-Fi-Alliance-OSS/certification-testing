@@ -28,12 +28,12 @@ docs {
   > Start again from "Publish and Maintain Intervention Definitions" (Sample Data
   > users: run `Sample Data › MTSS › Reset` first).
   >
-  > Steps marked `[OPTION 1]` or `[OPTION 2]` belong to that staff option only;
-  > skip the ones for the option you did not certify.
+  > Steps marked `[PATH 1]` or `[PATH 2]` belong to that staff path only;
+  > skip the ones for the path you did not certify.
 
   ## Prerequisites
 
-  * All earlier scenarios completed on your chosen staff option.
+  * All earlier scenarios completed on your chosen staff path.
   * The `first` Intervention holds only the certification records (the `first`
     StudentInterventionAssociation and its attendance events). Any other record
     that references it makes step 7 fail with 409 Conflict.
@@ -48,31 +48,31 @@ docs {
   5. __DELETE__ Remove the `fifth` attendance event.
   6. __DELETE__ [optional] Remove the `sixth` attendance event (only if you recorded it).
   7. __DELETE__ Remove the `first` Intervention (nothing references it any more).
-  8. __DELETE__ [OPTION 2] Remove the `first` StaffCohortAssociation. The Cohort is left in place.
-  9. __CREATE__ **After your normal synchronization:** the `first` Intervention is restored with its latest _endDate_ and _maxDosage_.
+  8. __DELETE__ [PATH 2] Remove the `first` StaffCohortAssociation. The Cohort is left in place.
+  9. __CREATE__ **After your normal synchronization:** the `first` Intervention is restored with its latest _endDate_, _minDosage_, _maxDosage_, _meetingTimes_ and _diagnoses_.
   10. __DELETE__ The `second` Intervention (deleted earlier by you) did not reappear.
-  11. __CREATE__ The `first` StudentInterventionAssociation is restored with its latest _dosage_; the `second` one did not reappear.
-  12. __CREATE__ ALL attendance events are restored: checks pass, the `second` event keeps its updated duration, the deleted `fourth` event did not reappear, and assigned vs. delivered results equal those of "AssignedVersusDeliveredDosage".
-  13. __CREATE__ [OPTION 1] The `first` Intervention lists the same staff as after the OPTION 1 update.
-  14. __CREATE__ [OPTION 2] The `first` StaffCohortAssociation is restored (latest _endDate_), it is the Cohort's only one, and the `first` StudentInterventionAssociation still references the Cohort.
+  11. __CREATE__ The `first` StudentInterventionAssociation is restored with its latest _dosage_ and _diagnosticStatement_; the `second` one did not reappear.
+  12. __CREATE__ ALL attendance events are restored: checks pass, the `second` event keeps its updated duration, the `third` and `fifth` events keep their _attendanceEventReason_, the deleted `fourth` event did not reappear, and assigned vs. delivered results equal those of "Assigned Versus Delivered Dosage".
+  13. __CREATE__ [PATH 1] The `first` Intervention lists the same staff as after the PATH 1 update.
+  14. __CREATE__ [PATH 2] The `first` StaffCohortAssociation is restored (latest _endDate_ and _studentRecordAccess_), it is the Cohort's only one, and the `first` StudentInterventionAssociation still references the Cohort.
 
   ## Expected state after synchronization
 
   | Resource                           | Record (natural key, sample)                     | Expected                                                  |
   | ---------------------------------- | ------------------------------------------------ | --------------------------------------------------------- |
-  | StudentInterventionAttendanceEvent | 604863 / READ-T2-001 / 2026-09-10 / Partial      | Restored: interventionDuration 15                         |
-  | StudentInterventionAssociation     | 604863 / 255901 / READ-T2-001                    | Restored: dosage 900; OPTION 2: cohortReference GRP-A     |
+  | StudentInterventionAttendanceEvent | 604863 / READ-T2-001 / 2026-09-10 / Partial      | Restored: interventionDuration 15; attendanceEventReason "Left early for nurse visit" |
+  | StudentInterventionAssociation     | 604863 / 255901 / READ-T2-001                    | Restored: dosage 900; diagnosticStatement "Student demonstrates reading fluency needs."; PATH 2: cohortReference GRP-A |
   | StudentInterventionAttendanceEvent | 604863 / READ-T2-001 / 2026-09-08 / In Attendance | Restored: interventionDuration 30                        |
   | StudentInterventionAttendanceEvent | 604863 / READ-T2-001 / 2026-09-09 / In Attendance | Restored: interventionDuration **25** (latest, not 30)   |
-  | StudentInterventionAttendanceEvent | 604863 / READ-T2-001 / 2026-09-11 / Excused Absence | Restored: interventionDuration 0                       |
+  | StudentInterventionAttendanceEvent | 604863 / READ-T2-001 / 2026-09-11 / Excused Absence | Restored: interventionDuration 0; attendanceEventReason "Family emergency" |
   | StudentInterventionAttendanceEvent | 604863 / READ-T2-001 / 2026-09-14 / Session Not Held | Restored, if recorded                                 |
-  | Intervention                       | 255901 / READ-T2-001                             | Restored with the latest values; OPTION 1: staffs 207288 only |
-  | StaffCohortAssociation (OPTION 2)  | 207288 / READ-T2-001-GRP-A / 255901 / 2026-08-24 | Restored: endDate 2026-12-18                              |
+  | Intervention                       | 255901 / READ-T2-001                             | Restored with the latest endDate, minDosage, maxDosage, meetingTimes and diagnoses; PATH 1: staffs 207288 only |
+  | StaffCohortAssociation (PATH 2)  | 207288 / READ-T2-001-GRP-A / 255901 / 2026-08-24 | Restored: endDate 2026-12-18; studentRecordAccess true    |
 
   Records that must **not** reappear: Intervention ATTD-T2-001, the 604854
   StudentInterventionAssociation, the 2026-09-11 Unexcused Absence event, the
-  207289 StaffCohortAssociation (OPTION 2), and staff 207289 on the
-  Intervention (OPTION 1).
+  207289 StaffCohortAssociation (PATH 2), and staff 207289 on the
+  Intervention (PATH 1).
 
   Restored records get a new resource `id` from the ODS/API; certification
   compares natural keys and values, not ids.

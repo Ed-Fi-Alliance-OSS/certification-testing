@@ -17,6 +17,8 @@ assert {
   res.body.id: isNotEmpty
   res.body.studentReference.studentUniqueId: isString
   res.body.studentReference.studentUniqueId: isNotEmpty
+  res.body.interventionReference.educationOrganizationId: isNumber
+  res.body.interventionReference.educationOrganizationId: neq 0
   res.body.interventionReference.interventionIdentificationCode: isString
   res.body.interventionReference.interventionIdentificationCode: isNotEmpty
   res.body.eventDate: isString

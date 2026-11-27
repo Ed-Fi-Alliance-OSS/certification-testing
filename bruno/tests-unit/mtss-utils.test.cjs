@@ -79,6 +79,16 @@ test('findEventProblems: missing interventionReference', () => {
   assert.deepEqual(only(e), ['Event #1 (2026-09-08): missing interventionReference']);
 });
 
+test('findEventProblems: interventionReference.educationOrganizationId must be a non-zero number', () => {
+  const base = ev('Present', 10);
+  const withEdOrg = edOrg => ({ ...base, interventionReference: { ...base.interventionReference, educationOrganizationId: edOrg } });
+  const msg = ['Event #1 (2026-09-08): missing interventionReference.educationOrganizationId'];
+  assert.deepEqual(only(withEdOrg(undefined)), msg);
+  assert.deepEqual(only(withEdOrg(0)), msg);
+  assert.deepEqual(only(withEdOrg('255901')), msg);
+  assert.deepEqual(only(withEdOrg(255901)), []);
+});
+
 test('findEventProblems: missing eventDate is labelled "no date"', () => {
   const { eventDate, ...e } = ev('Present', 10);
   assert.deepEqual(only(e), ['Event #1 (no date): missing eventDate']);
@@ -145,6 +155,34 @@ test('cohortKeyOf flattens a cohortReference and returns "none" without one', ()
 
 test('joinIds sorts and joins without spaces', () => {
   assert.equal(u.joinIds(['207289', '207288']), '207288,207289');
+});
+
+test('meetingTimesKeyOf is order-independent and returns "none" without times', () => {
+  const a = [{ startTime: '09:00:00', endTime: '09:30:00' }, { startTime: '08:00:00', endTime: '08:30:00' }];
+  assert.equal(u.meetingTimesKeyOf(a), '08:00:00-08:30:00|09:00:00-09:30:00');
+  assert.equal(u.meetingTimesKeyOf([...a].reverse()), u.meetingTimesKeyOf(a));
+  assert.equal(u.meetingTimesKeyOf(undefined), 'none');
+  assert.equal(u.meetingTimesKeyOf([]), 'none');
+  assert.equal(u.meetingTimesKeyOf([{ startTime: '08:00:00' }]), 'none');
+});
+
+test('diagnosesKeyOf is order-independent and returns "none" without descriptors', () => {
+  const rf = 'uri://gbisd.edu/DiagnosisDescriptor#Reading Fluency';
+  const la = 'uri://ed-fi.org/DiagnosisDescriptor#Low Attendance';
+  assert.equal(u.diagnosesKeyOf([{ diagnosisDescriptor: rf }, { diagnosisDescriptor: la }]), `${la}|${rf}`);
+  assert.equal(u.diagnosesKeyOf([{ diagnosisDescriptor: la }, { diagnosisDescriptor: rf }]), `${la}|${rf}`);
+  assert.equal(u.diagnosesKeyOf(undefined), 'none');
+  assert.equal(u.diagnosesKeyOf([{}]), 'none');
+  // A restored record without diagnoses never matches a saved list.
+  assert.notEqual(u.diagnosesKeyOf([]), u.diagnosesKeyOf([{ diagnosisDescriptor: rf }]));
+});
+
+test('isEdFiDefaultDescriptor flags only the uri://ed-fi.org namespace', () => {
+  assert.equal(u.isEdFiDefaultDescriptor('uri://ed-fi.org/AttendanceEventCategoryDescriptor#Excused Absence'), true);
+  assert.equal(u.isEdFiDefaultDescriptor('  URI://Ed-Fi.org/AttendanceEventCategoryDescriptor#X'), true);
+  assert.equal(u.isEdFiDefaultDescriptor('uri://gbisd.edu/AttendanceEventCategoryDescriptor#Session Not Held'), false);
+  assert.equal(u.isEdFiDefaultDescriptor('uri://ed-fi.org.example/AttendanceEventCategoryDescriptor#X'), false);
+  assert.equal(u.isEdFiDefaultDescriptor(undefined), false);
 });
 
 test('dependencyName joins scenario and step', () => {

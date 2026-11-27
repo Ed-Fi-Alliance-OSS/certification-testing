@@ -8,6 +8,9 @@
     "firstInterventionBeginDate",
     "firstInterventionEndDate",
     "firstInterventionMaxDosage",
+    "firstInterventionMinDosage",
+    "firstInterventionMeetingTimesKey",
+    "firstInterventionDiagnosesKey",
     "secondInterventionUniqueId",
     "secondInterventionIdentificationCode",
     "secondInterventionEducationOrganizationId"

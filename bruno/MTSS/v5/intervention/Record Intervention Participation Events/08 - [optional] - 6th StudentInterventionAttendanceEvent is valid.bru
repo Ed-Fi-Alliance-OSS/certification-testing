@@ -27,6 +27,8 @@ assert {
   res.body[0].id: isNotEmpty
   res.body[0].studentReference.studentUniqueId: isString
   res.body[0].studentReference.studentUniqueId: isNotEmpty
+  res.body[0].interventionReference.educationOrganizationId: isNumber
+  res.body[0].interventionReference.educationOrganizationId: neq 0
   res.body[0].interventionReference.interventionIdentificationCode: isString
   res.body[0].interventionReference.interventionIdentificationCode: isNotEmpty
   res.body[0].eventDate: isString
@@ -52,7 +54,7 @@ script:pre-request {
 }
 
 script:post-response {
-  const { pickSingle, setVars, wipeVars } = require('./utils');
+  const { pickSingle, setVars, wipeVars, isEdFiDefaultDescriptor } = require('./utils');
   const { logScenario, logSpecStudentInterventionAttendanceEvent } = require('./logging');
   const entityName = 'StudentInterventionAttendanceEvent';
   const scenarioName = this.req.name;
@@ -66,6 +68,12 @@ script:post-response {
       'sessionNotHeldCategory'
     ], entityName, true);
   }
+
+  // Sessions that don't fit the default categories use a descriptor in the provider's own namespace.
+  test('Session Not Held uses the provider namespace, not uri://ed-fi.org', () => {
+    expect(isEdFiDefaultDescriptor(single.attendanceEventCategoryDescriptor),
+      `${single.attendanceEventCategoryDescriptor} is a default Ed-Fi category; use a descriptor in your own namespace`).to.equal(false);
+  });
   
   setVars(bru, {
     sixthStudentInterventionAttendanceEventUniqueId: single.id,

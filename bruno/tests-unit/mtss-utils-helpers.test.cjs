@@ -60,8 +60,8 @@ for (const [name, u] of [['MTSS', mtss], ['Sample Data', sampleData]]) {
   });
 
   it(`${name}: validateDependency throws naming the step to run, with the action hint`, () => {
-    assert.throws(() => quiet(() => u.validateDependency(fakeBru({ a: '' }), 'a', 'Scenario › 01', { actionHint: 'Only for OPTION 2' })),
-      e => /Run "Scenario › 01" first/.test(e.message) && /Missing required variable "a"/.test(e.message) && /> Only for OPTION 2/.test(e.message));
+    assert.throws(() => quiet(() => u.validateDependency(fakeBru({ a: '' }), 'a', 'Scenario › 01', { actionHint: 'Only for PATH 2' })),
+      e => /Run "Scenario › 01" first/.test(e.message) && /Missing required variable "a"/.test(e.message) && /> Only for PATH 2/.test(e.message));
   });
 
   it(`${name}: validateDependency only warns when throwOnMissing is false`, () => {

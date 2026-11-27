@@ -10,10 +10,10 @@ Resources and scenarios follow the Confluence certification page above:
 
 | In scope | Used by |
 | --- | --- |
-| Interventions | Publish and Maintain Intervention Definitions; OPTION 1 (`staffs`) |
-| StudentInterventionAssociations | Assign a Student to an Intervention; OPTION 2 (`cohortReference`) |
-| StudentInterventionAttendanceEvents | Record Intervention Participation Events; AssignedVersusDeliveredDosage |
-| Cohorts, StaffCohortAssociations | Associate Staff with Intervention Delivery - [OPTION 2] |
+| Interventions | Publish and Maintain Intervention Definitions; PATH 1 (`staffs`) |
+| StudentInterventionAssociations | Assign a Student to an Intervention; PATH 2 (`cohortReference`) |
+| StudentInterventionAttendanceEvents | Record Intervention Participation Events; Assigned Versus Delivered Dosage |
+| Cohorts, StaffCohortAssociations | Associate Staff with Intervention Delivery - [PATH 2] |
 
 All of them are also exercised by "Recovery and Resubmission Scenarios".
 
@@ -25,7 +25,7 @@ CERT-275, but the Confluence certification scenarios don't use them.
 `v5/intervention/<Scenario>/NN - <step>.bru`. Folders are per certification **scenario**,
 not per resource (`<Area>/<EntityPlural>/` in SIS), because:
 
-- each MTSS scenario spans several resources (for example, OPTION 2 creates a Cohort, two
+- each MTSS scenario spans several resources (for example, PATH 2 creates a Cohort, two
   StaffCohortAssociations and updates a StudentInterventionAssociation);
 - later scenarios reuse values captured by earlier ones, which `scenario.config.json`
   declares (`needs` / `provides`). The SIS `entity.config.json` has no way to express that.
@@ -41,19 +41,19 @@ Run the scenarios in this order (folder `meta.seq`):
 1. Publish and Maintain Intervention Definitions
 2. Assign a Student to an Intervention
 3. Record Intervention Participation Events
-4. AssignedVersusDeliveredDosage
-5. Associate Staff with Intervention Delivery - [OPTION 1] **or**
-6. Associate Staff with Intervention Delivery - [OPTION 2]
+4. Assigned Versus Delivered Dosage
+5. Associate Staff with Intervention Delivery - [PATH 1] **or**
+6. Associate Staff with Intervention Delivery - [PATH 2]
 7. Recovery and Resubmission Scenarios (always last: it deletes and re-checks your data)
 
-## Options and optional steps
+## Paths and optional steps
 
-- `[OPTION N]`: complete **one** option of the "staff-delivery" group. Steps tagged with
-  an option in other scenarios (for example Recovery) are required only for that option.
+- `[PATH N]`: complete **one** path of the "staff-delivery" group. Steps tagged with
+  a path in other scenarios (for example Recovery) are required only for that path.
 - `[optional]`: run the step only if it applies to your product.
 
 Each scenario folder has a `scenario.config.json` (schema:
-`../schemas/scenario-config.schema.json`) that records options, optional steps, and the
+`../schemas/scenario-config.schema.json`) that records paths, optional steps, and the
 variables the scenario borrows from (`needs`) or shares with (`provides`) other scenarios.
 
 A `needs` entry can name a variable that only an `[optional]` step provides (for example
